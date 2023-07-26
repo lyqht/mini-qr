@@ -78,6 +78,8 @@ button:focus-visible {
   text-align: center;
   width: 100vw;
   height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 @media (prefers-color-scheme: light) {
