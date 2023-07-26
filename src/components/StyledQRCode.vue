@@ -5,66 +5,69 @@
 </template>
 
 <script setup lang="ts">
-import type { CornerDotType, CornerSquareType, DotType, DrawType } from 'qr-code-styling';
-import QRCodeStyling from 'qr-code-styling';
-import { onMounted, ref, watch } from 'vue';
+import type { CornerDotType, CornerSquareType, DotType, DrawType } from 'qr-code-styling'
+import QRCodeStyling from 'qr-code-styling'
+import { onMounted, ref, watch } from 'vue'
 
-const props = withDefaults(
-  defineProps<{
-    data: string
-    width?: number
-    height?: number
-    type?: DrawType
-    image?: string
+export interface StyledQRCodeProps {
+  data: string
+  width?: number
+  height?: number
+  type?: DrawType
+  image?: string
+  margin?: number
+  dotsOptions?: {
+    color?: string
+    type?: DotType
+  }
+  backgroundOptions?: {
+    color?: string
+  }
+  imageOptions?: {
     margin?: number
-    dotsOptions?: {
-      color?: string
-      type?: DotType
-    }
-    backgroundOptions?: {
-      color?: string
-    }
-    imageOptions?: {
-      margin?: number
-    }
-    cornersSquareOptions?: {
-      type?: CornerSquareType
-      color?: string
-    }
-  }>(),
-  {
-    width: 300,
-    height: 300,
-    type: 'svg' as DrawType,
-    image: undefined,
-    margin: 0,
-    dotsOptions: () => ({
-      color: 'black',
-      type: 'rounded',
-    }),
+  }
+  cornersSquareOptions?: {
+    type?: CornerSquareType
+    color?: string
+  }
+  cornersDotOptions?: {
+    type?: CornerDotType
+    color?: string
+  }
+}
 
-    // this is set to transparent by default so that we rely on the container's background
-    backgroundOptions: () => ({
-      color: 'transparent',
-    }),
-    imageOptions: () => ({
-      margin: 0,
-      crossOrigin: 'anonymous',
-    }),
-    cornersSquareOptions: () => ({
-      color: 'black',
-      type: 'extra-rounded' as CornerSquareType,
-    }),
-    cornersDotOptions: () => ({
-      color: 'black',
-      type: 'dot' as CornerDotType,
-    }),
-  },
-)
+const props = withDefaults(defineProps<StyledQRCodeProps>(), {
+  width: 300,
+  height: 300,
+  type: 'svg' as DrawType,
+  image: undefined,
+  margin: 0,
+  dotsOptions: () => ({
+    color: 'black',
+    type: 'rounded'
+  }),
+
+  // this is set to transparent by default so that we rely on the container's background
+  backgroundOptions: () => ({
+    color: 'transparent'
+  }),
+  imageOptions: () => ({
+    margin: 0,
+    crossOrigin: 'anonymous'
+  }),
+  cornersSquareOptions: () => ({
+    color: 'black',
+    type: 'extra-rounded' as CornerSquareType
+  }),
+  cornersDotOptions: () => ({
+    color: 'black',
+    type: 'dot' as CornerDotType
+  })
+})
 
 const QRCodeCanvasContainer = new QRCodeStyling({
   ...props,
-  image: props.image === null ? undefined : props.image,
+  image: props.image === null ? undefined : props.image
 })
 const qrCodeContainer = ref<HTMLElement>()
 
@@ -77,9 +80,9 @@ watch(
   () => {
     QRCodeCanvasContainer.update({
       ...props,
-      image: props.image === null ? undefined : props.image,
+      image: props.image === null ? undefined : props.image
     })
   },
-  { deep: true, immediate: true },
+  { deep: true, immediate: true }
 )
 </script>

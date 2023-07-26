@@ -1,9 +1,19 @@
 <script setup lang="ts">
-import StyledQRCode from '@/components/StyledQRCode.vue'
 import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
-import { ref, computed } from 'vue'
+import StyledQRCode, { type StyledQRCodeProps } from '@/components/StyledQRCode.vue'
+import {
+  copyImageToClipboard,
+  downloadPngElement,
+  downloadSvgElement
+} from '@/utils/convertToImage'
+import { computed, ref } from 'vue'
 
-const PLACEHOLDER_PROPS = {
+interface StyleProps {
+  borderRadius?: string
+  background?: string
+}
+
+const PLACEHOLDER_PROPS: StyledQRCodeProps & { style: StyleProps } = {
   data: 'https://github.com/lyqht',
   image: PLACEHOLDER_IMAGE_URL,
   width: 200,
@@ -18,8 +28,8 @@ const PLACEHOLDER_PROPS = {
     type: 'extra-rounded'
   },
   cornersDotOptions: {
-    color: 'black',
-    type: 'dot'
+    color: '#abcbca',
+    type: 'square'
   },
   style: {
     borderRadius: '24px',
@@ -45,8 +55,38 @@ const qrCodeProps = computed(() => ({
   margin: margin.value,
   dotsOptions: dotsOptions.value,
   cornersSquareOptions: cornersSquareOptions.value,
-  cornersDotOptions: cornersDotOptions.value,
+  cornersDotOptions: cornersDotOptions.value
 }))
+
+async function copyQRToClipboard() {
+  console.debug('Copying image to clipboard')
+  const qrCode = document.querySelector('#qr-code-container')
+  if (qrCode) {
+    await copyImageToClipboard(qrCode as HTMLElement)
+  }
+}
+
+function downloadQRImageAsPng() {
+  console.debug('Copying image to clipboard')
+  const qrCode = document.querySelector('#qr-code-container')
+  if (qrCode) {
+    downloadPngElement(qrCode as HTMLElement, 'qr-code.png', {
+      width: width.value,
+      height: height.value
+    })
+  }
+}
+
+function downloadQRImageAsSvg() {
+  console.debug('Copying image to clipboard')
+  const qrCode = document.querySelector('#qr-code-container')
+  if (qrCode) {
+    downloadSvgElement(qrCode as HTMLElement, 'qr-code.svg', {
+      width: width.value,
+      height: height.value
+    })
+  }
+}
 </script>
 
 <template>
@@ -54,21 +94,46 @@ const qrCodeProps = computed(() => ({
     <div>
       <h1 class="mb-8 text-4xl">Styled QR Code Generator</h1>
       <div class="flex flex-col md:flex-row items-start justify-center gap-12">
-      <div id="main-content">
-        <div
-          id="qr-code-container"
-          class="grid place-items-center overflow-hidden"
-          :style="[style, {
-            width: width + 'px',
-            height: height + 'px'
-          }]"
-        >
-          <StyledQRCode
-            v-if="data"
-            v-bind="qrCodeProps"
-          />
-          <p v-else>No data!</p>
-      </div>
+        <div id="main-content" class="w-full flex flex-col items-center justify-center">
+          <div
+            id="qr-code-container"
+            class="grid place-items-center overflow-hidden mb-4"
+            :style="[
+              style,
+              {
+                width: width + 'px',
+                height: height + 'px'
+              }
+            ]"
+          >
+            <StyledQRCode v-if="data" v-bind="qrCodeProps" />
+            <p v-else>No data!</p>
+          </div>
+          <div class="flex flex-col gap-2 items-center">
+            <button
+              id="copy-qr-image-button"
+              class="cursor-pointer bg-gray-300 text-black hover:shadow w-fit"
+              @click="copyQRToClipboard"
+            >
+              <p>Copy to clipboard</p>
+            </button>
+            <div class="flex flex-row gap-2 items-center">
+              <button
+                id="download-qr-image-button-png"
+                class="cursor-pointer bg-gray-300 text-black hover:shadow"
+                @click="downloadQRImageAsPng"
+              >
+                <p>PNG</p>
+              </button>
+              <button
+                id="download-qr-image-button-svg"
+                class="cursor-pointer bg-gray-300 text-black hover:shadow"
+                @click="downloadQRImageAsSvg"
+              >
+                <p>SVG</p>
+              </button>
+            </div>
+          </div>
         </div>
         <div id="settings" class="w-full flex flex-col items-start text-start gap-8">
           <div class="w-full">
