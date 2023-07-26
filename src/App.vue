@@ -8,17 +8,18 @@ import {
 } from '@/utils/convertToImage'
 import { computed, ref } from 'vue'
 
-interface StyleProps {
+interface CustomStyleProps {
   borderRadius?: string
   background?: string
 }
 
-const PLACEHOLDER_PROPS: StyledQRCodeProps & { style: StyleProps } = {
+const PLACEHOLDER_PROPS: Required<StyledQRCodeProps> & { style: CustomStyleProps } = {
   data: 'https://github.com/lyqht',
   image: PLACEHOLDER_IMAGE_URL,
   width: 200,
   height: 200,
   margin: 0,
+  type: 'svg',
   dotsOptions: {
     color: '#abcbca',
     type: 'extra-rounded'
@@ -31,6 +32,12 @@ const PLACEHOLDER_PROPS: StyledQRCodeProps & { style: StyleProps } = {
     color: '#abcbca',
     type: 'square'
   },
+  backgroundOptions: {
+    color: 'transparent'
+  },
+  imageOptions: {
+    margin: 0
+  },
   style: {
     borderRadius: '24px',
     background: '#697d80'
@@ -42,10 +49,32 @@ const image = ref(PLACEHOLDER_PROPS.image)
 const width = ref(PLACEHOLDER_PROPS.width)
 const height = ref(PLACEHOLDER_PROPS.height)
 const margin = ref(PLACEHOLDER_PROPS.margin)
-const dotsOptions = ref(PLACEHOLDER_PROPS.dotsOptions)
-const cornersSquareOptions = ref(PLACEHOLDER_PROPS.cornersSquareOptions)
-const cornersDotOptions = ref(PLACEHOLDER_PROPS.cornersDotOptions)
-const style = ref(PLACEHOLDER_PROPS.style)
+
+const dotsOptionsColor = ref(PLACEHOLDER_PROPS.dotsOptions.color)
+const dotsOptionsType = ref(PLACEHOLDER_PROPS.dotsOptions.type)
+const cornersSquareOptionsColor = ref(PLACEHOLDER_PROPS.cornersSquareOptions.color)
+const cornersSquareOptionsType = ref(PLACEHOLDER_PROPS.cornersSquareOptions.type)
+const cornersDotOptionsColor = ref(PLACEHOLDER_PROPS.cornersDotOptions.color)
+const cornersDotOptionsType = ref(PLACEHOLDER_PROPS.cornersDotOptions.type)
+const styleBorderRadius = ref(PLACEHOLDER_PROPS.style.borderRadius)
+const styleBackground = ref(PLACEHOLDER_PROPS.style.background)
+
+const dotsOptions = computed(() => ({
+  color: dotsOptionsColor.value,
+  type: dotsOptionsType.value
+}))
+const cornersSquareOptions = computed(() => ({
+  color: cornersSquareOptionsColor.value,
+  type: cornersSquareOptionsType.value
+}))
+const cornersDotOptions = computed(() => ({
+  color: cornersDotOptionsColor.value,
+  type: cornersDotOptionsType.value
+}))
+const style = computed(() => ({
+  borderRadius: styleBorderRadius.value,
+  background: styleBackground.value
+}))
 
 const qrCodeProps = computed(() => ({
   data: data.value,
@@ -91,10 +120,10 @@ function downloadQRImageAsSvg() {
 
 <template>
   <main class="grid place-items-center">
-    <div>
+    <div class="w-full md:w-5/6">
       <h1 class="mb-8 text-4xl">Styled QR Code Generator</h1>
-      <div class="flex flex-col md:flex-row items-start justify-center gap-12">
-        <div id="main-content" class="w-full flex flex-col items-center justify-center">
+      <div class="flex flex-col md:flex-row items-start justify-center gap-4 md:gap-12">
+        <div id="main-content" class="flex flex-col items-center justify-center flex-shrink-0 w-full md:w-fit">
           <div
             id="qr-code-container"
             class="grid place-items-center overflow-hidden mb-4"
@@ -135,7 +164,7 @@ function downloadQRImageAsSvg() {
             </div>
           </div>
         </div>
-        <div id="settings" class="w-full flex flex-col items-start text-start gap-8">
+        <div id="settings" class="w-full flex flex-col flex-grow items-start text-start gap-8">
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="data">
               data
@@ -195,6 +224,48 @@ function downloadQRImageAsSvg() {
               placeholder="margin in pixels"
               v-model="margin"
             />
+          </div>
+          <div class="w-full">
+            <label>Dots color:</label>
+            <input id="dotsColor" type="color" v-model="dotsOptionsColor" />
+          </div>
+          <div class="w-full">
+            <label>Dots type:</label>
+            <div
+              v-for="type in [
+                'dots',
+                'rounded',
+                'classy',
+                'classy-rounded',
+                'square',
+                'extra-rounded'
+              ]"
+              :key="type"
+            >
+              <input type="radio" v-model="dotsOptionsType" :value="type" /> {{ type }}
+            </div>
+          </div>
+
+          <div class="w-full">
+            <label>Corners Square color:</label>
+            <input id="cornersSquareColor" type="color" v-model="cornersSquareOptionsColor" />
+          </div>
+          <div class="w-full">
+            <label>Corners Square type:</label>
+            <div v-for="type in ['dot', 'square', 'extra-rounded']" :key="type">
+              <input type="radio" v-model="cornersSquareOptionsType" :value="type" /> {{ type }}
+            </div>
+          </div>
+
+          <div class="w-full">
+            <label>Corners Dot color:</label>
+            <input id="cornersDotColor" type="color" v-model="cornersDotOptionsColor" />
+          </div>
+          <div class="w-full">
+            <label>Corners Dot type:</label>
+            <div v-for="type in ['dot', 'square']" :key="type">
+              <input type="radio" v-model="cornersDotOptionsType" :value="type" /> {{ type }}
+            </div>
           </div>
         </div>
       </div>
