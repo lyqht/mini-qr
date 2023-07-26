@@ -6,6 +6,7 @@ import {
   downloadPngElement,
   downloadSvgElement
 } from '@/utils/convertToImage'
+import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
 import { computed, ref } from 'vue'
 
 interface CustomStyleProps {
@@ -87,6 +88,42 @@ const qrCodeProps = computed(() => ({
   cornersDotOptions: cornersDotOptions.value
 }))
 
+/* random settings utils */
+
+function createRandomColor() {
+  return '#' + Math.floor(Math.random() * 16777215).toString(16)
+}
+
+function getRandomItemInArray(array: any[]) {
+  return array[Math.floor(Math.random() * array.length)]
+}
+
+function randomizeStyleSettings() {
+  const dotTypes: DotType[] = [
+    'dots',
+    'rounded',
+    'classy',
+    'classy-rounded',
+    'square',
+    'extra-rounded'
+  ]
+  const cornerSquareTypes: CornerSquareType[] = ['dot', 'square', 'extra-rounded']
+  const cornerDotTypes: CornerDotType[] = ['dot', 'square']
+
+  dotsOptionsType.value = getRandomItemInArray(dotTypes)
+  dotsOptionsColor.value = createRandomColor()
+
+  cornersSquareOptionsType.value = getRandomItemInArray(cornerSquareTypes)
+  cornersSquareOptionsColor.value = createRandomColor()
+
+  cornersDotOptionsType.value = getRandomItemInArray(cornerDotTypes)
+  cornersDotOptionsColor.value = createRandomColor()
+
+  styleBackground.value = createRandomColor()
+}
+
+/* export image utils */
+
 async function copyQRToClipboard() {
   console.debug('Copying image to clipboard')
   const qrCode = document.querySelector('#qr-code-container')
@@ -121,7 +158,12 @@ function downloadQRImageAsSvg() {
 <template>
   <main class="grid place-items-center" role="main">
     <div class="w-full md:w-5/6">
-      <h1 class="mb-8 text-4xl">Styled QR Code Generator</h1>
+      <div class="w-full mb-8 flex flex-col items-center justify-center">
+      <h1 class="text-4xl">Styled QR Code Generator</h1>
+      <button class="p-2 mt-2 m-0" @click="randomizeStyleSettings">
+        Randomize style
+      </button>
+      </div>
       <div class="flex flex-col md:flex-row items-start justify-center gap-4 md:gap-12">
         <div
           id="main-content"
@@ -231,7 +273,7 @@ function downloadQRImageAsSvg() {
               v-model="margin"
             />
           </div>
-          <div class="w-full">
+          <div class="w-full flex-row">
             <label>Dots color:</label>
             <input id="dotsColor" type="color" v-model="dotsOptionsColor" />
           </div>
