@@ -119,11 +119,14 @@ function downloadQRImageAsSvg() {
 </script>
 
 <template>
-  <main class="grid place-items-center">
+  <main class="grid place-items-center" role="main">
     <div class="w-full md:w-5/6">
       <h1 class="mb-8 text-4xl">Styled QR Code Generator</h1>
       <div class="flex flex-col md:flex-row items-start justify-center gap-4 md:gap-12">
-        <div id="main-content" class="flex flex-col items-center justify-center flex-shrink-0 w-full md:w-fit">
+        <div
+          id="main-content"
+          class="flex flex-col items-center justify-center flex-shrink-0 w-full md:w-fit"
+        >
           <div
             id="qr-code-container"
             class="grid place-items-center overflow-hidden mb-4"
@@ -135,7 +138,7 @@ function downloadQRImageAsSvg() {
               }
             ]"
           >
-            <StyledQRCode v-if="data" v-bind="qrCodeProps" />
+            <StyledQRCode v-if="data" v-bind="qrCodeProps" role="img" aria-label="QR code" />
             <p v-else>No data!</p>
           </div>
           <div class="flex flex-col gap-2 items-center">
@@ -143,6 +146,7 @@ function downloadQRImageAsSvg() {
               id="copy-qr-image-button"
               class="cursor-pointer bg-gray-300 text-black hover:shadow w-fit"
               @click="copyQRToClipboard"
+              aria-label="Copy QR Code to Clipboard"
             >
               <p>Copy to clipboard</p>
             </button>
@@ -151,6 +155,7 @@ function downloadQRImageAsSvg() {
                 id="download-qr-image-button-png"
                 class="cursor-pointer bg-gray-300 text-black hover:shadow"
                 @click="downloadQRImageAsPng"
+                aria-label="Download QR Code as PNG"
               >
                 <p>PNG</p>
               </button>
@@ -158,6 +163,7 @@ function downloadQRImageAsSvg() {
                 id="download-qr-image-button-svg"
                 class="cursor-pointer bg-gray-300 text-black hover:shadow"
                 @click="downloadQRImageAsSvg"
+                aria-label="Download QR Code as SVG"
               >
                 <p>SVG</p>
               </button>
@@ -242,7 +248,13 @@ function downloadQRImageAsSvg() {
               ]"
               :key="type"
             >
-              <input type="radio" v-model="dotsOptionsType" :value="type" /> {{ type }}
+              <input
+                :id="'dotsOptionsType-' + type"
+                type="radio"
+                v-model="dotsOptionsType"
+                :value="type"
+              />
+              <label :for="'dotsOptionsType-' + type">{{ type }}</label>
             </div>
           </div>
 
@@ -253,7 +265,13 @@ function downloadQRImageAsSvg() {
           <div class="w-full">
             <label>Corners Square type:</label>
             <div v-for="type in ['dot', 'square', 'extra-rounded']" :key="type">
-              <input type="radio" v-model="cornersSquareOptionsType" :value="type" /> {{ type }}
+              <input
+                :id="'cornersSquareOptionsType-' + type"
+                type="radio"
+                v-model="cornersSquareOptionsType"
+                :value="type"
+              />
+              <label :for="'cornersSquareOptionsType-' + type">{{ type }}</label>
             </div>
           </div>
 
@@ -264,7 +282,13 @@ function downloadQRImageAsSvg() {
           <div class="w-full">
             <label>Corners Dot type:</label>
             <div v-for="type in ['dot', 'square']" :key="type">
-              <input type="radio" v-model="cornersDotOptionsType" :value="type" /> {{ type }}
+              <input
+                :id="'cornersDotOptionsType-' + type"
+                type="radio"
+                v-model="cornersDotOptionsType"
+                :value="type"
+              />
+              <label :for="'cornersDotOptionsType-' + type">{{ type }}</label>
             </div>
           </div>
         </div>
