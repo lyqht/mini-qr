@@ -8,3 +8,6 @@ A customizable QR code generator that allows you to create beautiful and unique 
 
 - Generate QR codes with custom colors and styles
 - Support for various output formats, including SVG and PNG
+- Copy to clipboard
+- UI respects user's light/dark mode preferences
+- Randomize style button
