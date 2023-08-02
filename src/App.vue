@@ -153,6 +153,71 @@ function downloadQRImageAsSvg() {
     })
   }
 }
+
+function saveQRConfig() {
+  console.debug('Saving QR code config')
+  const qrCodeProps = {
+    data: data.value,
+    image: image.value,
+    width: width.value,
+    height: height.value,
+    margin: margin.value,
+    dotsOptions: dotsOptions.value,
+    cornersSquareOptions: cornersSquareOptions.value,
+    cornersDotOptions: cornersDotOptions.value
+  }
+  const qrCodeStyle = {
+    borderRadius: styleBorderRadius.value,
+    background: styleBackground.value
+  }
+  const qrCodeConfig = {
+    props: qrCodeProps,
+    style: qrCodeStyle
+  }
+  const qrCodeConfigString = JSON.stringify(qrCodeConfig)
+  const qrCodeConfigBlob = new Blob([qrCodeConfigString], { type: 'application/json' })
+  const qrCodeConfigUrl = URL.createObjectURL(qrCodeConfigBlob)
+  const qrCodeConfigLink = document.createElement('a')
+  qrCodeConfigLink.href = qrCodeConfigUrl
+  qrCodeConfigLink.download = 'qr-code-config.json'
+  qrCodeConfigLink.click()
+}
+
+function loadQrConfig() {
+  console.debug('Loading QR code config')
+  const qrCodeConfigInput = document.createElement('input')
+  qrCodeConfigInput.type = 'file'
+  qrCodeConfigInput.accept = 'application/json'
+  qrCodeConfigInput.onchange = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    if (target.files) {
+      const file = target.files[0]
+      const reader = new FileReader()
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        const target = event.target as FileReader
+        const result = target.result as string
+        const qrCodeConfig = JSON.parse(result)
+        const qrCodeProps = qrCodeConfig.props
+        const qrCodeStyle = qrCodeConfig.style
+        data.value = qrCodeProps.data
+        image.value = qrCodeProps.image
+        width.value = qrCodeProps.width
+        height.value = qrCodeProps.height
+        margin.value = qrCodeProps.margin
+        dotsOptionsColor.value = qrCodeProps.dotsOptions.color
+        dotsOptionsType.value = qrCodeProps.dotsOptions.type
+        cornersSquareOptionsColor.value = qrCodeProps.cornersSquareOptions.color
+        cornersSquareOptionsType.value = qrCodeProps.cornersSquareOptions.type
+        cornersDotOptionsColor.value = qrCodeProps.cornersDotOptions.color
+        cornersDotOptionsType.value = qrCodeProps.cornersDotOptions.type
+        styleBorderRadius.value = qrCodeStyle.borderRadius
+        styleBackground.value = qrCodeStyle.background
+      }
+      reader.readAsText(file)
+    }
+  }
+  qrCodeConfigInput.click()
+}
 </script>
 
 <template>
@@ -196,7 +261,7 @@ function downloadQRImageAsSvg() {
           {{ $t('random_style') }}
         </button>
       </div>
-      <div class="flex flex-col md:flex-row items-start justify-center gap-4 md:gap-12">
+      <div class="flex flex-col-reverse md:flex-row items-start justify-center gap-4 md:gap-12">
         <div
           id="main-content"
           class="flex flex-col items-center justify-center flex-shrink-0 w-full md:w-fit"
@@ -216,69 +281,133 @@ function downloadQRImageAsSvg() {
             <p v-else>{{ $t('no_data') }}</p>
           </div>
           <div class="flex flex-col gap-2 items-center">
-            <button
-              id="copy-qr-image-button"
-              class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow w-fit flex flex-row gap-1"
-              @click="copyQRToClipboard"
-              :aria-label="$t('copy_clipboard')"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <g
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+            <div class="flex flex-col gap-2 items-center justify-center">
+              <button
+                id="copy-qr-image-button"
+                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow w-fit flex flex-row gap-1"
+                @click="copyQRToClipboard"
+                :aria-label="$t('copy_clipboard')"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M8 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z"
+                    />
+                    <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+                  </g>
+                </svg>
+                <p>{{ $t('copy_clipboard') }}</p>
+              </button>
+              <button
+                id="save-qr-code-config-button"
+                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow w-fit flex flex-row gap-1"
+                @click="saveQRConfig"
+                :aria-label="$t('save_qr_code')"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  >
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path
+                      d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-4v-6"
+                    />
+                    <path d="M9.5 14.5L12 17l2.5-2.5" />
+                  </g>
+                </svg>
+                <p>{{ $t('save_qr_code') }}</p>
+              </button>
+              <button
+                id="load-qr-code-config-button"
+                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow w-fit flex flex-row gap-1"
+                @click="loadQrConfig"
+                :aria-label="$t('load_qr_code')"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  >
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path
+                      d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-10v6"
+                    />
+                    <path d="M9.5 13.5L12 11l2.5 2.5" />
+                  </g>
+                </svg>
+                <p>{{ $t('load_qr_code') }}</p>
+              </button>
+            </div>
+
+            <div id="export-options" class="pt-4">
+              <p class="pb-2">{{ $t('Export as') }}</p>
+              <div class="flex flex-row gap-2 items-center">
+                <button
+                  id="download-qr-image-button-png"
+                  class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow"
+                  @click="downloadQRImageAsPng"
+                  :aria-label="$t('download_qr_code_png')"
                 >
-                  <path d="M8 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z" />
-                  <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
-                </g>
-              </svg>
-              <p>{{ $t('copy_clipboard') }}</p>
-            </button>
-            <div class="flex flex-row gap-2 items-center">
-              <button
-                id="download-qr-image-button-png"
-                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow"
-                @click="downloadQRImageAsPng"
-                :aria-label="$t('download_qr_code_png')"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <g
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
                   >
-                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                    <path
-                      d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4m1 3h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3M5 18h1.5a1.5 1.5 0 0 0 0-3H5v6m6 0v-6l3 6v-6"
-                    />
-                  </g>
-                </svg>
-              </button>
-              <button
-                id="download-qr-image-button-svg"
-                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow"
-                @click="downloadQRImageAsSvg"
-                :aria-label="$t('download_qr_code_svg')"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <g
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                      <path
+                        d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4m1 3h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3M5 18h1.5a1.5 1.5 0 0 0 0-3H5v6m6 0v-6l3 6v-6"
+                      />
+                    </g>
+                  </svg>
+                </button>
+                <button
+                  id="download-qr-image-button-svg"
+                  class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow"
+                  @click="downloadQRImageAsSvg"
+                  :aria-label="$t('download_qr_code_svg')"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
                   >
-                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                    <path
-                      d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4M4 20.25c0 .414.336.75.75.75H6a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h1.25a.75.75 0 0 1 .75.75m3-.75l2 6l2-6m6 0h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3"
-                    />
-                  </g>
-                </svg>
-              </button>
+                    <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                      <path
+                        d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4M4 20.25c0 .414.336.75.75.75H6a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h1.25a.75.75 0 0 1 .75.75m3-.75l2 6l2-6m6 0h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3"
+                      />
+                    </g>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
