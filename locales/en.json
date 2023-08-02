@@ -16,5 +16,12 @@
     "corners_square_color_label": "Corners Square color:",
     "corners_square_type_label": "Corners Square type:",
     "corners_dot_color_label": "Corners Dot color",
-    "corners_dot_type_label": "Corners Dot type:"
+    "corners_dot_type_label": "Corners Dot type:",
+    "dots": "dots",
+    "rounded": "rounded",
+    "classy": "classy",
+    "classy-rounded": "classy-rounded",
+    "square": "square",
+    "extra-rounded": "extra-rounded",
+    "dot": "dot"
 }

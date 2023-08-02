@@ -372,7 +372,7 @@ function downloadQRImageAsSvg() {
                 v-model="dotsOptionsType"
                 :value="type"
               />
-              <label :for="'dotsOptionsType-' + type">{{ type }}</label>
+              <label :for="'dotsOptionsType-' + type">{{ $t(type) }}</label>
             </div>
           </div>
 
@@ -393,7 +393,7 @@ function downloadQRImageAsSvg() {
                 v-model="cornersSquareOptionsType"
                 :value="type"
               />
-              <label :for="'cornersSquareOptionsType-' + type">{{ type }}</label>
+              <label :for="'cornersSquareOptionsType-' + type">{{ $t(type) }}</label>
             </div>
           </div>
 
@@ -410,7 +410,7 @@ function downloadQRImageAsSvg() {
                 v-model="cornersDotOptionsType"
                 :value="type"
               />
-              <label :for="'cornersDotOptionsType-' + type">{{ type }}</label>
+              <label :for="'cornersDotOptionsType-' + type">{{ $t(type) }}</label>
             </div>
           </div>
         </div>
