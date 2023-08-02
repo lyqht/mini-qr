@@ -2,12 +2,14 @@
 import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
 import StyledQRCode, { type StyledQRCodeProps } from '@/components/StyledQRCode.vue'
 import {
-  copyImageToClipboard,
-  downloadPngElement,
-  downloadSvgElement
+copyImageToClipboard,
+downloadPngElement,
+downloadSvgElement
 } from '@/utils/convertToImage'
 import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
 import { computed, ref } from 'vue'
+import 'vue-i18n'
+import { sortedLocales } from './utils/language'
 
 interface CustomStyleProps {
   borderRadius?: string
@@ -153,23 +155,115 @@ function downloadQRImageAsSvg() {
     })
   }
 }
+
+function saveQRConfig() {
+  console.debug('Saving QR code config')
+  const qrCodeProps = {
+    data: data.value,
+    image: image.value,
+    width: width.value,
+    height: height.value,
+    margin: margin.value,
+    dotsOptions: dotsOptions.value,
+    cornersSquareOptions: cornersSquareOptions.value,
+    cornersDotOptions: cornersDotOptions.value
+  }
+  const qrCodeStyle = {
+    borderRadius: styleBorderRadius.value,
+    background: styleBackground.value
+  }
+  const qrCodeConfig = {
+    props: qrCodeProps,
+    style: qrCodeStyle
+  }
+  const qrCodeConfigString = JSON.stringify(qrCodeConfig)
+  const qrCodeConfigBlob = new Blob([qrCodeConfigString], { type: 'application/json' })
+  const qrCodeConfigUrl = URL.createObjectURL(qrCodeConfigBlob)
+  const qrCodeConfigLink = document.createElement('a')
+  qrCodeConfigLink.href = qrCodeConfigUrl
+  qrCodeConfigLink.download = 'qr-code-config.json'
+  qrCodeConfigLink.click()
+}
+
+function loadQrConfig() {
+  console.debug('Loading QR code config')
+  const qrCodeConfigInput = document.createElement('input')
+  qrCodeConfigInput.type = 'file'
+  qrCodeConfigInput.accept = 'application/json'
+  qrCodeConfigInput.onchange = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    if (target.files) {
+      const file = target.files[0]
+      const reader = new FileReader()
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        const target = event.target as FileReader
+        const result = target.result as string
+        const qrCodeConfig = JSON.parse(result)
+        const qrCodeProps = qrCodeConfig.props
+        const qrCodeStyle = qrCodeConfig.style
+        data.value = qrCodeProps.data
+        image.value = qrCodeProps.image
+        width.value = qrCodeProps.width
+        height.value = qrCodeProps.height
+        margin.value = qrCodeProps.margin
+        dotsOptionsColor.value = qrCodeProps.dotsOptions.color
+        dotsOptionsType.value = qrCodeProps.dotsOptions.type
+        cornersSquareOptionsColor.value = qrCodeProps.cornersSquareOptions.color
+        cornersSquareOptionsType.value = qrCodeProps.cornersSquareOptions.type
+        cornersDotOptionsColor.value = qrCodeProps.cornersDotOptions.color
+        cornersDotOptionsType.value = qrCodeProps.cornersDotOptions.type
+        styleBorderRadius.value = qrCodeStyle.borderRadius
+        styleBackground.value = qrCodeStyle.background
+      }
+      reader.readAsText(file)
+    }
+  }
+  qrCodeConfigInput.click()
+}
 </script>
 
 <template>
-  <main class="grid place-items-center relative" role="main">
-    <div class="absolute end-4 top-0">
+  <main class="grid place-items-center px-6 py-20 sm:p-8 relative" role="main">
+    <div class="absolute end-4 top-4 flex flex-row items-center gap-4">
+      <form class="flex flex-row items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="#abcbca"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          >
+            <path d="M4 5h7M7 4c0 4.846 0 7 .5 8" />
+            <path
+              d="M10 8.5c0 2.286-2 4.5-3.5 4.5S4 11.865 4 11c0-2 1-3 3-3s5 .57 5 2.857c0 1.524-.667 2.571-2 3.143m2 6l4-9l4 9m-.9-2h-6.2"
+            />
+          </g>
+        </svg>
+        <select class="input px-0 text-center" id="locale-select" v-model="$i18n.locale">
+          <option v-for="(locale, index) in sortedLocales" :key="index" :value="locale">
+            {{ $t(locale) }}
+          </option>
+        </select>
+      </form>
+      <div class="vertical-border"></div>
       <a href="https://github.com/lyqht/styled-qr-code-generator">
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"><path fill="#abcbca" d="M12.001 2c-5.525 0-10 4.475-10 10a9.994 9.994 0 0 0 6.837 9.488c.5.087.688-.213.688-.476c0-.237-.013-1.024-.013-1.862c-2.512.463-3.162-.612-3.362-1.175c-.113-.288-.6-1.175-1.025-1.413c-.35-.187-.85-.65-.013-.662c.788-.013 1.35.725 1.538 1.025c.9 1.512 2.337 1.087 2.912.825c.088-.65.35-1.087.638-1.337c-2.225-.25-4.55-1.113-4.55-4.938c0-1.088.387-1.987 1.025-2.688c-.1-.25-.45-1.275.1-2.65c0 0 .837-.262 2.75 1.026a9.28 9.28 0 0 1 2.5-.338c.85 0 1.7.112 2.5.337c1.913-1.3 2.75-1.024 2.75-1.024c.55 1.375.2 2.4.1 2.65c.637.7 1.025 1.587 1.025 2.687c0 3.838-2.337 4.688-4.563 4.938c.363.312.676.912.676 1.85c0 1.337-.013 2.412-.013 2.75c0 .262.188.574.688.474A10.016 10.016 0 0 0 22 12c0-5.525-4.475-10-10-10Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+          <path
+            fill="#abcbca"
+            d="M12.001 2c-5.525 0-10 4.475-10 10a9.994 9.994 0 0 0 6.837 9.488c.5.087.688-.213.688-.476c0-.237-.013-1.024-.013-1.862c-2.512.463-3.162-.612-3.362-1.175c-.113-.288-.6-1.175-1.025-1.413c-.35-.187-.85-.65-.013-.662c.788-.013 1.35.725 1.538 1.025c.9 1.512 2.337 1.087 2.912.825c.088-.65.35-1.087.638-1.337c-2.225-.25-4.55-1.113-4.55-4.938c0-1.088.387-1.987 1.025-2.688c-.1-.25-.45-1.275.1-2.65c0 0 .837-.262 2.75 1.026a9.28 9.28 0 0 1 2.5-.338c.85 0 1.7.112 2.5.337c1.913-1.3 2.75-1.024 2.75-1.024c.55 1.375.2 2.4.1 2.65c.637.7 1.025 1.587 1.025 2.687c0 3.838-2.337 4.688-4.563 4.938c.363.312.676.912.676 1.85c0 1.337-.013 2.412-.013 2.75c0 .262.188.574.688.474A10.016 10.016 0 0 0 22 12c0-5.525-4.475-10-10-10Z"
+          />
+        </svg>
       </a>
     </div>
     <div class="w-full md:w-5/6">
       <div class="w-full mb-8 flex flex-col items-center justify-center">
-      <h1 class="text-4xl">Styled QR Code Generator</h1>
-      <button class="p-2 mt-2 m-0" @click="randomizeStyleSettings">
-        Randomize style
-      </button>
+        <h1 class="text-4xl">{{ $t('styled_qr_gen') }}</h1>
+        <button class="p-2 mt-2 m-0" @click="randomizeStyleSettings">
+          {{ $t('random_style') }}
+        </button>
       </div>
-      <div class="flex flex-col md:flex-row items-start justify-center gap-4 md:gap-12">
+      <div class="flex flex-col-reverse md:flex-row items-start justify-center gap-4 md:gap-12">
         <div
           id="main-content"
           class="flex flex-col items-center justify-center flex-shrink-0 w-full md:w-fit"
@@ -186,65 +280,172 @@ function downloadQRImageAsSvg() {
             ]"
           >
             <StyledQRCode v-if="data" v-bind="qrCodeProps" role="img" aria-label="QR code" />
-            <p v-else>No data!</p>
+            <p v-else>{{ $t('no_data') }}</p>
           </div>
           <div class="flex flex-col gap-2 items-center">
-            <button
-              id="copy-qr-image-button"
-              class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow w-fit flex flex-row gap-1"
-              @click="copyQRToClipboard"
-              aria-label="Copy QR Code to Clipboard"
-            >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M8 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></g></svg>
-            <p>Copy to clipboard</p>
-            </button>
-            <div class="flex flex-row gap-2 items-center">
+            <div class="flex flex-col gap-2 items-center justify-center">
               <button
-                id="download-qr-image-button-png"
-                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow"
-                @click="downloadQRImageAsPng"
-                aria-label="Download QR Code as PNG"
+                id="copy-qr-image-button"
+                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow w-fit flex flex-row gap-1"
+                @click="copyQRToClipboard"
+                :aria-label="$t('copy_clipboard')"
               >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4m1 3h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3M5 18h1.5a1.5 1.5 0 0 0 0-3H5v6m6 0v-6l3 6v-6"/></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M8 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z"
+                    />
+                    <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+                  </g>
+                </svg>
+                <p>{{ $t('copy_clipboard') }}</p>
               </button>
               <button
-                id="download-qr-image-button-svg"
-                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow"
-                @click="downloadQRImageAsSvg"
-                aria-label="Download QR Code as SVG"
+                id="save-qr-code-config-button"
+                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow w-fit flex flex-row gap-1"
+                @click="saveQRConfig"
+                :aria-label="$t('save_qr_code')"
               >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4M4 20.25c0 .414.336.75.75.75H6a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h1.25a.75.75 0 0 1 .75.75m3-.75l2 6l2-6m6 0h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3"/></g></svg>              </button>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  >
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path
+                      d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-4v-6"
+                    />
+                    <path d="M9.5 14.5L12 17l2.5-2.5" />
+                  </g>
+                </svg>
+                <p>{{ $t('save_qr_code') }}</p>
+              </button>
+              <button
+                id="load-qr-code-config-button"
+                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow w-fit flex flex-row gap-1"
+                @click="loadQrConfig"
+                :aria-label="$t('load_qr_code')"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  >
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path
+                      d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-10v6"
+                    />
+                    <path d="M9.5 13.5L12 11l2.5 2.5" />
+                  </g>
+                </svg>
+                <p>{{ $t('load_qr_code') }}</p>
+              </button>
+            </div>
+
+            <div id="export-options" class="pt-4">
+              <p class="pb-2">{{ $t('Export as') }}</p>
+              <div class="flex flex-row gap-2 items-center">
+                <button
+                  id="download-qr-image-button-png"
+                  class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow"
+                  @click="downloadQRImageAsPng"
+                  :aria-label="$t('download_qr_code_png')"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                      <path
+                        d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4m1 3h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3M5 18h1.5a1.5 1.5 0 0 0 0-3H5v6m6 0v-6l3 6v-6"
+                      />
+                    </g>
+                  </svg>
+                </button>
+                <button
+                  id="download-qr-image-button-svg"
+                  class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow"
+                  @click="downloadQRImageAsSvg"
+                  :aria-label="$t('download_qr_code_svg')"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <g
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                      <path
+                        d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4M4 20.25c0 .414.336.75.75.75H6a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h1.25a.75.75 0 0 1 .75.75m3-.75l2 6l2-6m6 0h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3"
+                      />
+                    </g>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
         <div id="settings" class="w-full flex flex-col flex-grow items-start text-start gap-8">
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="data">
-              data
+              {{ $t('data_label') }}
             </label>
             <textarea
+              name="data"
               class="input"
               id="url"
               rows="2"
-              placeholder="data to encode e.g. a URL or a string"
+              :placeholder="$t('data_placeholder')"
               v-model="data"
             />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="image">
-              image URL
+            <label
+              class="block text-gray-700 dark:text-white text-sm font-bold mb-2"
+              for="image-url"
+            >
+              {{ $t('image_label') }}
             </label>
             <textarea
+              name="image-url"
               class="input"
               id="url"
               rows="1"
-              placeholder="image URL if any"
+              :placeholder="$t('image_label')"
               v-model="image"
             />
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="width">
-              width (px)
+              {{ $t('width_label') }}
             </label>
             <input
               class="input"
@@ -256,7 +457,7 @@ function downloadQRImageAsSvg() {
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="height">
-              height (px)
+              {{ $t('height_label') }}
             </label>
             <input
               class="input"
@@ -268,7 +469,7 @@ function downloadQRImageAsSvg() {
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="margin">
-              margin (px)
+              {{ $t('margin_label') }}
             </label>
             <input
               class="input"
@@ -279,13 +480,14 @@ function downloadQRImageAsSvg() {
             />
           </div>
           <div class="w-full flex flex-row gap-2">
-            <label>Dots color:</label>
+            <label>{{ $t('dot_color_label') }}</label>
             <input id="dotsColor" type="color" v-model="dotsOptionsColor" />
           </div>
           <div class="w-full">
-            <label>Dots type:</label>
+            <label>{{ $t('dot_type_label') }}</label>
             <div
-              class="flex flex-row gap-1" v-for="type in [
+              class="flex flex-row gap-1"
+              v-for="type in [
                 'dots',
                 'rounded',
                 'classy',
@@ -301,33 +503,37 @@ function downloadQRImageAsSvg() {
                 v-model="dotsOptionsType"
                 :value="type"
               />
-              <label :for="'dotsOptionsType-' + type">{{ type }}</label>
+              <label :for="'dotsOptionsType-' + type">{{ $t(type) }}</label>
             </div>
           </div>
 
           <div class="w-full flex flex-row gap-2">
-            <label>Corners Square color:</label>
+            <label>{{ $t('corners_square_color_label') }}</label>
             <input id="cornersSquareColor" type="color" v-model="cornersSquareOptionsColor" />
           </div>
           <div class="w-full">
-            <label>Corners Square type:</label>
-            <div class="flex flex-row gap-1" v-for="type in ['dot', 'square', 'extra-rounded']" :key="type">
+            <label>{{ $t('corners_square_type_label') }}</label>
+            <div
+              class="flex flex-row gap-1"
+              v-for="type in ['dot', 'square', 'extra-rounded']"
+              :key="type"
+            >
               <input
                 :id="'cornersSquareOptionsType-' + type"
                 type="radio"
                 v-model="cornersSquareOptionsType"
                 :value="type"
               />
-              <label :for="'cornersSquareOptionsType-' + type">{{ type }}</label>
+              <label :for="'cornersSquareOptionsType-' + type">{{ $t(type) }}</label>
             </div>
           </div>
 
           <div class="w-full flex flex-row gap-2">
-            <label>Corners Dot color:</label>
+            <label>{{ $t('corners_dot_color_label') }}</label>
             <input id="cornersDotColor" type="color" v-model="cornersDotOptionsColor" />
           </div>
           <div class="w-full">
-            <label>Corners Dot type:</label>
+            <label>{{ $t('corners_dot_type_label') }}</label>
             <div class="flex flex-row gap-1" v-for="type in ['dot', 'square']" :key="type">
               <input
                 :id="'cornersDotOptionsType-' + type"
@@ -335,7 +541,7 @@ function downloadQRImageAsSvg() {
                 v-model="cornersDotOptionsType"
                 :value="type"
               />
-              <label :for="'cornersDotOptionsType-' + type">{{ type }}</label>
+              <label :for="'cornersDotOptionsType-' + type">{{ $t(type) }}</label>
             </div>
           </div>
         </div>
@@ -347,5 +553,9 @@ function downloadQRImageAsSvg() {
 <style lang="postcss">
 .input {
   @apply ms-1 p-4 shadow resize-none appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+}
+
+.vertical-border {
+  @apply h-6 bg-slate-300 dark:bg-slate-700 w-1;
 }
 </style>
