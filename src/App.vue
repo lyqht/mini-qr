@@ -156,7 +156,7 @@ function downloadQRImageAsSvg() {
 </script>
 
 <template>
-  <main class="grid place-items-center p-16 sm:p-8 relative" role="main">
+  <main class="grid place-items-center px-6 py-16 sm:p-8 relative" role="main">
     <div class="absolute end-4 top-4 flex flex-row items-center gap-4">
       <form class="flex flex-row items-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
