@@ -74,7 +74,7 @@ button:focus-visible {
 
 #app {
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0 auto;
   text-align: center;
   width: 100vw;
   height: 100vh;
@@ -93,9 +93,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
-
-
-main {
-  padding: 2rem;
 }

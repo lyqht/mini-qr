@@ -156,8 +156,15 @@ function downloadQRImageAsSvg() {
 </script>
 
 <template>
-  <main class="grid place-items-center relative" role="main">
-    <div class="absolute end-4 top-0">
+  <main class="grid place-items-center p-16 sm:p-8 relative" role="main">
+    <div class="absolute end-4 top-4 flex flex-row items-center gap-4">
+      <form class="flex flex-row items-center">
+        <select class="input" id="locale-select" v-model="$i18n.locale">
+          <option v-for="(locale, index) in $i18n.availableLocales" :key="index" :value="locale">
+            {{ locale }}
+          </option>
+        </select>
+      </form>
       <a href="https://github.com/lyqht/styled-qr-code-generator">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
           <path
