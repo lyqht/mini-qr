@@ -2,13 +2,14 @@
 import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
 import StyledQRCode, { type StyledQRCodeProps } from '@/components/StyledQRCode.vue'
 import {
-  copyImageToClipboard,
-  downloadPngElement,
-  downloadSvgElement
+copyImageToClipboard,
+downloadPngElement,
+downloadSvgElement
 } from '@/utils/convertToImage'
 import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
 import { computed, ref } from 'vue'
 import 'vue-i18n'
+import { sortedLocales } from './utils/language'
 
 interface CustomStyleProps {
   borderRadius?: string
@@ -222,7 +223,7 @@ function loadQrConfig() {
 </script>
 
 <template>
-  <main class="grid place-items-center px-6 py-16 sm:p-8 relative" role="main">
+  <main class="grid place-items-center px-6 py-20 sm:p-8 relative" role="main">
     <div class="absolute end-4 top-4 flex flex-row items-center gap-4">
       <form class="flex flex-row items-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
@@ -240,8 +241,8 @@ function loadQrConfig() {
           </g>
         </svg>
         <select class="input px-0 text-center" id="locale-select" v-model="$i18n.locale">
-          <option v-for="(locale, index) in $i18n.availableLocales" :key="index" :value="locale">
-            {{ locale }}
+          <option v-for="(locale, index) in sortedLocales" :key="index" :value="locale">
+            {{ $t(locale) }}
           </option>
         </select>
       </form>
