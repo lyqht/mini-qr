@@ -8,6 +8,7 @@ import {
 } from '@/utils/convertToImage'
 import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
 import { computed, ref } from 'vue'
+import 'vue-i18n'
 
 interface CustomStyleProps {
   borderRadius?: string
