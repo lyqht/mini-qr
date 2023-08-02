@@ -13,6 +13,7 @@
     "margin_label": "Margin (px)",
     "dot_color_label": "Dots color:",
     "dot_type_label": "Dots type:",
+    "save_qr_code": "Save QR Code configuration",
     "corners_square_color_label": "Corners Square color:",
     "corners_square_type_label": "Corners Square type:",
     "corners_dot_color_label": "Corners Dot color",
