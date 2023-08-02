@@ -159,12 +159,27 @@ function downloadQRImageAsSvg() {
   <main class="grid place-items-center p-16 sm:p-8 relative" role="main">
     <div class="absolute end-4 top-4 flex flex-row items-center gap-4">
       <form class="flex flex-row items-center">
-        <select class="input" id="locale-select" v-model="$i18n.locale">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="#abcbca"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          >
+            <path d="M4 5h7M7 4c0 4.846 0 7 .5 8" />
+            <path
+              d="M10 8.5c0 2.286-2 4.5-3.5 4.5S4 11.865 4 11c0-2 1-3 3-3s5 .57 5 2.857c0 1.524-.667 2.571-2 3.143m2 6l4-9l4 9m-.9-2h-6.2"
+            />
+          </g>
+        </svg>
+        <select class="input px-0 text-center" id="locale-select" v-model="$i18n.locale">
           <option v-for="(locale, index) in $i18n.availableLocales" :key="index" :value="locale">
             {{ locale }}
           </option>
         </select>
       </form>
+      <div class="vertical-border"></div>
       <a href="https://github.com/lyqht/styled-qr-code-generator">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
           <path
@@ -407,5 +422,9 @@ function downloadQRImageAsSvg() {
 <style lang="postcss">
 .input {
   @apply ms-1 p-4 shadow resize-none appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+}
+
+.vertical-border {
+  @apply h-6 bg-slate-300 dark:bg-slate-700 w-1;
 }
 </style>
