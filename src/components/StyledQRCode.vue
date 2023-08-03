@@ -37,8 +37,8 @@ export interface StyledQRCodeProps {
 }
 
 const props = withDefaults(defineProps<StyledQRCodeProps>(), {
-  width: 300,
-  height: 300,
+  width: 200,
+  height: 200,
   type: 'svg' as DrawType,
   image: undefined,
   margin: 0,

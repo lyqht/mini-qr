@@ -379,9 +379,8 @@ function uploadImage() {
                 <p>{{ $t('load_qr_code') }}</p>
               </button>
             </div>
-
             <div id="export-options" class="pt-4">
-              <p class="pb-2">{{ $t('Export as') }}</p>
+              <p class="pb-2">{{ $t('export_section_label') }}</p>
               <div class="flex flex-row gap-2 items-center">
                 <button
                   id="download-qr-image-button-png"
