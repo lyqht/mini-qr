@@ -7,6 +7,7 @@ A customizable QR code generator that allows you to create beautiful and unique 
 
 ## Features
 
+V0
 - Generate QR codes with custom colors and styles
 - Support for various output formats, including SVG and PNG
 - Copy to clipboard
@@ -14,3 +15,6 @@ A customizable QR code generator that allows you to create beautiful and unique 
 - Randomize style button
 - Available in 29 languages thanks to [deepl-translate-github-action](https://github.com/lyqht/deepl-translate-github-action)
 - Save & Load QR Code config
+
+V0.1
+- Upload custom image for logo
