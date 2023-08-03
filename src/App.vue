@@ -259,7 +259,7 @@ function loadQrConfig() {
     <div class="w-full md:w-5/6">
       <div class="w-full mb-8 flex flex-col items-center justify-center">
         <h1 class="text-4xl">{{ $t('styled_qr_gen') }}</h1>
-        <button class="p-2 mt-2 m-0" @click="randomizeStyleSettings">
+        <button class="p-2 mt-2 m-0 rounded-lg hover:shadow transition-shadow" @click="randomizeStyleSettings">
           {{ $t('random_style') }}
         </button>
       </div>
@@ -283,10 +283,10 @@ function loadQrConfig() {
             <p v-else>{{ $t('no_data') }}</p>
           </div>
           <div class="flex flex-col gap-2 items-center">
-            <div class="flex flex-col gap-2 items-center justify-center">
+            <div class="flex flex-col gap-3 items-center justify-center">
               <button
                 id="copy-qr-image-button"
-                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow w-fit flex flex-row gap-1"
+                class="button w-fit flex flex-row gap-1"
                 @click="copyQRToClipboard"
                 :aria-label="$t('copy_clipboard')"
               >
@@ -308,7 +308,7 @@ function loadQrConfig() {
               </button>
               <button
                 id="save-qr-code-config-button"
-                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow w-fit flex flex-row gap-1"
+                class="button w-fit flex flex-row gap-1"
                 @click="saveQRConfig"
                 :aria-label="$t('save_qr_code')"
               >
@@ -331,7 +331,7 @@ function loadQrConfig() {
               </button>
               <button
                 id="load-qr-code-config-button"
-                class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow w-fit flex flex-row gap-1"
+                class="button w-fit flex flex-row gap-1"
                 @click="loadQrConfig"
                 :aria-label="$t('load_qr_code')"
               >
@@ -359,7 +359,7 @@ function loadQrConfig() {
               <div class="flex flex-row gap-2 items-center">
                 <button
                   id="download-qr-image-button-png"
-                  class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow"
+                  class="button"
                   @click="downloadQRImageAsPng"
                   :aria-label="$t('download_qr_code_png')"
                 >
@@ -385,7 +385,7 @@ function loadQrConfig() {
                 </button>
                 <button
                   id="download-qr-image-button-svg"
-                  class="cursor-pointer outline-none bg-gray-300 text-black hover:shadow"
+                  class="button"
                   @click="downloadQRImageAsSvg"
                   :aria-label="$t('download_qr_code_svg')"
                 >
@@ -554,7 +554,7 @@ function loadQrConfig() {
   </main>
 </template>
 
-<style lang="postcss">
+<style lang="postcss" scoped>
 .setting-label {
   @apply text-gray-700 dark:text-white text-sm font-bold;
 }
@@ -567,4 +567,7 @@ function loadQrConfig() {
   @apply h-6 bg-slate-300 dark:bg-slate-700 w-1;
 }
 
+.button {
+  @apply outline-none bg-gray-200 text-black hover:shadow transition-shadow rounded-lg p-2;
+}
 </style>
