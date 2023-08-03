@@ -443,8 +443,8 @@ function loadQrConfig() {
               v-model="image"
             />
           </div>
-          <div class="w-full flex flex-row gap-2">
-            <label>{{ $t('background_color_label') }}</label>
+          <div class="w-full flex flex-row gap-2 items-center">
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('background_color_label') }}</label>
             <input id="dotsColor" type="color" v-model="styleBackground" />
           </div>
           <div class="w-full">
@@ -483,12 +483,12 @@ function loadQrConfig() {
               v-model="margin"
             />
           </div>
-          <div class="w-full flex flex-row gap-2">
-            <label>{{ $t('dot_color_label') }}</label>
+          <div class="w-full flex flex-row gap-2 items-center">
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('dot_color_label') }}</label>
             <input id="dotsColor" type="color" v-model="dotsOptionsColor" />
           </div>
           <div class="w-full">
-            <label>{{ $t('dot_type_label') }}</label>
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('dot_type_label') }}</label>
             <div
               class="flex flex-row gap-1"
               v-for="type in [
@@ -511,12 +511,12 @@ function loadQrConfig() {
             </div>
           </div>
 
-          <div class="w-full flex flex-row gap-2">
-            <label>{{ $t('corners_square_color_label') }}</label>
+          <div class="w-full flex flex-row gap-2 items-center">
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('corners_square_color_label') }}</label>
             <input id="cornersSquareColor" type="color" v-model="cornersSquareOptionsColor" />
           </div>
           <div class="w-full">
-            <label>{{ $t('corners_square_type_label') }}</label>
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('corners_square_type_label') }}</label>
             <div
               class="flex flex-row gap-1"
               v-for="type in ['dot', 'square', 'extra-rounded']"
@@ -532,12 +532,12 @@ function loadQrConfig() {
             </div>
           </div>
 
-          <div class="w-full flex flex-row gap-2">
-            <label>{{ $t('corners_dot_color_label') }}</label>
+          <div class="w-full flex flex-row gap-2 items-center">
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('corners_dot_color_label') }}</label>
             <input id="cornersDotColor" type="color" v-model="cornersDotOptionsColor" />
           </div>
           <div class="w-full">
-            <label>{{ $t('corners_dot_type_label') }}</label>
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('corners_dot_type_label') }}</label>
             <div class="flex flex-row gap-1" v-for="type in ['dot', 'square']" :key="type">
               <input
                 :id="'cornersDotOptionsType-' + type"
