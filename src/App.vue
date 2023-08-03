@@ -10,6 +10,7 @@ import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
 import { computed, ref } from 'vue'
 import 'vue-i18n'
 import { sortedLocales } from './utils/language'
+import { getNumericCSSValue } from './utils/formatting'
 
 interface CustomStyleProps {
   borderRadius?: string
@@ -59,7 +60,8 @@ const cornersSquareOptionsColor = ref(PLACEHOLDER_PROPS.cornersSquareOptions.col
 const cornersSquareOptionsType = ref(PLACEHOLDER_PROPS.cornersSquareOptions.type)
 const cornersDotOptionsColor = ref(PLACEHOLDER_PROPS.cornersDotOptions.color)
 const cornersDotOptionsType = ref(PLACEHOLDER_PROPS.cornersDotOptions.type)
-const styleBorderRadius = ref(PLACEHOLDER_PROPS.style.borderRadius)
+const styleBorderRadius = ref(getNumericCSSValue(PLACEHOLDER_PROPS.style.borderRadius as string))
+const styledBorderRadiusFormatted = computed(() => `${styleBorderRadius.value}px`)
 const styleBackground = ref(PLACEHOLDER_PROPS.style.background)
 
 const dotsOptions = computed(() => ({
@@ -75,7 +77,7 @@ const cornersDotOptions = computed(() => ({
   type: cornersDotOptionsType.value
 }))
 const style = computed(() => ({
-  borderRadius: styleBorderRadius.value,
+  borderRadius: styledBorderRadiusFormatted.value,
   background: styleBackground.value
 }))
 
@@ -510,8 +512,20 @@ function uploadImage() {
               class="text-input"
               id="margin"
               type="number"
-              placeholder="margin in pixels"
+              placeholder="0"
               v-model="margin"
+            />
+          </div>
+          <div class="w-full">
+            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="margin">
+              {{ $t('border_radius_label') }}
+            </label>
+            <input
+              class="text-input"
+              id="margin"
+              type="number"
+              placeholder="24"
+              v-model="styleBorderRadius"
             />
           </div>
           <div class="w-full flex flex-row gap-2 items-center">
