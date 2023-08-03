@@ -1,7 +1,7 @@
 # styled-qr-code-generator
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-![App preview](src/assets/app_preview.png)
+![App preview](public/app_preview.png)
 
 A customizable QR code generator that allows you to create beautiful and unique QR codes with various styles and colors.
 
