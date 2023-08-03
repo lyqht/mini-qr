@@ -443,6 +443,10 @@ function loadQrConfig() {
               v-model="image"
             />
           </div>
+          <div class="w-full flex flex-row gap-2">
+            <label>{{ $t('background_color_label') }}</label>
+            <input id="dotsColor" type="color" v-model="styleBackground" />
+          </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="width">
               {{ $t('width_label') }}

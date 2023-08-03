@@ -8,6 +8,7 @@
     "copy_clipboard": "Copy QR Code to clipboard",
     "download_qr_code_png": "Download QR Code as PNG",
     "download_qr_code_svg": "Download QR Code as SVG",
+    "background_color_label": "Background color",
     "width_label": "Width (px)",
     "height_label": "Height (px)",
     "margin_label": "Margin (px)",
