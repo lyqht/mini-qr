@@ -4,7 +4,7 @@
     "no_data": "No data!",
     "data_label": "Data to encode",
     "data_placeholder": "data to encode e.g. a URL or a string",
-    "image_label": "Image url",
+    "image_label": "Logo image URL",
     "copy_clipboard": "Copy QR Code to clipboard",
     "download_qr_code_png": "Download QR Code as PNG",
     "download_qr_code_svg": "Download QR Code as SVG",
