@@ -2,9 +2,9 @@
 import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
 import StyledQRCode, { type StyledQRCodeProps } from '@/components/StyledQRCode.vue'
 import {
-copyImageToClipboard,
-downloadPngElement,
-downloadSvgElement
+  copyImageToClipboard,
+  downloadPngElement,
+  downloadSvgElement
 } from '@/utils/convertToImage'
 import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
 import { computed, ref } from 'vue'
@@ -220,6 +220,27 @@ function loadQrConfig() {
   }
   qrCodeConfigInput.click()
 }
+
+function uploadImage() {
+  console.debug('Uploading image')
+  const imageInput = document.createElement('input')
+  imageInput.type = 'file'
+  imageInput.accept = 'image/*'
+  imageInput.onchange = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    if (target.files) {
+      const file = target.files[0]
+      const reader = new FileReader()
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        const target = event.target as FileReader
+        const result = target.result as string
+        image.value = result
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+  imageInput.click()
+}
 </script>
 
 <template>
@@ -259,7 +280,10 @@ function loadQrConfig() {
     <div class="w-full md:w-5/6">
       <div class="w-full mb-8 flex flex-col items-center justify-center">
         <h1 class="text-4xl">{{ $t('styled_qr_gen') }}</h1>
-        <button class="p-2 mt-2 m-0 rounded-lg hover:shadow transition-shadow" @click="randomizeStyleSettings">
+        <button
+          class="p-2 mt-2 m-0 rounded-lg secondary-button"
+          @click="randomizeStyleSettings"
+        >
           {{ $t('random_style') }}
         </button>
       </div>
@@ -428,12 +452,17 @@ function loadQrConfig() {
             />
           </div>
           <div class="w-full">
-            <label
-              class="block text-gray-700 dark:text-white text-sm font-bold mb-2"
-              for="image-url"
-            >
-              {{ $t('image_label') }}
-            </label>
+            <div class="flex flex-row gap-2 items-center mb-2">
+              <label
+                class="block text-gray-700 dark:text-white text-sm font-bold"
+                for="image-url"
+              >
+                {{ $t('image_label') }}
+              </label>
+              <button class="secondary-button" @click="uploadImage">
+                <p>{{ $t('upload_image') }}</p>
+              </button>
+            </div>
             <textarea
               name="image-url"
               class="text-input"
@@ -444,8 +473,10 @@ function loadQrConfig() {
             />
           </div>
           <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('background_color_label') }}</label>
-            <input id="dotsColor" type="color" v-model="styleBackground" />
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+              $t('background_color_label')
+            }}</label>
+            <input id="dotsColor" type="color" class="color-input" v-model="styleBackground" />
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="width">
@@ -484,11 +515,15 @@ function loadQrConfig() {
             />
           </div>
           <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('dot_color_label') }}</label>
-            <input id="dotsColor" type="color" v-model="dotsOptionsColor" />
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+              $t('dot_color_label')
+            }}</label>
+            <input id="dotsColor" type="color" class="color-input" v-model="dotsOptionsColor" />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('dot_type_label') }}</label>
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+              $t('dot_type_label')
+            }}</label>
             <div
               class="flex flex-row gap-1"
               v-for="type in [
@@ -512,11 +547,15 @@ function loadQrConfig() {
           </div>
 
           <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('corners_square_color_label') }}</label>
-            <input id="cornersSquareColor" type="color" v-model="cornersSquareOptionsColor" />
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+              $t('corners_square_color_label')
+            }}</label>
+            <input id="cornersSquareColor" type="color" class="color-input" v-model="cornersSquareOptionsColor" />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('corners_square_type_label') }}</label>
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+              $t('corners_square_type_label')
+            }}</label>
             <div
               class="flex flex-row gap-1"
               v-for="type in ['dot', 'square', 'extra-rounded']"
@@ -533,11 +572,15 @@ function loadQrConfig() {
           </div>
 
           <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('corners_dot_color_label') }}</label>
-            <input id="cornersDotColor" type="color"  v-model="cornersDotOptionsColor" />
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+              $t('corners_dot_color_label')
+            }}</label>
+            <input id="cornersDotColor" type="color" class="color-input" v-model="cornersDotOptionsColor" />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('corners_dot_type_label') }}</label>
+            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+              $t('corners_dot_type_label')
+            }}</label>
             <div class="flex flex-row gap-1" v-for="type in ['dot', 'square']" :key="type">
               <input
                 :id="'cornersDotOptionsType-' + type"
@@ -560,7 +603,11 @@ function loadQrConfig() {
 }
 
 .text-input {
-  @apply ms-1 p-4 shadow resize-none appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+  @apply ms-1 p-4 shadow resize-none appearance-none border rounded w-full py-2 px-3 text-zinc-700 dark:text-zinc-100 leading-tight focus:outline-none focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+}
+
+.color-input {
+  @apply bg-transparent shadow p-0 border rounded box-border text-zinc-700 dark:text-zinc-100 focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
 }
 
 .vertical-border {
@@ -568,6 +615,12 @@ function loadQrConfig() {
 }
 
 .button {
-  @apply outline-none bg-gray-200 text-black hover:shadow transition-shadow rounded-lg p-2;
+  @apply outline-none bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200 shadow-sm hover:shadow transition-shadow rounded-lg p-2;
+  @apply focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+}
+
+.secondary-button {
+  @apply outline-none bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-sm hover:shadow transition-shadow rounded-lg p-1;
+  @apply focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
 }
 </style>
