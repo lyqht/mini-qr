@@ -240,7 +240,7 @@ function loadQrConfig() {
             />
           </g>
         </svg>
-        <select class="input px-0 text-center" id="locale-select" v-model="$i18n.locale">
+        <select class="text-input px-0 text-center" id="locale-select" v-model="$i18n.locale">
           <option v-for="(locale, index) in sortedLocales" :key="index" :value="locale">
             {{ $t(locale) }}
           </option>
@@ -420,7 +420,7 @@ function loadQrConfig() {
             </label>
             <textarea
               name="data"
-              class="input"
+              class="text-input"
               id="url"
               rows="2"
               :placeholder="$t('data_placeholder')"
@@ -436,7 +436,7 @@ function loadQrConfig() {
             </label>
             <textarea
               name="image-url"
-              class="input"
+              class="text-input"
               id="url"
               rows="1"
               :placeholder="$t('image_label')"
@@ -452,7 +452,7 @@ function loadQrConfig() {
               {{ $t('width_label') }}
             </label>
             <input
-              class="input"
+              class="text-input"
               id="width"
               type="number"
               placeholder="width in pixels"
@@ -464,7 +464,7 @@ function loadQrConfig() {
               {{ $t('height_label') }}
             </label>
             <input
-              class="input"
+              class="text-input"
               id="height"
               type="number"
               placeholder="height in pixels"
@@ -476,7 +476,7 @@ function loadQrConfig() {
               {{ $t('margin_label') }}
             </label>
             <input
-              class="input"
+              class="text-input"
               id="margin"
               type="number"
               placeholder="margin in pixels"
@@ -534,7 +534,7 @@ function loadQrConfig() {
 
           <div class="w-full flex flex-row gap-2 items-center">
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('corners_dot_color_label') }}</label>
-            <input id="cornersDotColor" type="color" v-model="cornersDotOptionsColor" />
+            <input id="cornersDotColor" type="color"  v-model="cornersDotOptionsColor" />
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{ $t('corners_dot_type_label') }}</label>
@@ -555,11 +555,16 @@ function loadQrConfig() {
 </template>
 
 <style lang="postcss">
-.input {
+.setting-label {
+  @apply text-gray-700 dark:text-white text-sm font-bold;
+}
+
+.text-input {
   @apply ms-1 p-4 shadow resize-none appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
 }
 
 .vertical-border {
   @apply h-6 bg-slate-300 dark:bg-slate-700 w-1;
 }
+
 </style>
