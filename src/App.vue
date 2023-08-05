@@ -242,7 +242,7 @@ function uploadImage() {
             />
           </g>
         </svg>
-        <select class="text-input px-0 text-center" id="locale-select" v-model="$i18n.locale">
+        <select class="secondary-button text-center cursor-pointer" id="locale-select" v-model="$i18n.locale">
           <option v-for="(locale, index) in sortedLocales" :key="index" :value="locale">
             {{ $t(locale) }}
           </option>
@@ -261,8 +261,8 @@ function uploadImage() {
     <div class="w-full md:w-5/6">
       <div class="w-full mb-8 flex flex-col items-center justify-center">
         <h1 class="text-4xl">{{ $t('Styled QR Code Generator') }}</h1>
-        <div>
-          <button class="p-2 mt-2 m-0 rounded-lg secondary-button" @click="randomizeStyleSettings">
+        <div class="mt-2 flex flex-row gap-2 items-center justify-center">
+          <button class="p-2 m-0 rounded-lg secondary-button" @click="randomizeStyleSettings">
             {{ $t('Randomize style') }}
           </button>
           <select class="secondary-button cursor-pointer text-center" v-model="selectedPreset">
@@ -623,7 +623,7 @@ function uploadImage() {
 }
 
 .secondary-button {
-  @apply outline-none bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-sm hover:shadow transition-shadow rounded-lg p-1;
+  @apply outline-none p-1.5 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-md hover:shadow transition-shadow rounded-lg;
   @apply focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
 }
 </style>
