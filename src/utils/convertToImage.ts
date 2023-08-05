@@ -5,19 +5,48 @@ const defaultOptions: Options = {
   height: 400
 }
 
-export async function copyImageToClipboard(element: HTMLElement) {
-  console.debug("Converting to blob")
-  const blob = await domtoimage.toBlob(element, defaultOptions)
-  const item = new ClipboardItem({ [blob.type]: blob });
-  navigator.clipboard.write([item]).then(() => {
-    console.log('Blob copied to clipboard');
-  }, (error) => {
-    console.error('Error copying blob to clipboard:', error);
-  });
+const getFormattedOptions = (element: HTMLElement, options: Options): Options => {
+  if (options.width && options.height) {
+    const scale = getResizeScaleToFit(element, options.width, options.height)
+    return {
+      style: { scale, transformOrigin: 'left top', borderRadius: '48px' },
+      quality: 100,
+      ...options
+    }
+  }
+
+  return defaultOptions
 }
 
-export function downloadPngElement(element: HTMLElement, filename: string, options?: Options) {
-  domtoimage.toPng(element, options ?? defaultOptions).then((dataUrl: string) => {
+const getResizeScaleToFit = (child: HTMLElement, width: number, height: number): number => {
+  child.style.transformOrigin = 'center'
+
+  const scaleX = width / child.offsetWidth
+  const scaleY = height / child.offsetHeight
+
+  const maxScale = Math.min(scaleX, scaleY)
+  return maxScale
+}
+
+export async function copyImageToClipboard(element: HTMLElement, options: Options) {
+  console.debug('Converting to blob')
+  const formattedOptions = getFormattedOptions(element, options)
+  domtoimage.toBlob(element, formattedOptions).then((blob: Blob) => {
+    const item = new ClipboardItem({ [blob.type]: blob })
+    navigator.clipboard.write([item]).then(
+      () => {
+        console.log('Blob copied to clipboard')
+      },
+      (error) => {
+        console.error('Error copying blob to clipboard:', error)
+      }
+    )
+  })
+}
+
+export function downloadPngElement(element: HTMLElement, filename: string, options: Options) {
+  const formattedOptions = getFormattedOptions(element, options)
+  domtoimage.toPng(element, formattedOptions).then((dataUrl: string) => {
     const link = document.createElement('a')
     link.href = dataUrl
     link.download = filename
@@ -25,9 +54,10 @@ export function downloadPngElement(element: HTMLElement, filename: string, optio
   })
 }
 
-export function downloadSvgElement(element: HTMLElement, filename: string, options?: Options) {
+export function downloadSvgElement(element: HTMLElement, filename: string, options: Options) {
+  const formattedOptions = getFormattedOptions(element, options)
   domtoimage
-    .toSvg(element, options ?? defaultOptions)
+    .toSvg(element, formattedOptions)
     .then((dataUrl: string) => {
       const link = document.createElement('a')
       link.href = dataUrl
