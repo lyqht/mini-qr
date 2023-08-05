@@ -127,12 +127,16 @@ function randomizeStyleSettings() {
 }
 
 /* export image utils */
+const options = computed(() => ({
+  width: width.value,
+  height: height.value
+}))
 
 async function copyQRToClipboard() {
   console.debug('Copying image to clipboard')
   const qrCode = document.querySelector('#qr-code-container')
   if (qrCode) {
-    await copyImageToClipboard(qrCode as HTMLElement)
+    await copyImageToClipboard(qrCode as HTMLElement, options.value)
   }
 }
 
@@ -140,10 +144,7 @@ function downloadQRImageAsPng() {
   console.debug('Copying image to clipboard')
   const qrCode = document.querySelector('#qr-code-container')
   if (qrCode) {
-    downloadPngElement(qrCode as HTMLElement, 'qr-code.png', {
-      width: width.value,
-      height: height.value
-    })
+    downloadPngElement(qrCode as HTMLElement, 'qr-code.png', options.value)
   }
 }
 
@@ -151,10 +152,7 @@ function downloadQRImageAsSvg() {
   console.debug('Copying image to clipboard')
   const qrCode = document.querySelector('#qr-code-container')
   if (qrCode) {
-    downloadSvgElement(qrCode as HTMLElement, 'qr-code.svg', {
-      width: width.value,
-      height: height.value
-    })
+    downloadSvgElement(qrCode as HTMLElement, 'qr-code.svg', options.value)
   }
 }
 
@@ -282,10 +280,7 @@ function uploadImage() {
     <div class="w-full md:w-5/6">
       <div class="w-full mb-8 flex flex-col items-center justify-center">
         <h1 class="text-4xl">{{ $t('styled_qr_gen') }}</h1>
-        <button
-          class="p-2 mt-2 m-0 rounded-lg secondary-button"
-          @click="randomizeStyleSettings"
-        >
+        <button class="p-2 mt-2 m-0 rounded-lg secondary-button" @click="randomizeStyleSettings">
           {{ $t('random_style') }}
         </button>
       </div>
@@ -294,21 +289,27 @@ function uploadImage() {
           id="main-content"
           class="flex flex-col items-center justify-center flex-shrink-0 w-full md:w-fit"
         >
-          <div
-            id="qr-code-container"
-            class="grid place-items-center overflow-hidden mb-4"
-            :style="[
-              style,
-              {
-                width: width + 'px',
-                height: height + 'px'
-              }
-            ]"
-          >
-            <StyledQRCode v-if="data" v-bind="qrCodeProps" role="img" aria-label="QR code" />
-            <p v-else>{{ $t('no_data') }}</p>
+          <div id="qr-code-container">
+            <div
+              class="grid place-items-center overflow-hidden"
+              :style="[
+                style,
+                {
+                  width: '200px',
+                  height: '200px'
+                }
+              ]"
+            >
+              <StyledQRCode
+                v-if="data"
+                v-bind="{ ...qrCodeProps, width: 200, height: 200 }"
+                role="img"
+                aria-label="QR code"
+              />
+              <p v-else>{{ $t('no_data') }}</p>
+            </div>
           </div>
-          <div class="flex flex-col gap-2 items-center">
+          <div class="flex flex-col gap-2 items-center mt-4">
             <div class="flex flex-col gap-3 items-center justify-center">
               <button
                 id="copy-qr-image-button"
@@ -454,10 +455,7 @@ function uploadImage() {
           </div>
           <div class="w-full">
             <div class="flex flex-row gap-2 items-center mb-2">
-              <label
-                class="block text-gray-700 dark:text-white text-sm font-bold"
-                for="image-url"
-              >
+              <label class="block text-gray-700 dark:text-white text-sm font-bold" for="image-url">
                 {{ $t('image_label') }}
               </label>
               <button class="secondary-button" @click="uploadImage">
@@ -507,13 +505,7 @@ function uploadImage() {
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="margin">
               {{ $t('margin_label') }}
             </label>
-            <input
-              class="text-input"
-              id="margin"
-              type="number"
-              placeholder="0"
-              v-model="margin"
-            />
+            <input class="text-input" id="margin" type="number" placeholder="0" v-model="margin" />
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="margin">
@@ -563,7 +555,12 @@ function uploadImage() {
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
               $t('corners_square_color_label')
             }}</label>
-            <input id="cornersSquareColor" type="color" class="color-input" v-model="cornersSquareOptionsColor" />
+            <input
+              id="cornersSquareColor"
+              type="color"
+              class="color-input"
+              v-model="cornersSquareOptionsColor"
+            />
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
@@ -588,7 +585,12 @@ function uploadImage() {
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
               $t('corners_dot_color_label')
             }}</label>
-            <input id="cornersDotColor" type="color" class="color-input" v-model="cornersDotOptionsColor" />
+            <input
+              id="cornersDotColor"
+              type="color"
+              class="color-input"
+              v-model="cornersDotOptionsColor"
+            />
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
