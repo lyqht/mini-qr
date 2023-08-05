@@ -1,39 +1,32 @@
 <script setup lang="ts">
-import StyledQRCode, { type StyledQRCodeProps } from '@/components/StyledQRCode.vue'
+import StyledQRCode from '@/components/StyledQRCode.vue'
 import {
   copyImageToClipboard,
   downloadPngElement,
   downloadSvgElement
 } from '@/utils/convertToImage'
 import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import 'vue-i18n'
-import { sortedLocales } from './utils/language'
 import { getNumericCSSValue } from './utils/formatting'
-import { defaultPreset } from './utils/presets'
+import { sortedLocales } from './utils/language'
+import { defaultPreset, allPresets } from './utils/presets'
 
-interface CustomStyleProps {
-  borderRadius?: string
-  background?: string
-}
+const data = ref(defaultPreset.data)
+const image = ref(defaultPreset.image)
+const width = ref(defaultPreset.width)
+const height = ref(defaultPreset.height)
+const margin = ref(defaultPreset.margin)
 
-const PLACEHOLDER_PROPS = defaultPreset
-
-const data = ref(PLACEHOLDER_PROPS.data)
-const image = ref(PLACEHOLDER_PROPS.image)
-const width = ref(PLACEHOLDER_PROPS.width)
-const height = ref(PLACEHOLDER_PROPS.height)
-const margin = ref(PLACEHOLDER_PROPS.margin)
-
-const dotsOptionsColor = ref(PLACEHOLDER_PROPS.dotsOptions.color)
-const dotsOptionsType = ref(PLACEHOLDER_PROPS.dotsOptions.type)
-const cornersSquareOptionsColor = ref(PLACEHOLDER_PROPS.cornersSquareOptions.color)
-const cornersSquareOptionsType = ref(PLACEHOLDER_PROPS.cornersSquareOptions.type)
-const cornersDotOptionsColor = ref(PLACEHOLDER_PROPS.cornersDotOptions.color)
-const cornersDotOptionsType = ref(PLACEHOLDER_PROPS.cornersDotOptions.type)
-const styleBorderRadius = ref(getNumericCSSValue(PLACEHOLDER_PROPS.style.borderRadius as string))
+const dotsOptionsColor = ref(defaultPreset.dotsOptions.color)
+const dotsOptionsType = ref(defaultPreset.dotsOptions.type)
+const cornersSquareOptionsColor = ref(defaultPreset.cornersSquareOptions.color)
+const cornersSquareOptionsType = ref(defaultPreset.cornersSquareOptions.type)
+const cornersDotOptionsColor = ref(defaultPreset.cornersDotOptions.color)
+const cornersDotOptionsType = ref(defaultPreset.cornersDotOptions.type)
+const styleBorderRadius = ref(getNumericCSSValue(defaultPreset.style.borderRadius as string))
 const styledBorderRadiusFormatted = computed(() => `${styleBorderRadius.value}px`)
-const styleBackground = ref(PLACEHOLDER_PROPS.style.background)
+const styleBackground = ref(defaultPreset.style.background)
 
 const dotsOptions = computed(() => ({
   color: dotsOptionsColor.value,
@@ -96,6 +89,23 @@ function randomizeStyleSettings() {
 
   styleBackground.value = createRandomColor()
 }
+
+const selectedPreset = ref(defaultPreset)
+watch(selectedPreset, () => {
+  data.value = selectedPreset.value.data
+  image.value = selectedPreset.value.image
+  width.value = selectedPreset.value.width
+  height.value = selectedPreset.value.height
+  margin.value = selectedPreset.value.margin
+  dotsOptionsColor.value = selectedPreset.value.dotsOptions.color
+  dotsOptionsType.value = selectedPreset.value.dotsOptions.type
+  cornersSquareOptionsColor.value = selectedPreset.value.cornersSquareOptions.color
+  cornersSquareOptionsType.value = selectedPreset.value.cornersSquareOptions.type
+  cornersDotOptionsColor.value = selectedPreset.value.cornersDotOptions.color
+  cornersDotOptionsType.value = selectedPreset.value.cornersDotOptions.type
+  styleBorderRadius.value = getNumericCSSValue(selectedPreset.value.style.borderRadius as string)
+  styleBackground.value = selectedPreset.value.style.background
+})
 
 /* export image utils */
 const options = computed(() => ({
@@ -251,9 +261,16 @@ function uploadImage() {
     <div class="w-full md:w-5/6">
       <div class="w-full mb-8 flex flex-col items-center justify-center">
         <h1 class="text-4xl">{{ $t('Styled QR Code Generator') }}</h1>
-        <button class="p-2 mt-2 m-0 rounded-lg secondary-button" @click="randomizeStyleSettings">
-          {{ $t('Randomize style') }}
-        </button>
+        <div>
+          <button class="p-2 mt-2 m-0 rounded-lg secondary-button" @click="randomizeStyleSettings">
+            {{ $t('Randomize style') }}
+          </button>
+          <select class="secondary-button cursor-pointer text-center" v-model="selectedPreset">
+            <option v-for="(preset, index) in allPresets" :key="index" :value="preset">
+              {{ preset.name }}
+            </option>
+          </select>
+        </div>
       </div>
       <div class="flex flex-col-reverse md:flex-row items-start justify-center gap-4 md:gap-12">
         <div
