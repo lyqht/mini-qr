@@ -279,9 +279,9 @@ function uploadImage() {
     </div>
     <div class="w-full md:w-5/6">
       <div class="w-full mb-8 flex flex-col items-center justify-center">
-        <h1 class="text-4xl">{{ $t('styled_qr_gen') }}</h1>
+        <h1 class="text-4xl">{{ $t('Styled QR Code Generator') }}</h1>
         <button class="p-2 mt-2 m-0 rounded-lg secondary-button" @click="randomizeStyleSettings">
-          {{ $t('random_style') }}
+          {{ $t('Randomize style') }}
         </button>
       </div>
       <div class="flex flex-col-reverse md:flex-row items-start justify-center gap-4 md:gap-12">
@@ -306,7 +306,7 @@ function uploadImage() {
                 role="img"
                 aria-label="QR code"
               />
-              <p v-else>{{ $t('no_data') }}</p>
+              <p v-else>{{ $t('No data!') }}</p>
             </div>
           </div>
           <div class="flex flex-col gap-2 items-center mt-4">
@@ -315,7 +315,7 @@ function uploadImage() {
                 id="copy-qr-image-button"
                 class="button w-fit flex flex-row gap-1"
                 @click="copyQRToClipboard"
-                :aria-label="$t('copy_clipboard')"
+                :aria-label="$t('Copy QR Code to clipboard')"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                   <g
@@ -331,13 +331,13 @@ function uploadImage() {
                     <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
                   </g>
                 </svg>
-                <p>{{ $t('copy_clipboard') }}</p>
+                <p>{{ $t('Copy QR Code to clipboard') }}</p>
               </button>
               <button
                 id="save-qr-code-config-button"
                 class="button w-fit flex flex-row gap-1"
                 @click="saveQRConfig"
-                :aria-label="$t('save_qr_code')"
+                :aria-label="$t('Save QR Code configuration')"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                   <g
@@ -354,13 +354,13 @@ function uploadImage() {
                     <path d="M9.5 14.5L12 17l2.5-2.5" />
                   </g>
                 </svg>
-                <p>{{ $t('save_qr_code') }}</p>
+                <p>{{ $t('Save QR Code configuration') }}</p>
               </button>
               <button
                 id="load-qr-code-config-button"
                 class="button w-fit flex flex-row gap-1"
                 @click="loadQrConfig"
-                :aria-label="$t('load_qr_code')"
+                :aria-label="$t('Load QR Code configuration')"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                   <g
@@ -377,17 +377,17 @@ function uploadImage() {
                     <path d="M9.5 13.5L12 11l2.5 2.5" />
                   </g>
                 </svg>
-                <p>{{ $t('load_qr_code') }}</p>
+                <p>{{ $t('Load QR Code configuration') }}</p>
               </button>
             </div>
             <div id="export-options" class="pt-4">
-              <p class="pb-2">{{ $t('export_section_label') }}</p>
+              <p class="pb-2">{{ $t('Export as') }}</p>
               <div class="flex flex-row gap-2 items-center">
                 <button
                   id="download-qr-image-button-png"
                   class="button"
                   @click="downloadQRImageAsPng"
-                  :aria-label="$t('download_qr_code_png')"
+                  :aria-label="$t('Download QR Code as PNG')"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -413,7 +413,7 @@ function uploadImage() {
                   id="download-qr-image-button-svg"
                   class="button"
                   @click="downloadQRImageAsSvg"
-                  :aria-label="$t('download_qr_code_svg')"
+                  :aria-label="$t('Download QR Code as SVG')"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -442,24 +442,24 @@ function uploadImage() {
         <div id="settings" class="w-full flex flex-col flex-grow items-start text-start gap-8">
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="data">
-              {{ $t('data_label') }}
+              {{ $t('Data to encode') }}
             </label>
             <textarea
               name="data"
               class="text-input"
               id="url"
               rows="2"
-              :placeholder="$t('data_placeholder')"
+              :placeholder="$t('data to encode e.g. a URL or a string')"
               v-model="data"
             />
           </div>
           <div class="w-full">
             <div class="flex flex-row gap-2 items-center mb-2">
               <label class="block text-gray-700 dark:text-white text-sm font-bold" for="image-url">
-                {{ $t('image_label') }}
+                {{ $t('Logo image URL') }}
               </label>
               <button class="secondary-button" @click="uploadImage">
-                <p>{{ $t('upload_image') }}</p>
+                <p>{{ $t('Upload image') }}</p>
               </button>
             </div>
             <textarea
@@ -467,19 +467,19 @@ function uploadImage() {
               class="text-input"
               id="url"
               rows="1"
-              :placeholder="$t('image_label')"
+              :placeholder="$t('Logo image URL')"
               v-model="image"
             />
           </div>
           <div class="w-full flex flex-row gap-2 items-center">
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('background_color_label')
+              $t('Background color')
             }}</label>
             <input id="dotsColor" type="color" class="color-input" v-model="styleBackground" />
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="width">
-              {{ $t('width_label') }}
+              {{ $t('Width (px)') }}
             </label>
             <input
               class="text-input"
@@ -491,7 +491,7 @@ function uploadImage() {
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="height">
-              {{ $t('height_label') }}
+              {{ $t('Height (px)') }}
             </label>
             <input
               class="text-input"
@@ -503,13 +503,13 @@ function uploadImage() {
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="margin">
-              {{ $t('margin_label') }}
+              {{ $t('Margin (px)') }}
             </label>
             <input class="text-input" id="margin" type="number" placeholder="0" v-model="margin" />
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="margin">
-              {{ $t('border_radius_label') }}
+              {{ $t('Border radius (px)') }}
             </label>
             <input
               class="text-input"
@@ -521,13 +521,13 @@ function uploadImage() {
           </div>
           <div class="w-full flex flex-row gap-2 items-center">
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('dot_color_label')
+              $t('Dots color')
             }}</label>
             <input id="dotsColor" type="color" class="color-input" v-model="dotsOptionsColor" />
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('dot_type_label')
+              $t('Dots type')
             }}</label>
             <div
               class="flex flex-row gap-1"
@@ -553,7 +553,7 @@ function uploadImage() {
 
           <div class="w-full flex flex-row gap-2 items-center">
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('corners_square_color_label')
+              $t('Corners Square color')
             }}</label>
             <input
               id="cornersSquareColor"
@@ -564,7 +564,7 @@ function uploadImage() {
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('corners_square_type_label')
+              $t('Corners Square type')
             }}</label>
             <div
               class="flex flex-row gap-1"
@@ -583,7 +583,7 @@ function uploadImage() {
 
           <div class="w-full flex flex-row gap-2 items-center">
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('corners_dot_color_label')
+              $t('Corners Dot color')
             }}</label>
             <input
               id="cornersDotColor"
@@ -594,7 +594,7 @@ function uploadImage() {
           </div>
           <div class="w-full">
             <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('corners_dot_type_label')
+              $t('Corners Dot type')
             }}</label>
             <div class="flex flex-row gap-1" v-for="type in ['dot', 'square']" :key="type">
               <input
