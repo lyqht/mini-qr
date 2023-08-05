@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
 import StyledQRCode, { type StyledQRCodeProps } from '@/components/StyledQRCode.vue'
 import {
   copyImageToClipboard,
@@ -11,42 +10,14 @@ import { computed, ref } from 'vue'
 import 'vue-i18n'
 import { sortedLocales } from './utils/language'
 import { getNumericCSSValue } from './utils/formatting'
+import { defaultPreset } from './utils/presets'
 
 interface CustomStyleProps {
   borderRadius?: string
   background?: string
 }
 
-const PLACEHOLDER_PROPS: Required<StyledQRCodeProps> & { style: CustomStyleProps } = {
-  data: 'https://github.com/lyqht',
-  image: PLACEHOLDER_IMAGE_URL,
-  width: 200,
-  height: 200,
-  margin: 0,
-  type: 'svg',
-  dotsOptions: {
-    color: '#abcbca',
-    type: 'extra-rounded'
-  },
-  cornersSquareOptions: {
-    color: '#abcbca',
-    type: 'extra-rounded'
-  },
-  cornersDotOptions: {
-    color: '#abcbca',
-    type: 'square'
-  },
-  backgroundOptions: {
-    color: 'transparent'
-  },
-  imageOptions: {
-    margin: 0
-  },
-  style: {
-    borderRadius: '24px',
-    background: '#697d80'
-  }
-}
+const PLACEHOLDER_PROPS = defaultPreset
 
 const data = ref(PLACEHOLDER_PROPS.data)
 const image = ref(PLACEHOLDER_PROPS.image)
