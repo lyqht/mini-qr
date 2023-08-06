@@ -188,12 +188,40 @@ export const supabasePreset: Preset = {
   }
 }
 
+export const uiliciousPreset = {
+  ...defaultPresetOptions,
+  name: i18n.global.t('UIlicious Preset'),
+  data: 'https://uilicious.com/',
+  image:
+    'data:image/svg+xml;base64,PHN2ZyAKIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIgogd2lkdGg9IjE0NW1tIiBoZWlnaHQ9IjE1MG1tIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiAgZmlsbD0icmdiKDM3LCAzNywgMzcpIgogZD0iTTIwNi4wMDAsNDQzLjAwMCBMMjA2LjAwMCw1NjEuMDAwIEwwLjAwMCwzOTguMDAwIEwwLjAwMCwyODAuMDAwIEwyMDYuMDAwLDQ0My4wMDAgWiIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiICBmaWxsPSJyZ2IoMTcsIDE3LCAxNykiCiBkPSJNNTQ1LjAwMCwyMzYuMDAwIEwyMDYuMDAwLDU2MS4wMDAgTDIwNi4wMDAsNDQzLjAwMCBMNTQ1LjAwMCwxMTguMDAwIEw1NDUuMDAwLDIzNi4wMDAgWiIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiICBmaWxsPSJyZ2IoMCwgMTY2LCA4MSkiCiBkPSJNMjA2LjAwMCwzMjYuMDAwIEwyMDYuMDAwLDQ0NC4wMDAgTDAuMDAwLDI4MS4wMDAgTDAuMDAwLDE2My4wMDAgTDIwNi4wMDAsMzI2LjAwMCBaIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgIGZpbGw9InJnYigxNiwgMTM5LCA3NikiCiBkPSJNNTQ1LjAwMCwxMTkuMDAwIEwyMDYuMDAwLDQ0NC4wMDAgTDIwNi4wMDAsMzI2LjAwMCBMNTQ1LjAwMCwxLjAwMCBMNTQ1LjAwMCwxMTkuMDAwIFoiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiAgZmlsbD0icmdiKDEzOCwgMjEzLCAxNjUpIgogZD0iTTU0Ni4wMDAsMC4wMDAgTDIwNi4wMDAsMzI3LjAwMCBMMC4wMDAsMTYzLjAwMCBMNTQ2LjAwMCwwLjAwMCBaIi8+Cjwvc3ZnPg==',
+  dotsOptions: {
+    color: '#0f8b4c',
+    type: 'extra-rounded'
+  },
+  cornersSquareOptions: {
+    color: '#0f8b4c',
+    type: 'extra-rounded'
+  },
+  cornersDotOptions: {
+    color: '#111111',
+    type: 'square'
+  },
+  imageOptions: {
+    margin: 0
+  },
+  style: {
+    borderRadius: '24px',
+    background: '#ffffff'
+  }
+}
+
 export const allPresets = [
   defaultPreset,
   padletPreset,
   supabasePreset,
   vercelLightPreset,
   vercelDarkPreset,
+  uiliciousPreset,
   presetBlue,
   presetRed,
   presetGreen
