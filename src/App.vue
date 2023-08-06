@@ -631,7 +631,7 @@ function uploadImage() {
 }
 
 .secondary-button {
-  @apply outline-none p-1.5 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-md hover:shadow transition-shadow rounded-lg;
+  @apply outline-none p-1.5 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-md hover:shadow transition-shadow rounded-lg;
   @apply focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
 }
 </style>
