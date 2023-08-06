@@ -246,7 +246,7 @@ function uploadImage() {
         </select>
       </form>
       <div class="vertical-border"></div>
-      <a href="https://github.com/lyqht/styled-qr-code-generator">
+      <a class="icon-button" href="https://github.com/lyqht/styled-qr-code-generator">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
           <path
             fill="#abcbca"
@@ -415,12 +415,12 @@ function uploadImage() {
           </div>
         </div>
         <div id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
-          <div class="mt-2 flex flex-row items-center justify-center gap-2">
-            <div class="flex flex-row items-center gap-2">
-              <label for="preset-selector">{{ $t('Select a Preset') }}</label>
+          <div>
+            <label for="preset-selector">{{ $t('Preset') }}</label>
+            <div class="flex flex-row items-center justify-center gap-2">
               <select
                 id="preset-selector"
-                class="secondary-button cursor-pointer text-center"
+                class="secondary-button cursor-pointer text-start"
                 :aria-label="$t('QR code preset')"
                 v-model="selectedPreset"
               >
@@ -448,7 +448,7 @@ function uploadImage() {
             </div>
           </div>
           <div class="w-full">
-            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="data">
+            <label for="data">
               {{ $t('Data to encode') }}
             </label>
             <textarea
@@ -462,10 +462,25 @@ function uploadImage() {
           </div>
           <div class="w-full">
             <div class="mb-2 flex flex-row items-center gap-2">
-              <label class="block text-sm font-bold text-gray-700 dark:text-white" for="image-url">
+              <label for="image-url">
                 {{ $t('Logo image URL') }}
               </label>
-              <button class="secondary-button" @click="uploadImage">
+              <button class="icon-button flex flex-row items-center" @click="uploadImage">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  >
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path
+                      d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-10v6"
+                    />
+                    <path d="M9.5 13.5L12 11l2.5 2.5" />
+                  </g>
+                </svg>
                 <p>{{ $t('Upload image') }}</p>
               </button>
             </div>
@@ -479,13 +494,11 @@ function uploadImage() {
             />
           </div>
           <div class="flex w-full flex-row items-center gap-2">
-            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
-              $t('Background color')
-            }}</label>
+            <label>{{ $t('Background color') }}</label>
             <input id="dotsColor" type="color" class="color-input" v-model="styleBackground" />
           </div>
           <div class="w-full">
-            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="width">
+            <label for="width">
               {{ $t('Width (px)') }}
             </label>
             <input
@@ -497,10 +510,7 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label
-              class="mb-2 block text-sm font-bold text-gray-700 dark:text-white"
-              for="image-margin"
-            >
+            <label for="image-margin">
               {{ $t('Image margin (px)') }}
             </label>
             <input
@@ -512,7 +522,7 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="height">
+            <label for="height">
               {{ $t('Height (px)') }}
             </label>
             <input
@@ -524,13 +534,13 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="margin">
+            <label for="margin">
               {{ $t('Margin (px)') }}
             </label>
             <input class="text-input" id="margin" type="number" placeholder="0" v-model="margin" />
           </div>
           <div class="w-full">
-            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="margin">
+            <label for="margin">
               {{ $t('Border radius (px)') }}
             </label>
             <input
@@ -542,17 +552,13 @@ function uploadImage() {
             />
           </div>
           <div class="flex w-full flex-row items-center gap-2">
-            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
-              $t('Dots color')
-            }}</label>
+            <label>{{ $t('Dots color') }}</label>
             <input id="dotsColor" type="color" class="color-input" v-model="dotsOptionsColor" />
           </div>
           <div class="w-full">
-            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
-              $t('Dots type')
-            }}</label>
+            <label>{{ $t('Dots type') }}</label>
             <div
-              class="flex flex-row gap-1"
+              class="radiogroup"
               v-for="type in [
                 'dots',
                 'rounded',
@@ -574,9 +580,7 @@ function uploadImage() {
           </div>
 
           <div class="flex w-full flex-row items-center gap-2">
-            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
-              $t('Corners Square color')
-            }}</label>
+            <label>{{ $t('Corners Square color') }}</label>
             <input
               id="cornersSquareColor"
               type="color"
@@ -585,14 +589,8 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
-              $t('Corners Square type')
-            }}</label>
-            <div
-              class="flex flex-row gap-1"
-              v-for="type in ['dot', 'square', 'extra-rounded']"
-              :key="type"
-            >
+            <label>{{ $t('Corners Square type') }}</label>
+            <div class="radiogroup" v-for="type in ['dot', 'square', 'extra-rounded']" :key="type">
               <input
                 :id="'cornersSquareOptionsType-' + type"
                 type="radio"
@@ -604,9 +602,7 @@ function uploadImage() {
           </div>
 
           <div class="flex w-full flex-row items-center gap-2">
-            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
-              $t('Corners Dot color')
-            }}</label>
+            <label>{{ $t('Corners Dot color') }}</label>
             <input
               id="cornersDotColor"
               type="color"
@@ -615,10 +611,8 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
-              $t('Corners Dot type')
-            }}</label>
-            <div class="flex flex-row gap-1" v-for="type in ['dot', 'square']" :key="type">
+            <label>{{ $t('Corners Dot type') }}</label>
+            <div class="radiogroup" role="radiogroup" v-for="type in ['dot', 'square']" :key="type">
               <input
                 :id="'cornersDotOptionsType-' + type"
                 type="radio"
@@ -635,17 +629,30 @@ function uploadImage() {
 </template>
 
 <style lang="postcss" scoped>
-.setting-label {
-  @apply text-gray-700 dark:text-white text-sm font-bold;
+label {
+  @apply text-gray-700 dark:text-gray-100 text-lg font-semibold;
+}
+
+.text-input,
+.secondary-button {
+  @apply bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow hover:shadow-md transition-shadow rounded-lg;
+}
+
+.text-input,
+input[type='color'],
+input[type='radio'],
+.button,
+.secondary-button,
+.icon-button {
+  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
 }
 
 .text-input {
-  @apply ms-1 p-4 shadow resize-none appearance-none border rounded w-full py-2 px-3 text-zinc-700 dark:text-zinc-100 leading-tight focus:outline-none focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+  @apply resize-none appearance-none ms-1 p-4 rounded w-full;
 }
 
 .color-input {
-  @apply outline-none bg-transparent shadow p-0 border rounded box-border text-zinc-700 dark:text-zinc-100;
-  @apply focus-visible:shadow focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+  @apply bg-transparent shadow p-0 border rounded box-border text-zinc-700 dark:text-zinc-100 focus-visible:shadow;
 }
 
 .vertical-border {
@@ -653,16 +660,26 @@ function uploadImage() {
 }
 
 .button {
-  @apply outline-none bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200 shadow-sm hover:shadow transition-shadow rounded-lg p-2;
-  @apply focus-visible:shadow-md focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+  @apply bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200 shadow-sm hover:shadow p-2 focus-visible:shadow-md rounded-lg;
 }
 
 .secondary-button {
-  @apply outline-none p-1.5 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-md hover:shadow transition-shadow rounded-lg;
-  @apply focus-visible:shadow focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+  @apply outline-none p-1.5;
 }
 
 .icon-button {
-  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+  @apply outline-none hover:shadow rounded-sm;
+}
+
+input[type='radio'] {
+  @apply m-3;
+}
+
+.radio-group {
+  @apply flex flex-row items-center gap-1;
+}
+
+.radiogroup > label {
+  @apply font-normal;
 }
 </style>
