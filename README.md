@@ -18,3 +18,6 @@ V0
 
 V0.1
 - Upload custom image for logo
+
+V0.2
+- Presets: Pre-crafted QR code styles are available as immediate usage/ reference
