@@ -17,6 +17,7 @@ const image = ref(defaultPreset.image)
 const width = ref(defaultPreset.width)
 const height = ref(defaultPreset.height)
 const margin = ref(defaultPreset.margin)
+const imageMargin = ref(defaultPreset.imageOptions.margin)
 
 const dotsOptionsColor = ref(defaultPreset.dotsOptions.color)
 const dotsOptionsType = ref(defaultPreset.dotsOptions.type)
@@ -44,6 +45,9 @@ const style = computed(() => ({
   borderRadius: styledBorderRadiusFormatted.value,
   background: styleBackground.value
 }))
+const imageOptions = computed(() => ({
+  margin: imageMargin.value
+}))
 
 const qrCodeProps = computed(() => ({
   data: data.value,
@@ -53,7 +57,8 @@ const qrCodeProps = computed(() => ({
   margin: margin.value,
   dotsOptions: dotsOptions.value,
   cornersSquareOptions: cornersSquareOptions.value,
-  cornersDotOptions: cornersDotOptions.value
+  cornersDotOptions: cornersDotOptions.value,
+  imageOptions: imageOptions.value
 }))
 
 /* random settings utils */
@@ -91,12 +96,14 @@ function randomizeStyleSettings() {
 }
 
 const selectedPreset = ref(defaultPreset)
+
 watch(selectedPreset, () => {
   data.value = selectedPreset.value.data
   image.value = selectedPreset.value.image
   width.value = selectedPreset.value.width
   height.value = selectedPreset.value.height
   margin.value = selectedPreset.value.margin
+  imageMargin.value = selectedPreset.value.imageOptions.margin
   dotsOptionsColor.value = selectedPreset.value.dotsOptions.color
   dotsOptionsType.value = selectedPreset.value.dotsOptions.type
   cornersSquareOptionsColor.value = selectedPreset.value.cornersSquareOptions.color
@@ -139,23 +146,9 @@ function downloadQRImageAsSvg() {
 
 function saveQRConfig() {
   console.debug('Saving QR code config')
-  const qrCodeProps = {
-    data: data.value,
-    image: image.value,
-    width: width.value,
-    height: height.value,
-    margin: margin.value,
-    dotsOptions: dotsOptions.value,
-    cornersSquareOptions: cornersSquareOptions.value,
-    cornersDotOptions: cornersDotOptions.value
-  }
-  const qrCodeStyle = {
-    borderRadius: styleBorderRadius.value,
-    background: styleBackground.value
-  }
   const qrCodeConfig = {
-    props: qrCodeProps,
-    style: qrCodeStyle
+    props: qrCodeProps.value,
+    style: style.value
   }
   const qrCodeConfigString = JSON.stringify(qrCodeConfig)
   const qrCodeConfigBlob = new Blob([qrCodeConfigString], { type: 'application/json' })
@@ -484,6 +477,12 @@ function uploadImage() {
               placeholder="width in pixels"
               v-model="width"
             />
+          </div>
+          <div class="w-full">
+            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="image-margin">
+              {{ $t('Image margin (px)') }}
+            </label>
+            <input class="text-input" id="image-margin" type="number" placeholder="0" v-model="imageMargin" />
           </div>
           <div class="w-full">
             <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="height">
