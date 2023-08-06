@@ -225,7 +225,7 @@ function uploadImage() {
 </script>
 
 <template>
-  <main class="grid place-items-center px-6 py-20 sm:p-8 relative" role="main">
+  <main class="relative grid place-items-center px-6 py-20 sm:p-8" role="main">
     <div class="absolute end-4 top-4 flex flex-row items-center gap-4">
       <form class="flex flex-row items-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
@@ -242,7 +242,11 @@ function uploadImage() {
             />
           </g>
         </svg>
-        <select class="secondary-button text-center cursor-pointer" id="locale-select" v-model="$i18n.locale">
+        <select
+          class="secondary-button cursor-pointer text-center"
+          id="locale-select"
+          v-model="$i18n.locale"
+        >
           <option v-for="(locale, index) in sortedLocales" :key="index" :value="locale">
             {{ $t(locale) }}
           </option>
@@ -259,23 +263,27 @@ function uploadImage() {
       </a>
     </div>
     <div class="w-full md:w-5/6">
-      <div class="w-full mb-8 flex flex-col items-center justify-center">
+      <div class="mb-8 flex w-full flex-col items-center justify-center">
         <h1 class="text-4xl">{{ $t('Styled QR Code Generator') }}</h1>
-        <div class="mt-2 flex flex-row gap-2 items-center justify-center">
-          <button class="p-2 m-0 rounded-lg secondary-button" @click="randomizeStyleSettings">
+        <div class="mt-2 flex flex-row items-center justify-center gap-2">
+          <button class="secondary-button m-0 rounded-lg p-2" @click="randomizeStyleSettings">
             {{ $t('Randomize style') }}
           </button>
-          <select class="secondary-button cursor-pointer text-center" v-model="selectedPreset">
+          <select
+            class="secondary-button cursor-pointer text-center"
+            :aria-label="$t('QR code preset')"
+            v-model="selectedPreset"
+          >
             <option v-for="(preset, index) in allPresets" :key="index" :value="preset">
               {{ preset.name }}
             </option>
           </select>
         </div>
       </div>
-      <div class="flex flex-col-reverse md:flex-row items-start justify-center gap-4 md:gap-12">
+      <div class="flex flex-col-reverse items-start justify-center gap-4 md:flex-row md:gap-12">
         <div
           id="main-content"
-          class="flex flex-col items-center justify-center flex-shrink-0 w-full md:w-fit"
+          class="flex w-full shrink-0 flex-col items-center justify-center md:w-fit"
         >
           <div id="qr-code-container">
             <div
@@ -297,11 +305,11 @@ function uploadImage() {
               <p v-else>{{ $t('No data!') }}</p>
             </div>
           </div>
-          <div class="flex flex-col gap-2 items-center mt-4">
-            <div class="flex flex-col gap-3 items-center justify-center">
+          <div class="mt-4 flex flex-col items-center gap-2">
+            <div class="flex flex-col items-center justify-center gap-3">
               <button
                 id="copy-qr-image-button"
-                class="button w-fit flex flex-row gap-1"
+                class="button flex w-fit flex-row gap-1"
                 @click="copyQRToClipboard"
                 :aria-label="$t('Copy QR Code to clipboard')"
               >
@@ -323,7 +331,7 @@ function uploadImage() {
               </button>
               <button
                 id="save-qr-code-config-button"
-                class="button w-fit flex flex-row gap-1"
+                class="button flex w-fit flex-row gap-1"
                 @click="saveQRConfig"
                 :aria-label="$t('Save QR Code configuration')"
               >
@@ -346,7 +354,7 @@ function uploadImage() {
               </button>
               <button
                 id="load-qr-code-config-button"
-                class="button w-fit flex flex-row gap-1"
+                class="button flex w-fit flex-row gap-1"
                 @click="loadQrConfig"
                 :aria-label="$t('Load QR Code configuration')"
               >
@@ -370,7 +378,7 @@ function uploadImage() {
             </div>
             <div id="export-options" class="pt-4">
               <p class="pb-2">{{ $t('Export as') }}</p>
-              <div class="flex flex-row gap-2 items-center">
+              <div class="flex flex-row items-center gap-2">
                 <button
                   id="download-qr-image-button-png"
                   class="button"
@@ -427,9 +435,9 @@ function uploadImage() {
             </div>
           </div>
         </div>
-        <div id="settings" class="w-full flex flex-col flex-grow items-start text-start gap-8">
+        <div id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="data">
+            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="data">
               {{ $t('Data to encode') }}
             </label>
             <textarea
@@ -442,8 +450,8 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <div class="flex flex-row gap-2 items-center mb-2">
-              <label class="block text-gray-700 dark:text-white text-sm font-bold" for="image-url">
+            <div class="mb-2 flex flex-row items-center gap-2">
+              <label class="block text-sm font-bold text-gray-700 dark:text-white" for="image-url">
                 {{ $t('Logo image URL') }}
               </label>
               <button class="secondary-button" @click="uploadImage">
@@ -459,14 +467,14 @@ function uploadImage() {
               v-model="image"
             />
           </div>
-          <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+          <div class="flex w-full flex-row items-center gap-2">
+            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
               $t('Background color')
             }}</label>
             <input id="dotsColor" type="color" class="color-input" v-model="styleBackground" />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="width">
+            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="width">
               {{ $t('Width (px)') }}
             </label>
             <input
@@ -478,7 +486,7 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="height">
+            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="height">
               {{ $t('Height (px)') }}
             </label>
             <input
@@ -490,13 +498,13 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="margin">
+            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="margin">
               {{ $t('Margin (px)') }}
             </label>
             <input class="text-input" id="margin" type="number" placeholder="0" v-model="margin" />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="margin">
+            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="margin">
               {{ $t('Border radius (px)') }}
             </label>
             <input
@@ -507,14 +515,14 @@ function uploadImage() {
               v-model="styleBorderRadius"
             />
           </div>
-          <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+          <div class="flex w-full flex-row items-center gap-2">
+            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
               $t('Dots color')
             }}</label>
             <input id="dotsColor" type="color" class="color-input" v-model="dotsOptionsColor" />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
               $t('Dots type')
             }}</label>
             <div
@@ -539,8 +547,8 @@ function uploadImage() {
             </div>
           </div>
 
-          <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+          <div class="flex w-full flex-row items-center gap-2">
+            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
               $t('Corners Square color')
             }}</label>
             <input
@@ -551,7 +559,7 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
               $t('Corners Square type')
             }}</label>
             <div
@@ -569,8 +577,8 @@ function uploadImage() {
             </div>
           </div>
 
-          <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+          <div class="flex w-full flex-row items-center gap-2">
+            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
               $t('Corners Dot color')
             }}</label>
             <input
@@ -581,7 +589,7 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
+            <label class="block text-sm font-bold text-gray-700 dark:text-white">{{
               $t('Corners Dot type')
             }}</label>
             <div class="flex flex-row gap-1" v-for="type in ['dot', 'square']" :key="type">

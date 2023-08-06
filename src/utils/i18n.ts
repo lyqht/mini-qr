@@ -64,4 +64,4 @@ export const i18n = createI18n({
     uk,
     zh
   }
-});
+})
