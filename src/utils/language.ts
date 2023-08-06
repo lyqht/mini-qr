@@ -31,5 +31,5 @@ const languageMap: Record<string, string> = {
   zh: 'Chinese'
 }
 export const sortedLocales = Object.keys(languageMap).sort((a, b) => {
-  return languageMap[a].localeCompare(languageMap[b]);
-});
+  return languageMap[a].localeCompare(languageMap[b])
+})

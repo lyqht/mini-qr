@@ -1,68 +1,33 @@
 <script setup lang="ts">
-import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
-import StyledQRCode, { type StyledQRCodeProps } from '@/components/StyledQRCode.vue'
+import StyledQRCode from '@/components/StyledQRCode.vue'
 import {
   copyImageToClipboard,
   downloadPngElement,
   downloadSvgElement
 } from '@/utils/convertToImage'
 import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import 'vue-i18n'
-import { sortedLocales } from './utils/language'
 import { getNumericCSSValue } from './utils/formatting'
+import { sortedLocales } from './utils/language'
+import { defaultPreset, allPresets } from './utils/presets'
 
-interface CustomStyleProps {
-  borderRadius?: string
-  background?: string
-}
+const data = ref(defaultPreset.data)
+const image = ref(defaultPreset.image)
+const width = ref(defaultPreset.width)
+const height = ref(defaultPreset.height)
+const margin = ref(defaultPreset.margin)
+const imageMargin = ref(defaultPreset.imageOptions.margin)
 
-const PLACEHOLDER_PROPS: Required<StyledQRCodeProps> & { style: CustomStyleProps } = {
-  data: 'https://github.com/lyqht',
-  image: PLACEHOLDER_IMAGE_URL,
-  width: 200,
-  height: 200,
-  margin: 0,
-  type: 'svg',
-  dotsOptions: {
-    color: '#abcbca',
-    type: 'extra-rounded'
-  },
-  cornersSquareOptions: {
-    color: '#abcbca',
-    type: 'extra-rounded'
-  },
-  cornersDotOptions: {
-    color: '#abcbca',
-    type: 'square'
-  },
-  backgroundOptions: {
-    color: 'transparent'
-  },
-  imageOptions: {
-    margin: 0
-  },
-  style: {
-    borderRadius: '24px',
-    background: '#697d80'
-  }
-}
-
-const data = ref(PLACEHOLDER_PROPS.data)
-const image = ref(PLACEHOLDER_PROPS.image)
-const width = ref(PLACEHOLDER_PROPS.width)
-const height = ref(PLACEHOLDER_PROPS.height)
-const margin = ref(PLACEHOLDER_PROPS.margin)
-
-const dotsOptionsColor = ref(PLACEHOLDER_PROPS.dotsOptions.color)
-const dotsOptionsType = ref(PLACEHOLDER_PROPS.dotsOptions.type)
-const cornersSquareOptionsColor = ref(PLACEHOLDER_PROPS.cornersSquareOptions.color)
-const cornersSquareOptionsType = ref(PLACEHOLDER_PROPS.cornersSquareOptions.type)
-const cornersDotOptionsColor = ref(PLACEHOLDER_PROPS.cornersDotOptions.color)
-const cornersDotOptionsType = ref(PLACEHOLDER_PROPS.cornersDotOptions.type)
-const styleBorderRadius = ref(getNumericCSSValue(PLACEHOLDER_PROPS.style.borderRadius as string))
+const dotsOptionsColor = ref(defaultPreset.dotsOptions.color)
+const dotsOptionsType = ref(defaultPreset.dotsOptions.type)
+const cornersSquareOptionsColor = ref(defaultPreset.cornersSquareOptions.color)
+const cornersSquareOptionsType = ref(defaultPreset.cornersSquareOptions.type)
+const cornersDotOptionsColor = ref(defaultPreset.cornersDotOptions.color)
+const cornersDotOptionsType = ref(defaultPreset.cornersDotOptions.type)
+const styleBorderRadius = ref(getNumericCSSValue(defaultPreset.style.borderRadius as string))
 const styledBorderRadiusFormatted = computed(() => `${styleBorderRadius.value}px`)
-const styleBackground = ref(PLACEHOLDER_PROPS.style.background)
+const styleBackground = ref(defaultPreset.style.background)
 
 const dotsOptions = computed(() => ({
   color: dotsOptionsColor.value,
@@ -80,6 +45,9 @@ const style = computed(() => ({
   borderRadius: styledBorderRadiusFormatted.value,
   background: styleBackground.value
 }))
+const imageOptions = computed(() => ({
+  margin: imageMargin.value
+}))
 
 const qrCodeProps = computed(() => ({
   data: data.value,
@@ -89,7 +57,8 @@ const qrCodeProps = computed(() => ({
   margin: margin.value,
   dotsOptions: dotsOptions.value,
   cornersSquareOptions: cornersSquareOptions.value,
-  cornersDotOptions: cornersDotOptions.value
+  cornersDotOptions: cornersDotOptions.value,
+  imageOptions: imageOptions.value
 }))
 
 /* random settings utils */
@@ -126,6 +95,25 @@ function randomizeStyleSettings() {
   styleBackground.value = createRandomColor()
 }
 
+const selectedPreset = ref(defaultPreset)
+
+watch(selectedPreset, () => {
+  data.value = selectedPreset.value.data
+  image.value = selectedPreset.value.image
+  width.value = selectedPreset.value.width
+  height.value = selectedPreset.value.height
+  margin.value = selectedPreset.value.margin
+  imageMargin.value = selectedPreset.value.imageOptions.margin
+  dotsOptionsColor.value = selectedPreset.value.dotsOptions.color
+  dotsOptionsType.value = selectedPreset.value.dotsOptions.type
+  cornersSquareOptionsColor.value = selectedPreset.value.cornersSquareOptions.color
+  cornersSquareOptionsType.value = selectedPreset.value.cornersSquareOptions.type
+  cornersDotOptionsColor.value = selectedPreset.value.cornersDotOptions.color
+  cornersDotOptionsType.value = selectedPreset.value.cornersDotOptions.type
+  styleBorderRadius.value = getNumericCSSValue(selectedPreset.value.style.borderRadius as string)
+  styleBackground.value = selectedPreset.value.style.background
+})
+
 /* export image utils */
 const options = computed(() => ({
   width: width.value,
@@ -158,23 +146,9 @@ function downloadQRImageAsSvg() {
 
 function saveQRConfig() {
   console.debug('Saving QR code config')
-  const qrCodeProps = {
-    data: data.value,
-    image: image.value,
-    width: width.value,
-    height: height.value,
-    margin: margin.value,
-    dotsOptions: dotsOptions.value,
-    cornersSquareOptions: cornersSquareOptions.value,
-    cornersDotOptions: cornersDotOptions.value
-  }
-  const qrCodeStyle = {
-    borderRadius: styleBorderRadius.value,
-    background: styleBackground.value
-  }
   const qrCodeConfig = {
-    props: qrCodeProps,
-    style: qrCodeStyle
+    props: qrCodeProps.value,
+    style: style.value
   }
   const qrCodeConfigString = JSON.stringify(qrCodeConfig)
   const qrCodeConfigBlob = new Blob([qrCodeConfigString], { type: 'application/json' })
@@ -244,7 +218,7 @@ function uploadImage() {
 </script>
 
 <template>
-  <main class="grid place-items-center px-6 py-20 sm:p-8 relative" role="main">
+  <main class="relative grid place-items-center px-6 py-20 sm:p-8" role="main">
     <div class="absolute end-4 top-4 flex flex-row items-center gap-4">
       <form class="flex flex-row items-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
@@ -261,14 +235,18 @@ function uploadImage() {
             />
           </g>
         </svg>
-        <select class="text-input px-0 text-center" id="locale-select" v-model="$i18n.locale">
+        <select
+          class="secondary-button cursor-pointer text-center"
+          id="locale-select"
+          v-model="$i18n.locale"
+        >
           <option v-for="(locale, index) in sortedLocales" :key="index" :value="locale">
             {{ $t(locale) }}
           </option>
         </select>
       </form>
       <div class="vertical-border"></div>
-      <a href="https://github.com/lyqht/styled-qr-code-generator">
+      <a class="icon-button" href="https://github.com/lyqht/styled-qr-code-generator">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
           <path
             fill="#abcbca"
@@ -278,16 +256,13 @@ function uploadImage() {
       </a>
     </div>
     <div class="w-full md:w-5/6">
-      <div class="w-full mb-8 flex flex-col items-center justify-center">
+      <div class="mb-8 flex w-full flex-col items-center justify-center">
         <h1 class="text-4xl">{{ $t('Styled QR Code Generator') }}</h1>
-        <button class="p-2 mt-2 m-0 rounded-lg secondary-button" @click="randomizeStyleSettings">
-          {{ $t('Randomize style') }}
-        </button>
       </div>
-      <div class="flex flex-col-reverse md:flex-row items-start justify-center gap-4 md:gap-12">
+      <div class="flex flex-col-reverse items-start justify-center gap-4 md:flex-row md:gap-12">
         <div
           id="main-content"
-          class="flex flex-col items-center justify-center flex-shrink-0 w-full md:w-fit"
+          class="flex w-full shrink-0 flex-col items-center justify-center md:w-fit"
         >
           <div id="qr-code-container">
             <div
@@ -309,11 +284,11 @@ function uploadImage() {
               <p v-else>{{ $t('No data!') }}</p>
             </div>
           </div>
-          <div class="flex flex-col gap-2 items-center mt-4">
-            <div class="flex flex-col gap-3 items-center justify-center">
+          <div class="mt-4 flex flex-col items-center gap-2">
+            <div class="flex flex-col items-center justify-center gap-3">
               <button
                 id="copy-qr-image-button"
-                class="button w-fit flex flex-row gap-1"
+                class="button flex w-fit flex-row gap-1"
                 @click="copyQRToClipboard"
                 :aria-label="$t('Copy QR Code to clipboard')"
               >
@@ -335,7 +310,7 @@ function uploadImage() {
               </button>
               <button
                 id="save-qr-code-config-button"
-                class="button w-fit flex flex-row gap-1"
+                class="button flex w-fit flex-row gap-1"
                 @click="saveQRConfig"
                 :aria-label="$t('Save QR Code configuration')"
               >
@@ -358,7 +333,7 @@ function uploadImage() {
               </button>
               <button
                 id="load-qr-code-config-button"
-                class="button w-fit flex flex-row gap-1"
+                class="button flex w-fit flex-row gap-1"
                 @click="loadQrConfig"
                 :aria-label="$t('Load QR Code configuration')"
               >
@@ -382,7 +357,7 @@ function uploadImage() {
             </div>
             <div id="export-options" class="pt-4">
               <p class="pb-2">{{ $t('Export as') }}</p>
-              <div class="flex flex-row gap-2 items-center">
+              <div class="flex flex-row items-center gap-2">
                 <button
                   id="download-qr-image-button-png"
                   class="button"
@@ -439,9 +414,41 @@ function uploadImage() {
             </div>
           </div>
         </div>
-        <div id="settings" class="w-full flex flex-col flex-grow items-start text-start gap-8">
+        <div id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
+          <div>
+            <label for="preset-selector">{{ $t('Preset') }}</label>
+            <div class="flex flex-row items-center justify-center gap-2">
+              <select
+                id="preset-selector"
+                class="secondary-button cursor-pointer text-start"
+                :aria-label="$t('QR code preset')"
+                v-model="selectedPreset"
+              >
+                <option v-for="(preset, index) in allPresets" :key="index" :value="preset">
+                  {{ $t(preset.name) }}
+                </option>
+              </select>
+              <button
+                class="icon-button"
+                @click="randomizeStyleSettings"
+                :aria-label="$t('Randomize style')"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="40"
+                  height="32"
+                  viewBox="0 0 640 512"
+                >
+                  <path
+                    fill="#888888"
+                    d="M274.9 34.3c-28.1-28.1-73.7-28.1-101.8 0L34.3 173.1c-28.1 28.1-28.1 73.7 0 101.8l138.8 138.8c28.1 28.1 73.7 28.1 101.8 0l138.8-138.8c28.1-28.1 28.1-73.7 0-101.8L274.9 34.3zM200 224a24 24 0 1 1 48 0a24 24 0 1 1-48 0zM96 200a24 24 0 1 1 0 48a24 24 0 1 1 0-48zm128 176a24 24 0 1 1 0-48a24 24 0 1 1 0 48zm128-176a24 24 0 1 1 0 48a24 24 0 1 1 0-48zm-128-80a24 24 0 1 1 0-48a24 24 0 1 1 0 48zm96 328c0 35.3 28.7 64 64 64h192c35.3 0 64-28.7 64-64V256c0-35.3-28.7-64-64-64H461.7c11.6 36 3.1 77-25.4 105.5L320 413.8V448zm160-120a24 24 0 1 1 0 48a24 24 0 1 1 0-48z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="data">
+            <label for="data">
               {{ $t('Data to encode') }}
             </label>
             <textarea
@@ -454,11 +461,26 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <div class="flex flex-row gap-2 items-center mb-2">
-              <label class="block text-gray-700 dark:text-white text-sm font-bold" for="image-url">
+            <div class="mb-2 flex flex-row items-center gap-2">
+              <label for="image-url">
                 {{ $t('Logo image URL') }}
               </label>
-              <button class="secondary-button" @click="uploadImage">
+              <button class="icon-button flex flex-row items-center" @click="uploadImage">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  >
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path
+                      d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-10v6"
+                    />
+                    <path d="M9.5 13.5L12 11l2.5 2.5" />
+                  </g>
+                </svg>
                 <p>{{ $t('Upload image') }}</p>
               </button>
             </div>
@@ -471,14 +493,12 @@ function uploadImage() {
               v-model="image"
             />
           </div>
-          <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('Background color')
-            }}</label>
+          <div class="flex w-full flex-row items-center gap-2">
+            <label>{{ $t('Background color') }}</label>
             <input id="dotsColor" type="color" class="color-input" v-model="styleBackground" />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="width">
+            <label for="width">
               {{ $t('Width (px)') }}
             </label>
             <input
@@ -490,7 +510,19 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="height">
+            <label for="image-margin">
+              {{ $t('Image margin (px)') }}
+            </label>
+            <input
+              class="text-input"
+              id="image-margin"
+              type="number"
+              placeholder="0"
+              v-model="imageMargin"
+            />
+          </div>
+          <div class="w-full">
+            <label for="height">
               {{ $t('Height (px)') }}
             </label>
             <input
@@ -502,13 +534,13 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="margin">
+            <label for="margin">
               {{ $t('Margin (px)') }}
             </label>
             <input class="text-input" id="margin" type="number" placeholder="0" v-model="margin" />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold mb-2" for="margin">
+            <label for="margin">
               {{ $t('Border radius (px)') }}
             </label>
             <input
@@ -519,18 +551,14 @@ function uploadImage() {
               v-model="styleBorderRadius"
             />
           </div>
-          <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('Dots color')
-            }}</label>
+          <div class="flex w-full flex-row items-center gap-2">
+            <label>{{ $t('Dots color') }}</label>
             <input id="dotsColor" type="color" class="color-input" v-model="dotsOptionsColor" />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('Dots type')
-            }}</label>
+            <label>{{ $t('Dots type') }}</label>
             <div
-              class="flex flex-row gap-1"
+              class="radiogroup"
               v-for="type in [
                 'dots',
                 'rounded',
@@ -551,10 +579,8 @@ function uploadImage() {
             </div>
           </div>
 
-          <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('Corners Square color')
-            }}</label>
+          <div class="flex w-full flex-row items-center gap-2">
+            <label>{{ $t('Corners Square color') }}</label>
             <input
               id="cornersSquareColor"
               type="color"
@@ -563,14 +589,8 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('Corners Square type')
-            }}</label>
-            <div
-              class="flex flex-row gap-1"
-              v-for="type in ['dot', 'square', 'extra-rounded']"
-              :key="type"
-            >
+            <label>{{ $t('Corners Square type') }}</label>
+            <div class="radiogroup" v-for="type in ['dot', 'square', 'extra-rounded']" :key="type">
               <input
                 :id="'cornersSquareOptionsType-' + type"
                 type="radio"
@@ -581,10 +601,8 @@ function uploadImage() {
             </div>
           </div>
 
-          <div class="w-full flex flex-row gap-2 items-center">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('Corners Dot color')
-            }}</label>
+          <div class="flex w-full flex-row items-center gap-2">
+            <label>{{ $t('Corners Dot color') }}</label>
             <input
               id="cornersDotColor"
               type="color"
@@ -593,10 +611,8 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="block text-gray-700 dark:text-white text-sm font-bold">{{
-              $t('Corners Dot type')
-            }}</label>
-            <div class="flex flex-row gap-1" v-for="type in ['dot', 'square']" :key="type">
+            <label>{{ $t('Corners Dot type') }}</label>
+            <div class="radiogroup" role="radiogroup" v-for="type in ['dot', 'square']" :key="type">
               <input
                 :id="'cornersDotOptionsType-' + type"
                 type="radio"
@@ -613,16 +629,30 @@ function uploadImage() {
 </template>
 
 <style lang="postcss" scoped>
-.setting-label {
-  @apply text-gray-700 dark:text-white text-sm font-bold;
+label {
+  @apply text-gray-700 dark:text-gray-100 text-lg font-semibold;
+}
+
+.text-input,
+.secondary-button {
+  @apply bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow hover:shadow-md transition-shadow rounded-lg;
+}
+
+.text-input,
+input[type='color'],
+input[type='radio'],
+.button,
+.secondary-button,
+.icon-button {
+  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
 }
 
 .text-input {
-  @apply ms-1 p-4 shadow resize-none appearance-none border rounded w-full py-2 px-3 text-zinc-700 dark:text-zinc-100 leading-tight focus:outline-none focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+  @apply resize-none appearance-none ms-1 p-4 rounded w-full;
 }
 
 .color-input {
-  @apply bg-transparent shadow p-0 border rounded box-border text-zinc-700 dark:text-zinc-100 focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+  @apply bg-transparent shadow p-0 border rounded box-border text-zinc-700 dark:text-zinc-100 focus-visible:shadow;
 }
 
 .vertical-border {
@@ -630,12 +660,26 @@ function uploadImage() {
 }
 
 .button {
-  @apply outline-none bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200 shadow-sm hover:shadow transition-shadow rounded-lg p-2;
-  @apply focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+  @apply bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200 shadow-sm hover:shadow p-2 focus-visible:shadow-md rounded-lg;
 }
 
 .secondary-button {
-  @apply outline-none bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-sm hover:shadow transition-shadow rounded-lg p-1;
-  @apply focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+  @apply outline-none p-1.5;
+}
+
+.icon-button {
+  @apply outline-none hover:shadow rounded-sm;
+}
+
+input[type='radio'] {
+  @apply m-3;
+}
+
+.radio-group {
+  @apply flex flex-row items-center gap-1;
+}
+
+.radiogroup > label {
+  @apply font-normal;
 }
 </style>
