@@ -226,7 +226,7 @@ export const pejuangKodePreset = {
   cornersSquareOptions: { color: '#252f3f', type: 'dot' },
   cornersDotOptions: { color: '#f05252', type: 'dot' },
   imageOptions: { margin: 4 },
-  style: { borderRadius: '22pxpx', background: '#ffffff' }
+  style: { borderRadius: '22px', background: '#ffffff' }
 }
 
 export const allPresets = [
