@@ -493,6 +493,18 @@ function uploadImage() {
               v-model="image"
             />
           </div>
+          <div class="w-full">
+            <label for="image-margin">
+              {{ $t('Image margin (px)') }}
+            </label>
+            <input
+              class="text-input"
+              id="image-margin"
+              type="number"
+              placeholder="0"
+              v-model="imageMargin"
+            />
+          </div>
           <div class="flex w-full flex-row items-center gap-2">
             <label>{{ $t('Background color') }}</label>
             <input id="dotsColor" type="color" class="color-input" v-model="styleBackground" />
@@ -507,18 +519,6 @@ function uploadImage() {
               type="number"
               placeholder="width in pixels"
               v-model="width"
-            />
-          </div>
-          <div class="w-full">
-            <label for="image-margin">
-              {{ $t('Image margin (px)') }}
-            </label>
-            <input
-              class="text-input"
-              id="image-margin"
-              type="number"
-              placeholder="0"
-              v-model="imageMargin"
             />
           </div>
           <div class="w-full">
