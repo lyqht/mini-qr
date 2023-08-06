@@ -164,8 +164,7 @@ export const supabasePreset: Preset = {
   ...defaultPresetOptions,
   name: 'Supabase Preset',
   data: 'https://supabase.com',
-  image:
-    'https://supabase.com/_next/image?url=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F54469796&w=3840&q=75',
+  image: 'https://api.iconify.design/logos:supabase-icon.svg',
   dotsOptions: {
     color: '#3ecf8e',
     type: 'classy-rounded'
@@ -179,7 +178,7 @@ export const supabasePreset: Preset = {
     type: 'square'
   },
   imageOptions: {
-    margin: 0
+    margin: 8
   },
   style: {
     borderRadius: '12px',
