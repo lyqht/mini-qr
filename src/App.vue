@@ -258,20 +258,6 @@ function uploadImage() {
     <div class="w-full md:w-5/6">
       <div class="mb-8 flex w-full flex-col items-center justify-center">
         <h1 class="text-4xl">{{ $t('Styled QR Code Generator') }}</h1>
-        <div class="mt-2 flex flex-row items-center justify-center gap-2">
-          <button class="secondary-button m-0 rounded-lg p-2" @click="randomizeStyleSettings">
-            {{ $t('Randomize style') }}
-          </button>
-          <select
-            class="secondary-button cursor-pointer text-center"
-            :aria-label="$t('QR code preset')"
-            v-model="selectedPreset"
-          >
-            <option v-for="(preset, index) in allPresets" :key="index" :value="preset">
-              {{ preset.name }}
-            </option>
-          </select>
-        </div>
       </div>
       <div class="flex flex-col-reverse items-start justify-center gap-4 md:flex-row md:gap-12">
         <div
@@ -429,6 +415,38 @@ function uploadImage() {
           </div>
         </div>
         <div id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
+          <div class="mt-2 flex flex-row items-center justify-center gap-2">
+            <div class="flex flex-row items-center gap-2">
+              <label for="preset-selector">{{ $t('Select a Preset') }}</label>
+              <select
+                id="preset-selector"
+                class="secondary-button cursor-pointer text-center"
+                :aria-label="$t('QR code preset')"
+                v-model="selectedPreset"
+              >
+                <option v-for="(preset, index) in allPresets" :key="index" :value="preset">
+                  {{ $t(preset.name) }}
+                </option>
+              </select>
+              <button
+                class="icon-button"
+                @click="randomizeStyleSettings"
+                :aria-label="$t('Randomize style')"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="40"
+                  height="32"
+                  viewBox="0 0 640 512"
+                >
+                  <path
+                    fill="#888888"
+                    d="M274.9 34.3c-28.1-28.1-73.7-28.1-101.8 0L34.3 173.1c-28.1 28.1-28.1 73.7 0 101.8l138.8 138.8c28.1 28.1 73.7 28.1 101.8 0l138.8-138.8c28.1-28.1 28.1-73.7 0-101.8L274.9 34.3zM200 224a24 24 0 1 1 48 0a24 24 0 1 1-48 0zM96 200a24 24 0 1 1 0 48a24 24 0 1 1 0-48zm128 176a24 24 0 1 1 0-48a24 24 0 1 1 0 48zm128-176a24 24 0 1 1 0 48a24 24 0 1 1 0-48zm-128-80a24 24 0 1 1 0-48a24 24 0 1 1 0 48zm96 328c0 35.3 28.7 64 64 64h192c35.3 0 64-28.7 64-64V256c0-35.3-28.7-64-64-64H461.7c11.6 36 3.1 77-25.4 105.5L320 413.8V448zm160-120a24 24 0 1 1 0 48a24 24 0 1 1 0-48z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
           <div class="w-full">
             <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="data">
               {{ $t('Data to encode') }}
@@ -479,10 +497,19 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="image-margin">
+            <label
+              class="mb-2 block text-sm font-bold text-gray-700 dark:text-white"
+              for="image-margin"
+            >
               {{ $t('Image margin (px)') }}
             </label>
-            <input class="text-input" id="image-margin" type="number" placeholder="0" v-model="imageMargin" />
+            <input
+              class="text-input"
+              id="image-margin"
+              type="number"
+              placeholder="0"
+              v-model="imageMargin"
+            />
           </div>
           <div class="w-full">
             <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-white" for="height">
@@ -617,7 +644,8 @@ function uploadImage() {
 }
 
 .color-input {
-  @apply bg-transparent shadow p-0 border rounded box-border text-zinc-700 dark:text-zinc-100 focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+  @apply outline-none bg-transparent shadow p-0 border rounded box-border text-zinc-700 dark:text-zinc-100;
+  @apply focus-visible:shadow focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
 }
 
 .vertical-border {
@@ -626,11 +654,15 @@ function uploadImage() {
 
 .button {
   @apply outline-none bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200 shadow-sm hover:shadow transition-shadow rounded-lg p-2;
-  @apply focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+  @apply focus-visible:shadow-md focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
 }
 
 .secondary-button {
   @apply outline-none p-1.5 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-md hover:shadow transition-shadow rounded-lg;
-  @apply focus-visible:shadow-md dark:focus-visible:ring-1 focus-visible:ring-white;
+  @apply focus-visible:shadow focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+}
+
+.icon-button {
+  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
 }
 </style>
