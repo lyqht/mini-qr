@@ -8,20 +8,14 @@
     "build": "vite build",
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore --ignore-pattern \"*.json\"",
-    "format": "prettier --write src/ locales/",
+    "lint": "eslint --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore --ignore-pattern \"*.json\"",
+    "format": "prettier --write",
     "postinstall": "husky install"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json}": [
+    "*.{vue,js,jsx,ts,tsx,json}": [
       "yarn lint",
-      "yarn format",
-      "git add"
+      "yarn format"
     ]
   },
   "dependencies": {
