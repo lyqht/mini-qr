@@ -1,7 +1,6 @@
 import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
 import type { StyledQRCodeProps } from '@/components/StyledQRCode.vue'
 import type { CornerDotType, DrawType } from 'qr-code-styling'
-import { i18n } from './i18n'
 
 export interface CustomStyleProps {
   borderRadius?: string
@@ -30,7 +29,7 @@ const defaultPresetOptions = {
 
 export const defaultPreset: Preset = {
   ...defaultPresetOptions,
-  name: i18n.global.t('Default Preset'),
+  name: 'Default Preset',
   data: 'https://github.com/lyqht',
   image: PLACEHOLDER_IMAGE_URL,
   dotsOptions: {
@@ -53,7 +52,7 @@ export const defaultPreset: Preset = {
 
 export const presetBlue: Preset = {
   ...defaultPreset,
-  name: i18n.global.t('Basic Blue Preset'),
+  name: 'Basic Blue Preset',
   dotsOptions: {
     color: '#0000ff',
     type: 'square'
@@ -74,7 +73,7 @@ export const presetBlue: Preset = {
 
 export const presetRed: Preset = {
   ...defaultPreset,
-  name: i18n.global.t('Basic Red Preset'),
+  name: 'Basic Red Preset',
   dotsOptions: {
     color: '#ff0000',
     type: 'dots'
@@ -95,7 +94,7 @@ export const presetRed: Preset = {
 
 export const presetGreen: Preset = {
   ...defaultPreset,
-  name: i18n.global.t('Basic Green Preset'),
+  name: 'Basic Green Preset',
   dotsOptions: {
     color: '#385E1C',
     type: 'square'
@@ -118,7 +117,7 @@ export const presetGreen: Preset = {
 
 export const padletPreset: Preset = {
   ...defaultPresetOptions,
-  name: i18n.global.t('Padlet Preset'),
+  name: 'Padlet Preset',
   data: 'https://padlet.com/',
   image:
     'https://v1.padlet.pics/3/image.webp?t=c_limit%2Cdpr_2%2Ch_665%2Cw_835&url=https%3A%2F%2Fugc.padletcdn.com%2Fuploads%2Fpadlet-uploads%2F80961422%2Fe899b39fcf2f3e705ccfa017cdb49c26%2FCrane.svg%3Fexpiry_token%3D5WaHZRdGG3LkUVQGy3SZ-zdRtq89aJeottSBaF_Hii8EGDVBG-vnLc5ZfL_2GiKosWMOCkHArMcc8LorETHcZyy8t7O3lxfMxdmHX_xkMWI2Az-OSmg73voj8ousyfUWoclzpPE-oHXzShXlf3VmK_rLSohun5uc1D8yzsF1tGma3N8COdaM4Dt-URPZL9mx2qyW6KqLKUV8DrMHU1usGw%3D%3D',
@@ -133,7 +132,7 @@ export const padletPreset: Preset = {
 
 export const vercelLightPreset: Preset = {
   ...defaultPresetOptions,
-  name: i18n.global.t('Vercel Light Preset'),
+  name: 'Vercel Light Preset',
   data: 'https://vercel.com',
   image: 'https://api.iconify.design/ion:logo-vercel.svg?color=%23000',
   dotsOptions: { color: '#000000', type: 'classy' },
@@ -148,7 +147,7 @@ export const vercelLightPreset: Preset = {
 
 export const vercelDarkPreset: Preset = {
   ...defaultPresetOptions,
-  name: i18n.global.t('Vercel Dark Preset'),
+  name: 'Vercel Dark Preset',
   data: 'https://vercel.com',
   image: 'https://api.iconify.design/ion:logo-vercel.svg?color=%23FFF',
   dotsOptions: { color: '#FFFFFF', type: 'classy' },
@@ -163,7 +162,7 @@ export const vercelDarkPreset: Preset = {
 
 export const supabasePreset: Preset = {
   ...defaultPresetOptions,
-  name: i18n.global.t('Supabase Preset'),
+  name: 'Supabase Preset',
   data: 'https://supabase.com',
   image:
     'https://supabase.com/_next/image?url=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F54469796&w=3840&q=75',
@@ -190,7 +189,7 @@ export const supabasePreset: Preset = {
 
 export const uiliciousPreset = {
   ...defaultPresetOptions,
-  name: i18n.global.t('UIlicious Preset'),
+  name: 'UIlicious Preset',
   data: 'https://uilicious.com/',
   image:
     'data:image/svg+xml;base64,PHN2ZyAKIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIgogd2lkdGg9IjE0NW1tIiBoZWlnaHQ9IjE1MG1tIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiAgZmlsbD0icmdiKDM3LCAzNywgMzcpIgogZD0iTTIwNi4wMDAsNDQzLjAwMCBMMjA2LjAwMCw1NjEuMDAwIEwwLjAwMCwzOTguMDAwIEwwLjAwMCwyODAuMDAwIEwyMDYuMDAwLDQ0My4wMDAgWiIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiICBmaWxsPSJyZ2IoMTcsIDE3LCAxNykiCiBkPSJNNTQ1LjAwMCwyMzYuMDAwIEwyMDYuMDAwLDU2MS4wMDAgTDIwNi4wMDAsNDQzLjAwMCBMNTQ1LjAwMCwxMTguMDAwIEw1NDUuMDAwLDIzNi4wMDAgWiIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiICBmaWxsPSJyZ2IoMCwgMTY2LCA4MSkiCiBkPSJNMjA2LjAwMCwzMjYuMDAwIEwyMDYuMDAwLDQ0NC4wMDAgTDAuMDAwLDI4MS4wMDAgTDAuMDAwLDE2My4wMDAgTDIwNi4wMDAsMzI2LjAwMCBaIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgIGZpbGw9InJnYigxNiwgMTM5LCA3NikiCiBkPSJNNTQ1LjAwMCwxMTkuMDAwIEwyMDYuMDAwLDQ0NC4wMDAgTDIwNi4wMDAsMzI2LjAwMCBMNTQ1LjAwMCwxLjAwMCBMNTQ1LjAwMCwxMTkuMDAwIFoiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiAgZmlsbD0icmdiKDEzOCwgMjEzLCAxNjUpIgogZD0iTTU0Ni4wMDAsMC4wMDAgTDIwNi4wMDAsMzI3LjAwMCBMMC4wMDAsMTYzLjAwMCBMNTQ2LjAwMCwwLjAwMCBaIi8+Cjwvc3ZnPg==',
