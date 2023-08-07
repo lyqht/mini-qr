@@ -1,6 +1,6 @@
 import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
 import type { StyledQRCodeProps } from '@/components/StyledQRCode.vue'
-import type { CornerDotType, DrawType } from 'qr-code-styling'
+import type { DrawType } from 'qr-code-styling'
 
 export interface CustomStyleProps {
   borderRadius?: string
@@ -47,69 +47,6 @@ export const defaultPreset: Preset = {
   style: {
     borderRadius: '24px',
     background: '#697d80'
-  }
-}
-
-export const presetBlue: Preset = {
-  ...defaultPreset,
-  name: 'Basic Blue Preset',
-  dotsOptions: {
-    color: '#0000ff',
-    type: 'square'
-  },
-  cornersSquareOptions: {
-    color: '#0000ff',
-    type: 'square'
-  },
-  cornersDotOptions: {
-    color: '#0000ff',
-    type: 'extra-rounded' as CornerDotType
-  },
-  style: {
-    borderRadius: '16px',
-    background: '#a0a0f0'
-  }
-}
-
-export const presetRed: Preset = {
-  ...defaultPreset,
-  name: 'Basic Red Preset',
-  dotsOptions: {
-    color: '#ff0000',
-    type: 'dots'
-  },
-  cornersSquareOptions: {
-    color: '#ff0000',
-    type: 'dot'
-  },
-  cornersDotOptions: {
-    color: '#ff0000',
-    type: 'extra-rounded' as CornerDotType
-  },
-  style: {
-    borderRadius: '10px',
-    background: '#f0a0a0'
-  }
-}
-
-export const presetGreen: Preset = {
-  ...defaultPreset,
-  name: 'Basic Green Preset',
-  dotsOptions: {
-    color: '#385E1C',
-    type: 'square'
-  },
-  cornersSquareOptions: {
-    color: '#385E1C',
-    type: 'square'
-  },
-  cornersDotOptions: {
-    color: '#385E1C',
-    type: 'dot'
-  },
-  style: {
-    borderRadius: '20px',
-    background: '#a0f0a0'
   }
 }
 
@@ -235,8 +172,5 @@ export const allPresets = [
   vercelLightPreset,
   vercelDarkPreset,
   uiliciousPreset,
-  pejuangKodePreset,
-  presetBlue,
-  presetRed,
-  presetGreen
+  pejuangKodePreset
 ]
