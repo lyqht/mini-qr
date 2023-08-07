@@ -221,12 +221,14 @@ export const pejuangKodePreset = {
 
 export const allPresets = [
   defaultPreset,
-  padletPreset,
-  uiliciousPreset,
-  supabasePreset,
-  vercelLightPreset,
-  vercelDarkPreset,
-  vueJsPreset,
-  vuei18nPreset,
-  pejuangKodePreset
+  ...[
+    padletPreset,
+    uiliciousPreset,
+    supabasePreset,
+    vercelLightPreset,
+    vercelDarkPreset,
+    vueJsPreset,
+    vuei18nPreset,
+    pejuangKodePreset
+  ].sort((a, b) => a.name.localeCompare(b.name))
 ]
