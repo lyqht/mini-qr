@@ -3,7 +3,7 @@
 
 ![App preview](public/app_preview.png)
 
-A customizable QR code generator that allows you to create beautiful and unique QR codes with various styles and colors.
+A customizable QR code generator to create beautiful and unique QR codes.
 
 ## Features
 
