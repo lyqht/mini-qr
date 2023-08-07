@@ -10,8 +10,9 @@ import { computed, ref, watch } from 'vue'
 import 'vue-i18n'
 import { getNumericCSSValue } from './utils/formatting'
 import { sortedLocales } from './utils/language'
-import { defaultPreset, allPresets } from './utils/presets'
+import { allPresets } from './utils/presets'
 
+const defaultPreset = allPresets[0]
 const data = ref(defaultPreset.data)
 const image = ref(defaultPreset.image)
 const width = ref(defaultPreset.width)
@@ -425,7 +426,7 @@ function uploadImage() {
                 v-model="selectedPreset"
               >
                 <option v-for="(preset, index) in allPresets" :key="index" :value="preset">
-                  {{ $t(preset.name) }}
+                  {{ preset.name }}
                 </option>
               </select>
               <button
