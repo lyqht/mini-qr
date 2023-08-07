@@ -213,6 +213,21 @@ export const uiliciousPreset = {
   }
 }
 
+export const pejuangKodePreset = {
+  ...defaultPresetOptions,
+  name: 'Pejuang Kode Preset',
+  data: 'https://docs.zavi.family/',
+  image: 'https://docs.zavi.family/images/pejuang-kode-logo.png',
+  width: 400,
+  height: 400,
+  margin: 0,
+  dotsOptions: { color: '#252f3f', type: 'classy-rounded' },
+  cornersSquareOptions: { color: '#252f3f', type: 'dot' },
+  cornersDotOptions: { color: '#f05252', type: 'dot' },
+  imageOptions: { margin: -1 },
+  style: { borderRadius: '22px', background: '#ffffff' }
+}
+
 export const allPresets = [
   defaultPreset,
   padletPreset,
@@ -220,6 +235,7 @@ export const allPresets = [
   vercelLightPreset,
   vercelDarkPreset,
   uiliciousPreset,
+  pejuangKodePreset,
   presetBlue,
   presetRed,
   presetGreen
