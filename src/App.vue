@@ -10,8 +10,9 @@ import { computed, ref, watch } from 'vue'
 import 'vue-i18n'
 import { getNumericCSSValue } from './utils/formatting'
 import { sortedLocales } from './utils/language'
-import { defaultPreset, allPresets } from './utils/presets'
+import { allPresets } from './utils/presets'
 
+const defaultPreset = allPresets[0]
 const data = ref(defaultPreset.data)
 const image = ref(defaultPreset.image)
 const width = ref(defaultPreset.width)
@@ -425,7 +426,7 @@ function uploadImage() {
                 v-model="selectedPreset"
               >
                 <option v-for="(preset, index) in allPresets" :key="index" :value="preset">
-                  {{ $t(preset.name) }}
+                  {{ preset.name }}
                 </option>
               </select>
               <button
@@ -493,21 +494,33 @@ function uploadImage() {
               v-model="image"
             />
           </div>
-          <div class="w-full">
-            <label for="image-margin">
-              {{ $t('Image margin (px)') }}
-            </label>
-            <input
-              class="text-input"
-              id="image-margin"
-              type="number"
-              placeholder="0"
-              v-model="imageMargin"
-            />
-          </div>
-          <div class="flex w-full flex-row items-center gap-2">
-            <label>{{ $t('Background color') }}</label>
-            <input id="dotsColor" type="color" class="color-input" v-model="styleBackground" />
+          <div id="color-settings" class="flex w-full flex-row flex-wrap gap-4">
+            <div class="flex flex-row items-center gap-2">
+              <label>{{ $t('Background color') }}</label>
+              <input id="dotsColor" type="color" class="color-input" v-model="styleBackground" />
+            </div>
+            <div class="flex flex-row items-center gap-2">
+              <label>{{ $t('Dots color') }}</label>
+              <input id="dotsColor" type="color" class="color-input" v-model="dotsOptionsColor" />
+            </div>
+            <div class="flex flex-row items-center gap-2">
+              <label>{{ $t('Corners Square color') }}</label>
+              <input
+                id="cornersSquareColor"
+                type="color"
+                class="color-input"
+                v-model="cornersSquareOptionsColor"
+              />
+            </div>
+            <div class="flex flex-row items-center gap-2">
+              <label>{{ $t('Corners Dot color') }}</label>
+              <input
+                id="cornersDotColor"
+                type="color"
+                class="color-input"
+                v-model="cornersDotOptionsColor"
+              />
+            </div>
           </div>
           <div class="w-full">
             <label for="width">
@@ -540,6 +553,18 @@ function uploadImage() {
             <input class="text-input" id="margin" type="number" placeholder="0" v-model="margin" />
           </div>
           <div class="w-full">
+            <label for="image-margin">
+              {{ $t('Image margin (px)') }}
+            </label>
+            <input
+              class="text-input"
+              id="image-margin"
+              type="number"
+              placeholder="0"
+              v-model="imageMargin"
+            />
+          </div>
+          <div class="w-full">
             <label for="margin">
               {{ $t('Border radius (px)') }}
             </label>
@@ -551,75 +576,65 @@ function uploadImage() {
               v-model="styleBorderRadius"
             />
           </div>
-          <div class="flex w-full flex-row items-center gap-2">
-            <label>{{ $t('Dots color') }}</label>
-            <input id="dotsColor" type="color" class="color-input" v-model="dotsOptionsColor" />
-          </div>
-          <div class="w-full">
-            <label>{{ $t('Dots type') }}</label>
-            <div
-              class="radiogroup"
-              v-for="type in [
-                'dots',
-                'rounded',
-                'classy',
-                'classy-rounded',
-                'square',
-                'extra-rounded'
-              ]"
-              :key="type"
-            >
-              <input
-                :id="'dotsOptionsType-' + type"
-                type="radio"
-                v-model="dotsOptionsType"
-                :value="type"
-              />
-              <label :for="'dotsOptionsType-' + type">{{ $t(type) }}</label>
+          <div
+            id="dots-squares-settings"
+            class="mb-4 flex w-full flex-col flex-wrap gap-6 md:flex-row"
+          >
+            <div class="flex-1">
+              <label>{{ $t('Dots type') }}</label>
+              <div
+                class="radiogroup"
+                v-for="type in [
+                  'dots',
+                  'rounded',
+                  'classy',
+                  'classy-rounded',
+                  'square',
+                  'extra-rounded'
+                ]"
+                :key="type"
+              >
+                <input
+                  :id="'dotsOptionsType-' + type"
+                  type="radio"
+                  v-model="dotsOptionsType"
+                  :value="type"
+                />
+                <label :for="'dotsOptionsType-' + type">{{ $t(type) }}</label>
+              </div>
             </div>
-          </div>
-
-          <div class="flex w-full flex-row items-center gap-2">
-            <label>{{ $t('Corners Square color') }}</label>
-            <input
-              id="cornersSquareColor"
-              type="color"
-              class="color-input"
-              v-model="cornersSquareOptionsColor"
-            />
-          </div>
-          <div class="w-full">
-            <label>{{ $t('Corners Square type') }}</label>
-            <div class="radiogroup" v-for="type in ['dot', 'square', 'extra-rounded']" :key="type">
-              <input
-                :id="'cornersSquareOptionsType-' + type"
-                type="radio"
-                v-model="cornersSquareOptionsType"
-                :value="type"
-              />
-              <label :for="'cornersSquareOptionsType-' + type">{{ $t(type) }}</label>
+            <div class="flex-1">
+              <label>{{ $t('Corners Square type') }}</label>
+              <div
+                class="radiogroup"
+                v-for="type in ['dot', 'square', 'extra-rounded']"
+                :key="type"
+              >
+                <input
+                  :id="'cornersSquareOptionsType-' + type"
+                  type="radio"
+                  v-model="cornersSquareOptionsType"
+                  :value="type"
+                />
+                <label :for="'cornersSquareOptionsType-' + type">{{ $t(type) }}</label>
+              </div>
             </div>
-          </div>
-
-          <div class="flex w-full flex-row items-center gap-2">
-            <label>{{ $t('Corners Dot color') }}</label>
-            <input
-              id="cornersDotColor"
-              type="color"
-              class="color-input"
-              v-model="cornersDotOptionsColor"
-            />
-          </div>
-          <div class="w-full">
-            <label>{{ $t('Corners Dot type') }}</label>
-            <div class="radiogroup" role="radiogroup" v-for="type in ['dot', 'square']" :key="type">
-              <input
-                :id="'cornersDotOptionsType-' + type"
-                type="radio"
-                v-model="cornersDotOptionsType"
-                :value="type"
-              />
-              <label :for="'cornersDotOptionsType-' + type">{{ $t(type) }}</label>
+            <div class="flex-1">
+              <label>{{ $t('Corners Dot type') }}</label>
+              <div
+                class="radiogroup"
+                role="radiogroup"
+                v-for="type in ['dot', 'square']"
+                :key="type"
+              >
+                <input
+                  :id="'cornersDotOptionsType-' + type"
+                  type="radio"
+                  v-model="cornersDotOptionsType"
+                  :value="type"
+                />
+                <label :for="'cornersDotOptionsType-' + type">{{ $t(type) }}</label>
+              </div>
             </div>
           </div>
         </div>

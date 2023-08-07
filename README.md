@@ -11,6 +11,8 @@ A customizable QR code generator to create beautiful and unique QR codes.
     <img width="100" src="public/presets/supabase.png" />
     <img width="100" src="public/presets/vercel-light.png" />
     <img width="100" src="public/presets/uilicious.png" />
+    <img width="100" src="public/presets/vuejs.png" />
+    <img width="100" src="public/presets/vuei18n.png" />
 </div>
 
 ## Features
