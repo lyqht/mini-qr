@@ -22,7 +22,17 @@ Misc/Fixes:
 ## V0.2
 
 Feat:
-- Presets: Pre-crafted QR code styles are available as immediate usage/ reference
+- Presets: Pre-crafted QR code styles are available as immediate usage/ reference. Current presets available: padletPreset, uiliciousPreset, supabasePreset, vercelLightPreset, vercelDarkPreset.
 
 Misc/Fixes:
 - Refactoring of styles
+
+## V0.3
+
+New presets:
+- vueJsPreset, vuei18nPreset, pejuangKodePreset
+
+Misc/Fixes:
+- Reorder inputs for colors to be together
+- Improve styling for desktop using flex-wrap
+- Sort presets by alphabetical order except for default
