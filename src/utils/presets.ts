@@ -154,6 +154,32 @@ export const vuei18nPreset = {
   }
 }
 
+export const vueJsPreset = {
+  ...defaultPresetOptions,
+  name: 'VueJS',
+  data: 'https://vuejs.org/',
+  image: 'https://api.iconify.design/logos:vue.svg',
+  dotsOptions: {
+    color: '#35495e',
+    type: 'rounded'
+  },
+  cornersSquareOptions: {
+    color: '#40b883',
+    type: 'extra-rounded'
+  },
+  cornersDotOptions: {
+    color: '#40b883',
+    type: 'dot'
+  },
+  imageOptions: {
+    margin: 2
+  },
+  style: {
+    borderRadius: '12px',
+    background: '#ffffff'
+  }
+}
+
 // Individual presets
 
 export const defaultPreset: Preset = {
@@ -196,10 +222,11 @@ export const pejuangKodePreset = {
 export const allPresets = [
   defaultPreset,
   padletPreset,
+  uiliciousPreset,
   supabasePreset,
   vercelLightPreset,
   vercelDarkPreset,
-  uiliciousPreset,
+  vueJsPreset,
   vuei18nPreset,
   pejuangKodePreset
 ]
