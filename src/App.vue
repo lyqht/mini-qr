@@ -263,7 +263,7 @@ function uploadImage() {
       <div class="flex flex-col-reverse items-start justify-center gap-4 md:flex-row md:gap-12">
         <div
           id="main-content"
-          class="flex w-full shrink-0 flex-col items-center justify-center md:w-fit"
+          class="sticky top-0 flex w-full shrink-0 flex-col items-center justify-center p-4 md:w-fit"
         >
           <div id="qr-code-container">
             <div
