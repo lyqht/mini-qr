@@ -590,7 +590,7 @@ function uploadImage() {
             id="dots-squares-settings"
             class="mb-4 flex w-full flex-col flex-wrap gap-6 md:flex-row"
           >
-            <fieldset class="flex-1" role="radiogroup">
+            <fieldset class="flex-1" role="radiogroup" tabindex="0">
               <legend>{{ $t('Dots type') }}</legend>
               <div
                 class="radiogroup"
@@ -613,7 +613,7 @@ function uploadImage() {
                 <label :for="'dotsOptionsType-' + type">{{ $t(type) }}</label>
               </div>
             </fieldset>
-            <fieldset class="flex-1" role="radiogroup">
+            <fieldset class="flex-1" role="radiogroup" tabindex="0">
               <legend>{{ $t('Corners Square type') }}</legend>
               <div
                 class="radiogroup"
@@ -629,7 +629,7 @@ function uploadImage() {
                 <label :for="'cornersSquareOptionsType-' + type">{{ $t(type) }}</label>
               </div>
             </fieldset>
-            <fieldset class="flex-1" role="radiogroup">
+            <fieldset class="flex-1" role="radiogroup" tabindex="0">
               <legend>{{ $t('Corners Dot type') }}</legend>
               <div class="radiogroup" v-for="type in ['dot', 'square']" :key="type">
                 <input
