@@ -221,7 +221,7 @@ function uploadImage() {
 <template>
   <main class="relative grid place-items-center px-6 py-20 sm:p-8" role="main">
     <div class="absolute end-4 top-4 flex flex-row items-center gap-4">
-      <form class="flex flex-row items-center">
+      <div class="flex flex-row items-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
           <g
             fill="none"
@@ -240,14 +240,19 @@ function uploadImage() {
           class="secondary-button cursor-pointer text-center"
           id="locale-select"
           v-model="$i18n.locale"
+          :aria-label="$t('Change language')"
         >
           <option v-for="(locale, index) in sortedLocales" :key="index" :value="locale">
             {{ $t(locale) }}
           </option>
         </select>
-      </form>
+      </div>
       <div class="vertical-border"></div>
-      <a class="icon-button" href="https://github.com/lyqht/styled-qr-code-generator">
+      <a
+        class="icon-button"
+        href="https://github.com/lyqht/styled-qr-code-generator"
+        :aria-label="$t('GitHub repository for this project')"
+      >
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
           <path
             fill="#abcbca"
@@ -455,7 +460,7 @@ function uploadImage() {
             <textarea
               name="data"
               class="text-input"
-              id="url"
+              id="data"
               rows="2"
               :placeholder="$t('data to encode e.g. a URL or a string')"
               v-model="data"
@@ -488,7 +493,7 @@ function uploadImage() {
             <textarea
               name="image-url"
               class="text-input"
-              id="url"
+              id="image-url"
               rows="1"
               :placeholder="$t('Logo image URL')"
               v-model="image"
@@ -496,26 +501,31 @@ function uploadImage() {
           </div>
           <div id="color-settings" class="flex w-full flex-row flex-wrap gap-4">
             <div class="flex flex-row items-center gap-2">
-              <label>{{ $t('Background color') }}</label>
-              <input id="dotsColor" type="color" class="color-input" v-model="styleBackground" />
-            </div>
-            <div class="flex flex-row items-center gap-2">
-              <label>{{ $t('Dots color') }}</label>
-              <input id="dotsColor" type="color" class="color-input" v-model="dotsOptionsColor" />
-            </div>
-            <div class="flex flex-row items-center gap-2">
-              <label>{{ $t('Corners Square color') }}</label>
+              <label for="background-color">{{ $t('Background color') }}</label>
               <input
-                id="cornersSquareColor"
+                id="background-color"
+                type="color"
+                class="color-input"
+                v-model="styleBackground"
+              />
+            </div>
+            <div class="flex flex-row items-center gap-2">
+              <label for="dots-color">{{ $t('Dots color') }}</label>
+              <input id="dots-color" type="color" class="color-input" v-model="dotsOptionsColor" />
+            </div>
+            <div class="flex flex-row items-center gap-2">
+              <label for="corners-square-color">{{ $t('Corners Square color') }}</label>
+              <input
+                id="corners-square-color"
                 type="color"
                 class="color-input"
                 v-model="cornersSquareOptionsColor"
               />
             </div>
             <div class="flex flex-row items-center gap-2">
-              <label>{{ $t('Corners Dot color') }}</label>
+              <label for="corners-dot-color">{{ $t('Corners Dot color') }}</label>
               <input
-                id="cornersDotColor"
+                id="corners-dot-color"
                 type="color"
                 class="color-input"
                 v-model="cornersDotOptionsColor"
@@ -565,12 +575,12 @@ function uploadImage() {
             />
           </div>
           <div class="w-full">
-            <label for="margin">
+            <label for="border-radius">
               {{ $t('Border radius (px)') }}
             </label>
             <input
               class="text-input"
-              id="margin"
+              id="border-radius"
               type="number"
               placeholder="24"
               v-model="styleBorderRadius"
@@ -580,8 +590,8 @@ function uploadImage() {
             id="dots-squares-settings"
             class="mb-4 flex w-full flex-col flex-wrap gap-6 md:flex-row"
           >
-            <div class="flex-1">
-              <label>{{ $t('Dots type') }}</label>
+            <fieldset class="flex-1" role="radiogroup">
+              <legend>{{ $t('Dots type') }}</legend>
               <div
                 class="radiogroup"
                 v-for="type in [
@@ -602,9 +612,9 @@ function uploadImage() {
                 />
                 <label :for="'dotsOptionsType-' + type">{{ $t(type) }}</label>
               </div>
-            </div>
-            <div class="flex-1">
-              <label>{{ $t('Corners Square type') }}</label>
+            </fieldset>
+            <fieldset class="flex-1" role="radiogroup">
+              <legend>{{ $t('Corners Square type') }}</legend>
               <div
                 class="radiogroup"
                 v-for="type in ['dot', 'square', 'extra-rounded']"
@@ -618,15 +628,10 @@ function uploadImage() {
                 />
                 <label :for="'cornersSquareOptionsType-' + type">{{ $t(type) }}</label>
               </div>
-            </div>
-            <div class="flex-1">
-              <label>{{ $t('Corners Dot type') }}</label>
-              <div
-                class="radiogroup"
-                role="radiogroup"
-                v-for="type in ['dot', 'square']"
-                :key="type"
-              >
+            </fieldset>
+            <fieldset class="flex-1" role="radiogroup">
+              <legend>{{ $t('Corners Dot type') }}</legend>
+              <div class="radiogroup" v-for="type in ['dot', 'square']" :key="type">
                 <input
                   :id="'cornersDotOptionsType-' + type"
                   type="radio"
@@ -635,7 +640,7 @@ function uploadImage() {
                 />
                 <label :for="'cornersDotOptionsType-' + type">{{ $t(type) }}</label>
               </div>
-            </div>
+            </fieldset>
           </div>
         </div>
       </div>
@@ -644,7 +649,8 @@ function uploadImage() {
 </template>
 
 <style lang="postcss" scoped>
-label {
+label,
+legend {
   @apply text-gray-700 dark:text-gray-100 text-lg font-semibold;
 }
 
