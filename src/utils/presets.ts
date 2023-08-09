@@ -100,7 +100,7 @@ export const supabasePreset: Preset = {
   }
 }
 
-export const uiliciousPreset = {
+export const uiliciousPreset: Preset = {
   ...defaultPresetOptions,
   name: 'UIlicious',
   data: 'https://uilicious.com/',
@@ -127,7 +127,7 @@ export const uiliciousPreset = {
   }
 }
 
-export const vuei18nPreset = {
+export const vuei18nPreset: Preset = {
   ...defaultPresetOptions,
   name: 'Vue I18n',
   data: 'https://vue-i18n.intlify.dev/',
@@ -154,7 +154,7 @@ export const vuei18nPreset = {
   }
 }
 
-export const vueJsPreset = {
+export const vueJsPreset: Preset = {
   ...defaultPresetOptions,
   name: 'VueJS',
   data: 'https://vuejs.org/',
@@ -204,7 +204,7 @@ export const defaultPreset: Preset = {
     background: '#697d80'
   }
 }
-export const pejuangKodePreset = {
+export const pejuangKodePreset: Preset = {
   ...defaultPresetOptions,
   name: 'Pejuang Kode',
   data: 'https://docs.zavi.family/',
@@ -219,7 +219,7 @@ export const pejuangKodePreset = {
   style: { borderRadius: '22px', background: '#ffffff' }
 }
 
-export const allPresets = [
+export const allPresets: Preset[] = [
   defaultPreset,
   ...[
     padletPreset,
