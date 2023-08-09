@@ -648,49 +648,46 @@ label {
   @apply text-gray-700 dark:text-gray-100 text-lg font-semibold;
 }
 
-.text-input,
-.secondary-button {
-  @apply bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow hover:shadow-md transition-shadow rounded-lg;
-}
-
-.text-input,
-input[type='color'],
-input[type='radio'],
-.button,
-.secondary-button,
-.icon-button {
-  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
-}
-
 .text-input {
+  @apply bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100;
+  @apply shadow hover:shadow-md transition-shadow rounded-lg;
+  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
   @apply resize-none appearance-none ms-1 p-4 rounded w-full;
 }
 
-.color-input {
+input[type='color'] {
+  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
   @apply bg-transparent shadow p-0 border rounded box-border text-zinc-700 dark:text-zinc-100 focus-visible:shadow;
+}
+
+input[type='radio'] {
+  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+  @apply m-3;
+}
+
+.button {
+  @apply bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200;
+  @apply shadow-sm hover:shadow p-2 focus-visible:shadow-md rounded-lg;
+  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+}
+
+.secondary-button {
+  @apply bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100;
+  @apply shadow hover:shadow-md transition-shadow rounded-lg;
+  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+  @apply outline-none p-1.5;
+}
+
+.icon-button {
+  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+  @apply outline-none hover:shadow rounded-sm;
 }
 
 .vertical-border {
   @apply h-6 bg-slate-300 dark:bg-slate-700 w-1;
 }
 
-.button {
-  @apply bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200 shadow-sm hover:shadow p-2 focus-visible:shadow-md rounded-lg;
-}
-
-.secondary-button {
-  @apply outline-none p-1.5;
-}
-
-.icon-button {
-  @apply outline-none hover:shadow rounded-sm;
-}
-
-input[type='radio'] {
-  @apply m-3;
-}
-
-.radio-group {
+.radiogroup {
   @apply flex flex-row items-center gap-1;
 }
 
