@@ -228,7 +228,7 @@ export const vueJsPreset: Preset = {
     margin: 2
   },
   style: {
-    borderRadius: '12px',
+    borderRadius: '24px',
     background: '#ffffff'
   }
 }
