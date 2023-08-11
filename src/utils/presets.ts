@@ -74,9 +74,9 @@ export const vercelDarkPreset: Preset = {
   }
 }
 
-export const supabasePreset: Preset = {
+export const supabaseGreenPreset: Preset = {
   ...defaultPresetOptions,
-  name: 'Supabase',
+  name: 'Supabase Green',
   data: 'https://supabase.com',
   image: 'https://api.iconify.design/logos:supabase-icon.svg',
   dotsOptions: {
@@ -93,6 +93,32 @@ export const supabasePreset: Preset = {
   },
   imageOptions: {
     margin: 8
+  },
+  style: {
+    borderRadius: '12px',
+    background: '#000000'
+  }
+}
+
+export const supabasePurplePreset: Preset = {
+  ...defaultPresetOptions,
+  name: 'Supabase Purple',
+  data: 'https://supabase.com',
+  image: 'https://avatars.githubusercontent.com/u/54469796',
+  dotsOptions: {
+    color: '#7700ff',
+    type: 'classy-rounded'
+  },
+  cornersSquareOptions: {
+    color: '#7700ff',
+    type: 'square'
+  },
+  cornersDotOptions: {
+    color: '#7700ff',
+    type: 'square'
+  },
+  imageOptions: {
+    margin: 0
   },
   style: {
     borderRadius: '12px',
@@ -119,11 +145,38 @@ export const uiliciousPreset: Preset = {
     type: 'square'
   },
   imageOptions: {
-    margin: 0
+    margin: 8
   },
   style: {
     borderRadius: '24px',
     background: '#ffffff'
+  }
+}
+
+export const viteConf2023Preset: Preset = {
+  ...defaultPresetOptions,
+  data: 'https://viteconf.org/23',
+  image: 'https://pbs.twimg.com/profile_images/1689531700953366528/i9_EssaZ_400x400.jpg',
+  name: 'Vite Conf 2023',
+  margin: 12,
+  dotsOptions: {
+    color: '#a661ea',
+    type: 'classy-rounded'
+  },
+  cornersSquareOptions: {
+    color: '#5d69a0',
+    type: 'square'
+  },
+  cornersDotOptions: {
+    color: '#5da5d8',
+    type: 'square'
+  },
+  imageOptions: {
+    margin: 0
+  },
+  style: {
+    borderRadius: '12px',
+    background: '#060817'
   }
 }
 
@@ -175,7 +228,7 @@ export const vueJsPreset: Preset = {
     margin: 2
   },
   style: {
-    borderRadius: '12px',
+    borderRadius: '24px',
     background: '#ffffff'
   }
 }
@@ -224,9 +277,11 @@ export const allPresets: Preset[] = [
   ...[
     padletPreset,
     uiliciousPreset,
-    supabasePreset,
+    supabaseGreenPreset,
+    supabasePurplePreset,
     vercelLightPreset,
     vercelDarkPreset,
+    viteConf2023Preset,
     vueJsPreset,
     vuei18nPreset,
     pejuangKodePreset
