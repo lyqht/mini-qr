@@ -4,18 +4,17 @@
 
 A customizable QR code generator to create beautiful and unique QR codes.
 
-
 <div style="display:flex; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:8px;">
-    <img width="100" src="public/presets/lyqht.svg" />
-    <img width="100" src="public/presets/padlet.svg" />
-    <img width="100" src="public/presets/supabase-green.svg" />
-    <img width="100" src="public/presets/supabase-purple.svg" />
-    <img width="100" src="public/presets/vercel-light.svg" />
-    <img width="100" src="public/presets/vercel-dark.svg" />
+    <a href="https://github.com/lyqht"><img width="100" src="public/presets/lyqht.svg" /></a>
+    <a href="https://www.padlet.com"><img width="100" src="public/presets/padlet.svg" /></a>
+    <a href="https://www.uilicious.com">
     <img width="100" src="public/presets/uilicious.svg" />
-    <img width="100" src="public/presets/viteconf2023.svg" />
-    <img width="100" src="public/presets/vuejs.svg" />
-    <img width="100" src="public/presets/vuei18n.svg" />
+    </a>
+    <a href="https://www.supabase.com"><img width="100" src="public/presets/supabase-green.svg" /></a>
+    <a href="https://www.vercel.com"><img width="100" src="public/presets/vercel-dark.svg" /></a>
+    <a href="https://vuejs.org/"><img width="100" src="public/presets/vuejs.svg" /></a>
+    <a href="https://vue-i18n.intlify.dev/"><img width="100" src="public/presets/vuei18n.svg" /></a>
+    <a href="https://viteconf.org/"><img width="100" src="public/presets/viteconf2023.svg" /></a>
 </div>
 
 ## Features
