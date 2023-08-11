@@ -74,9 +74,9 @@ export const vercelDarkPreset: Preset = {
   }
 }
 
-export const supabasePreset: Preset = {
+export const supabaseGreenPreset: Preset = {
   ...defaultPresetOptions,
-  name: 'Supabase',
+  name: 'Supabase Green',
   data: 'https://supabase.com',
   image: 'https://api.iconify.design/logos:supabase-icon.svg',
   dotsOptions: {
@@ -93,6 +93,32 @@ export const supabasePreset: Preset = {
   },
   imageOptions: {
     margin: 8
+  },
+  style: {
+    borderRadius: '12px',
+    background: '#000000'
+  }
+}
+
+export const supabasePurplePreset: Preset = {
+  ...defaultPresetOptions,
+  name: 'Supabase Purple',
+  data: 'https://supabase.com',
+  image: 'https://avatars.githubusercontent.com/u/54469796',
+  dotsOptions: {
+    color: '#7700ff',
+    type: 'classy-rounded'
+  },
+  cornersSquareOptions: {
+    color: '#7700ff',
+    type: 'square'
+  },
+  cornersDotOptions: {
+      color: '#7700ff',
+    type: 'square'
+  },
+  imageOptions: {
+    margin: 0
   },
   style: {
     borderRadius: '12px',
@@ -119,7 +145,7 @@ export const uiliciousPreset: Preset = {
     type: 'square'
   },
   imageOptions: {
-    margin: 0
+    margin: 8
   },
   style: {
     borderRadius: '24px',
@@ -224,7 +250,8 @@ export const allPresets: Preset[] = [
   ...[
     padletPreset,
     uiliciousPreset,
-    supabasePreset,
+    supabaseGreenPreset,
+    supabasePurplePreset,
     vercelLightPreset,
     vercelDarkPreset,
     vueJsPreset,
