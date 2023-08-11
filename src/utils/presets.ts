@@ -114,7 +114,7 @@ export const supabasePurplePreset: Preset = {
     type: 'square'
   },
   cornersDotOptions: {
-      color: '#7700ff',
+    color: '#7700ff',
     type: 'square'
   },
   imageOptions: {
@@ -150,6 +150,33 @@ export const uiliciousPreset: Preset = {
   style: {
     borderRadius: '24px',
     background: '#ffffff'
+  }
+}
+
+export const viteConf2023Preset: Preset = {
+  ...defaultPresetOptions,
+  data: 'https://viteconf.org/23',
+  image: 'https://pbs.twimg.com/profile_images/1689531700953366528/i9_EssaZ_400x400.jpg',
+  name: 'Vite Conf 2023',
+  margin: 12,
+  dotsOptions: {
+    color: '#a661ea',
+    type: 'classy-rounded'
+  },
+  cornersSquareOptions: {
+    color: '#5d69a0',
+    type: 'square'
+  },
+  cornersDotOptions: {
+    color: '#5da5d8',
+    type: 'square'
+  },
+  imageOptions: {
+    margin: 0
+  },
+  style: {
+    borderRadius: '12px',
+    background: '#060817'
   }
 }
 
@@ -254,6 +281,7 @@ export const allPresets: Preset[] = [
     supabasePurplePreset,
     vercelLightPreset,
     vercelDarkPreset,
+    viteConf2023Preset,
     vueJsPreset,
     vuei18nPreset,
     pejuangKodePreset
