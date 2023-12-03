@@ -34,7 +34,7 @@ export const padletPreset: Preset = {
   name: 'Padlet',
   data: 'https://padlet.com/',
   image:
-    'https://v1.padlet.pics/3/image.webp?t=c_limit%2Cdpr_2%2Ch_665%2Cw_835&url=https%3A%2F%2Fugc.padletcdn.com%2Fuploads%2Fpadlet-uploads%2F80961422%2Fe899b39fcf2f3e705ccfa017cdb49c26%2FCrane.svg%3Fexpiry_token%3D5WaHZRdGG3LkUVQGy3SZ-zdRtq89aJeottSBaF_Hii8EGDVBG-vnLc5ZfL_2GiKosWMOCkHArMcc8LorETHcZyy8t7O3lxfMxdmHX_xkMWI2Az-OSmg73voj8ousyfUWoclzpPE-oHXzShXlf3VmK_rLSohun5uc1D8yzsF1tGma3N8COdaM4Dt-URPZL9mx2qyW6KqLKUV8DrMHU1usGw%3D%3D',
+    'https://padlet-uploads.storage.googleapis.com/5587727/AEV1LKtFkyKgLU1DzT_Ocg/ef1210d4305560b0eb3acf6500d5099c.png',
   width: 200,
   height: 200,
   margin: 0,
