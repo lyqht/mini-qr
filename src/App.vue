@@ -7,27 +7,30 @@ import {
   IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED
 } from '@/utils/convertToImage'
 import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import 'vue-i18n'
+import { useI18n } from 'vue-i18n'
 import { getNumericCSSValue } from './utils/formatting'
 import { sortedLocales } from './utils/language'
 import { allPresets } from './utils/presets'
 
-const defaultPreset = allPresets[0]
-const data = ref(defaultPreset.data)
-const image = ref(defaultPreset.image)
-const width = ref(defaultPreset.width)
-const height = ref(defaultPreset.height)
-const margin = ref(defaultPreset.margin)
-const imageMargin = ref(defaultPreset.imageOptions.margin)
+const { t } = useI18n()
 
-const dotsOptionsColor = ref(defaultPreset.dotsOptions.color)
-const dotsOptionsType = ref(defaultPreset.dotsOptions.type)
-const cornersSquareOptionsColor = ref(defaultPreset.cornersSquareOptions.color)
-const cornersSquareOptionsType = ref(defaultPreset.cornersSquareOptions.type)
-const cornersDotOptionsColor = ref(defaultPreset.cornersDotOptions.color)
-const cornersDotOptionsType = ref(defaultPreset.cornersDotOptions.type)
-const styleBorderRadius = ref(getNumericCSSValue(defaultPreset.style.borderRadius as string))
+const defaultPreset = allPresets[0]
+const data = ref()
+const image = ref()
+const width = ref()
+const height = ref()
+const margin = ref()
+const imageMargin = ref()
+
+const dotsOptionsColor = ref()
+const dotsOptionsType = ref()
+const cornersSquareOptionsColor = ref()
+const cornersSquareOptionsType = ref()
+const cornersDotOptionsColor = ref()
+const cornersDotOptionsType = ref()
+const styleBorderRadius = ref()
 const styledBorderRadiusFormatted = computed(() => `${styleBorderRadius.value}px`)
 const styleBackground = ref(defaultPreset.style.background)
 
@@ -146,57 +149,6 @@ function downloadQRImageAsSvg() {
   }
 }
 
-function saveQRConfig() {
-  console.debug('Saving QR code config')
-  const qrCodeConfig = {
-    props: qrCodeProps.value,
-    style: style.value
-  }
-  const qrCodeConfigString = JSON.stringify(qrCodeConfig)
-  const qrCodeConfigBlob = new Blob([qrCodeConfigString], { type: 'application/json' })
-  const qrCodeConfigUrl = URL.createObjectURL(qrCodeConfigBlob)
-  const qrCodeConfigLink = document.createElement('a')
-  qrCodeConfigLink.href = qrCodeConfigUrl
-  qrCodeConfigLink.download = 'qr-code-config.json'
-  qrCodeConfigLink.click()
-}
-
-function loadQrConfig() {
-  console.debug('Loading QR code config')
-  const qrCodeConfigInput = document.createElement('input')
-  qrCodeConfigInput.type = 'file'
-  qrCodeConfigInput.accept = 'application/json'
-  qrCodeConfigInput.onchange = (event: Event) => {
-    const target = event.target as HTMLInputElement
-    if (target.files) {
-      const file = target.files[0]
-      const reader = new FileReader()
-      reader.onload = (event: ProgressEvent<FileReader>) => {
-        const target = event.target as FileReader
-        const result = target.result as string
-        const qrCodeConfig = JSON.parse(result)
-        const qrCodeProps = qrCodeConfig.props
-        const qrCodeStyle = qrCodeConfig.style
-        data.value = qrCodeProps.data
-        image.value = qrCodeProps.image
-        width.value = qrCodeProps.width
-        height.value = qrCodeProps.height
-        margin.value = qrCodeProps.margin
-        dotsOptionsColor.value = qrCodeProps.dotsOptions.color
-        dotsOptionsType.value = qrCodeProps.dotsOptions.type
-        cornersSquareOptionsColor.value = qrCodeProps.cornersSquareOptions.color
-        cornersSquareOptionsType.value = qrCodeProps.cornersSquareOptions.type
-        cornersDotOptionsColor.value = qrCodeProps.cornersDotOptions.color
-        cornersDotOptionsType.value = qrCodeProps.cornersDotOptions.type
-        styleBorderRadius.value = qrCodeStyle.borderRadius
-        styleBackground.value = qrCodeStyle.background
-      }
-      reader.readAsText(file)
-    }
-  }
-  qrCodeConfigInput.click()
-}
-
 function uploadImage() {
   console.debug('Uploading image')
   const imageInput = document.createElement('input')
@@ -217,6 +169,87 @@ function uploadImage() {
   }
   imageInput.click()
 }
+
+/* QR Config Utils */
+
+function createQrConfig() {
+  return {
+    props: qrCodeProps.value,
+    style: style.value
+  }
+}
+
+function downloadQRConfig() {
+  console.debug('Downloading QR code config')
+  const qrCodeConfig = createQrConfig()
+  const qrCodeConfigString = JSON.stringify(qrCodeConfig)
+  const qrCodeConfigBlob = new Blob([qrCodeConfigString], { type: 'application/json' })
+  const qrCodeConfigUrl = URL.createObjectURL(qrCodeConfigBlob)
+  const qrCodeConfigLink = document.createElement('a')
+  qrCodeConfigLink.href = qrCodeConfigUrl
+  qrCodeConfigLink.download = 'qr-code-config.json'
+  qrCodeConfigLink.click()
+}
+
+function saveQRConfigToLocalStorage() {
+  const qrCodeConfig = createQrConfig()
+  const qrCodeConfigString = JSON.stringify(qrCodeConfig)
+  localStorage.setItem('qrCodeConfig', qrCodeConfigString)
+}
+
+function loadQRConfig(jsonString: string, name?: string) {
+  const qrCodeConfig = JSON.parse(jsonString)
+  const qrCodeProps = qrCodeConfig.props
+  const qrCodeStyle = qrCodeConfig.style
+  const preset = {
+    ...qrCodeProps,
+    style: qrCodeStyle
+  }
+
+  selectedPreset.value = {
+    ...preset,
+    name: name ?? qrCodeProps.name
+  }
+}
+
+function loadQRConfigFromLocalStorage() {
+  const qrCodeConfigString = localStorage.getItem('qrCodeConfig')
+  if (qrCodeConfigString) {
+    console.debug('Loading QR code config from local storage')
+    loadQRConfig(qrCodeConfigString, t('Last saved locally'))
+  } else {
+    selectedPreset.value = defaultPreset
+  }
+}
+
+function loadQrConfigFromFile() {
+  console.debug('Loading QR code config')
+  const qrCodeConfigInput = document.createElement('input')
+  qrCodeConfigInput.type = 'file'
+  qrCodeConfigInput.accept = 'application/json'
+  qrCodeConfigInput.onchange = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    if (target.files) {
+      const file = target.files[0]
+      const reader = new FileReader()
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        const target = event.target as FileReader
+        const result = target.result as string
+        loadQRConfig(result, t('Loaded from file'))
+      }
+      reader.readAsText(file)
+    }
+  }
+  qrCodeConfigInput.click()
+}
+
+watch(qrCodeProps, () => {
+  saveQRConfigToLocalStorage()
+})
+
+onMounted(() => {
+  loadQRConfigFromLocalStorage()
+})
 </script>
 
 <template>
@@ -241,10 +274,10 @@ function uploadImage() {
           class="secondary-button cursor-pointer text-center"
           id="locale-select"
           v-model="$i18n.locale"
-          :aria-label="$t('Change language')"
+          :aria-label="t('Change language')"
         >
           <option v-for="(locale, index) in sortedLocales" :key="index" :value="locale">
-            {{ $t(locale) }}
+            {{ t(locale) }}
           </option>
         </select>
       </div>
@@ -252,7 +285,7 @@ function uploadImage() {
       <a
         class="icon-button"
         href="https://github.com/lyqht/styled-qr-code-generator"
-        :aria-label="$t('GitHub repository for this project')"
+        :aria-label="t('GitHub repository for this project')"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
           <path
@@ -264,7 +297,7 @@ function uploadImage() {
     </div>
     <div class="w-full md:w-5/6">
       <div class="mb-8 flex w-full flex-col items-center justify-center">
-        <h1 class="text-4xl">{{ $t('Styled QR Code Generator') }}</h1>
+        <h1 class="text-4xl">{{ t('Styled QR Code Generator') }}</h1>
       </div>
       <div class="flex flex-col-reverse items-start justify-center gap-4 md:flex-row md:gap-12">
         <div
@@ -288,7 +321,7 @@ function uploadImage() {
                 role="img"
                 aria-label="QR code"
               />
-              <p v-else>{{ $t('No data!') }}</p>
+              <p v-else>{{ t('No data!') }}</p>
             </div>
           </div>
           <div class="mt-4 flex flex-col items-center gap-2">
@@ -298,7 +331,7 @@ function uploadImage() {
                 id="copy-qr-image-button"
                 class="button flex w-fit flex-row gap-1"
                 @click="copyQRToClipboard"
-                :aria-label="$t('Copy QR Code to clipboard')"
+                :aria-label="t('Copy QR Code to clipboard')"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                   <g
@@ -314,13 +347,13 @@ function uploadImage() {
                     <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
                   </g>
                 </svg>
-                <p>{{ $t('Copy QR Code to clipboard') }}</p>
+                <p>{{ t('Copy QR Code to clipboard') }}</p>
               </button>
               <button
                 id="save-qr-code-config-button"
                 class="button flex w-fit flex-row gap-1"
-                @click="saveQRConfig"
-                :aria-label="$t('Save QR Code configuration')"
+                @click="downloadQRConfig"
+                :aria-label="t('Save QR Code configuration')"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                   <g
@@ -337,13 +370,13 @@ function uploadImage() {
                     <path d="M9.5 14.5L12 17l2.5-2.5" />
                   </g>
                 </svg>
-                <p>{{ $t('Save QR Code configuration') }}</p>
+                <p>{{ t('Save QR Code configuration') }}</p>
               </button>
               <button
                 id="load-qr-code-config-button"
                 class="button flex w-fit flex-row gap-1"
-                @click="loadQrConfig"
-                :aria-label="$t('Load QR Code configuration')"
+                @click="loadQrConfigFromFile"
+                :aria-label="t('Load QR Code configuration')"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                   <g
@@ -360,17 +393,17 @@ function uploadImage() {
                     <path d="M9.5 13.5L12 11l2.5 2.5" />
                   </g>
                 </svg>
-                <p>{{ $t('Load QR Code configuration') }}</p>
+                <p>{{ t('Load QR Code configuration') }}</p>
               </button>
             </div>
             <div id="export-options" class="pt-4">
-              <p class="pb-2">{{ $t('Export as') }}</p>
+              <p class="pb-2">{{ t('Export as') }}</p>
               <div class="flex flex-row items-center gap-2">
                 <button
                   id="download-qr-image-button-png"
                   class="button"
                   @click="downloadQRImageAsPng"
-                  :aria-label="$t('Download QR Code as PNG')"
+                  :aria-label="t('Download QR Code as PNG')"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -396,7 +429,7 @@ function uploadImage() {
                   id="download-qr-image-button-svg"
                   class="button"
                   @click="downloadQRImageAsSvg"
-                  :aria-label="$t('Download QR Code as SVG')"
+                  :aria-label="t('Download QR Code as SVG')"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -424,14 +457,22 @@ function uploadImage() {
         </div>
         <div id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
           <div>
-            <label for="preset-selector">{{ $t('Preset') }}</label>
+            <label for="preset-selector">{{ t('Preset') }}</label>
             <div class="flex flex-row items-center justify-center gap-2">
               <select
                 id="preset-selector"
                 class="secondary-button cursor-pointer text-start"
-                :aria-label="$t('QR code preset')"
+                :aria-label="t('QR code preset')"
                 v-model="selectedPreset"
               >
+                <option
+                  :key="`custom-preset`"
+                  disabled
+                  :selected="selectedPreset.name.includes('custom-')"
+                  :value="selectedPreset"
+                >
+                  {{ selectedPreset.name }}
+                </option>
                 <option v-for="(preset, index) in allPresets" :key="index" :value="preset">
                   {{ preset.name }}
                 </option>
@@ -439,7 +480,7 @@ function uploadImage() {
               <button
                 class="icon-button"
                 @click="randomizeStyleSettings"
-                :aria-label="$t('Randomize style')"
+                :aria-label="t('Randomize style')"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -457,21 +498,21 @@ function uploadImage() {
           </div>
           <div class="w-full">
             <label for="data">
-              {{ $t('Data to encode') }}
+              {{ t('Data to encode') }}
             </label>
             <textarea
               name="data"
               class="text-input"
               id="data"
               rows="2"
-              :placeholder="$t('data to encode e.g. a URL or a string')"
+              :placeholder="t('data to encode e.g. a URL or a string')"
               v-model="data"
             />
           </div>
           <div class="w-full">
             <div class="mb-2 flex flex-row items-center gap-2">
               <label for="image-url">
-                {{ $t('Logo image URL') }}
+                {{ t('Logo image URL') }}
               </label>
               <button class="icon-button flex flex-row items-center" @click="uploadImage">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -489,7 +530,7 @@ function uploadImage() {
                     <path d="M9.5 13.5L12 11l2.5 2.5" />
                   </g>
                 </svg>
-                <p>{{ $t('Upload image') }}</p>
+                <p>{{ t('Upload image') }}</p>
               </button>
             </div>
             <textarea
@@ -497,13 +538,13 @@ function uploadImage() {
               class="text-input"
               id="image-url"
               rows="1"
-              :placeholder="$t('Logo image URL')"
+              :placeholder="t('Logo image URL')"
               v-model="image"
             />
           </div>
           <div id="color-settings" class="flex w-full flex-row flex-wrap gap-4">
             <div class="flex flex-row items-center gap-2">
-              <label for="background-color">{{ $t('Background color') }}</label>
+              <label for="background-color">{{ t('Background color') }}</label>
               <input
                 id="background-color"
                 type="color"
@@ -512,11 +553,11 @@ function uploadImage() {
               />
             </div>
             <div class="flex flex-row items-center gap-2">
-              <label for="dots-color">{{ $t('Dots color') }}</label>
+              <label for="dots-color">{{ t('Dots color') }}</label>
               <input id="dots-color" type="color" class="color-input" v-model="dotsOptionsColor" />
             </div>
             <div class="flex flex-row items-center gap-2">
-              <label for="corners-square-color">{{ $t('Corners Square color') }}</label>
+              <label for="corners-square-color">{{ t('Corners Square color') }}</label>
               <input
                 id="corners-square-color"
                 type="color"
@@ -525,7 +566,7 @@ function uploadImage() {
               />
             </div>
             <div class="flex flex-row items-center gap-2">
-              <label for="corners-dot-color">{{ $t('Corners Dot color') }}</label>
+              <label for="corners-dot-color">{{ t('Corners Dot color') }}</label>
               <input
                 id="corners-dot-color"
                 type="color"
@@ -536,7 +577,7 @@ function uploadImage() {
           </div>
           <div class="w-full">
             <label for="width">
-              {{ $t('Width (px)') }}
+              {{ t('Width (px)') }}
             </label>
             <input
               class="text-input"
@@ -548,7 +589,7 @@ function uploadImage() {
           </div>
           <div class="w-full">
             <label for="height">
-              {{ $t('Height (px)') }}
+              {{ t('Height (px)') }}
             </label>
             <input
               class="text-input"
@@ -560,13 +601,13 @@ function uploadImage() {
           </div>
           <div class="w-full">
             <label for="margin">
-              {{ $t('Margin (px)') }}
+              {{ t('Margin (px)') }}
             </label>
             <input class="text-input" id="margin" type="number" placeholder="0" v-model="margin" />
           </div>
           <div class="w-full">
             <label for="image-margin">
-              {{ $t('Image margin (px)') }}
+              {{ t('Image margin (px)') }}
             </label>
             <input
               class="text-input"
@@ -578,7 +619,7 @@ function uploadImage() {
           </div>
           <div class="w-full">
             <label for="border-radius">
-              {{ $t('Border radius (px)') }}
+              {{ t('Border radius (px)') }}
             </label>
             <input
               class="text-input"
@@ -593,7 +634,7 @@ function uploadImage() {
             class="mb-4 flex w-full flex-col flex-wrap gap-6 md:flex-row"
           >
             <fieldset class="flex-1" role="radiogroup" tabindex="0">
-              <legend>{{ $t('Dots type') }}</legend>
+              <legend>{{ t('Dots type') }}</legend>
               <div
                 class="radiogroup"
                 v-for="type in [
@@ -612,11 +653,11 @@ function uploadImage() {
                   v-model="dotsOptionsType"
                   :value="type"
                 />
-                <label :for="'dotsOptionsType-' + type">{{ $t(type) }}</label>
+                <label :for="'dotsOptionsType-' + type">{{ t(type) }}</label>
               </div>
             </fieldset>
             <fieldset class="flex-1" role="radiogroup" tabindex="0">
-              <legend>{{ $t('Corners Square type') }}</legend>
+              <legend>{{ t('Corners Square type') }}</legend>
               <div
                 class="radiogroup"
                 v-for="type in ['dot', 'square', 'extra-rounded']"
@@ -628,11 +669,11 @@ function uploadImage() {
                   v-model="cornersSquareOptionsType"
                   :value="type"
                 />
-                <label :for="'cornersSquareOptionsType-' + type">{{ $t(type) }}</label>
+                <label :for="'cornersSquareOptionsType-' + type">{{ t(type) }}</label>
               </div>
             </fieldset>
             <fieldset class="flex-1" role="radiogroup" tabindex="0">
-              <legend>{{ $t('Corners Dot type') }}</legend>
+              <legend>{{ t('Corners Dot type') }}</legend>
               <div class="radiogroup" v-for="type in ['dot', 'square']" :key="type">
                 <input
                   :id="'cornersDotOptionsType-' + type"
@@ -640,7 +681,7 @@ function uploadImage() {
                   v-model="cornersDotOptionsType"
                   :value="type"
                 />
-                <label :for="'cornersDotOptionsType-' + type">{{ $t(type) }}</label>
+                <label :for="'cornersDotOptionsType-' + type">{{ t(type) }}</label>
               </div>
             </fieldset>
           </div>
