@@ -32,6 +32,7 @@ import zh from '../../locales/zh.json'
 
 export const i18n = createI18n({
   locale: 'en',
+  legacy: false,
   messages: {
     bg,
     cs,
