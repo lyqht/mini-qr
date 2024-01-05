@@ -14,7 +14,7 @@ import { getNumericCSSValue } from './utils/formatting'
 import { sortedLocales } from './utils/language'
 import { allPresets } from './utils/presets'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const defaultPreset = allPresets[0]
 const data = ref()
@@ -242,6 +242,13 @@ function loadQrConfigFromFile() {
   }
   qrCodeConfigInput.click()
 }
+
+watch(locale, () => {
+  selectedPreset.value = {
+    ...selectedPreset.value,
+    name: t(selectedPreset.value.name)
+  }
+})
 
 watch(qrCodeProps, () => {
   saveQRConfigToLocalStorage()
