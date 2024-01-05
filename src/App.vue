@@ -3,7 +3,8 @@ import StyledQRCode from '@/components/StyledQRCode.vue'
 import {
   copyImageToClipboard,
   downloadPngElement,
-  downloadSvgElement
+  downloadSvgElement,
+  IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED
 } from '@/utils/convertToImage'
 import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
 import { computed, ref, watch } from 'vue'
@@ -293,6 +294,7 @@ function uploadImage() {
           <div class="mt-4 flex flex-col items-center gap-2">
             <div class="flex flex-col items-center justify-center gap-3">
               <button
+                v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED"
                 id="copy-qr-image-button"
                 class="button flex w-fit flex-row gap-1"
                 @click="copyQRToClipboard"

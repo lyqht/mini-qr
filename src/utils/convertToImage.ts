@@ -28,20 +28,25 @@ const getResizeScaleToFit = (child: HTMLElement, width: number, height: number):
   return maxScale
 }
 
+export const IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED =
+  navigator.clipboard && navigator.clipboard.write != undefined
+
 export async function copyImageToClipboard(element: HTMLElement, options: Options) {
-  console.debug('Converting to blob')
-  const formattedOptions = getFormattedOptions(element, options)
-  domtoimage.toBlob(element, formattedOptions).then((blob: Blob) => {
-    const item = new ClipboardItem({ [blob.type]: blob })
-    navigator.clipboard.write([item]).then(
-      () => {
-        console.log('Blob copied to clipboard')
-      },
-      (error) => {
-        console.error('Error copying blob to clipboard:', error)
-      }
-    )
-  })
+  if (IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED) {
+    const formattedOptions = getFormattedOptions(element, options)
+    console.debug('Converting to blob')
+    domtoimage.toBlob(element, formattedOptions).then((blob: Blob) => {
+      const item = new ClipboardItem({ [blob.type]: blob })
+      navigator.clipboard.write([item]).then(
+        () => {
+          console.log('Blob copied to clipboard')
+        },
+        (error) => {
+          console.error('Error copying blob to clipboard:', error)
+        }
+      )
+    })
+  }
 }
 
 export function downloadPngElement(element: HTMLElement, filename: string, options: Options) {
