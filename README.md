@@ -1,4 +1,4 @@
-# styled-qr-code-generator
+# mini-qr-code-generator
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -12,8 +12,6 @@ A customizable QR code generator to create beautiful and unique QR codes.
     </a>
     <a href="https://www.supabase.com"><img width="100" src="public/presets/supabase-green.svg" /></a>
     <a href="https://www.vercel.com"><img width="100" src="public/presets/vercel-dark.svg" /></a>
-    <a href="https://vuejs.org/"><img width="100" src="public/presets/vuejs.svg" /></a>
-    <a href="https://vue-i18n.intlify.dev/"><img width="100" src="public/presets/vuei18n.svg" /></a>
     <a href="https://viteconf.org/"><img width="100" src="public/presets/viteconf2023.svg" /></a>
 </div>
 

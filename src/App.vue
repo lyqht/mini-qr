@@ -304,7 +304,7 @@ onMounted(() => {
     </div>
     <div class="w-full md:w-5/6">
       <div class="mb-8 flex w-full flex-col items-center justify-center">
-        <h1 class="text-4xl">{{ t('Styled QR Code Generator') }}</h1>
+        <h1 class="text-4xl">{{ t('Mini QR Code Generator') }}</h1>
       </div>
       <div class="flex flex-col-reverse items-start justify-center gap-4 md:flex-row md:gap-12">
         <div
