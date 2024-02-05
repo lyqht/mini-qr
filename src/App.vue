@@ -10,12 +10,36 @@ import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
 import { computed, onMounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
+import { createRandomColor, getRandomItemInArray } from './utils/color'
 import { getNumericCSSValue } from './utils/formatting'
 import { sortedLocales } from './utils/language'
 import { allPresets } from './utils/presets'
 
+//#region /** locale */
 const { t, locale } = useI18n()
+const locales = sortedLocales.map((loc) => ({
+  value: loc,
+  label: t(loc)
+}))
 
+const selectedLocale = ref({
+  value: locale.value,
+  label: t(locale.value)
+})
+
+watch(selectedLocale, () => {
+  locale.value = selectedLocale.value.value
+})
+
+watch(locale, () => {
+  selectedPreset.value = {
+    ...selectedPreset.value,
+    name: t(selectedPreset.value.name)
+  }
+})
+//#endregion
+
+//#region /** styling states and computed properties */
 const defaultPreset = allPresets[0]
 const data = ref()
 const image = ref()
@@ -66,16 +90,6 @@ const qrCodeProps = computed(() => ({
   imageOptions: imageOptions.value
 }))
 
-/* random settings utils */
-
-function createRandomColor() {
-  return '#' + Math.floor(Math.random() * 16777215).toString(16)
-}
-
-function getRandomItemInArray(array: any[]) {
-  return array[Math.floor(Math.random() * array.length)]
-}
-
 function randomizeStyleSettings() {
   const dotTypes: DotType[] = [
     'dots',
@@ -119,7 +133,9 @@ watch(selectedPreset, () => {
   styleBackground.value = selectedPreset.value.style.background
 })
 
-/* export image utils */
+//#endregion
+
+//#region /* export image utils */
 const options = computed(() => ({
   width: width.value,
   height: height.value
@@ -170,8 +186,9 @@ function uploadImage() {
   imageInput.click()
 }
 
-/* QR Config Utils */
+//#endregion
 
+//#region /* QR Config Utils */
 function createQrConfig() {
   return {
     props: qrCodeProps.value,
@@ -243,13 +260,6 @@ function loadQrConfigFromFile() {
   qrCodeConfigInput.click()
 }
 
-watch(locale, () => {
-  selectedPreset.value = {
-    ...selectedPreset.value,
-    name: t(selectedPreset.value.name)
-  }
-})
-
 watch(qrCodeProps, () => {
   saveQRConfigToLocalStorage()
 })
@@ -257,6 +267,7 @@ watch(qrCodeProps, () => {
 onMounted(() => {
   loadQRConfigFromLocalStorage()
 })
+//#endregion
 </script>
 
 <template>
