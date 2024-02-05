@@ -1,7 +1,9 @@
 name: Translate files using DeepL Translate GitHub Action
 on:
   workflow_dispatch:
-  push:
+  pull_request:
+    types:
+      - merged
     paths:
       - 'locales/en.json'
   
