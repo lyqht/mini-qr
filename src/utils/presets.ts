@@ -12,7 +12,7 @@ export type PresetAttributes = {
   name: string
 }
 
-type Preset = Required<StyledQRCodeProps> & PresetAttributes
+export type Preset = Required<StyledQRCodeProps> & PresetAttributes
 
 const defaultPresetOptions = {
   backgroundOptions: {
