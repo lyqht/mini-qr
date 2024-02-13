@@ -295,7 +295,7 @@ onMounted(() => {
     <div class="flex w-full flex-row justify-between p-4 md:w-5/6">
       <h1>MiniQR</h1>
       <div class="flex flex-row items-center justify-end gap-4">
-        <div class="flex flex-row items-center">
+        <div class="flex flex-row items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
             <g
               fill="none"

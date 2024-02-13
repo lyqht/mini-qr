@@ -24,7 +24,7 @@ defineProps<{
 <template>
   <Popover v-model:open="open">
     <PopoverTrigger as-child>
-      <Button variant="outline" role="combobox" :aria-expanded="open" class="w-fit justify-between">
+      <Button variant="outline" role="combobox" :aria-expanded="open" class="w-fit justify-between focus-visible:ring-1">
         {{ value ? items.find((item) => item.value === value)?.label : 'Select item...' }}
         <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
