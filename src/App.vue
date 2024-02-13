@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import StyledQRCode from '@/components/StyledQRCode.vue'
+import { Combobox } from '@/components/ui/Combobox'
 import {
   copyImageToClipboard,
   downloadPngElement,
@@ -10,12 +11,24 @@ import type { CornerDotType, CornerSquareType, DotType } from 'qr-code-styling'
 import { computed, onMounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
+import { createRandomColor, getRandomItemInArray } from './utils/color'
 import { getNumericCSSValue } from './utils/formatting'
 import { sortedLocales } from './utils/language'
-import { allPresets } from './utils/presets'
+import { allPresets, type Preset } from './utils/presets'
 
+//#region /** locale */
+const isLocaleSelectOpen = ref(false)
 const { t, locale } = useI18n()
+const locales = computed(() =>
+  sortedLocales.map((loc) => ({
+    value: loc,
+    label: t(loc)
+  }))
+)
 
+//#endregion
+
+//#region /** styling states and computed properties */
 const defaultPreset = allPresets[0]
 const data = ref()
 const image = ref()
@@ -66,16 +79,6 @@ const qrCodeProps = computed(() => ({
   imageOptions: imageOptions.value
 }))
 
-/* random settings utils */
-
-function createRandomColor() {
-  return '#' + Math.floor(Math.random() * 16777215).toString(16)
-}
-
-function getRandomItemInArray(array: any[]) {
-  return array[Math.floor(Math.random() * array.length)]
-}
-
 function randomizeStyleSettings() {
   const dotTypes: DotType[] = [
     'dots',
@@ -100,8 +103,14 @@ function randomizeStyleSettings() {
   styleBackground.value = createRandomColor()
 }
 
-const selectedPreset = ref(defaultPreset)
-
+const isPresetSelectOpen = ref(false)
+const allPresetOptions = computed(() => {
+  const options = lastCustomLoadedPreset.value
+    ? [lastCustomLoadedPreset.value, ...allPresets]
+    : allPresets
+  return options.map((preset) => ({ value: preset.name, label: t(preset.name) }))
+})
+const selectedPreset = ref<Preset & { key?: string }>(defaultPreset)
 watch(selectedPreset, () => {
   data.value = selectedPreset.value.data
   image.value = selectedPreset.value.image
@@ -119,7 +128,32 @@ watch(selectedPreset, () => {
   styleBackground.value = selectedPreset.value.style.background
 })
 
-/* export image utils */
+const LAST_LOADED_LOCALLY_PRESET_KEY = 'Last saved locally'
+const LOADED_FROM_FILE_PRESET_KEY = 'Loaded from file'
+const CUSTOM_LOADED_PRESET_KEYS = [LAST_LOADED_LOCALLY_PRESET_KEY, LOADED_FROM_FILE_PRESET_KEY]
+const selectedPresetKey = ref<string>(LAST_LOADED_LOCALLY_PRESET_KEY)
+const lastCustomLoadedPreset = ref<Preset>()
+watch(
+  selectedPresetKey,
+  (newKey, prevKey) => {
+    if (newKey === prevKey || !newKey) return
+
+    if (CUSTOM_LOADED_PRESET_KEYS.includes(newKey) && lastCustomLoadedPreset.value) {
+      selectedPreset.value = lastCustomLoadedPreset.value
+      return
+    }
+
+    const updatedPreset = allPresets.find((preset) => preset.name === newKey)
+    if (updatedPreset) {
+      selectedPreset.value = updatedPreset
+    }
+  },
+  { immediate: true }
+)
+
+//#endregion
+
+//#region /* export image utils */
 const options = computed(() => ({
   width: width.value,
   height: height.value
@@ -170,8 +204,9 @@ function uploadImage() {
   imageInput.click()
 }
 
-/* QR Config Utils */
+//#endregion
 
+//#region /* QR Config Utils */
 function createQrConfig() {
   return {
     props: qrCodeProps.value,
@@ -197,7 +232,7 @@ function saveQRConfigToLocalStorage() {
   localStorage.setItem('qrCodeConfig', qrCodeConfigString)
 }
 
-function loadQRConfig(jsonString: string, name?: string) {
+function loadQRConfig(jsonString: string, key?: string) {
   const qrCodeConfig = JSON.parse(jsonString)
   const qrCodeProps = qrCodeConfig.props
   const qrCodeStyle = qrCodeConfig.style
@@ -206,20 +241,12 @@ function loadQRConfig(jsonString: string, name?: string) {
     style: qrCodeStyle
   }
 
-  selectedPreset.value = {
-    ...preset,
-    name: name ?? qrCodeProps.name
+  if (key) {
+    preset.name = key
+    lastCustomLoadedPreset.value = preset
   }
-}
 
-function loadQRConfigFromLocalStorage() {
-  const qrCodeConfigString = localStorage.getItem('qrCodeConfig')
-  if (qrCodeConfigString) {
-    console.debug('Loading QR code config from local storage')
-    loadQRConfig(qrCodeConfigString, t('Last saved locally'))
-  } else {
-    selectedPreset.value = { ...defaultPreset }
-  }
+  selectedPreset.value = preset
 }
 
 function loadQrConfigFromFile() {
@@ -235,7 +262,7 @@ function loadQrConfigFromFile() {
       reader.onload = (event: ProgressEvent<FileReader>) => {
         const target = event.target as FileReader
         const result = target.result as string
-        loadQRConfig(result, t('Loaded from file'))
+        loadQRConfig(result, LOADED_FROM_FILE_PRESET_KEY)
       }
       reader.readAsText(file)
     }
@@ -243,12 +270,15 @@ function loadQrConfigFromFile() {
   qrCodeConfigInput.click()
 }
 
-watch(locale, () => {
-  selectedPreset.value = {
-    ...selectedPreset.value,
-    name: t(selectedPreset.value.name)
+function loadQRConfigFromLocalStorage() {
+  const qrCodeConfigString = localStorage.getItem('qrCodeConfig')
+  if (qrCodeConfigString) {
+    console.debug('Loading QR code config from local storage')
+    loadQRConfig(qrCodeConfigString, LAST_LOADED_LOCALLY_PRESET_KEY)
+  } else {
+    selectedPreset.value = { ...defaultPreset }
   }
-})
+}
 
 watch(qrCodeProps, () => {
   saveQRConfigToLocalStorage()
@@ -257,55 +287,47 @@ watch(qrCodeProps, () => {
 onMounted(() => {
   loadQRConfigFromLocalStorage()
 })
+//#endregion
 </script>
 
 <template>
   <main class="relative grid place-items-center px-6 py-20 sm:p-8" role="main">
-    <div class="absolute end-4 top-4 flex flex-row items-center gap-4">
-      <div class="flex flex-row items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
-          <g
-            fill="none"
-            stroke="#abcbca"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          >
-            <path d="M4 5h7M7 4c0 4.846 0 7 .5 8" />
-            <path
-              d="M10 8.5c0 2.286-2 4.5-3.5 4.5S4 11.865 4 11c0-2 1-3 3-3s5 .57 5 2.857c0 1.524-.667 2.571-2 3.143m2 6l4-9l4 9m-.9-2h-6.2"
-            />
-          </g>
-        </svg>
-        <select
-          class="secondary-button cursor-pointer text-center"
-          id="locale-select"
-          v-model="$i18n.locale"
-          :aria-label="t('Change language')"
+    <div class="flex w-full flex-row justify-between p-4 md:w-5/6">
+      <h1>MiniQR</h1>
+      <div class="flex flex-row items-center justify-end gap-4">
+        <div class="flex flex-row items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+            <g
+              fill="none"
+              stroke="#abcbca"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            >
+              <path d="M4 5h7M7 4c0 4.846 0 7 .5 8" />
+              <path
+                d="M10 8.5c0 2.286-2 4.5-3.5 4.5S4 11.865 4 11c0-2 1-3 3-3s5 .57 5 2.857c0 1.524-.667 2.571-2 3.143m2 6l4-9l4 9m-.9-2h-6.2"
+              />
+            </g>
+          </svg>
+          <Combobox :items="locales" v-model:value="locale" v-model:open="isLocaleSelectOpen" />
+        </div>
+        <div class="vertical-border"></div>
+        <a
+          class="icon-button"
+          href="https://github.com/lyqht/styled-qr-code-generator"
+          :aria-label="t('GitHub repository for this project')"
         >
-          <option v-for="(locale, index) in sortedLocales" :key="index" :value="locale">
-            {{ t(locale) }}
-          </option>
-        </select>
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+            <path
+              fill="#abcbca"
+              d="M12.001 2c-5.525 0-10 4.475-10 10a9.994 9.994 0 0 0 6.837 9.488c.5.087.688-.213.688-.476c0-.237-.013-1.024-.013-1.862c-2.512.463-3.162-.612-3.362-1.175c-.113-.288-.6-1.175-1.025-1.413c-.35-.187-.85-.65-.013-.662c.788-.013 1.35.725 1.538 1.025c.9 1.512 2.337 1.087 2.912.825c.088-.65.35-1.087.638-1.337c-2.225-.25-4.55-1.113-4.55-4.938c0-1.088.387-1.987 1.025-2.688c-.1-.25-.45-1.275.1-2.65c0 0 .837-.262 2.75 1.026a9.28 9.28 0 0 1 2.5-.338c.85 0 1.7.112 2.5.337c1.913-1.3 2.75-1.024 2.75-1.024c.55 1.375.2 2.4.1 2.65c.637.7 1.025 1.587 1.025 2.687c0 3.838-2.337 4.688-4.563 4.938c.363.312.676.912.676 1.85c0 1.337-.013 2.412-.013 2.75c0 .262.188.574.688.474A10.016 10.016 0 0 0 22 12c0-5.525-4.475-10-10-10Z"
+            />
+          </svg>
+        </a>
       </div>
-      <div class="vertical-border"></div>
-      <a
-        class="icon-button"
-        href="https://github.com/lyqht/styled-qr-code-generator"
-        :aria-label="t('GitHub repository for this project')"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
-          <path
-            fill="#abcbca"
-            d="M12.001 2c-5.525 0-10 4.475-10 10a9.994 9.994 0 0 0 6.837 9.488c.5.087.688-.213.688-.476c0-.237-.013-1.024-.013-1.862c-2.512.463-3.162-.612-3.362-1.175c-.113-.288-.6-1.175-1.025-1.413c-.35-.187-.85-.65-.013-.662c.788-.013 1.35.725 1.538 1.025c.9 1.512 2.337 1.087 2.912.825c.088-.65.35-1.087.638-1.337c-2.225-.25-4.55-1.113-4.55-4.938c0-1.088.387-1.987 1.025-2.688c-.1-.25-.45-1.275.1-2.65c0 0 .837-.262 2.75 1.026a9.28 9.28 0 0 1 2.5-.338c.85 0 1.7.112 2.5.337c1.913-1.3 2.75-1.024 2.75-1.024c.55 1.375.2 2.4.1 2.65c.637.7 1.025 1.587 1.025 2.687c0 3.838-2.337 4.688-4.563 4.938c.363.312.676.912.676 1.85c0 1.337-.013 2.412-.013 2.75c0 .262.188.574.688.474A10.016 10.016 0 0 0 22 12c0-5.525-4.475-10-10-10Z"
-          />
-        </svg>
-      </a>
     </div>
     <div class="w-full md:w-5/6">
-      <div class="mb-8 flex w-full flex-col items-center justify-center">
-        <h1 class="text-4xl">{{ t('Mini QR Code Generator') }}</h1>
-      </div>
       <div class="flex flex-col-reverse items-start justify-center gap-4 md:flex-row md:gap-12">
         <div
           id="main-content"
@@ -336,7 +358,7 @@ onMounted(() => {
               <button
                 v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED"
                 id="copy-qr-image-button"
-                class="button flex w-fit flex-row gap-1"
+                class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
                 @click="copyQRToClipboard"
                 :aria-label="t('Copy QR Code to clipboard')"
               >
@@ -358,7 +380,7 @@ onMounted(() => {
               </button>
               <button
                 id="save-qr-code-config-button"
-                class="button flex w-fit flex-row gap-1"
+                class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
                 @click="downloadQRConfig"
                 :aria-label="t('Save QR Code configuration')"
               >
@@ -381,7 +403,7 @@ onMounted(() => {
               </button>
               <button
                 id="load-qr-code-config-button"
-                class="button flex w-fit flex-row gap-1"
+                class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
                 @click="loadQrConfigFromFile"
                 :aria-label="t('Load QR Code configuration')"
               >
@@ -405,7 +427,7 @@ onMounted(() => {
             </div>
             <div id="export-options" class="pt-4">
               <p class="pb-2">{{ t('Export as') }}</p>
-              <div class="flex flex-row items-center gap-2">
+              <div class="flex flex-row items-center justify-center gap-2">
                 <button
                   id="download-qr-image-button-png"
                   class="button"
@@ -465,25 +487,12 @@ onMounted(() => {
         <div id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
           <div>
             <label for="preset-selector">{{ t('Preset') }}</label>
-            <div class="flex flex-row items-center justify-center gap-2">
-              <select
-                id="preset-selector"
-                class="secondary-button cursor-pointer text-start"
-                :aria-label="t('QR code preset')"
-                v-model="selectedPreset"
-              >
-                <option
-                  v-if="!(selectedPreset.name && selectedPreset.name === defaultPreset.name)"
-                  :key="`custom-preset`"
-                  :value="selectedPreset"
-                  disabled
-                >
-                  {{ selectedPreset.name }}
-                </option>
-                <option v-for="(preset, index) in allPresets" :key="index" :value="preset">
-                  {{ preset.name }}
-                </option>
-              </select>
+            <div class="flex flex-row items-center justify-start gap-2">
+              <Combobox
+                :items="allPresetOptions"
+                v-model:value="selectedPresetKey"
+                v-model:open="isPresetSelectOpen"
+              />
               <button
                 class="icon-button"
                 @click="randomizeStyleSettings"
@@ -537,7 +546,7 @@ onMounted(() => {
                     <path d="M9.5 13.5L12 11l2.5 2.5" />
                   </g>
                 </svg>
-                <p>{{ t('Upload image') }}</p>
+                <span>{{ t('Upload image') }}</span>
               </button>
             </div>
             <textarea
