@@ -1,6 +1,9 @@
 import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
 import type { StyledQRCodeProps } from '@/components/StyledQRCode.vue'
 import type { DrawType } from 'qr-code-styling'
+import GeeksHackingConfig from '@/assets/presets/geekshacking.json'
+import SpDigitalConfig from '@/assets/presets/spdigital.json'
+import GovtechStackCommunityConfig from '@/assets/presets/govtech_stack.json'
 
 export interface CustomStyleProps {
   borderRadius?: string
@@ -273,6 +276,27 @@ export const pejuangKodePreset: Preset = {
   style: { borderRadius: '22px', background: '#ffffff' }
 }
 
+export const geeksHackingPreset = {
+  ...defaultPresetOptions,
+  name: 'GeeksHacking',
+  ...GeeksHackingConfig.props,
+  style: GeeksHackingConfig.style
+} as Preset
+
+export const spDigitalPreset = {
+  ...defaultPresetOptions,
+  name: 'SP Digital',
+  ...SpDigitalConfig.props,
+  style: SpDigitalConfig.style
+} as Preset
+
+export const govtechStackCommunityPreset = {
+  ...defaultPresetOptions,
+  name: 'GovTech - Stack Community',
+  ...GovtechStackCommunityConfig.props,
+  style: GovtechStackCommunityConfig.style
+} as Preset
+
 export const allPresets: Preset[] = [
   defaultPreset,
   ...[
@@ -285,6 +309,9 @@ export const allPresets: Preset[] = [
     viteConf2023Preset,
     vueJsPreset,
     vuei18nPreset,
-    pejuangKodePreset
+    pejuangKodePreset,
+    geeksHackingPreset,
+    spDigitalPreset,
+    govtechStackCommunityPreset
   ].sort((a, b) => a.name.localeCompare(b.name))
 ]
