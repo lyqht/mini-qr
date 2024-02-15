@@ -24,7 +24,8 @@ defineProps<{
 <template>
   <Popover v-model:open="open">
     <PopoverTrigger as-child>
-      <Button variant="outline" role="combobox" :aria-expanded="open" class="w-fit justify-between focus-visible:ring-1">
+      <Button variant="outline" role="combobox" :aria-expanded="open"
+        class="w-fit justify-between focus-visible:ring-1 bg-zinc-50 dark:bg-zinc-800">
         {{ value ? items.find((item) => item.value === value)?.label : 'Select item...' }}
         <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
@@ -35,23 +36,15 @@ defineProps<{
         <CommandEmpty>No item found.</CommandEmpty>
         <CommandList>
           <CommandGroup>
-            <CommandItem
-              v-for="item in items"
-              :key="item.value"
-              :value="item.value"
-              @select="
-                (ev) => {
-                  if (typeof ev.detail.value === 'string') {
-                    value = ev.detail.value
-                  }
-                  open = false
+            <CommandItem v-for="item in items" :key="item.value" :value="item.value" @select="(ev) => {
+                if (typeof ev.detail.value === 'string') {
+                  value = ev.detail.value
                 }
-              "
-            >
+                open = false
+              }
+              ">
               {{ item.label }}
-              <Check
-                :class="cn('ml-auto h-4 w-4', value === item.value ? 'opacity-100' : 'opacity-0')"
-              />
+              <Check :class="cn('ml-auto h-4 w-4', value === item.value ? 'opacity-100' : 'opacity-0')" />
             </CommandItem>
           </CommandGroup>
         </CommandList>
