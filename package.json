@@ -22,6 +22,7 @@
     "@vitejs/plugin-vue": "^5.0.0",
     "@vitejs/plugin-vue-jsx": "^3.0.0",
     "@vue/tsconfig": "^0.5.1",
+    "@vueuse/core": "^10.7.2",
     "autoprefixer": "^10.4.14",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
@@ -32,7 +33,7 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
-    "vite": "^5.0.10",
+    "vite": "^5.1.2",
     "vue": "^3.4.15",
     "vue-i18n": "9"
   },
