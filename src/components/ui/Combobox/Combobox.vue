@@ -24,27 +24,40 @@ defineProps<{
 <template>
   <Popover v-model:open="open">
     <PopoverTrigger as-child>
-      <Button variant="outline" role="combobox" :aria-expanded="open"
-        class="w-fit justify-between focus-visible:ring-1 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
+      <Button
+        variant="outline"
+        role="combobox"
+        :aria-expanded="open"
+        class="w-fit justify-between focus-visible:ring-1 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+      >
         {{ value ? items.find((item) => item.value === value)?.label : 'Select item...' }}
         <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-fit p-0">
-      <Command>
+      <Command class="bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
         <CommandInput class="h-9" placeholder="Search item..." />
         <CommandEmpty>No item found.</CommandEmpty>
         <CommandList>
           <CommandGroup>
-            <CommandItem v-for="item in items" :key="item.value" :value="item.value" @select="(ev) => {
-                if (typeof ev.detail.value === 'string') {
-                  value = ev.detail.value
+            <CommandItem
+              v-for="item in items"
+              :key="item.value"
+              :value="item.value"
+              class="bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+              @select="
+                (ev) => {
+                  if (typeof ev.detail.value === 'string') {
+                    value = ev.detail.value
+                  }
+                  open = false
                 }
-                open = false
-              }
-              ">
+              "
+            >
               {{ item.label }}
-              <Check :class="cn('ml-auto h-4 w-4', value === item.value ? 'opacity-100' : 'opacity-0')" />
+              <Check
+                :class="cn('ml-auto h-4 w-4', value === item.value ? 'opacity-100' : 'opacity-0')"
+              />
             </CommandItem>
           </CommandGroup>
         </CommandList>

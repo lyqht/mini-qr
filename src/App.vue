@@ -294,8 +294,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <main :class="{ dark: isDark }">
-    <div class="relative grid place-items-center bg-white p-8 dark:bg-zinc-900 md:px-6">
+  <main>
+    <div class="relative grid place-items-center bg-white p-8 md:px-6 dark:bg-zinc-900">
       <div
         class="mb-8 flex w-full flex-row flex-wrap justify-between gap-4 md:mb-4 md:w-5/6 md:ps-4"
       >
