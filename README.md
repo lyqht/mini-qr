@@ -15,6 +15,10 @@ A customizable QR code generator to create beautiful and unique QR codes.
     <a href="https://viteconf.org/"><img width="100" src="public/presets/viteconf2023.svg" /></a>
 </div>
 
+## Demo
+
+https://github.com/lyqht/mini-qr/assets/35736525/991b2d7e-f168-4354-9091-1678d2c1bddb
+
 ## Features
 
 - Generate QR codes with custom colors and styles
@@ -26,7 +30,3 @@ A customizable QR code generator to create beautiful and unique QR codes.
 - Save & Load QR Code config
 - Upload custom image for logo
 - Presets: Pre-crafted QR code styles are available as immediate usage/ reference. Refer to samples above!
-
-### Demo of Randomize Style & Presets
-
-![](public/app_preview.gif)
