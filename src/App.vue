@@ -331,7 +331,12 @@ onMounted(() => {
                 />
               </g>
             </svg>
-            <Combobox :items="locales" v-model:value="locale" v-model:open="isLocaleSelectOpen" />
+            <Combobox
+              :items="locales"
+              v-model:value="locale"
+              v-model:open="isLocaleSelectOpen"
+              :button-label="t('Select language')"
+            />
           </div>
         </div>
       </div>
@@ -449,7 +454,7 @@ onMounted(() => {
                 </button>
               </div>
               <div id="export-options" class="pt-4">
-                <p class="pb-2">{{ t('Export as') }}</p>
+                <p class="pb-2 text-zinc-900 dark:text-zinc-100">{{ t('Export as') }}</p>
                 <div class="flex flex-row items-center justify-center gap-2">
                   <button
                     id="download-qr-image-button-png"
@@ -509,12 +514,13 @@ onMounted(() => {
           </div>
           <div id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
             <div>
-              <label for="preset-selector">{{ t('Preset') }}</label>
+              <label>{{ t('Preset') }}</label>
               <div class="flex flex-row items-center justify-start gap-2">
                 <Combobox
                   :items="allPresetOptions"
                   v-model:value="selectedPresetKey"
                   v-model:open="isPresetSelectOpen"
+                  :button-label="t('Select preset')"
                 />
                 <button
                   class="icon-button"

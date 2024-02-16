@@ -18,6 +18,7 @@ const value = defineModel<string>('value')
 
 defineProps<{
   items: { value: any; label: string }[]
+  buttonLabel: string
 }>()
 </script>
 
@@ -28,6 +29,7 @@ defineProps<{
         variant="outline"
         role="combobox"
         :aria-expanded="open"
+        :aria-label="buttonLabel"
         class="w-fit justify-between focus-visible:ring-1 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
       >
         {{ value ? items.find((item) => item.value === value)?.label : 'Select item...' }}
