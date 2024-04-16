@@ -19,6 +19,16 @@ A customizable QR code generator to create beautiful and unique QR codes.
 
 https://github.com/lyqht/mini-qr/assets/35736525/991b2d7e-f168-4354-9091-1678d2c1bddb
 
+
+## Self-hosting with Docker 🐋
+Mini-QR can easily be self-hosted. We provide a [docker-compose.yml](docker-compose.yml) file as well as our own images. We are using GitHub's `ghrc.io` Container Registry.
+
+```bash
+wget https://github.com/lyqht/mini-qr/raw/main/docker-compose.yml
+
+docker compose up -d
+```
+
 ## Features
 
 - Generate QR codes with custom colors and styles
