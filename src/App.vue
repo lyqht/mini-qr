@@ -49,6 +49,17 @@ const cornersDotOptionsType = ref()
 const styleBorderRadius = ref()
 const styledBorderRadiusFormatted = computed(() => `${styleBorderRadius.value}px`)
 const styleBackground = ref(defaultPreset.style.background)
+const lastBackground = ref(defaultPreset.style.background)
+
+const withBackground = ref(true)
+watch(withBackground, () => {
+  if (!withBackground.value) {
+    lastBackground.value = styleBackground.value
+    styleBackground.value = 'transparent'
+  } else {
+    styleBackground.value = lastBackground.value
+  }
+})
 
 const dotsOptions = computed(() => ({
   color: dotsOptionsColor.value,
@@ -592,7 +603,22 @@ onMounted(() => {
                 v-model="image"
               />
             </div>
-            <div id="color-settings" class="flex w-full flex-row flex-wrap gap-4">
+            <div class="flex flex-row items-center gap-2">
+              <label for="with-background">
+                {{ t('With background') }}
+              </label>
+              <input
+                id="with-background"
+                type="checkbox"
+                class="checkbox"
+                v-model="withBackground"
+              />
+            </div>
+            <div
+              id="color-settings"
+              :inert="!withBackground"
+              :class="[!withBackground && 'opacity-30', 'flex w-full flex-row flex-wrap gap-4']"
+            >
               <div class="flex flex-row items-center gap-2">
                 <label for="background-color">{{ t('Background color') }}</label>
                 <input
