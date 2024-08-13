@@ -40,3 +40,5 @@ docker compose up -d
 - Save & Load QR Code config
 - Upload custom image for logo
 - Presets: Pre-crafted QR code styles are available as immediate usage/ reference. Refer to samples above!
+- User can choose to include background or obtain a transparent QR code
+- Error correction level selection - this will affect the size of the qr code and image within.
