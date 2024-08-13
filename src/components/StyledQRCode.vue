@@ -5,38 +5,17 @@
 </template>
 
 <script setup lang="ts">
-import type { CornerDotType, CornerSquareType, DotType, DrawType } from 'qr-code-styling'
+import type {
+  CornerDotType,
+  CornerSquareType,
+  DrawType,
+  Options as StyledQRCodeProps
+} from 'qr-code-styling'
 import QRCodeStyling from 'qr-code-styling'
 import { onMounted, ref, watch } from 'vue'
 
-export interface StyledQRCodeProps {
-  data: string
-  width?: number
-  height?: number
-  type?: DrawType
-  image?: string
-  margin?: number
-  dotsOptions?: {
-    color?: string
-    type?: DotType
-  }
-  backgroundOptions?: {
-    color?: string
-  }
-  imageOptions?: {
-    margin?: number
-  }
-  cornersSquareOptions?: {
-    type?: CornerSquareType
-    color?: string
-  }
-  cornersDotOptions?: {
-    type?: CornerDotType
-    color?: string
-  }
-}
-
 const props = withDefaults(defineProps<StyledQRCodeProps>(), {
+  data: undefined,
   width: 200,
   height: 200,
   type: 'svg' as DrawType,
@@ -62,6 +41,9 @@ const props = withDefaults(defineProps<StyledQRCodeProps>(), {
   cornersDotOptions: () => ({
     color: 'black',
     type: 'dot' as CornerDotType
+  }),
+  qrOptions: () => ({
+    errorCorrectionLevel: 'Q'
   })
 })
 
