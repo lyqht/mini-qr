@@ -29,7 +29,7 @@ jobs:
             file: "Dockerfile"
             image: "mini-qr"
             # ARM not working. Needs further research.
-            platforms: "linux/arm64,linux/amd64"
+            platforms: "linux/arm64,linux/amd64,linux/arm/v8"
 
     steps:
       - name: Checkout
