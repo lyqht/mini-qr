@@ -15,9 +15,6 @@ import { createRandomColor, getRandomItemInArray } from './utils/color'
 import { getNumericCSSValue } from './utils/formatting'
 import { sortedLocales } from './utils/language'
 import { allPresets, type Preset } from './utils/presets'
-import { useDarkMode } from './vuecomposables/dark_mode'
-
-const { isDark } = useDarkMode()
 
 //#region /** locale */
 const isLocaleSelectOpen = ref(false)
@@ -306,7 +303,7 @@ onMounted(() => {
 
 <template>
   <main>
-    <div class="relative grid place-items-center bg-white p-8 dark:bg-zinc-900 md:px-6">
+    <div class="relative grid place-items-center bg-white p-8 md:px-6 dark:bg-zinc-900">
       <div
         class="mb-8 flex w-full flex-row flex-wrap justify-between gap-4 md:mb-4 md:w-5/6 md:ps-4"
       >
