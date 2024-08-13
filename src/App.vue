@@ -51,9 +51,9 @@ const styledBorderRadiusFormatted = computed(() => `${styleBorderRadius.value}px
 const styleBackground = ref(defaultPreset.style.background)
 const lastBackground = ref(defaultPreset.style.background)
 
-const withBackground = ref(true)
-watch(withBackground, () => {
-  if (!withBackground.value) {
+const includeBackground = ref(true)
+watch(includeBackground, () => {
+  if (!includeBackground.value) {
     lastBackground.value = styleBackground.value
     styleBackground.value = 'transparent'
   } else {
@@ -306,7 +306,7 @@ onMounted(() => {
 
 <template>
   <main>
-    <div class="relative grid place-items-center bg-white p-8 md:px-6 dark:bg-zinc-900">
+    <div class="relative grid place-items-center bg-white p-8 dark:bg-zinc-900 md:px-6">
       <div
         class="mb-8 flex w-full flex-row flex-wrap justify-between gap-4 md:mb-4 md:w-5/6 md:ps-4"
       >
@@ -611,15 +611,14 @@ onMounted(() => {
                 id="with-background"
                 type="checkbox"
                 class="checkbox"
-                v-model="withBackground"
+                v-model="includeBackground"
               />
             </div>
-            <div
-              id="color-settings"
-              :inert="!withBackground"
-              :class="[!withBackground && 'opacity-30', 'flex w-full flex-row flex-wrap gap-4']"
-            >
-              <div class="flex flex-row items-center gap-2">
+            <div id="color-settings" :class="'flex w-full flex-row flex-wrap gap-4'">
+              <div
+                :inert="!includeBackground"
+                :class="[!includeBackground && 'opacity-30', 'flex flex-row items-center gap-2']"
+              >
                 <label for="background-color">{{ t('Background color') }}</label>
                 <input
                   id="background-color"
