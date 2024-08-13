@@ -55,14 +55,20 @@ const styleBackground = ref(defaultPreset.style.background)
 const lastBackground = ref(defaultPreset.style.background)
 
 const includeBackground = ref(true)
-watch(includeBackground, () => {
-  if (!includeBackground.value) {
-    lastBackground.value = styleBackground.value
-    styleBackground.value = 'transparent'
-  } else {
-    styleBackground.value = lastBackground.value
+watch(
+  includeBackground,
+  (newIncludeBackground) => {
+    if (!newIncludeBackground) {
+      lastBackground.value = styleBackground.value
+      styleBackground.value = 'transparent'
+    } else {
+      styleBackground.value = lastBackground.value
+    }
+  },
+  {
+    immediate: true
   }
-})
+)
 
 const dotsOptions = computed(() => ({
   color: dotsOptionsColor.value,
@@ -147,6 +153,8 @@ watch(selectedPreset, () => {
   cornersDotOptionsType.value = selectedPreset.value.cornersDotOptions.type
   styleBorderRadius.value = getNumericCSSValue(selectedPreset.value.style.borderRadius as string)
   styleBackground.value = selectedPreset.value.style.background
+  includeBackground.value = selectedPreset.value.style.background !== 'transparent'
+  errorCorrectionLevel.value = selectedPreset.value.qrOptions ? selectedPreset.value.qrOptions.errorCorrectionLevel : 'Q'
 })
 
 const LAST_LOADED_LOCALLY_PRESET_KEY = 'Last saved locally'
@@ -323,9 +331,15 @@ function loadQRConfigFromLocalStorage() {
   }
 }
 
-watch(qrCodeProps, () => {
-  saveQRConfigToLocalStorage()
-})
+watch(
+  [qrCodeProps, style],
+  () => {
+    saveQRConfigToLocalStorage()
+  },
+  {
+    deep: true
+  }
+)
 
 onMounted(() => {
   loadQRConfigFromLocalStorage()
@@ -347,6 +361,7 @@ onMounted(() => {
             <a
               class="icon-button"
               href="https://github.com/lyqht/styled-qr-code-generator"
+              target="_blank"
               :aria-label="t('GitHub repository for this project')"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
@@ -597,8 +612,24 @@ onMounted(() => {
             <fieldset class="flex-1" role="radiogroup" tabindex="0">
               <div class="flex flex-row items-center gap-2">
                 <legend>{{ t('Error correction level') }}</legend>
-                <a href="" class="icon-button flex flex-row items-center" :aria-label="t('What is error correction level?')">
-                  <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#888888" d="M11.95 18q.525 0 .888-.363t.362-.887t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362m.05 4q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"/></svg>
+                <a
+                  href="https://docs.uniqode.com/en/articles/7219782-what-is-the-recommended-error-correction-level-for-printing-a-qr-code"
+                  target="_blank"
+                  class="icon-button flex flex-row items-center"
+                  :aria-label="t('What is error correction level?')"
+                >
+                  <svg
+                    class="me-1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="#888888"
+                      d="M11.95 18q.525 0 .888-.363t.362-.887t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362m.05 4q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
+                    />
+                  </svg>
                   <span class="text-sm text-gray-500">{{ t('What is this?') }}</span>
                 </a>
               </div>
