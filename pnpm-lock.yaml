@@ -10,10 +10,10 @@ importers:
     dependencies:
       '@vitejs/plugin-vue':
         specifier: ^5.0.0
-        version: 5.0.3(vite@5.1.2(@types/node@20.11.16))(vue@3.4.15(typescript@5.3.3))
+        version: 5.0.3(vite@5.1.7(@types/node@20.11.16))(vue@3.4.15(typescript@5.3.3))
       '@vitejs/plugin-vue-jsx':
         specifier: ^3.0.0
-        version: 3.1.0(vite@5.1.2(@types/node@20.11.16))(vue@3.4.15(typescript@5.3.3))
+        version: 3.1.0(vite@5.1.7(@types/node@20.11.16))(vue@3.4.15(typescript@5.3.3))
       '@vue/tsconfig':
         specifier: ^0.5.1
         version: 0.5.1
@@ -48,8 +48,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.1)
       vite:
-        specifier: ^5.1.2
-        version: 5.1.2(@types/node@20.11.16)
+        specifier: ^5.1.7
+        version: 5.1.7(@types/node@20.11.16)
       vue:
         specifier: ^3.4.15
         version: 3.4.15(typescript@5.3.3)
@@ -1746,8 +1746,8 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  vite@5.1.2:
-    resolution: {integrity: sha512-uwiFebQbTWRIGbCaTEBVAfKqgqKNKMJ2uPXsXeLIZxM8MVMjoS3j0cG8NrPxdDIadaWnPSjrkLWffLSC+uiP3Q==}
+  vite@5.1.7:
+    resolution: {integrity: sha512-sgnEEFTZYMui/sTlH1/XEnVNHMujOahPLGMxn1+5sIT45Xjng1Ec1K78jRP15dSmVgg5WBin9yO81j3o9OxofA==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -2359,19 +2359,19 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitejs/plugin-vue-jsx@3.1.0(vite@5.1.2(@types/node@20.11.16))(vue@3.4.15(typescript@5.3.3))':
+  '@vitejs/plugin-vue-jsx@3.1.0(vite@5.1.7(@types/node@20.11.16))(vue@3.4.15(typescript@5.3.3))':
     dependencies:
       '@babel/core': 7.23.9
       '@babel/plugin-transform-typescript': 7.23.6(@babel/core@7.23.9)
       '@vue/babel-plugin-jsx': 1.2.1(@babel/core@7.23.9)
-      vite: 5.1.2(@types/node@20.11.16)
+      vite: 5.1.7(@types/node@20.11.16)
       vue: 3.4.15(typescript@5.3.3)
     transitivePeerDependencies:
       - supports-color
 
-  '@vitejs/plugin-vue@5.0.3(vite@5.1.2(@types/node@20.11.16))(vue@3.4.15(typescript@5.3.3))':
+  '@vitejs/plugin-vue@5.0.3(vite@5.1.7(@types/node@20.11.16))(vue@3.4.15(typescript@5.3.3))':
     dependencies:
-      vite: 5.1.2(@types/node@20.11.16)
+      vite: 5.1.7(@types/node@20.11.16)
       vue: 3.4.15(typescript@5.3.3)
 
   '@vue/babel-helper-vue-transform-on@1.2.1': {}
@@ -2425,7 +2425,7 @@ snapshots:
       '@vue/shared': 3.4.15
       estree-walker: 2.0.2
       magic-string: 0.30.6
-      postcss: 8.4.33
+      postcss: 8.4.35
       source-map-js: 1.0.2
 
   '@vue/compiler-ssr@3.4.15':
@@ -3492,7 +3492,7 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  vite@5.1.2(@types/node@20.11.16):
+  vite@5.1.7(@types/node@20.11.16):
     dependencies:
       esbuild: 0.19.12
       postcss: 8.4.35
