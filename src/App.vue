@@ -827,13 +827,16 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                   v-if="!csvFile"
                   tabindex="0"
                   class="cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-8 text-center"
+                  :aria-label="t('Click to select and upload a CSV file')"
                   @click="fileInput.click()"
                   @keyup.enter="fileInput.click()"
                   @keyup.space="fileInput.click()"
                   @dragover.prevent
                   @drop.prevent="onCsvFileUpload"
                 >
-                  <p>{{ $t('Drag and drop a CSV file here or click to select') }}</p>
+                  <p aria-hidden="true">
+                    {{ $t('Drag and drop a CSV file here or click to select') }}
+                  </p>
                   <input
                     aria-hidden="true"
                     ref="fileInput"
@@ -1136,6 +1139,11 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
 </template>
 
 <style lang="postcss" scoped>
+p {
+  @apply !font-normal;
+}
+
+p,
 label,
 legend {
   @apply text-gray-700 dark:text-gray-100 text-lg font-semibold;
