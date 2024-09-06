@@ -377,6 +377,7 @@ const currentExportedQrCodeIndex = ref<number | null>(null)
 const resetBatchExportProgress = () => {
   isExportingBatchQRs.value = false
   currentExportedQrCodeIndex.value = null
+  usedFilenames.clear()
 }
 
 const resetData = () => {
