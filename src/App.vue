@@ -364,11 +364,15 @@ enum ExportMode {
 }
 
 const exportMode = ref(ExportMode.Single)
-const processedDataStrings = ref<string[]>([])
+const dataStringsFromCsv = ref<string[]>([])
+const filteredDataStringsFromCsv = computed(() =>
+  ignoreHeaderRow.value ? dataStringsFromCsv.value.slice(1) : dataStringsFromCsv.value
+)
 
 const csvFile = ref<File | null>(null)
 const fileInput = ref<HTMLInputElement>()
 const isValidCsv = ref(true)
+const ignoreHeaderRow = ref(false)
 
 const isExportingBatchQRs = ref(false)
 const isBatchExportSuccess = ref(false)
@@ -383,7 +387,7 @@ const resetBatchExportProgress = () => {
 const resetData = () => {
   data.value = ''
   csvFile.value = null
-  processedDataStrings.value = []
+  dataStringsFromCsv.value = []
   isValidCsv.value = true
   resetBatchExportProgress()
   isBatchExportSuccess.value = false
@@ -428,8 +432,13 @@ const onCsvFileUpload = (event: Event) => {
       isValidCsv.value = false
       return
     }
-    const links = content.split('\n').filter((link) => link.trim() !== '')
-    processedDataStrings.value = links
+    let links = content.split('\n').filter((link) => link.trim() !== '')
+    links = links.map((link) => link.replace('\r', ''))
+    if (ignoreHeaderRow.value && links.length > 0) {
+      links.shift()
+    }
+    console.log('links', links)
+    dataStringsFromCsv.value = links
     isValidCsv.value = true
   }
 
@@ -445,7 +454,7 @@ const createZipFile = (
   index: number,
   format: 'png' | 'svg'
 ) => {
-  const dataString = processedDataStrings.value[index]
+  const dataString = filteredDataStringsFromCsv.value[index]
   let fileName = dataString.trim()
   if (dataString.startsWith('http')) {
     const pathSegments = dataString.split('/')
@@ -477,9 +486,9 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
   let numQrCodesCreated = 0
 
   try {
-    for (let index = 0; index < processedDataStrings.value.length; index++) {
+    for (let index = 0; index < filteredDataStringsFromCsv.value.length; index++) {
       currentExportedQrCodeIndex.value = index
-      const url = processedDataStrings.value[index]
+      const url = filteredDataStringsFromCsv.value[index]
       data.value = url
       await sleep(1000)
       let dataUrl: string = ''
@@ -492,7 +501,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
       numQrCodesCreated++
     }
 
-    while (numQrCodesCreated !== processedDataStrings.value.length) {
+    while (numQrCodesCreated !== filteredDataStringsFromCsv.value.length) {
       await sleep(100)
     }
 
@@ -768,7 +777,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                 <label for="data">
                   {{ t('Data to encode') }}
                 </label>
-                <div class="flex items-center gap-2">
+                <div class="flex grow items-center gap-2">
                   <button
                     :class="[
                       'secondary-button',
@@ -784,6 +793,24 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                   >
                     {{ $t('Batch export') }}
                   </button>
+                  <div
+                    v-if="exportMode === ExportMode.Batch"
+                    :class="[
+                      'flex grow items-center justify-end',
+                      dataStringsFromCsv.length > 0 && 'opacity-80'
+                    ]"
+                  >
+                    <input
+                      id="ignore-header"
+                      type="checkbox"
+                      class="checkbox mr-2"
+                      v-model="ignoreHeaderRow"
+                      @change="onCsvFileUpload($event)"
+                    />
+                    <label for="ignore-header" class="!text-sm !font-normal">
+                      {{ $t('Ignore header row') }}
+                    </label>
+                  </div>
                 </div>
               </div>
               <textarea
@@ -798,13 +825,17 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
               <template v-else>
                 <div
                   v-if="!csvFile"
+                  tabindex="0"
                   class="cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-8 text-center"
                   @click="fileInput.click()"
+                  @keyup.enter="fileInput.click()"
+                  @keyup.space="fileInput.click()"
                   @dragover.prevent
                   @drop.prevent="onCsvFileUpload"
                 >
                   <p>{{ $t('Drag and drop a CSV file here or click to select') }}</p>
                   <input
+                    aria-hidden="true"
                     ref="fileInput"
                     type="file"
                     accept=".csv"
@@ -820,7 +851,9 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                     </button>
                   </div>
                   <p v-else-if="currentExportedQrCodeIndex == null && !isExportingBatchQRs">
-                    {{ $t('{count} links detected', { count: processedDataStrings.length }) }}
+                    {{
+                      $t('{count} link(s) detected', { count: filteredDataStringsFromCsv.length })
+                    }}
                   </p>
                   <div v-else-if="currentExportedQrCodeIndex != null">
                     <p>{{ $t('Creating QR codes... This may take a while.') }}</p>
@@ -828,7 +861,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                       {{
                         $t('{index} / {count} QR codes have been created.', {
                           index: currentExportedQrCodeIndex + 1,
-                          count: processedDataStrings.length
+                          count: filteredDataStringsFromCsv.length
                         })
                       }}
                     </p>
