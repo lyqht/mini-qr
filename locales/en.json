@@ -58,6 +58,7 @@
   "{index} / {count} QR codes have been created.": "{index} / {count} QR codes have been created.",
   "QR codes have been successfully exported.": "QR codes have been successfully exported.",
   "Start new batch export": "Start new batch export",
+  "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.": "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.",
   "bg": "Bulgarian",
   "cs": "Czech",
   "da": "Danish",

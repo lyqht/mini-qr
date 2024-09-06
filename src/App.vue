@@ -604,6 +604,11 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                   class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
                   @click="copyQRToClipboard"
                   :disabled="exportMode === ExportMode.Batch"
+                  :title="
+                    t(
+                      'There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.'
+                    )
+                  "
                   :aria-label="t('Copy QR Code to clipboard')"
                 >
                   <svg
