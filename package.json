@@ -14,8 +14,8 @@
   },
   "lint-staged": {
     "*.{vue,js,jsx,ts,tsx,json}": [
-      "yarn lint",
-      "yarn format"
+      "pnpm lint",
+      "pnpm format"
     ]
   },
   "dependencies": {
