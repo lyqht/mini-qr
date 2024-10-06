@@ -8,6 +8,7 @@ on:
   release:
     types: [published]
 
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -28,15 +29,15 @@ jobs:
             file: "Dockerfile"
             image: "mini-qr"
             # ARM not working. Needs further research.
-            platforms: "linux/arm64,linux/amd64"
+            platforms: "linux/arm64,linux/amd64,linux/arm/v8"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3.0.0
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.0.0
         # Workaround to fix error:
