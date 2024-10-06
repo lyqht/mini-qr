@@ -828,10 +828,9 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                 v-model="data"
               />
               <template v-else>
-                <div
+                <button
                   v-if="!csvFile"
-                  tabindex="0"
-                  class="cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-8 text-center"
+                  class="w-full rounded-lg border-2 border-dashed border-gray-300 p-8 text-center"
                   :aria-label="t('Click to select and upload a CSV file')"
                   @click="fileInput.click()"
                   @keyup.enter="fileInput.click()"
@@ -843,14 +842,13 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                     {{ $t('Drag and drop a CSV file here or click to select') }}
                   </p>
                   <input
-                    aria-hidden="true"
                     ref="fileInput"
                     type="file"
                     accept=".csv"
                     class="hidden"
                     @change="onCsvFileUpload"
                   />
-                </div>
+                </button>
                 <div v-else-if="isValidCsv" class="p-4 text-center">
                   <div v-if="isBatchExportSuccess">
                     <p>{{ $t('QR codes have been successfully exported.') }}</p>
