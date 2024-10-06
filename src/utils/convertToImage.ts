@@ -1,4 +1,5 @@
 import domtoimage, { type Options } from 'dom-to-image'
+import { elementToSVG, inlineResources } from 'dom-to-svg'
 
 const defaultOptions: Options = {
   width: 400,
@@ -55,28 +56,53 @@ export function getPngElement(element: HTMLElement, options: Options) {
 }
 
 export function downloadPngElement(element: HTMLElement, filename: string, options: Options) {
-  getPngElement(element, options).then((dataUrl: string) => {
-    const link = document.createElement('a')
-    link.href = dataUrl
-    link.download = filename
-    link.click()
-  }).catch((error: Error) => {
-    console.error('Error converting element to PNG:', error)
-  })
+  getPngElement(element, options)
+    .then((dataUrl: string) => {
+      const link = document.createElement('a')
+      link.href = dataUrl
+      link.download = filename
+      link.click()
+    })
+    .catch((error: Error) => {
+      console.error('Error converting element to PNG:', error)
+    })
 }
 
-export function getSvgElement(element: HTMLElement, options: Options) {
+function applySvgOptions(svgDocument: Document, options: Options) {
+  const svgElement = svgDocument.documentElement
+  if (options.width) svgElement.setAttribute('width', options.width.toString())
+  if (options.height) svgElement.setAttribute('height', options.height.toString())
+  if (options.style) {
+    for (const [key, value] of Object.entries(options.style)) {
+      svgElement.style[key as any] = value as any
+    }
+  }
+}
+
+export async function getSvgString(element: HTMLElement, options: Options): Promise<string> {
   const formattedOptions = getFormattedOptions(element, options)
-  return domtoimage.toSvg(element, formattedOptions)
+  const svgDocument = elementToSVG(element)
+  await inlineResources(svgDocument.documentElement)
+  applySvgOptions(svgDocument, formattedOptions)
+  return new XMLSerializer().serializeToString(svgDocument)
+}
+
+export async function getSvgElement(element: HTMLElement, options: Options): Promise<string> {
+  const svgString = await getSvgString(element, options)
+
+  // Convert SVG string to data URL
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`
 }
 
 export function downloadSvgElement(element: HTMLElement, filename: string, options: Options) {
-  getSvgElement(element, options).then((dataUrl: string) => {
-    const link = document.createElement('a')
-    link.href = dataUrl
-    link.download = filename
-    link.click()
-  }).catch((error: Error) => {
-    console.error('Error converting element to SVG:', error)
-  })
+  getSvgElement(element, options)
+    .then((dataUrl: string) => {
+      const link = document.createElement('a')
+      link.href = dataUrl
+      link.download = filename
+      link.click()
+    })
+    .catch((error: Error) => {
+      console.error('Error converting element to SVG:', error)
+    })
 }
