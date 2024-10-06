@@ -1,9 +1,8 @@
 import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
-import type { StyledQRCodeProps } from '@/components/StyledQRCode.vue'
-import type { DrawType } from 'qr-code-styling'
 import GeeksHackingConfig from '@/assets/presets/geekshacking.json'
 import SpDigitalConfig from '@/assets/presets/spdigital.json'
 import GovtechStackCommunityConfig from '@/assets/presets/govtech_stack.json'
+import type { DrawType, Options as StyledQRCodeProps } from 'qr-code-styling'
 
 export interface CustomStyleProps {
   borderRadius?: string
@@ -15,7 +14,7 @@ export type PresetAttributes = {
   name: string
 }
 
-export type Preset = Required<StyledQRCodeProps> & PresetAttributes
+export type Preset = Omit<Required<StyledQRCodeProps>, 'shape' | 'qrOptions'> & PresetAttributes
 
 const defaultPresetOptions = {
   backgroundOptions: {
