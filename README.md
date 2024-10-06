@@ -15,16 +15,6 @@ A customizable QR code generator to create beautiful and unique QR codes.
     <a href="https://viteconf.org/"><img width="100" src="public/presets/viteconf2023.svg" /></a>
 </div>
 
-## Demo
-
-Try it out [here](https://mini-qr.vercel.app/).
-
-https://github.com/lyqht/mini-qr/assets/35736525/991b2d7e-f168-4354-9091-1678d2c1bddb
-
-Batch data export is also now supported.
-
-![](./public/batch_data_export.mp4)
-
 ## Features
 
 - 🎨 Generate QR codes with custom colors and styles
@@ -39,6 +29,17 @@ Batch data export is also now supported.
 - 🔳 User can choose to include background or obtain a transparent QR code
 - 🛡️ Error correction level selection - this will affect the size of the qr code and image within. Use lower correction levels for bigger pieces of data.
 - 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once.
+
+## Demo
+
+Try it out [here](https://mini-qr.vercel.app/).
+
+https://github.com/lyqht/mini-qr/assets/35736525/991b2d7e-f168-4354-9091-1678d2c1bddb
+
+Batch data export is also now supported.
+
+https://github.com/user-attachments/assets/fef17e6a-c226-4136-9501-8d3e951671e0
+
 
 ## Self-hosting with Docker 🐋
 
