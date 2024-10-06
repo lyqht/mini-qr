@@ -50,7 +50,7 @@
   "dot": "dot",
   "Drag and drop a CSV file here or click to select": "Drag and drop a CSV file here or click to select",
   "Click to select and upload a CSV file": "Click to select and upload a CSV file",
-  "{count} link(s) detected": "{count} link(s) detected",
+  "{count} piece(s) of data detected": "{count} piece(s) of data detected",
   "Invalid CSV": "Invalid CSV",
   "Single export": "Single export",
   "Batch export": "Batch export",

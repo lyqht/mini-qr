@@ -860,7 +860,9 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                   </div>
                   <p v-else-if="currentExportedQrCodeIndex == null && !isExportingBatchQRs">
                     {{
-                      $t('{count} link(s) detected', { count: filteredDataStringsFromCsv.length })
+                      $t('{count} piece(s) of data detected', {
+                        count: filteredDataStringsFromCsv.length
+                      })
                     }}
                   </p>
                   <div v-else-if="currentExportedQrCodeIndex != null">
