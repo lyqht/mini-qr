@@ -7,6 +7,7 @@ import {
   downloadSvgElement,
   getPngElement,
   getSvgElement,
+  getSvgString,
   IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED
 } from '@/utils/convertToImage'
 import JSZip from 'jszip'
@@ -495,7 +496,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
       if (format === 'png') {
         dataUrl = await getPngElement(qrCode as HTMLElement, options.value)
       } else {
-        dataUrl = await getSvgElement(qrCode as HTMLElement, options.value)
+        dataUrl = await getSvgString(qrCode as HTMLElement, options.value)
       }
       createZipFile(zip, dataUrl, index, format)
       numQrCodesCreated++
