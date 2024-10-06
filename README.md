@@ -49,3 +49,7 @@ wget https://github.com/lyqht/mini-qr/raw/main/docker-compose.yml
 
 docker compose up -d
 ```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
