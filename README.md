@@ -25,16 +25,6 @@ Batch data export is also now supported.
 
 ![](./public/batch_data_export.mp4)
 
-## Self-hosting with Docker 🐋
-
-Mini-QR can easily be self-hosted. We provide a [docker-compose.yml](docker-compose.yml) file as well as our own images. We are using GitHub's `ghrc.io` Container Registry.
-
-```bash
-wget https://github.com/lyqht/mini-qr/raw/main/docker-compose.yml
-
-docker compose up -d
-```
-
 ## Features
 
 - 🎨 Generate QR codes with custom colors and styles
@@ -49,3 +39,13 @@ docker compose up -d
 - 🔳 User can choose to include background or obtain a transparent QR code
 - 🛡️ Error correction level selection - this will affect the size of the qr code and image within. Use lower correction levels for bigger pieces of data.
 - 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once.
+
+## Self-hosting with Docker 🐋
+
+Mini-QR can easily be self-hosted. We provide a [docker-compose.yml](docker-compose.yml) file as well as our own images. We are using GitHub's `ghrc.io` Container Registry.
+
+```bash
+wget https://github.com/lyqht/mini-qr/raw/main/docker-compose.yml
+
+docker compose up -d
+```
