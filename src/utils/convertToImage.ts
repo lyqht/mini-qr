@@ -49,27 +49,34 @@ export async function copyImageToClipboard(element: HTMLElement, options: Option
   }
 }
 
-export function downloadPngElement(element: HTMLElement, filename: string, options: Options) {
+export function getPngElement(element: HTMLElement, options: Options) {
   const formattedOptions = getFormattedOptions(element, options)
-  domtoimage.toPng(element, formattedOptions).then((dataUrl: string) => {
+  return domtoimage.toPng(element, formattedOptions)
+}
+
+export function downloadPngElement(element: HTMLElement, filename: string, options: Options) {
+  getPngElement(element, options).then((dataUrl: string) => {
     const link = document.createElement('a')
     link.href = dataUrl
     link.download = filename
     link.click()
+  }).catch((error: Error) => {
+    console.error('Error converting element to PNG:', error)
   })
 }
 
-export function downloadSvgElement(element: HTMLElement, filename: string, options: Options) {
+export function getSvgElement(element: HTMLElement, options: Options) {
   const formattedOptions = getFormattedOptions(element, options)
-  domtoimage
-    .toSvg(element, formattedOptions)
-    .then((dataUrl: string) => {
-      const link = document.createElement('a')
-      link.href = dataUrl
-      link.download = filename
-      link.click()
-    })
-    .catch((error: Error) => {
-      console.error('Error converting element to SVG:', error)
-    })
+  return domtoimage.toSvg(element, formattedOptions)
+}
+
+export function downloadSvgElement(element: HTMLElement, filename: string, options: Options) {
+  getSvgElement(element, options).then((dataUrl: string) => {
+    const link = document.createElement('a')
+    link.href = dataUrl
+    link.download = filename
+    link.click()
+  }).catch((error: Error) => {
+    console.error('Error converting element to SVG:', error)
+  })
 }

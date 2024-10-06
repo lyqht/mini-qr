@@ -5,8 +5,11 @@ import {
   copyImageToClipboard,
   downloadPngElement,
   downloadSvgElement,
+  getPngElement,
+  getSvgElement,
   IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED
 } from '@/utils/convertToImage'
+import JSZip from 'jszip'
 import {
   type CornerDotType,
   type CornerSquareType,
@@ -154,7 +157,9 @@ watch(selectedPreset, () => {
   styleBorderRadius.value = getNumericCSSValue(selectedPreset.value.style.borderRadius as string)
   styleBackground.value = selectedPreset.value.style.background
   includeBackground.value = selectedPreset.value.style.background !== 'transparent'
-  errorCorrectionLevel.value = selectedPreset.value.qrOptions ? selectedPreset.value.qrOptions.errorCorrectionLevel : 'Q'
+  errorCorrectionLevel.value = selectedPreset.value.qrOptions
+    ? selectedPreset.value.qrOptions.errorCorrectionLevel
+    : 'Q'
 })
 
 const LAST_LOADED_LOCALLY_PRESET_KEY = 'Last saved locally'
@@ -219,18 +224,24 @@ async function copyQRToClipboard() {
 }
 
 function downloadQRImageAsPng() {
-  console.debug('Copying image to clipboard')
-  const qrCode = document.querySelector('#qr-code-container')
-  if (qrCode) {
-    downloadPngElement(qrCode as HTMLElement, 'qr-code.png', options.value)
+  if (exportMode.value === ExportMode.Single) {
+    const qrCode = document.querySelector('#qr-code-container')
+    if (qrCode) {
+      downloadPngElement(qrCode as HTMLElement, 'qr-code.png', options.value)
+    }
+  } else {
+    generateBatchQRCodes('png')
   }
 }
 
 function downloadQRImageAsSvg() {
-  console.debug('Copying image to clipboard')
-  const qrCode = document.querySelector('#qr-code-container')
-  if (qrCode) {
-    downloadSvgElement(qrCode as HTMLElement, 'qr-code.svg', options.value)
+  if (exportMode.value === ExportMode.Single) {
+    const qrCode = document.querySelector('#qr-code-container')
+    if (qrCode) {
+      downloadSvgElement(qrCode as HTMLElement, 'qr-code.svg', options.value)
+    }
+  } else {
+    generateBatchQRCodes('svg')
   }
 }
 
@@ -345,6 +356,170 @@ onMounted(() => {
   loadQRConfigFromLocalStorage()
 })
 //#endregion
+
+//#region /* Batch QR Code Generation */
+enum ExportMode {
+  Single = 'single',
+  Batch = 'batch'
+}
+
+const exportMode = ref(ExportMode.Single)
+const dataStringsFromCsv = ref<string[]>([])
+const filteredDataStringsFromCsv = computed(() =>
+  ignoreHeaderRow.value ? dataStringsFromCsv.value.slice(1) : dataStringsFromCsv.value
+)
+
+const csvFile = ref<File | null>(null)
+const fileInput = ref<HTMLInputElement>()
+const isValidCsv = ref(true)
+const ignoreHeaderRow = ref(false)
+
+const isExportingBatchQRs = ref(false)
+const isBatchExportSuccess = ref(false)
+const currentExportedQrCodeIndex = ref<number | null>(null)
+
+const resetBatchExportProgress = () => {
+  isExportingBatchQRs.value = false
+  currentExportedQrCodeIndex.value = null
+  usedFilenames.clear()
+}
+
+const resetData = () => {
+  data.value = ''
+  csvFile.value = null
+  dataStringsFromCsv.value = []
+  isValidCsv.value = true
+  resetBatchExportProgress()
+  isBatchExportSuccess.value = false
+}
+
+watch(exportMode, () => {
+  resetData()
+})
+
+const getFileFromInputEvent = (event: InputEvent) => {
+  const inputElement = event.target as HTMLInputElement
+  if (inputElement.files && inputElement.files.length > 0) {
+    return inputElement.files[0]
+  }
+  return null
+}
+
+const onCsvFileUpload = (event: Event) => {
+  isBatchExportSuccess.value = false
+  let file: File | null = getFileFromInputEvent(event as InputEvent)
+
+  // If it is not input event, then it might be a drag and drop event
+  if (file == null) {
+    const dt = (event as DragEvent).dataTransfer
+    if (!dt || !dt.files || dt.files.length === 0) {
+      return
+    }
+    file = dt.files[0]
+  }
+
+  // Early return if file is not a CSV
+  if (file.type !== 'text/csv') {
+    isValidCsv.value = false
+    return
+  }
+
+  csvFile.value = file
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const content = e.target?.result
+    if (typeof content !== 'string') {
+      isValidCsv.value = false
+      return
+    }
+    let links = content.split('\n').filter((link) => link.trim() !== '')
+    links = links.map((link) => link.replace('\r', ''))
+    if (ignoreHeaderRow.value && links.length > 0) {
+      links.shift()
+    }
+    console.log('links', links)
+    dataStringsFromCsv.value = links
+    isValidCsv.value = true
+  }
+
+  reader.readAsText(file)
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const usedFilenames = new Set() // zip folders cannot have duplicate filenames, otherwise they override each other
+const createZipFile = (
+  zip: typeof JSZip,
+  dataUrl: string,
+  index: number,
+  format: 'png' | 'svg'
+) => {
+  const dataString = filteredDataStringsFromCsv.value[index]
+  let fileName = dataString.trim()
+  if (dataString.startsWith('http')) {
+    const pathSegments = dataString.split('/')
+    const lastPathSegment = pathSegments[pathSegments.length - 1]
+    // Check if lastPathSegment is only alphanumeric or underscores
+    const isValidFileName = /^[a-zA-Z0-9_]+$/.test(lastPathSegment)
+    if (!isValidFileName) {
+      fileName = pathSegments[pathSegments.length - 2] || `qr_code_${index}`
+    }
+  }
+
+  if (usedFilenames.has(fileName)) {
+    fileName = `${fileName}-${index}`
+  }
+
+  usedFilenames.add(fileName)
+
+  if (format === 'png') {
+    zip.file(`${fileName}.${format}`, dataUrl.split(',')[1], { base64: true })
+  } else {
+    // For SVG, we don't need to split and use base64
+    zip.file(`${fileName}.${format}`, dataUrl)
+  }
+}
+async function generateBatchQRCodes(format: 'png' | 'svg') {
+  isExportingBatchQRs.value = true
+  const qrCode = document.querySelector('#qr-code-container')
+  const zip = new JSZip()
+  let numQrCodesCreated = 0
+
+  try {
+    for (let index = 0; index < filteredDataStringsFromCsv.value.length; index++) {
+      currentExportedQrCodeIndex.value = index
+      const url = filteredDataStringsFromCsv.value[index]
+      data.value = url
+      await sleep(1000)
+      let dataUrl: string = ''
+      if (format === 'png') {
+        dataUrl = await getPngElement(qrCode as HTMLElement, options.value)
+      } else {
+        dataUrl = await getSvgElement(qrCode as HTMLElement, options.value)
+      }
+      createZipFile(zip, dataUrl, index, format)
+      numQrCodesCreated++
+    }
+
+    while (numQrCodesCreated !== filteredDataStringsFromCsv.value.length) {
+      await sleep(100)
+    }
+
+    zip.generateAsync({ type: 'blob' }).then((content) => {
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(content)
+      link.download = `qr-codes.zip`
+      link.click()
+      isBatchExportSuccess.value = true
+    })
+  } catch (error) {
+    console.error('Error generating batch QR codes', error)
+    isBatchExportSuccess.value = false
+  } finally {
+    resetBatchExportProgress()
+  }
+}
+//#endregion
 </script>
 
 <template>
@@ -428,6 +603,12 @@ onMounted(() => {
                   id="copy-qr-image-button"
                   class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
                   @click="copyQRToClipboard"
+                  :disabled="exportMode === ExportMode.Batch"
+                  :title="
+                    t(
+                      'There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.'
+                    )
+                  "
                   :aria-label="t('Copy QR Code to clipboard')"
                 >
                   <svg
@@ -597,10 +778,48 @@ onMounted(() => {
               </div>
             </div>
             <div class="w-full">
-              <label for="data">
-                {{ t('Data to encode') }}
-              </label>
+              <div class="mb-2 flex items-center gap-4">
+                <label for="data">
+                  {{ t('Data to encode') }}
+                </label>
+                <div class="flex grow items-center gap-2">
+                  <button
+                    :class="[
+                      'secondary-button',
+                      { 'opacity-50': exportMode !== ExportMode.Single }
+                    ]"
+                    @click="exportMode = ExportMode.Single"
+                  >
+                    {{ $t('Single export') }}
+                  </button>
+                  <button
+                    :class="['secondary-button', { 'opacity-50': exportMode !== ExportMode.Batch }]"
+                    @click="exportMode = ExportMode.Batch"
+                  >
+                    {{ $t('Batch export') }}
+                  </button>
+                  <div
+                    v-if="exportMode === ExportMode.Batch"
+                    :class="[
+                      'flex grow items-center justify-end',
+                      dataStringsFromCsv.length > 0 && 'opacity-80'
+                    ]"
+                  >
+                    <input
+                      id="ignore-header"
+                      type="checkbox"
+                      class="checkbox mr-2"
+                      v-model="ignoreHeaderRow"
+                      @change="onCsvFileUpload($event)"
+                    />
+                    <label for="ignore-header" class="!text-sm !font-normal">
+                      {{ $t('Ignore header row') }}
+                    </label>
+                  </div>
+                </div>
+              </div>
               <textarea
+                v-if="exportMode === ExportMode.Single"
                 name="data"
                 class="text-input"
                 id="data"
@@ -608,6 +827,60 @@ onMounted(() => {
                 :placeholder="t('data to encode e.g. a URL or a string')"
                 v-model="data"
               />
+              <template v-else>
+                <div
+                  v-if="!csvFile"
+                  tabindex="0"
+                  class="cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-8 text-center"
+                  :aria-label="t('Click to select and upload a CSV file')"
+                  @click="fileInput.click()"
+                  @keyup.enter="fileInput.click()"
+                  @keyup.space="fileInput.click()"
+                  @dragover.prevent
+                  @drop.prevent="onCsvFileUpload"
+                >
+                  <p aria-hidden="true">
+                    {{ $t('Drag and drop a CSV file here or click to select') }}
+                  </p>
+                  <input
+                    aria-hidden="true"
+                    ref="fileInput"
+                    type="file"
+                    accept=".csv"
+                    class="hidden"
+                    @change="onCsvFileUpload"
+                  />
+                </div>
+                <div v-else-if="isValidCsv" class="p-4 text-center">
+                  <div v-if="isBatchExportSuccess">
+                    <p>{{ $t('QR codes have been successfully exported.') }}</p>
+                    <button class="button mt-4" @click="csvFile = null">
+                      {{ $t('Start new batch export') }}
+                    </button>
+                  </div>
+                  <p v-else-if="currentExportedQrCodeIndex == null && !isExportingBatchQRs">
+                    {{
+                      $t('{count} piece(s) of data detected', {
+                        count: filteredDataStringsFromCsv.length
+                      })
+                    }}
+                  </p>
+                  <div v-else-if="currentExportedQrCodeIndex != null">
+                    <p>{{ $t('Creating QR codes... This may take a while.') }}</p>
+                    <p>
+                      {{
+                        $t('{index} / {count} QR codes have been created.', {
+                          index: currentExportedQrCodeIndex + 1,
+                          count: filteredDataStringsFromCsv.length
+                        })
+                      }}
+                    </p>
+                  </div>
+                </div>
+                <div v-else class="p-4 text-center text-red-500">
+                  <p>{{ $t('Invalid CSV') }}</p>
+                </div>
+              </template>
             </div>
             <fieldset class="flex-1" role="radiogroup" tabindex="0">
               <div class="flex flex-row items-center gap-2">
@@ -873,6 +1146,11 @@ onMounted(() => {
 </template>
 
 <style lang="postcss" scoped>
+p {
+  @apply !font-normal;
+}
+
+p,
 label,
 legend {
   @apply text-gray-700 dark:text-gray-100 text-lg font-semibold;

@@ -17,10 +17,31 @@ A customizable QR code generator to create beautiful and unique QR codes.
 
 ## Demo
 
+Try it out [here](https://mini-qr.vercel.app/).
+
 https://github.com/lyqht/mini-qr/assets/35736525/991b2d7e-f168-4354-9091-1678d2c1bddb
 
+Batch data export is also now supported.
+
+![](./public/batch_data_export.mp4)
+
+## Features
+
+- 🎨 Generate QR codes with custom colors and styles
+- 🖼️ Support for various output formats, including SVG and PNG
+- 📋 Copy to clipboard
+- 🌓 UI respects user's light/dark mode preferences
+- 🎲 Randomize style button
+- 🌐 Available in 29 languages thanks to [deepl-translate-github-action](https://github.com/lyqht/deepl-translate-github-action)
+- 💾 Save & Load QR Code config
+- 🖼️ Upload custom image for logo
+- 🎭 Presets: Pre-crafted QR code styles are available as immediate usage/ reference. Refer to samples above!
+- 🔳 User can choose to include background or obtain a transparent QR code
+- 🛡️ Error correction level selection - this will affect the size of the qr code and image within. Use lower correction levels for bigger pieces of data.
+- 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once.
 
 ## Self-hosting with Docker 🐋
+
 Mini-QR can easily be self-hosted. We provide a [docker-compose.yml](docker-compose.yml) file as well as our own images. We are using GitHub's `ghrc.io` Container Registry.
 
 ```bash
@@ -28,17 +49,3 @@ wget https://github.com/lyqht/mini-qr/raw/main/docker-compose.yml
 
 docker compose up -d
 ```
-
-## Features
-
-- Generate QR codes with custom colors and styles
-- Support for various output formats, including SVG and PNG
-- Copy to clipboard
-- UI respects user's light/dark mode preferences
-- Randomize style button
-- Available in 29 languages thanks to [deepl-translate-github-action](https://github.com/lyqht/deepl-translate-github-action)
-- Save & Load QR Code config
-- Upload custom image for logo
-- Presets: Pre-crafted QR code styles are available as immediate usage/ reference. Refer to samples above!
-- User can choose to include background or obtain a transparent QR code
-- Error correction level selection - this will affect the size of the qr code and image within.

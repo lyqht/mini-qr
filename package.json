@@ -14,8 +14,8 @@
   },
   "lint-staged": {
     "*.{vue,js,jsx,ts,tsx,json}": [
-      "yarn lint",
-      "yarn format"
+      "pnpm lint",
+      "pnpm format"
     ]
   },
   "dependencies": {
@@ -26,6 +26,8 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "dom-to-image": "^2.6.0",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "lucide-vue-next": "^0.321.0",
     "qr-code-styling": "^1.6.0-rc.1",
     "radix-vue": "^1.4.1",
