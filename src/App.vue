@@ -6,7 +6,6 @@ import {
   downloadPngElement,
   downloadSvgElement,
   getPngElement,
-  getSvgElement,
   getSvgString,
   IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED
 } from '@/utils/convertToImage'
@@ -228,7 +227,12 @@ function downloadQRImageAsPng() {
   if (exportMode.value === ExportMode.Single) {
     const qrCode = document.querySelector('#qr-code-container')
     if (qrCode) {
-      downloadPngElement(qrCode as HTMLElement, 'qr-code.png', options.value)
+      downloadPngElement(
+        qrCode as HTMLElement,
+        'qr-code.png',
+        options.value,
+        styledBorderRadiusFormatted.value
+      )
     }
   } else {
     generateBatchQRCodes('png')
@@ -239,7 +243,12 @@ function downloadQRImageAsSvg() {
   if (exportMode.value === ExportMode.Single) {
     const qrCode = document.querySelector('#qr-code-container')
     if (qrCode) {
-      downloadSvgElement(qrCode as HTMLElement, 'qr-code.svg', options.value)
+      downloadSvgElement(
+        qrCode as HTMLElement,
+        'qr-code.svg',
+        options.value,
+        styledBorderRadiusFormatted.value
+      )
     }
   } else {
     generateBatchQRCodes('svg')
@@ -494,9 +503,17 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
       await sleep(1000)
       let dataUrl: string = ''
       if (format === 'png') {
-        dataUrl = await getPngElement(qrCode as HTMLElement, options.value)
+        dataUrl = await getPngElement(
+          qrCode as HTMLElement,
+          options.value,
+          styledBorderRadiusFormatted.value
+        )
       } else {
-        dataUrl = await getSvgString(qrCode as HTMLElement, options.value)
+        dataUrl = await getSvgString(
+          qrCode as HTMLElement,
+          options.value,
+          styledBorderRadiusFormatted.value
+        )
       }
       createZipFile(zip, dataUrl, index, format)
       numQrCodesCreated++

@@ -6,11 +6,15 @@ const defaultOptions: Options = {
   height: 400
 }
 
-const getFormattedOptions = (element: HTMLElement, options: Options): Options => {
+const getFormattedOptions = (
+  element: HTMLElement,
+  options: Options,
+  borderRadius?: string
+): Options => {
   if (options.width && options.height) {
     const scale = getResizeScaleToFit(element, options.width, options.height)
     return {
-      style: { scale, transformOrigin: 'left top', borderRadius: '48px' },
+      style: { scale, transformOrigin: 'left top', borderRadius: borderRadius ?? '48px' },
       quality: 100,
       ...options
     }
@@ -32,9 +36,13 @@ const getResizeScaleToFit = (child: HTMLElement, width: number, height: number):
 export const IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED =
   navigator.clipboard && navigator.clipboard.write != undefined
 
-export async function copyImageToClipboard(element: HTMLElement, options: Options) {
+export async function copyImageToClipboard(
+  element: HTMLElement,
+  options: Options,
+  borderRadius?: string
+) {
   if (IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED) {
-    const formattedOptions = getFormattedOptions(element, options)
+    const formattedOptions = getFormattedOptions(element, options, borderRadius)
     console.debug('Converting to blob')
     domtoimage.toBlob(element, formattedOptions).then((blob: Blob) => {
       const item = new ClipboardItem({ [blob.type]: blob })
@@ -50,13 +58,18 @@ export async function copyImageToClipboard(element: HTMLElement, options: Option
   }
 }
 
-export function getPngElement(element: HTMLElement, options: Options) {
-  const formattedOptions = getFormattedOptions(element, options)
+export function getPngElement(element: HTMLElement, options: Options, borderRadius?: string) {
+  const formattedOptions = getFormattedOptions(element, options, borderRadius)
   return domtoimage.toPng(element, formattedOptions)
 }
 
-export function downloadPngElement(element: HTMLElement, filename: string, options: Options) {
-  getPngElement(element, options)
+export function downloadPngElement(
+  element: HTMLElement,
+  filename: string,
+  options: Options,
+  borderRadius?: string
+) {
+  getPngElement(element, options, borderRadius)
     .then((dataUrl: string) => {
       const link = document.createElement('a')
       link.href = dataUrl
@@ -79,23 +92,36 @@ function applySvgOptions(svgDocument: Document, options: Options) {
   }
 }
 
-export async function getSvgString(element: HTMLElement, options: Options): Promise<string> {
-  const formattedOptions = getFormattedOptions(element, options)
+export async function getSvgString(
+  element: HTMLElement,
+  options: Options,
+  borderRadius?: string
+): Promise<string> {
+  const formattedOptions = getFormattedOptions(element, options, borderRadius)
   const svgDocument = elementToSVG(element)
   await inlineResources(svgDocument.documentElement)
   applySvgOptions(svgDocument, formattedOptions)
   return new XMLSerializer().serializeToString(svgDocument)
 }
 
-export async function getSvgElement(element: HTMLElement, options: Options): Promise<string> {
-  const svgString = await getSvgString(element, options)
+export async function getSvgElement(
+  element: HTMLElement,
+  options: Options,
+  borderRadius?: string
+): Promise<string> {
+  const svgString = await getSvgString(element, options, borderRadius)
 
   // Convert SVG string to data URL
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`
 }
 
-export function downloadSvgElement(element: HTMLElement, filename: string, options: Options) {
-  getSvgElement(element, options)
+export function downloadSvgElement(
+  element: HTMLElement,
+  filename: string,
+  options: Options,
+  borderRadius?: string
+) {
+  getSvgElement(element, options, borderRadius)
     .then((dataUrl: string) => {
       const link = document.createElement('a')
       link.href = dataUrl
