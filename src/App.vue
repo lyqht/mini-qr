@@ -598,7 +598,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                 />
               </svg>
             </a>
-            <button @click="toggleTheme">
+            <a class="icon-button" @click="toggleTheme" :aria-label="t('Toggle Theme')">
               <span v-if="userTheme === 'light'">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -635,7 +635,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                   />
                 </svg>
               </span>
-            </button>
+            </a>
             <div class="vertical-border"></div>
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
               <g
