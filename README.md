@@ -21,7 +21,7 @@ A customizable QR code generator to create beautiful and unique QR codes.
 - 🎨 Customizable colors and styles
 - 🖼️ Export to SVG and PNG
 - 📋 Copy to clipboard
-- 🌓 Light/dark mode based on system settings
+- 🌓 Light/dark/system-preference mode toggle
 - 🎲 Randomize style button
 - 🌐 Available in 29+ languages thanks to [deepl-translate-github-action](https://github.com/lyqht/deepl-translate-github-action)
 - 💾 Save & Load QR Code config

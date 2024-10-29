@@ -7,6 +7,7 @@ export const content = [
   './app/**/*.{ts,tsx,vue}',
   './src/**/*.{ts,tsx,vue}'
 ]
+export const darkMode = 'class'
 export const theme = {
   container: {
     center: true,

@@ -7,6 +7,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  transition-duration: 300ms;
+  transition-property: background-color, color;
+
+  @media screen and (prefers-reduced-motion: reduce), (update: slow) {
+    transition-duration: 0s;
+  }
 }
 
 a {

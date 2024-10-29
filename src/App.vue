@@ -24,7 +24,7 @@ import { createRandomColor, getRandomItemInArray } from './utils/color'
 import { getNumericCSSValue } from './utils/formatting'
 import { sortedLocales } from './utils/language'
 import { allPresets, type Preset } from './utils/presets'
-
+import useDarkModePreference from './utils/useDarkModePreference'
 //#region /** locale */
 const isLocaleSelectOpen = ref(false)
 const { t, locale } = useI18n()
@@ -184,6 +184,10 @@ watch(
   },
   { immediate: true }
 )
+
+//#region /** dark mode */
+const { isDarkMode, isDarkModePreferenceSetBySystem, toggleDarkModePreference } =
+  useDarkModePreference()
 //#endregion
 
 //#region /* error correction level */
@@ -542,7 +546,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
 
 <template>
   <main>
-    <div class="relative grid place-items-center bg-white p-8 md:px-6 dark:bg-zinc-900">
+    <div class="relative grid place-items-center bg-white p-8 dark:bg-zinc-900 md:px-6">
       <div
         class="mb-8 flex w-full flex-row flex-wrap justify-between gap-4 md:mb-4 md:w-5/6 md:ps-4"
       >
@@ -565,7 +569,68 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
               </svg>
             </a>
             <div class="vertical-border"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+            <button
+              class="icon-button"
+              @click="toggleDarkModePreference"
+              :aria-label="t('Toggle dark mode')"
+            >
+              <span v-if="isDarkModePreferenceSetBySystem">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+                  <g fill="#abcabc">
+                    <path d="M12 16a4 4 0 0 0 0-8z" />
+                    <path
+                      fill-rule="evenodd"
+                      d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2m0 2v4a4 4 0 1 0 0 8v4a8 8 0 1 0 0-16"
+                      clip-rule="evenodd"
+                    />
+                  </g>
+                </svg>
+              </span>
+
+              <span v-else-if="isDarkMode">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#abcbca"
+                  stroke-width="2"
+                  width="36"
+                  height="36"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              </span>
+              <span v-else>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  width="36"
+                  height="36"
+                >
+                  <path
+                    fill="#abcbca"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+              </span>
+            </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon"
+              width="36"
+              height="36"
+              viewBox="0 0 24 24"
+            >
               <g
                 fill="none"
                 stroke="#abcbca"
