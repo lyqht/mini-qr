@@ -24,7 +24,7 @@ import { createRandomColor, getRandomItemInArray } from './utils/color'
 import { getNumericCSSValue } from './utils/formatting'
 import { sortedLocales } from './utils/language'
 import { allPresets, type Preset } from './utils/presets'
-
+import useDarkModePreference from './utils/useDarkModePreference'
 //#region /** locale */
 const isLocaleSelectOpen = ref(false)
 const { t, locale } = useI18n()
@@ -185,39 +185,9 @@ watch(
   { immediate: true }
 )
 
-export type UserTheme = 'light' | 'dark'
-
-const setTheme = (theme: UserTheme) => {
-  localStorage.setItem('user-theme', theme)
-  userTheme.value = theme
-  document.documentElement.className = theme
-}
-
-const getTheme = (): UserTheme => {
-  return localStorage.getItem('user-theme') as UserTheme
-}
-
-const toggleTheme = (): void => {
-  const activeTheme = localStorage.getItem('user-theme')
-  if (activeTheme === 'light') {
-    setTheme('dark')
-  } else {
-    setTheme('light')
-  }
-}
-
-const getMediaPreference = (): UserTheme => {
-  const hasDarkPreference = window.matchMedia('(prefers-color-scheme: dark)').matches
-  if (hasDarkPreference) {
-    return 'dark'
-  } else {
-    return 'light'
-  }
-}
-
-const userTheme = ref<UserTheme>(getTheme() || getMediaPreference())
-
-onMounted(() => setTheme(userTheme.value))
+//#region /** dark mode */
+const { isDarkMode, isDarkModePreferenceSetBySystem, toggleDarkModePreference } =
+  useDarkModePreference()
 //#endregion
 
 //#region /* error correction level */
@@ -598,11 +568,47 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                 />
               </svg>
             </a>
-            <a class="icon-button" @click="toggleTheme" :aria-label="t('Toggle Theme')">
-              <span v-if="userTheme === 'light'">
+            <div class="vertical-border"></div>
+            <button
+              class="icon-button"
+              @click="toggleDarkModePreference"
+              :aria-label="t('Toggle dark mode')"
+            >
+              <span v-if="isDarkModePreferenceSetBySystem">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+                  <g fill="#abcabc">
+                    <path d="M12 16a4 4 0 0 0 0-8z" />
+                    <path
+                      fill-rule="evenodd"
+                      d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2m0 2v4a4 4 0 1 0 0 8v4a8 8 0 1 0 0-16"
+                      clip-rule="evenodd"
+                    />
+                  </g>
+                </svg>
+              </span>
+
+              <span v-else-if="isDarkMode">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="icon fill-current"
+                  class="icon"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#abcbca"
+                  stroke-width="2"
+                  width="36"
+                  height="36"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              </span>
+              <span v-else>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke-width="2"
@@ -617,27 +623,14 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                   />
                 </svg>
               </span>
-              <span v-if="userTheme === 'dark'">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="icon"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  width="36"
-                  height="36"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
-              </span>
-            </a>
-            <div class="vertical-border"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+            </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon"
+              width="36"
+              height="36"
+              viewBox="0 0 24 24"
+            >
               <g
                 fill="none"
                 stroke="#abcbca"
