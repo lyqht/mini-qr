@@ -840,6 +840,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                   v-model:value="selectedPresetKey"
                   v-model:open="isPresetSelectOpen"
                   :button-label="t('Select preset')"
+                  :insert-divider-at-indexes="[0, 2]"
                 />
                 <button
                   class="icon-button"

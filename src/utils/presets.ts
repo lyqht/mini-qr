@@ -2,6 +2,7 @@ import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
 import GeeksHackingConfig from '@/assets/presets/geekshacking.json'
 import SpDigitalConfig from '@/assets/presets/spdigital.json'
 import GovtechStackCommunityConfig from '@/assets/presets/govtech_stack.json'
+import PlainConfig from '@/assets/presets/plain.json'
 import type { DrawType, Options as StyledQRCodeProps } from 'qr-code-styling'
 
 export interface CustomStyleProps {
@@ -14,7 +15,11 @@ export type PresetAttributes = {
   name: string
 }
 
-export type Preset = Omit<Required<StyledQRCodeProps>, 'shape' | 'qrOptions'> & PresetAttributes
+export type Preset = Omit<
+  Required<StyledQRCodeProps>,
+  'shape' | 'qrOptions' | 'nodeCanvas' | 'jsdom'
+> &
+  PresetAttributes
 
 const defaultPresetOptions = {
   backgroundOptions: {
@@ -240,7 +245,7 @@ export const vueJsPreset: Preset = {
 
 export const defaultPreset: Preset = {
   ...defaultPresetOptions,
-  name: 'Default',
+  name: 'Default (lyqht)',
   data: 'https://github.com/lyqht',
   image: PLACEHOLDER_IMAGE_URL,
   dotsOptions: {
@@ -296,8 +301,16 @@ export const govtechStackCommunityPreset = {
   style: GovtechStackCommunityConfig.style
 } as Preset
 
+export const plainPreset = {
+  ...defaultPresetOptions,
+  name: 'Plain',
+  ...PlainConfig.props,
+  style: PlainConfig.style
+} as Preset
+
 export const allPresets: Preset[] = [
   defaultPreset,
+  plainPreset,
   ...[
     padletPreset,
     uiliciousPreset,

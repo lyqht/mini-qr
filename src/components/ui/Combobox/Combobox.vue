@@ -18,6 +18,7 @@ const value = defineModel<string>('value')
 
 defineProps<{
   items: { value: any; label: string }[]
+  insertDividerAtIndexes?: number[]
   buttonLabel: string
 }>()
 </script>
@@ -42,25 +43,30 @@ defineProps<{
         <CommandEmpty>No item found.</CommandEmpty>
         <CommandList>
           <CommandGroup>
-            <CommandItem
-              v-for="item in items"
-              :key="item.value"
-              :value="item.value"
-              class="bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
-              @select="
-                (ev) => {
-                  if (typeof ev.detail.value === 'string') {
-                    value = ev.detail.value
+            <template v-for="(item, index) in items" :key="item.value">
+              <CommandItem
+                :value="item.value"
+                class="bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                @select="
+                  (ev) => {
+                    if (typeof ev.detail.value === 'string') {
+                      value = ev.detail.value
+                    }
+                    open = false
                   }
-                  open = false
-                }
-              "
-            >
-              {{ item.label }}
-              <Check
-                :class="cn('ml-auto h-4 w-4', value === item.value ? 'opacity-100' : 'opacity-0')"
+                "
+              >
+                {{ item.label }}
+                <Check
+                  :class="cn('ml-auto h-4 w-4', value === item.value ? 'opacity-100' : 'opacity-0')"
+                />
+              </CommandItem>
+              <div
+                id="divider"
+                v-if="insertDividerAtIndexes && insertDividerAtIndexes.includes(index)"
+                class="h-px bg-zinc-200 dark:bg-zinc-700"
               />
-            </CommandItem>
+            </template>
           </CommandGroup>
         </CommandList>
       </Command>
