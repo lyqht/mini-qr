@@ -1,0 +1,31 @@
+{
+  "props": {
+    "data": "https://www.myspeciallink.com",
+    "image": "",
+    "width": 200,
+    "height": 200,
+    "margin": 0,
+    "dotsOptions": {
+      "color": "#000000",
+      "type": "square"
+    },
+    "cornersSquareOptions": {
+      "color": "#000000",
+      "type": "square"
+    },
+    "cornersDotOptions": {
+      "color": "#000000",
+      "type": "square"
+    },
+    "imageOptions": {
+      "margin": 0
+    },
+    "qrOptions": {
+      "errorCorrectionLevel": "Q"
+    }
+  },
+  "style": {
+    "borderRadius": "24px",
+    "background": "#ffffff"
+  }
+}
