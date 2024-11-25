@@ -16,6 +16,7 @@ import ja from '../../locales/ja.json'
 import ko from '../../locales/ko.json'
 import lt from '../../locales/lt.json'
 import lv from '../../locales/lv.json'
+import my from '../../locales/my.json'
 import nb from '../../locales/nb.json'
 import nl from '../../locales/nl.json'
 import pl from '../../locales/pl.json'
@@ -51,6 +52,7 @@ export const i18n = createI18n({
     ko,
     lt,
     lv,
+    my,
     nb,
     nl,
     pl,
