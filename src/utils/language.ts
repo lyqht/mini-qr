@@ -16,6 +16,7 @@ const languageMap: Record<string, string> = {
   ko: 'Korean',
   lt: 'Lithuanian',
   lv: 'Latvian',
+  my: 'Burmese',
   nb: 'Norwegian Bokmål',
   nl: 'Dutch',
   pl: 'Polish',
