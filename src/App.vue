@@ -16,7 +16,7 @@ import {
   type DotType,
   type ErrorCorrectionLevel,
   type Options as StyledQRCodeProps
-} from 'qr-code-styling'
+} from 'qr-code-styling-utf8'
 import { computed, onMounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'

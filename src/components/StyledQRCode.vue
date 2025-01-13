@@ -10,8 +10,8 @@ import type {
   CornerSquareType,
   DrawType,
   Options as StyledQRCodeProps
-} from 'qr-code-styling'
-import QRCodeStyling from 'qr-code-styling'
+} from 'qr-code-styling-utf8'
+import QRCodeStyling from 'qr-code-styling-utf8'
 import { onMounted, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<StyledQRCodeProps>(), {
@@ -43,7 +43,8 @@ const props = withDefaults(defineProps<StyledQRCodeProps>(), {
     type: 'dot' as CornerDotType
   }),
   qrOptions: () => ({
-    errorCorrectionLevel: 'Q'
+    errorCorrectionLevel: 'Q',
+    multibyte: 'UTF-8'
   })
 })
 
@@ -62,7 +63,12 @@ watch(
   () => {
     QRCodeCanvasContainer.update({
       ...props,
-      image: props.image === null ? undefined : props.image
+      image: props.image === null ? undefined : props.image,
+      qrOptions: {
+        ...props.qrOptions,
+        errorCorrectionLevel: props.qrOptions.errorCorrectionLevel,
+        multibyte: 'UTF-8'
+      }
     })
   },
   { deep: true, immediate: true }
