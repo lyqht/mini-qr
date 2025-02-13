@@ -245,24 +245,24 @@ export const vueJsPreset: Preset = {
 
 export const defaultPreset: Preset = {
   ...defaultPresetOptions,
-  name: 'Default (lyqht)',
-  data: 'https://github.com/lyqht',
-  image: PLACEHOLDER_IMAGE_URL,
+  name: 'Default (Dark Grey + White)',
+  data: 'https://yoursitehere.com',
+  image: '',
   dotsOptions: {
-    color: '#abcbca',
-    type: 'extra-rounded'
+    color: '#222',
+    type: 'square'
   },
   cornersSquareOptions: {
-    color: '#abcbca',
-    type: 'extra-rounded'
+    color: '#222',
+    type: 'square'
   },
   cornersDotOptions: {
-    color: '#abcbca',
+    color: '#222',
     type: 'square'
   },
   style: {
     borderRadius: '24px',
-    background: '#697d80'
+    background: '#fff'
   }
 }
 export const pejuangKodePreset: Preset = {
