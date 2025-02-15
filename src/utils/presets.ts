@@ -2,6 +2,7 @@ import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
 import GeeksHackingConfig from '@/assets/presets/geekshacking.json'
 import SpDigitalConfig from '@/assets/presets/spdigital.json'
 import GovtechStackCommunityConfig from '@/assets/presets/govtech_stack.json'
+import Hackomania2025Config from '@/assets/presets/hackomania2025.json'
 import PlainConfig from '@/assets/presets/plain.json'
 import type { DrawType, Options as StyledQRCodeProps } from 'qr-code-styling'
 
@@ -308,6 +309,13 @@ export const plainPreset = {
   style: PlainConfig.style
 } as Preset
 
+export const hackomania2025Preset = {
+  ...defaultPresetOptions,
+  name: 'Hackomania 2025',
+  ...Hackomania2025Config.props,
+  style: Hackomania2025Config.style
+} as Preset
+
 export const allPresets: Preset[] = [
   defaultPreset,
   plainPreset,
@@ -324,6 +332,7 @@ export const allPresets: Preset[] = [
     pejuangKodePreset,
     geeksHackingPreset,
     spDigitalPreset,
-    govtechStackCommunityPreset
+    govtechStackCommunityPreset,
+    hackomania2025Preset
   ].sort((a, b) => a.name.localeCompare(b.name))
 ]
