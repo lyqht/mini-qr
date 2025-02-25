@@ -31,10 +31,11 @@ defineProps<{
         role="combobox"
         :aria-expanded="open"
         :aria-label="buttonLabel"
-        class="w-fit justify-between focus-visible:ring-1 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+        class="w-fit flex gap-2 items-center justify-between focus-visible:ring-1 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
       >
+        <slot name="button-icon"></slot>
         {{ value ? items.find((item) => item.value === value)?.label : 'Select item...' }}
-        <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        <ChevronsUpDown class="size-4 shrink-0 opacity-50" />
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-fit p-0">
