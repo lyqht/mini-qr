@@ -689,11 +689,15 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                   id="copy-qr-image-button"
                   class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
                   @click="copyQRToClipboard"
-                  :disabled="exportMode === ExportMode.Batch"
+                  :disabled="exportMode === ExportMode.Batch || !data"
                   :title="
-                    t(
-                      'There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.'
-                    )
+                    exportMode === ExportMode.Batch
+                      ? t(
+                          'There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.'
+                        )
+                      : !data
+                        ? t('Please enter data to encode first')
+                        : ''
                   "
                   :aria-label="t('Copy QR Code to clipboard')"
                 >
@@ -722,6 +726,8 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                   id="save-qr-code-config-button"
                   class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
                   @click="downloadQRConfig"
+                  :disabled="!data"
+                  :title="!data ? t('Please enter data to encode first') : ''"
                   :aria-label="t('Save QR Code configuration')"
                 >
                   <svg
@@ -782,6 +788,8 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                     id="download-qr-image-button-png"
                     class="button"
                     @click="downloadQRImageAsPng"
+                    :disabled="!data"
+                    :title="!data ? t('Please enter data to encode first') : ''"
                     :aria-label="t('Download QR Code as PNG')"
                   >
                     <svg
@@ -808,6 +816,8 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                     id="download-qr-image-button-svg"
                     class="button"
                     @click="downloadQRImageAsSvg"
+                    :disabled="!data"
+                    :title="!data ? t('Please enter data to encode first') : ''"
                     :aria-label="t('Download QR Code as SVG')"
                   >
                     <svg
@@ -1262,6 +1272,7 @@ input[type='radio'] {
   @apply bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200;
   @apply shadow-sm hover:shadow p-2 focus-visible:shadow-md rounded-lg;
   @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
 .secondary-button {
