@@ -675,12 +675,15 @@ const isExportButtonDisabled = computed(() => {
                 ]"
               >
                 <StyledQRCode
-                  v-if="data"
-                  v-bind="{ ...qrCodeProps, width: 200, height: 200 }"
+                  v-bind="{
+                    ...qrCodeProps,
+                    data: data?.length > 0 ? data : t('Have nice day!'),
+                    width: 200,
+                    height: 200
+                  }"
                   role="img"
                   aria-label="QR code"
                 />
-                <p v-else>{{ t('No data!') }}</p>
               </div>
             </div>
             <div class="mt-4 flex flex-col items-center gap-2">
