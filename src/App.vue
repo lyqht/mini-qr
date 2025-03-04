@@ -1117,65 +1117,69 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                 />
               </div>
             </div>
-            <div class="w-full">
-              <label for="width">
-                {{ t('Width (px)') }}
-              </label>
-              <input
-                class="text-input"
-                id="width"
-                type="number"
-                placeholder="width in pixels"
-                v-model="width"
-              />
+            <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
+              <div class="w-full sm:w-1/3">
+                <label for="width">
+                  {{ t('Width (px)') }}
+                </label>
+                <input
+                  class="text-input"
+                  id="width"
+                  type="number"
+                  placeholder="width in pixels"
+                  v-model="width"
+                />
+              </div>
+              <div class="w-full sm:w-1/3">
+                <label for="height">
+                  {{ t('Height (px)') }}
+                </label>
+                <input
+                  class="text-input"
+                  id="height"
+                  type="number"
+                  placeholder="height in pixels"
+                  v-model="height"
+                />
+              </div>
+              <div class="w-full sm:w-1/3">
+                <label for="border-radius">
+                  {{ t('Border radius (px)') }}
+                </label>
+                <input
+                  class="text-input"
+                  id="border-radius"
+                  type="number"
+                  placeholder="24"
+                  v-model="styleBorderRadius"
+                />
+              </div>
             </div>
-            <div class="w-full">
-              <label for="height">
-                {{ t('Height (px)') }}
-              </label>
-              <input
-                class="text-input"
-                id="height"
-                type="number"
-                placeholder="height in pixels"
-                v-model="height"
-              />
-            </div>
-            <div class="w-full">
-              <label for="margin">
-                {{ t('Margin (px)') }}
-              </label>
-              <input
-                class="text-input"
-                id="margin"
-                type="number"
-                placeholder="0"
-                v-model="margin"
-              />
-            </div>
-            <div class="w-full">
-              <label for="image-margin">
-                {{ t('Image margin (px)') }}
-              </label>
-              <input
-                class="text-input"
-                id="image-margin"
-                type="number"
-                placeholder="0"
-                v-model="imageMargin"
-              />
-            </div>
-            <div class="w-full">
-              <label for="border-radius">
-                {{ t('Border radius (px)') }}
-              </label>
-              <input
-                class="text-input"
-                id="border-radius"
-                type="number"
-                placeholder="24"
-                v-model="styleBorderRadius"
-              />
+            <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
+              <div class="w-full sm:w-1/2">
+                <label for="margin">
+                  {{ t('Margin (px)') }}
+                </label>
+                <input
+                  class="text-input"
+                  id="margin"
+                  type="number"
+                  placeholder="0"
+                  v-model="margin"
+                />
+              </div>
+              <div class="w-full sm:w-1/2">
+                <label for="image-margin">
+                  {{ t('Image margin (px)') }}
+                </label>
+                <input
+                  class="text-input"
+                  id="image-margin"
+                  type="number"
+                  placeholder="0"
+                  v-model="imageMargin"
+                />
+              </div>
             </div>
             <div
               id="dots-squares-settings"
