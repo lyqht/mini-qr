@@ -536,6 +536,13 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
   }
 }
 //#endregion
+
+const isExportButtonDisabled = computed(() => {
+  if (exportMode.value === ExportMode.Single) {
+    return !data.value
+  }
+  return dataStringsFromCsv.value.length === 0
+})
 </script>
 
 <template>
@@ -679,19 +686,15 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
             <div class="mt-4 flex flex-col items-center gap-2">
               <div class="flex flex-col items-center justify-center gap-3">
                 <button
-                  v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED"
+                  v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED && exportMode !== ExportMode.Batch"
                   id="copy-qr-image-button"
                   class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
                   @click="copyQRToClipboard"
-                  :disabled="exportMode === ExportMode.Batch || !data"
+                  :disabled="isExportButtonDisabled"
                   :title="
-                    exportMode === ExportMode.Batch
-                      ? t(
-                          'There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.'
-                        )
-                      : !data
-                        ? t('Please enter data to encode first')
-                        : ''
+                    isExportButtonDisabled
+                      ? t('Please enter data to encode first')
+                      : t('Copy QR Code to clipboard')
                   "
                   :aria-label="t('Copy QR Code to clipboard')"
                 >
@@ -720,8 +723,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                   id="save-qr-code-config-button"
                   class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
                   @click="downloadQRConfig"
-                  :disabled="!data"
-                  :title="!data ? t('Please enter data to encode first') : ''"
+                  :title="t('Save QR Code configuration')"
                   :aria-label="t('Save QR Code configuration')"
                 >
                   <svg
@@ -782,8 +784,12 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                     id="download-qr-image-button-png"
                     class="button"
                     @click="downloadQRImageAsPng"
-                    :disabled="!data"
-                    :title="!data ? t('Please enter data to encode first') : ''"
+                    :disabled="isExportButtonDisabled"
+                    :title="
+                      isExportButtonDisabled
+                        ? t('Please enter data to encode first')
+                        : t('Download QR Code as PNG')
+                    "
                     :aria-label="t('Download QR Code as PNG')"
                   >
                     <svg
@@ -810,8 +816,12 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                     id="download-qr-image-button-svg"
                     class="button"
                     @click="downloadQRImageAsSvg"
-                    :disabled="!data"
-                    :title="!data ? t('Please enter data to encode first') : ''"
+                    :disabled="isExportButtonDisabled"
+                    :title="
+                      isExportButtonDisabled
+                        ? t('Please enter data to encode first')
+                        : t('Download QR Code as SVG')
+                    "
                     :aria-label="t('Download QR Code as SVG')"
                   >
                     <svg
