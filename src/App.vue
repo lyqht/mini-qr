@@ -875,158 +875,167 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
               </div>
             </div>
             <div class="w-full">
-              <div class="mb-2 flex items-center gap-4">
-                <label for="data">
-                  {{ t('Data to encode') }}
-                </label>
-                <div class="flex grow items-center gap-2">
-                  <button
-                    :class="[
-                      'secondary-button',
-                      { 'opacity-50': exportMode !== ExportMode.Single }
-                    ]"
-                    @click="exportMode = ExportMode.Single"
-                  >
-                    {{ $t('Single export') }}
-                  </button>
-                  <button
-                    :class="['secondary-button', { 'opacity-50': exportMode !== ExportMode.Batch }]"
-                    @click="exportMode = ExportMode.Batch"
-                  >
-                    {{ $t('Batch export') }}
-                  </button>
-                  <div
-                    v-if="exportMode === ExportMode.Batch"
-                    :class="[
-                      'flex grow items-center justify-end',
-                      dataStringsFromCsv.length > 0 && 'opacity-80'
-                    ]"
-                  >
-                    <input
-                      id="ignore-header"
-                      type="checkbox"
-                      class="checkbox mr-2"
-                      v-model="ignoreHeaderRow"
-                      @change="onCsvFileUpload($event)"
-                    />
-                    <label for="ignore-header" class="!text-sm !font-normal">
-                      {{ $t('Ignore header row') }}
+              <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
+                <div class="w-full sm:w-2/3">
+                  <div class="mb-2 flex items-center gap-4">
+                    <label for="data">
+                      {{ t('Data to encode') }}
                     </label>
+                    <div class="flex grow items-center gap-2">
+                      <button
+                        :class="[
+                          'secondary-button',
+                          { 'opacity-50': exportMode !== ExportMode.Single }
+                        ]"
+                        @click="exportMode = ExportMode.Single"
+                      >
+                        {{ $t('Single export') }}
+                      </button>
+                      <button
+                        :class="[
+                          'secondary-button',
+                          { 'opacity-50': exportMode !== ExportMode.Batch }
+                        ]"
+                        @click="exportMode = ExportMode.Batch"
+                      >
+                        {{ $t('Batch export') }}
+                      </button>
+                      <div
+                        v-if="exportMode === ExportMode.Batch"
+                        :class="[
+                          'flex grow items-center justify-end',
+                          dataStringsFromCsv.length > 0 && 'opacity-80'
+                        ]"
+                      >
+                        <input
+                          id="ignore-header"
+                          type="checkbox"
+                          class="checkbox mr-2"
+                          v-model="ignoreHeaderRow"
+                          @change="onCsvFileUpload($event)"
+                        />
+                        <label for="ignore-header" class="!text-sm !font-normal">
+                          {{ $t('Ignore header row') }}
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <textarea
-                v-if="exportMode === ExportMode.Single"
-                name="data"
-                class="text-input"
-                id="data"
-                rows="2"
-                :placeholder="t('data to encode e.g. a URL or a string')"
-                v-model="data"
-              />
-              <template v-else>
-                <button
-                  v-if="!csvFile"
-                  class="w-full rounded-lg border-2 border-dashed border-gray-300 p-8 text-center"
-                  :aria-label="t('Click to select and upload a CSV file')"
-                  @click="fileInput.click()"
-                  @keyup.enter="fileInput.click()"
-                  @keyup.space="fileInput.click()"
-                  @dragover.prevent
-                  @drop.prevent="onCsvFileUpload"
-                >
-                  <p aria-hidden="true">
-                    {{ $t('Drag and drop a CSV file here or click to select') }}
-                  </p>
-                  <input
-                    ref="fileInput"
-                    type="file"
-                    accept=".csv"
-                    class="hidden"
-                    @change="onCsvFileUpload"
+                  <textarea
+                    v-if="exportMode === ExportMode.Single"
+                    name="data"
+                    class="text-input"
+                    id="data"
+                    rows="2"
+                    :placeholder="t('data to encode e.g. a URL or a string')"
+                    v-model="data"
                   />
-                </button>
-                <div v-else-if="isValidCsv" class="p-4 text-center">
-                  <div v-if="isBatchExportSuccess">
-                    <p>{{ $t('QR codes have been successfully exported.') }}</p>
-                    <button class="button mt-4" @click="csvFile = null">
-                      {{ $t('Start new batch export') }}
+                  <template v-else>
+                    <button
+                      v-if="!csvFile"
+                      class="w-full rounded-lg border-2 border-dashed border-gray-300 p-8 text-center"
+                      :aria-label="t('Click to select and upload a CSV file')"
+                      @click="fileInput.click()"
+                      @keyup.enter="fileInput.click()"
+                      @keyup.space="fileInput.click()"
+                      @dragover.prevent
+                      @drop.prevent="onCsvFileUpload"
+                    >
+                      <p aria-hidden="true">
+                        {{ $t('Drag and drop a CSV file here or click to select') }}
+                      </p>
+                      <input
+                        ref="fileInput"
+                        type="file"
+                        accept=".csv"
+                        class="hidden"
+                        @change="onCsvFileUpload"
+                      />
                     </button>
-                  </div>
-                  <p v-else-if="currentExportedQrCodeIndex == null && !isExportingBatchQRs">
-                    {{
-                      $t('{count} piece(s) of data detected', {
-                        count: filteredDataStringsFromCsv.length
-                      })
-                    }}
-                  </p>
-                  <div v-else-if="currentExportedQrCodeIndex != null">
-                    <p>{{ $t('Creating QR codes... This may take a while.') }}</p>
-                    <p>
-                      {{
-                        $t('{index} / {count} QR codes have been created.', {
-                          index: currentExportedQrCodeIndex + 1,
-                          count: filteredDataStringsFromCsv.length
-                        })
-                      }}
-                    </p>
-                  </div>
+                    <div v-else-if="isValidCsv" class="p-4 text-center">
+                      <div v-if="isBatchExportSuccess">
+                        <p>{{ $t('QR codes have been successfully exported.') }}</p>
+                        <button class="button mt-4" @click="csvFile = null">
+                          {{ $t('Start new batch export') }}
+                        </button>
+                      </div>
+                      <p v-else-if="currentExportedQrCodeIndex == null && !isExportingBatchQRs">
+                        {{
+                          $t('{count} piece(s) of data detected', {
+                            count: filteredDataStringsFromCsv.length
+                          })
+                        }}
+                      </p>
+                      <div v-else-if="currentExportedQrCodeIndex != null">
+                        <p>{{ $t('Creating QR codes... This may take a while.') }}</p>
+                        <p>
+                          {{
+                            $t('{index} / {count} QR codes have been created.', {
+                              index: currentExportedQrCodeIndex + 1,
+                              count: filteredDataStringsFromCsv.length
+                            })
+                          }}
+                        </p>
+                      </div>
+                    </div>
+                    <div v-else class="p-4 text-center text-red-500">
+                      <p>{{ $t('Invalid CSV') }}</p>
+                    </div>
+                  </template>
                 </div>
-                <div v-else class="p-4 text-center text-red-500">
-                  <p>{{ $t('Invalid CSV') }}</p>
+
+                <div class="w-full border-l-2 border-gray-300 pl-4 sm:w-1/3">
+                  <fieldset class="h-full" role="radiogroup" tabindex="0">
+                    <div class="flex flex-row items-center gap-2">
+                      <legend>{{ t('Error correction level') }}</legend>
+                      <a
+                        href="https://docs.uniqode.com/en/articles/7219782-what-is-the-recommended-error-correction-level-for-printing-a-qr-code"
+                        target="_blank"
+                        class="icon-button flex flex-row items-center"
+                        :aria-label="t('What is error correction level?')"
+                      >
+                        <svg
+                          class="me-1"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            fill="#888888"
+                            d="M11.95 18q.525 0 .888-.363t.362-.887t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362m.05 4q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                    <div v-for="level in errorCorrectionLevels" class="radiogroup" :key="level">
+                      <input
+                        :id="'errorCorrectionLevel-' + level"
+                        type="radio"
+                        v-model="errorCorrectionLevel"
+                        :value="level"
+                        :aria-describedby="
+                          level === recommendedErrorCorrectionLevel ? 'recommended-text' : undefined
+                        "
+                      />
+                      <div class="flex items-center gap-2">
+                        <label :for="'errorCorrectionLevel-' + level">{{
+                          t(ERROR_CORRECTION_LEVEL_LABELS[level])
+                        }}</label>
+                        <span
+                          v-if="level === recommendedErrorCorrectionLevel"
+                          class="text-sm text-gray-500"
+                        >
+                          <span :aria-hidden="true" class="me-1">✓</span>
+                          <span id="recommended-text">
+                            {{ t('Recommended') }}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  </fieldset>
                 </div>
-              </template>
+              </div>
             </div>
-            <fieldset class="flex-1" role="radiogroup" tabindex="0">
-              <div class="flex flex-row items-center gap-2">
-                <legend>{{ t('Error correction level') }}</legend>
-                <a
-                  href="https://docs.uniqode.com/en/articles/7219782-what-is-the-recommended-error-correction-level-for-printing-a-qr-code"
-                  target="_blank"
-                  class="icon-button flex flex-row items-center"
-                  :aria-label="t('What is error correction level?')"
-                >
-                  <svg
-                    class="me-1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="#888888"
-                      d="M11.95 18q.525 0 .888-.363t.362-.887t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362m.05 4q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
-                    />
-                  </svg>
-                  <span class="text-sm text-gray-500">{{ t('What is this?') }}</span>
-                </a>
-              </div>
-              <div v-for="level in errorCorrectionLevels" class="radiogroup" :key="level">
-                <input
-                  :id="'errorCorrectionLevel-' + level"
-                  type="radio"
-                  v-model="errorCorrectionLevel"
-                  :value="level"
-                  :aria-describedby="
-                    level === recommendedErrorCorrectionLevel ? 'recommended-text' : undefined
-                  "
-                />
-                <div class="flex items-center gap-2">
-                  <label :for="'errorCorrectionLevel-' + level">{{
-                    t(ERROR_CORRECTION_LEVEL_LABELS[level])
-                  }}</label>
-                  <span
-                    v-if="level === recommendedErrorCorrectionLevel"
-                    class="text-sm text-gray-500"
-                  >
-                    <span :aria-hidden="true" class="me-1">✓</span>
-                    <span id="recommended-text">
-                      {{ t('Recommended') }}
-                    </span>
-                  </span>
-                </div>
-              </div>
-            </fieldset>
             <div class="w-full">
               <div class="mb-2 flex flex-row items-center gap-2">
                 <label for="image-url">
