@@ -383,7 +383,7 @@ const filteredDataStringsFromCsv = computed(() =>
   ignoreHeaderRow.value ? dataStringsFromCsv.value.slice(1) : dataStringsFromCsv.value
 )
 
-const csvFile = ref<File | null>(null)
+const inputFileForBatchEncoding = ref<File | null>(null)
 const fileInput = ref<HTMLInputElement>()
 const isValidCsv = ref(true)
 const ignoreHeaderRow = ref(false)
@@ -400,7 +400,7 @@ const resetBatchExportProgress = () => {
 
 const resetData = () => {
   data.value = ''
-  csvFile.value = null
+  inputFileForBatchEncoding.value = null
   dataStringsFromCsv.value = []
   isValidCsv.value = true
   resetBatchExportProgress()
@@ -419,7 +419,7 @@ const getFileFromInputEvent = (event: InputEvent) => {
   return null
 }
 
-const onCsvFileUpload = (event: Event) => {
+const onBatchInputFileUpload = (event: Event) => {
   isBatchExportSuccess.value = false
   let file: File | null = getFileFromInputEvent(event as InputEvent)
 
@@ -432,13 +432,7 @@ const onCsvFileUpload = (event: Event) => {
     file = dt.files[0]
   }
 
-  // Early return if file is not a CSV
-  if (file.type !== 'text/csv') {
-    isValidCsv.value = false
-    return
-  }
-
-  csvFile.value = file
+  inputFileForBatchEncoding.value = file
   const reader = new FileReader()
   reader.onload = (e) => {
     const content = e.target?.result
@@ -451,7 +445,7 @@ const onCsvFileUpload = (event: Event) => {
     if (ignoreHeaderRow.value && links.length > 0) {
       links.shift()
     }
-    console.log('links', links)
+    console.debug('links', links)
     dataStringsFromCsv.value = links
     isValidCsv.value = true
   }
@@ -542,6 +536,13 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
   }
 }
 //#endregion
+
+const isExportButtonDisabled = computed(() => {
+  if (exportMode.value === ExportMode.Single) {
+    return !data.value
+  }
+  return dataStringsFromCsv.value.length === 0
+})
 </script>
 
 <template>
@@ -674,26 +675,29 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                 ]"
               >
                 <StyledQRCode
-                  v-if="data"
-                  v-bind="{ ...qrCodeProps, width: 200, height: 200 }"
+                  v-bind="{
+                    ...qrCodeProps,
+                    data: data?.length > 0 ? data : t('Have nice day!'),
+                    width: 200,
+                    height: 200
+                  }"
                   role="img"
                   aria-label="QR code"
                 />
-                <p v-else>{{ t('No data!') }}</p>
               </div>
             </div>
             <div class="mt-4 flex flex-col items-center gap-2">
               <div class="flex flex-col items-center justify-center gap-3">
                 <button
-                  v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED"
+                  v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED && exportMode !== ExportMode.Batch"
                   id="copy-qr-image-button"
                   class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
                   @click="copyQRToClipboard"
-                  :disabled="exportMode === ExportMode.Batch"
+                  :disabled="isExportButtonDisabled"
                   :title="
-                    t(
-                      'There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.'
-                    )
+                    isExportButtonDisabled
+                      ? t('Please enter data to encode first')
+                      : t('Copy QR Code to clipboard')
                   "
                   :aria-label="t('Copy QR Code to clipboard')"
                 >
@@ -722,6 +726,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                   id="save-qr-code-config-button"
                   class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
                   @click="downloadQRConfig"
+                  :title="t('Save QR Code configuration')"
                   :aria-label="t('Save QR Code configuration')"
                 >
                   <svg
@@ -782,6 +787,12 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                     id="download-qr-image-button-png"
                     class="button"
                     @click="downloadQRImageAsPng"
+                    :disabled="isExportButtonDisabled"
+                    :title="
+                      isExportButtonDisabled
+                        ? t('Please enter data to encode first')
+                        : t('Download QR Code as PNG')
+                    "
                     :aria-label="t('Download QR Code as PNG')"
                   >
                     <svg
@@ -808,6 +819,12 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                     id="download-qr-image-button-svg"
                     class="button"
                     @click="downloadQRImageAsSvg"
+                    :disabled="isExportButtonDisabled"
+                    :title="
+                      isExportButtonDisabled
+                        ? t('Please enter data to encode first')
+                        : t('Download QR Code as SVG')
+                    "
                     :aria-label="t('Download QR Code as SVG')"
                   >
                     <svg
@@ -865,158 +882,199 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
               </div>
             </div>
             <div class="w-full">
-              <div class="mb-2 flex items-center gap-4">
-                <label for="data">
-                  {{ t('Data to encode') }}
-                </label>
-                <div class="flex grow items-center gap-2">
-                  <button
-                    :class="[
-                      'secondary-button',
-                      { 'opacity-50': exportMode !== ExportMode.Single }
-                    ]"
-                    @click="exportMode = ExportMode.Single"
-                  >
-                    {{ $t('Single export') }}
-                  </button>
-                  <button
-                    :class="['secondary-button', { 'opacity-50': exportMode !== ExportMode.Batch }]"
-                    @click="exportMode = ExportMode.Batch"
-                  >
-                    {{ $t('Batch export') }}
-                  </button>
-                  <div
-                    v-if="exportMode === ExportMode.Batch"
-                    :class="[
-                      'flex grow items-center justify-end',
-                      dataStringsFromCsv.length > 0 && 'opacity-80'
-                    ]"
-                  >
-                    <input
-                      id="ignore-header"
-                      type="checkbox"
-                      class="checkbox mr-2"
-                      v-model="ignoreHeaderRow"
-                      @change="onCsvFileUpload($event)"
-                    />
-                    <label for="ignore-header" class="!text-sm !font-normal">
-                      {{ $t('Ignore header row') }}
+              <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
+                <div class="w-full sm:w-2/3">
+                  <div class="mb-2 flex items-center gap-4">
+                    <label for="data">
+                      {{ t('Data to encode') }}
                     </label>
+                    <div class="flex grow items-center gap-2">
+                      <button
+                        :class="[
+                          'secondary-button',
+                          { 'opacity-50': exportMode !== ExportMode.Single }
+                        ]"
+                        @click="exportMode = ExportMode.Single"
+                      >
+                        {{ $t('Single export') }}
+                      </button>
+                      <button
+                        :class="[
+                          'secondary-button',
+                          { 'opacity-50': exportMode !== ExportMode.Batch }
+                        ]"
+                        @click="exportMode = ExportMode.Batch"
+                      >
+                        {{ $t('Batch export') }}
+                      </button>
+                      <div
+                        v-if="exportMode === ExportMode.Batch"
+                        :class="[
+                          'flex grow items-center justify-end',
+                          dataStringsFromCsv.length > 0 && 'opacity-80'
+                        ]"
+                      >
+                        <input
+                          id="ignore-header"
+                          type="checkbox"
+                          class="checkbox mr-2"
+                          v-model="ignoreHeaderRow"
+                          @change="onBatchInputFileUpload($event)"
+                        />
+                        <label for="ignore-header" class="!text-sm !font-normal">
+                          {{ $t('Ignore header row') }}
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <textarea
-                v-if="exportMode === ExportMode.Single"
-                name="data"
-                class="text-input"
-                id="data"
-                rows="2"
-                :placeholder="t('data to encode e.g. a URL or a string')"
-                v-model="data"
-              />
-              <template v-else>
-                <button
-                  v-if="!csvFile"
-                  class="w-full rounded-lg border-2 border-dashed border-gray-300 p-8 text-center"
-                  :aria-label="t('Click to select and upload a CSV file')"
-                  @click="fileInput.click()"
-                  @keyup.enter="fileInput.click()"
-                  @keyup.space="fileInput.click()"
-                  @dragover.prevent
-                  @drop.prevent="onCsvFileUpload"
-                >
-                  <p aria-hidden="true">
-                    {{ $t('Drag and drop a CSV file here or click to select') }}
-                  </p>
-                  <input
-                    ref="fileInput"
-                    type="file"
-                    accept=".csv"
-                    class="hidden"
-                    @change="onCsvFileUpload"
+                  <textarea
+                    v-if="exportMode === ExportMode.Single"
+                    name="data"
+                    class="text-input"
+                    id="data"
+                    :placeholder="t('data to encode e.g. a URL or a string')"
+                    v-model="data"
                   />
-                </button>
-                <div v-else-if="isValidCsv" class="p-4 text-center">
-                  <div v-if="isBatchExportSuccess">
-                    <p>{{ $t('QR codes have been successfully exported.') }}</p>
-                    <button class="button mt-4" @click="csvFile = null">
-                      {{ $t('Start new batch export') }}
-                    </button>
-                  </div>
-                  <p v-else-if="currentExportedQrCodeIndex == null && !isExportingBatchQRs">
-                    {{
-                      $t('{count} piece(s) of data detected', {
-                        count: filteredDataStringsFromCsv.length
-                      })
-                    }}
-                  </p>
-                  <div v-else-if="currentExportedQrCodeIndex != null">
-                    <p>{{ $t('Creating QR codes... This may take a while.') }}</p>
-                    <p>
-                      {{
-                        $t('{index} / {count} QR codes have been created.', {
-                          index: currentExportedQrCodeIndex + 1,
-                          count: filteredDataStringsFromCsv.length
-                        })
-                      }}
-                    </p>
-                  </div>
+                  <template v-else>
+                    <template v-if="!inputFileForBatchEncoding">
+                      <button
+                        class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-1 py-4 text-center text-input"
+                        :aria-label="
+                          t('Click to select a text or CSV file containing data to encode')
+                        "
+                        @click="fileInput.click()"
+                        @keyup.enter="fileInput.click()"
+                        @keyup.space="fileInput.click()"
+                        @dragover.prevent
+                        @drop.prevent="onBatchInputFileUpload"
+                      >
+                        <p aria-hidden="true">
+                          {{ $t('Upload a text/CSV file') }}
+                        </p>
+                        <input
+                          ref="fileInput"
+                          type="file"
+                          accept=".csv,.txt"
+                          class="hidden"
+                          @change="onBatchInputFileUpload"
+                        />
+                      </button>
+                      <p class="w-full text-end">
+                        <a
+                          href="/6_strings_batch.csv"
+                          download
+                          class="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200"
+                        >
+                          {{ t('Example file') }}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            class="inline"
+                          >
+                            <path
+                              fill="currentColor"
+                              d="M12 15.575q-.2 0-.375-.063q-.175-.062-.325-.212l-3.6-3.6q-.275-.275-.275-.7q0-.425.275-.7q.275-.275.7-.275q.425 0 .7.275l1.9 1.9V4q0-.425.288-.713Q11.575 3 12 3t.713.287Q13 3.575 13 4v8.2l1.9-1.9q.275-.275.7-.275q.425 0 .7.275q.275.275.275.7q0 .425-.275.7l-3.6 3.6q-.15.15-.325.212q-.175.063-.375.063M6 21q-.825 0-1.413-.587Q4 19.825 4 19v-2q0-.425.287-.713Q4.575 16 5 16t.713.287Q6 16.575 6 17v2h12v-2q0-.425.288-.713Q18.575 16 19 16t.712.287Q20 16.575 20 17v2q0 .825-.587 1.413Q18.825 21 18 21m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
+                            />
+                          </svg>
+                        </a>
+                      </p>
+                    </template>
+                    <div v-else-if="isValidCsv" class="p-4 text-center">
+                      <div v-if="isBatchExportSuccess">
+                        <p>{{ $t('QR codes have been successfully exported.') }}</p>
+                        <button class="button mt-4" @click="inputFileForBatchEncoding = null">
+                          {{ $t('Start new batch export') }}
+                        </button>
+                      </div>
+                      <div v-else-if="currentExportedQrCodeIndex == null && !isExportingBatchQRs">
+                        <p>
+                          {{
+                            $t('{count} piece(s) of data detected', {
+                              count: filteredDataStringsFromCsv.length
+                            })
+                          }}
+                        </p>
+                        <div v-if="dataStringsFromCsv.length > 0" class="mt-4 text-start">
+                          <p class="text-center text-sm text-zinc-500">
+                            <span class="me-2">{{ $t('First row preview:') }}</span>
+                            <span class="inline-block">
+                              <pre class="rounded bg-gray-200 text-sm">{{
+                                `${ignoreHeaderRow ? dataStringsFromCsv[1] : dataStringsFromCsv[0]}`
+                              }}</pre>
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                      <div v-else-if="currentExportedQrCodeIndex != null">
+                        <p>{{ $t('Creating QR codes... This may take a while.') }}</p>
+                        <p>
+                          {{
+                            $t('{index} / {count} QR codes have been created.', {
+                              index: currentExportedQrCodeIndex + 1,
+                              count: filteredDataStringsFromCsv.length
+                            })
+                          }}
+                        </p>
+                      </div>
+                    </div>
+                    <div v-else class="p-4 text-center text-red-500">
+                      <p>{{ $t('Invalid CSV') }}</p>
+                    </div>
+                  </template>
                 </div>
-                <div v-else class="p-4 text-center text-red-500">
-                  <p>{{ $t('Invalid CSV') }}</p>
+
+                <div class="w-full border-l-2 border-gray-300 pl-4 sm:w-1/3">
+                  <fieldset class="h-full" role="radiogroup" tabindex="0">
+                    <div class="flex flex-row items-center gap-2">
+                      <legend>{{ t('Error correction level') }}</legend>
+                      <a
+                        href="https://docs.uniqode.com/en/articles/7219782-what-is-the-recommended-error-correction-level-for-printing-a-qr-code"
+                        target="_blank"
+                        class="icon-button flex flex-row items-center"
+                        :aria-label="t('What is error correction level?')"
+                      >
+                        <svg
+                          class="me-1"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            fill="#888888"
+                            d="M11.95 18q.525 0 .888-.363t.362-.887t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362m.05 4q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                    <div v-for="level in errorCorrectionLevels" class="radiogroup" :key="level">
+                      <input
+                        :id="'errorCorrectionLevel-' + level"
+                        type="radio"
+                        v-model="errorCorrectionLevel"
+                        :value="level"
+                        :aria-describedby="
+                          level === recommendedErrorCorrectionLevel ? 'recommended-text' : undefined
+                        "
+                      />
+                      <div class="flex items-center gap-2">
+                        <label :for="'errorCorrectionLevel-' + level">{{
+                          t(ERROR_CORRECTION_LEVEL_LABELS[level])
+                        }}</label>
+                        <span
+                          v-if="level === recommendedErrorCorrectionLevel"
+                          class="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
+                        >
+                          {{ t('Suggested') }}
+                        </span>
+                      </div>
+                    </div>
+                  </fieldset>
                 </div>
-              </template>
+              </div>
             </div>
-            <fieldset class="flex-1" role="radiogroup" tabindex="0">
-              <div class="flex flex-row items-center gap-2">
-                <legend>{{ t('Error correction level') }}</legend>
-                <a
-                  href="https://docs.uniqode.com/en/articles/7219782-what-is-the-recommended-error-correction-level-for-printing-a-qr-code"
-                  target="_blank"
-                  class="icon-button flex flex-row items-center"
-                  :aria-label="t('What is error correction level?')"
-                >
-                  <svg
-                    class="me-1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="#888888"
-                      d="M11.95 18q.525 0 .888-.363t.362-.887t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362m.05 4q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
-                    />
-                  </svg>
-                  <span class="text-sm text-gray-500">{{ t('What is this?') }}</span>
-                </a>
-              </div>
-              <div v-for="level in errorCorrectionLevels" class="radiogroup" :key="level">
-                <input
-                  :id="'errorCorrectionLevel-' + level"
-                  type="radio"
-                  v-model="errorCorrectionLevel"
-                  :value="level"
-                  :aria-describedby="
-                    level === recommendedErrorCorrectionLevel ? 'recommended-text' : undefined
-                  "
-                />
-                <div class="flex items-center gap-2">
-                  <label :for="'errorCorrectionLevel-' + level">{{
-                    t(ERROR_CORRECTION_LEVEL_LABELS[level])
-                  }}</label>
-                  <span
-                    v-if="level === recommendedErrorCorrectionLevel"
-                    class="text-sm text-gray-500"
-                  >
-                    <span :aria-hidden="true" class="me-1">✓</span>
-                    <span id="recommended-text">
-                      {{ t('Recommended') }}
-                    </span>
-                  </span>
-                </div>
-              </div>
-            </fieldset>
             <div class="w-full">
               <div class="mb-2 flex flex-row items-center gap-2">
                 <label for="image-url">
@@ -1107,65 +1165,69 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
                 />
               </div>
             </div>
-            <div class="w-full">
-              <label for="width">
-                {{ t('Width (px)') }}
-              </label>
-              <input
-                class="text-input"
-                id="width"
-                type="number"
-                placeholder="width in pixels"
-                v-model="width"
-              />
+            <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
+              <div class="w-full sm:w-1/3">
+                <label for="width">
+                  {{ t('Width (px)') }}
+                </label>
+                <input
+                  class="text-input"
+                  id="width"
+                  type="number"
+                  placeholder="width in pixels"
+                  v-model="width"
+                />
+              </div>
+              <div class="w-full sm:w-1/3">
+                <label for="height">
+                  {{ t('Height (px)') }}
+                </label>
+                <input
+                  class="text-input"
+                  id="height"
+                  type="number"
+                  placeholder="height in pixels"
+                  v-model="height"
+                />
+              </div>
+              <div class="w-full sm:w-1/3">
+                <label for="border-radius">
+                  {{ t('Border radius (px)') }}
+                </label>
+                <input
+                  class="text-input"
+                  id="border-radius"
+                  type="number"
+                  placeholder="24"
+                  v-model="styleBorderRadius"
+                />
+              </div>
             </div>
-            <div class="w-full">
-              <label for="height">
-                {{ t('Height (px)') }}
-              </label>
-              <input
-                class="text-input"
-                id="height"
-                type="number"
-                placeholder="height in pixels"
-                v-model="height"
-              />
-            </div>
-            <div class="w-full">
-              <label for="margin">
-                {{ t('Margin (px)') }}
-              </label>
-              <input
-                class="text-input"
-                id="margin"
-                type="number"
-                placeholder="0"
-                v-model="margin"
-              />
-            </div>
-            <div class="w-full">
-              <label for="image-margin">
-                {{ t('Image margin (px)') }}
-              </label>
-              <input
-                class="text-input"
-                id="image-margin"
-                type="number"
-                placeholder="0"
-                v-model="imageMargin"
-              />
-            </div>
-            <div class="w-full">
-              <label for="border-radius">
-                {{ t('Border radius (px)') }}
-              </label>
-              <input
-                class="text-input"
-                id="border-radius"
-                type="number"
-                placeholder="24"
-                v-model="styleBorderRadius"
-              />
+            <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
+              <div class="w-full sm:w-1/2">
+                <label for="margin">
+                  {{ t('Margin (px)') }}
+                </label>
+                <input
+                  class="text-input"
+                  id="margin"
+                  type="number"
+                  placeholder="0"
+                  v-model="margin"
+                />
+              </div>
+              <div class="w-full sm:w-1/2">
+                <label for="image-margin">
+                  {{ t('Image margin (px)') }}
+                </label>
+                <input
+                  class="text-input"
+                  id="image-margin"
+                  type="number"
+                  placeholder="0"
+                  v-model="imageMargin"
+                />
+              </div>
             </div>
             <div
               id="dots-squares-settings"
@@ -1262,6 +1324,7 @@ input[type='radio'] {
   @apply bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200;
   @apply shadow-sm hover:shadow p-2 focus-visible:shadow-md rounded-lg;
   @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
 .secondary-button {
