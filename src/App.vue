@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LanguageSelector from '@/components/LanguageSelector.vue'
 import StyledQRCode from '@/components/StyledQRCode.vue'
 import { Combobox } from '@/components/ui/Combobox'
 import {
@@ -22,19 +23,11 @@ import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
 import { createRandomColor, getRandomItemInArray } from './utils/color'
 import { getNumericCSSValue } from './utils/formatting'
-import { sortedLocales } from './utils/language'
 import { allPresets, type Preset } from './utils/presets'
 import useDarkModePreference from './utils/useDarkModePreference'
-//#region /** locale */
-const isLocaleSelectOpen = ref(false)
-const { t, locale } = useI18n()
-const locales = computed(() =>
-  sortedLocales.map((loc) => ({
-    value: loc,
-    label: t(loc)
-  }))
-)
 
+//#region /** locale */
+const { t } = useI18n()
 //#endregion
 
 //#region /** styling states and computed properties */
@@ -140,7 +133,9 @@ const allPresetOptions = computed(() => {
     : allPresets
   return options.map((preset) => ({ value: preset.name, label: t(preset.name) }))
 })
-const selectedPreset = ref<Preset & { key?: string }>(defaultPreset)
+const selectedPreset = ref<
+  Preset & { key?: string; qrOptions?: { errorCorrectionLevel: ErrorCorrectionLevel } }
+>(defaultPreset)
 watch(selectedPreset, () => {
   data.value = selectedPreset.value.data
   image.value = selectedPreset.value.image
@@ -157,9 +152,10 @@ watch(selectedPreset, () => {
   styleBorderRadius.value = getNumericCSSValue(selectedPreset.value.style.borderRadius as string)
   styleBackground.value = selectedPreset.value.style.background
   includeBackground.value = selectedPreset.value.style.background !== 'transparent'
-  errorCorrectionLevel.value = selectedPreset.value.qrOptions
-    ? selectedPreset.value.qrOptions.errorCorrectionLevel
-    : 'Q'
+  errorCorrectionLevel.value =
+    selectedPreset.value.qrOptions && selectedPreset.value.qrOptions.errorCorrectionLevel
+      ? selectedPreset.value.qrOptions.errorCorrectionLevel
+      : 'Q'
 })
 
 const LAST_LOADED_LOCALLY_PRESET_KEY = 'Last saved locally'
@@ -384,7 +380,7 @@ const filteredDataStringsFromCsv = computed(() =>
 )
 
 const inputFileForBatchEncoding = ref<File | null>(null)
-const fileInput = ref<HTMLInputElement>()
+const fileInput = ref<HTMLInputElement | null>(null)
 const isValidCsv = ref(true)
 const ignoreHeaderRow = ref(false)
 
@@ -625,35 +621,7 @@ const isExportButtonDisabled = computed(() => {
                 </svg>
               </span>
             </button>
-            <Combobox
-              :items="locales"
-              v-model:value="locale"
-              v-model:open="isLocaleSelectOpen"
-              :button-label="t('Select language')"
-            >
-              <template #button-icon>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="icon -ml-1.5 size-6 shrink-0"
-                  width="36"
-                  height="36"
-                  viewBox="0 0 24 24"
-                >
-                  <g
-                    fill="none"
-                    stroke="#abcbca"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  >
-                    <path d="M4 5h7M7 4c0 4.846 0 7 .5 8" />
-                    <path
-                      d="M10 8.5c0 2.286-2 4.5-3.5 4.5S4 11.865 4 11c0-2 1-3 3-3s5 .57 5 2.857c0 1.524-.667 2.571-2 3.143m2 6l4-9l4 9m-.9-2h-6.2"
-                    />
-                  </g>
-                </svg>
-              </template>
-            </Combobox>
+            <LanguageSelector />
           </div>
         </div>
       </div>
@@ -942,9 +910,9 @@ const isExportButtonDisabled = computed(() => {
                         :aria-label="
                           t('Click to select a text or CSV file containing data to encode')
                         "
-                        @click="fileInput.click()"
-                        @keyup.enter="fileInput.click()"
-                        @keyup.space="fileInput.click()"
+                        @click="fileInput?.click()"
+                        @keyup.enter="fileInput?.click()"
+                        @keyup.space="fileInput?.click()"
                         @dragover.prevent
                         @drop.prevent="onBatchInputFileUpload"
                       >
