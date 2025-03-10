@@ -13,23 +13,15 @@ const { isDarkMode, isDarkModePreferenceSetBySystem, toggleDarkModePreference } 
 
 enum AppMode {
   Create = 'create',
-  Capture = 'capture'
+  Scan = 'scan'
 }
 
 const appMode = ref<AppMode>(AppMode.Create)
 const capturedData = ref<string>('')
 
-const toggleAppMode = () => {
-  if (appMode.value === AppMode.Capture && qrCodeCaptureRef.value?.capturedData) {
-    capturedData.value = qrCodeCaptureRef.value.capturedData
-  }
-
-  appMode.value = appMode.value === AppMode.Create ? AppMode.Capture : AppMode.Create
-}
-
 const setAppMode = (mode: AppMode) => {
   if (
-    appMode.value === AppMode.Capture &&
+    appMode.value === AppMode.Scan &&
     mode === AppMode.Create &&
     qrCodeCaptureRef.value?.capturedData
   ) {
@@ -48,9 +40,7 @@ const useCapturedDataInCreateMode = (data: string) => {
 
 const isModeToggleDisabled = computed(() => {
   return (
-    appMode.value === AppMode.Capture &&
-    !!qrCodeCaptureRef.value &&
-    !!(qrCodeCaptureRef.value.isLoading || qrCodeCaptureRef.value.isCapturing)
+    appMode.value === AppMode.Scan && !!qrCodeCaptureRef.value && !!qrCodeCaptureRef.value.isLoading
   )
 })
 </script>
@@ -90,13 +80,13 @@ const isModeToggleDisabled = computed(() => {
           <button
             class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors md:gap-2 md:px-3 md:py-1.5 md:text-base"
             :class="
-              appMode === AppMode.Capture
+              appMode === AppMode.Scan
                 ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100'
                 : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
             "
-            @click="setAppMode(AppMode.Capture)"
+            @click="setAppMode(AppMode.Scan)"
             :disabled="isModeToggleDisabled"
-            :aria-label="t('Switch to Capture Mode')"
+            :aria-label="t('Switch to Scan Mode')"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
               <path
@@ -104,7 +94,7 @@ const isModeToggleDisabled = computed(() => {
                 d="M12 9a3 3 0 1 0 0 6a3 3 0 0 0 0-6m0 8a5 5 0 1 1 0-10a5 5 0 0 1 0 10m0-12a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m4.5 1.5a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5M20 4h-3.17l-1.24-1.35A1.99 1.99 0 0 0 14.12 2H9.88c-.56 0-1.1.24-1.48.65L7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"
               />
             </svg>
-            <span>{{ t('Capture') }}</span>
+            <span>{{ t('Scan') }}</span>
           </button>
         </div>
       </div>
@@ -209,13 +199,13 @@ const isModeToggleDisabled = computed(() => {
           <button
             class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors"
             :class="
-              appMode === AppMode.Capture
+              appMode === AppMode.Scan
                 ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100'
                 : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
             "
-            @click="setAppMode(AppMode.Capture)"
+            @click="setAppMode(AppMode.Scan)"
             :disabled="isModeToggleDisabled"
-            :aria-label="t('Switch to Capture Mode')"
+            :aria-label="t('Switch to Scan Mode')"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
               <path
@@ -223,7 +213,7 @@ const isModeToggleDisabled = computed(() => {
                 d="M12 9a3 3 0 1 0 0 6a3 3 0 0 0 0-6m0 8a5 5 0 1 1 0-10a5 5 0 0 1 0 10m0-12a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m4.5 1.5a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5M20 4h-3.17l-1.24-1.35A1.99 1.99 0 0 0 14.12 2H9.88c-.56 0-1.1.24-1.48.65L7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"
               />
             </svg>
-            <span>{{ t('Capture') }}</span>
+            <span>{{ t('Scan') }}</span>
           </button>
 
           <!-- Hamburger menu -->
