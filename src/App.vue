@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 import LanguageSelector from '@/components/LanguageSelector.vue'
+import MobileMenu from '@/components/MobileMenu.vue'
 import QRCodeCapture from '@/components/QRCodeCapture.vue'
 import QRCodeCreate from '@/components/QRCodeCreate.vue'
 import useDarkModePreference from '@/utils/useDarkModePreference'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const { isDarkMode, isDarkModePreferenceSetBySystem, toggleDarkModePreference } =
@@ -61,14 +62,15 @@ const isModeToggleDisabled = computed(() => {
     >
       <div
         id="header"
-        class="mb-8 flex w-full flex-col flex-wrap justify-between gap-4 md:mb-4 md:w-5/6 md:flex-row md:ps-4"
+        class="mb-8 flex w-full flex-col flex-wrap gap-4 md:mb-4 md:w-5/6 md:flex-row md:justify-between md:ps-4"
       >
-        <div class="flex flex-wrap items-center gap-2">
+        <!-- First row on mobile, left side on desktop -->
+        <div class="hidden md:flex md:items-center">
           <h1 class="text-3xl text-gray-700 dark:text-gray-100">MiniQR</h1>
 
-          <!-- Mode toggle button -->
+          <!-- Mode toggle button - only visible on desktop -->
           <div
-            class="ml-0 mt-2 flex items-center rounded-lg border border-zinc-300 bg-zinc-100 p-1 dark:border-zinc-700 dark:bg-zinc-800 md:ml-4 md:mt-0"
+            class="ml-4 flex items-center rounded-lg border border-zinc-300 bg-zinc-100 p-1 dark:border-zinc-700 dark:bg-zinc-800"
           >
             <button
               class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors md:gap-2 md:px-3 md:py-1.5 md:text-base"
@@ -111,7 +113,8 @@ const isModeToggleDisabled = computed(() => {
           </div>
         </div>
 
-        <div class="mt-2 flex flex-wrap items-center justify-end gap-2 md:mt-0">
+        <!-- Right side controls - visible on mobile only in first row -->
+        <div class="hidden md:flex md:items-center md:justify-end md:gap-2">
           <a
             class="icon-button"
             href="https://github.com/lyqht/styled-qr-code-generator"
@@ -125,7 +128,6 @@ const isModeToggleDisabled = computed(() => {
               />
             </svg>
           </a>
-          <div class="vertical-border hidden md:block"></div>
           <button
             class="icon-button"
             @click="toggleDarkModePreference"
@@ -143,7 +145,6 @@ const isModeToggleDisabled = computed(() => {
                 </g>
               </svg>
             </span>
-
             <span v-else-if="isDarkMode">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -181,8 +182,61 @@ const isModeToggleDisabled = computed(() => {
               </svg>
             </span>
           </button>
-          <div class="vertical-border hidden md:block"></div>
           <LanguageSelector />
+        </div>
+
+        <!-- Mobile version - only visible on mobile -->
+        <div class="flex justify-center md:hidden">
+          <!-- Mode toggle button with hamburger menu -->
+          <div
+            class="relative flex items-center rounded-lg border border-zinc-300 bg-zinc-100 p-1 dark:border-zinc-700 dark:bg-zinc-800"
+          >
+            <button
+              class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors"
+              :class="
+                appMode === AppMode.Create
+                  ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100'
+                  : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+              "
+              @click="setAppMode(AppMode.Create)"
+              :disabled="isModeToggleDisabled"
+              :aria-label="t('Switch to Create Mode')"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M3 11h8V3H3zm2-6h4v4H5zM3 21h8v-8H3zm2-6h4v4H5zm8-12v8h8V3zm6 6h-4V5h4zm-6 12h8v-8h-8zm2-6h4v4h-4z"
+                />
+              </svg>
+              <span>{{ t('Create') }}</span>
+            </button>
+            <button
+              class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors"
+              :class="
+                appMode === AppMode.Capture
+                  ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100'
+                  : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+              "
+              @click="setAppMode(AppMode.Capture)"
+              :disabled="isModeToggleDisabled"
+              :aria-label="t('Switch to Capture Mode')"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M12 9a3 3 0 1 0 0 6a3 3 0 0 0 0-6m0 8a5 5 0 1 1 0-10a5 5 0 0 1 0 10m0-12a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m4.5 1.5a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5M20 4h-3.17l-1.24-1.35A1.99 1.99 0 0 0 14.12 2H9.88c-.56 0-1.1.24-1.48.65L7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"
+                />
+              </svg>
+              <span>{{ t('Capture') }}</span>
+            </button>
+
+            <!-- Hamburger menu -->
+            <MobileMenu
+              :isDarkMode="isDarkMode"
+              :isDarkModePreferenceSetBySystem="isDarkModePreferenceSetBySystem"
+              @toggle-dark-mode="toggleDarkModePreference"
+            />
+          </div>
         </div>
       </div>
 
