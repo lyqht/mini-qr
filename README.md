@@ -41,6 +41,10 @@ Batch data export is also now supported.
 
 https://github.com/user-attachments/assets/fef17e6a-c226-4136-9501-8d3e951671e0
 
+Scanning QR codes is also possible at MiniQR.
+
+https://github.com/user-attachments/assets/5ad58b35-0a16-43a4-839a-e2197bfc273a
+
 ## Self-hosting with Docker 🐋
 
 Mini-QR can easily be self-hosted. We provide a [docker-compose.yml](docker-compose.yml) file as well as our own images. We are using GitHub's `ghrc.io` Container Registry.
