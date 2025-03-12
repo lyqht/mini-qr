@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import LanguageSelector from '@/components/LanguageSelector.vue'
 import MobileMenu from '@/components/MobileMenu.vue'
-import QRCodeCapture from '@/components/QRCodeCapture.vue'
+import QRCodeScan from '@/components/QRCodeScan.vue'
 import QRCodeCreate from '@/components/QRCodeCreate.vue'
 import useDarkModePreference from '@/utils/useDarkModePreference'
 import { computed, ref } from 'vue'
@@ -18,20 +18,19 @@ enum AppMode {
 
 const appMode = ref<AppMode>(AppMode.Create)
 const capturedData = ref<string>('')
+const qrCodeScanRef = ref<InstanceType<typeof QRCodeScan> | null>(null)
 
 const setAppMode = (mode: AppMode) => {
   if (
     appMode.value === AppMode.Scan &&
     mode === AppMode.Create &&
-    qrCodeCaptureRef.value?.capturedData
+    qrCodeScanRef.value?.capturedData
   ) {
-    capturedData.value = qrCodeCaptureRef.value.capturedData
+    capturedData.value = qrCodeScanRef.value.capturedData
   }
 
   appMode.value = mode
 }
-
-const qrCodeCaptureRef = ref<InstanceType<typeof QRCodeCapture> | null>(null)
 
 const useCapturedDataInCreateMode = (data: string) => {
   capturedData.value = data
@@ -39,9 +38,7 @@ const useCapturedDataInCreateMode = (data: string) => {
 }
 
 const isModeToggleDisabled = computed(() => {
-  return (
-    appMode.value === AppMode.Scan && !!qrCodeCaptureRef.value && !!qrCodeCaptureRef.value.isLoading
-  )
+  return appMode.value === AppMode.Scan && !!qrCodeScanRef.value && !!qrCodeScanRef.value.isLoading
 })
 </script>
 
@@ -235,7 +232,7 @@ const isModeToggleDisabled = computed(() => {
           <QRCodeCreate :initial-data="capturedData" />
         </div>
         <div v-else class="flex flex-col items-center justify-center py-8">
-          <QRCodeCapture ref="qrCodeCaptureRef" @create-qr="useCapturedDataInCreateMode" />
+          <QRCodeScan ref="qrCodeScanRef" @create-qr="useCapturedDataInCreateMode" />
         </div>
       </div>
     </div>
