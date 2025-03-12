@@ -3,22 +3,22 @@ import StyledQRCode from '@/components/StyledQRCode.vue'
 import { Combobox } from '@/components/ui/Combobox'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
 import {
-    copyImageToClipboard,
-    downloadPngElement,
-    downloadSvgElement,
-    getPngElement,
-    getSvgString,
-    IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED
+  copyImageToClipboard,
+  downloadPngElement,
+  downloadSvgElement,
+  getPngElement,
+  getSvgString,
+  IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED
 } from '@/utils/convertToImage'
 import { getNumericCSSValue } from '@/utils/formatting'
 import { allPresets, type Preset } from '@/utils/presets'
 import JSZip from 'jszip'
 import {
-    type CornerDotType,
-    type CornerSquareType,
-    type DotType,
-    type ErrorCorrectionLevel,
-    type Options as StyledQRCodeProps
+  type CornerDotType,
+  type CornerSquareType,
+  type DotType,
+  type ErrorCorrectionLevel,
+  type Options as StyledQRCodeProps
 } from 'qr-code-styling'
 import { computed, onMounted, ref, watch } from 'vue'
 import 'vue-i18n'
@@ -1101,65 +1101,3 @@ const isExportButtonDisabled = computed(() => {
     </div>
   </div>
 </template>
-
-<style lang="postcss" scoped>
-p {
-  @apply !font-normal;
-}
-
-p,
-label,
-legend {
-  @apply text-gray-700 dark:text-gray-100 text-lg font-semibold;
-}
-
-.text-input {
-  @apply bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100;
-  @apply shadow hover:shadow-md transition-shadow rounded-lg;
-  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
-  @apply resize-none appearance-none ms-1 p-4 rounded w-full;
-}
-
-input[type='color'] {
-  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
-  @apply bg-transparent shadow p-0 border rounded box-border text-zinc-700 dark:text-zinc-100 focus-visible:shadow;
-}
-
-input[type='radio'] {
-  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
-  @apply m-3;
-}
-
-.button {
-  @apply bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200;
-  @apply shadow-sm hover:shadow p-2 focus-visible:shadow-md rounded-lg;
-  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
-  @apply disabled:opacity-50 disabled:cursor-not-allowed;
-}
-
-.secondary-button {
-  @apply bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100;
-  @apply shadow hover:shadow-md transition-shadow rounded-lg;
-  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
-  @apply outline-none p-1.5;
-}
-
-.icon-button {
-  @apply p-1;
-  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200 hover:shadow rounded-sm;
-  @apply text-zinc-900 dark:text-zinc-100 dark:bg-zinc-800;
-}
-
-.vertical-border {
-  @apply h-8 bg-slate-300 dark:bg-slate-700 w-1;
-}
-
-.radiogroup {
-  @apply flex flex-row items-center gap-1;
-}
-
-.radiogroup > * > label,
-.radiogroup > label {
-  @apply font-normal;
-}
-</style>
