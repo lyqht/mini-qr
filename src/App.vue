@@ -4,22 +4,53 @@ import MobileMenu from '@/components/MobileMenu.vue'
 import QRCodeScan from '@/components/QRCodeScan.vue'
 import QRCodeCreate from '@/components/QRCodeCreate.vue'
 import useDarkModePreference from '@/utils/useDarkModePreference'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const { isDarkMode, isDarkModePreferenceSetBySystem, toggleDarkModePreference } =
   useDarkModePreference()
 
+const capturedData = ref<string>('')
+const qrCodeScanRef = ref<InstanceType<typeof QRCodeScan> | null>(null)
+
+// #region Scroll-aware header
+const lastScrollTop = ref(0)
+const isHeaderCollapsed = ref(false)
+const scrollThreshold = 50 // Scroll threshold to trigger header collapse
+
+const handleScroll = () => {
+  const currentScrollTop = document.querySelector('#app')?.scrollTop
+  if (!currentScrollTop) return
+
+  // Determine scroll direction and distance
+  if (currentScrollTop > lastScrollTop.value && currentScrollTop > scrollThreshold) {
+    // Scrolling down past threshold
+    isHeaderCollapsed.value = true
+  } else if (currentScrollTop < lastScrollTop.value || currentScrollTop < scrollThreshold) {
+    // Scrolling up or at top
+    isHeaderCollapsed.value = false
+  }
+
+  lastScrollTop.value = currentScrollTop
+}
+
+onMounted(() => {
+  document.querySelector('#app')?.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  document.querySelector('#app')?.removeEventListener('scroll', handleScroll)
+})
+// #endregion
+
+// #region App mode
 enum AppMode {
   Create = 'create',
   Scan = 'scan'
 }
 
 const appMode = ref<AppMode>(AppMode.Create)
-const capturedData = ref<string>('')
-const qrCodeScanRef = ref<InstanceType<typeof QRCodeScan> | null>(null)
-
 const setAppMode = (mode: AppMode) => {
   if (
     appMode.value === AppMode.Scan &&
@@ -40,6 +71,7 @@ const useCapturedDataInCreateMode = (data: string) => {
 const isModeToggleDisabled = computed(() => {
   return appMode.value === AppMode.Scan && !!qrCodeScanRef.value && !!qrCodeScanRef.value.isLoading
 })
+// #endregion
 </script>
 
 <template>
@@ -169,23 +201,32 @@ const isModeToggleDisabled = computed(() => {
     </div>
 
     <!-- Mobile sticky header - only visible on mobile -->
-    <div class="fixed inset-x-0 top-0 z-50 md:hidden">
+    <div
+      class="scroll-header-container fixed inset-x-0 top-0 z-50 md:hidden"
+      :class="{ 'header-collapsed': isHeaderCollapsed }"
+    >
       <div class="flex justify-center">
         <div
-          class="relative flex items-center rounded-lg border border-zinc-300 bg-zinc-100 p-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-800 dark:shadow-slate-800"
+          class="relative flex items-center rounded-lg border border-zinc-300 bg-zinc-100 p-1 shadow-lg transition-all duration-300 dark:border-zinc-700 dark:bg-zinc-800 dark:shadow-slate-800"
         >
           <button
             class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors"
-            :class="
+            :class="[
               appMode === AppMode.Create
                 ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100'
-                : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
-            "
+                : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100',
+              isHeaderCollapsed ? 'py-0.5 text-xs' : 'py-1 text-sm'
+            ]"
             @click="setAppMode(AppMode.Create)"
             :disabled="isModeToggleDisabled"
             :aria-label="t('Switch to Create Mode')"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              :width="isHeaderCollapsed ? 14 : 18"
+              :height="isHeaderCollapsed ? 14 : 18"
+              viewBox="0 0 24 24"
+            >
               <path
                 fill="currentColor"
                 d="M3 11h8V3H3zm2-6h4v4H5zM3 21h8v-8H3zm2-6h4v4H5zm8-12v8h8V3zm6 6h-4V5h4zm-6 12h8v-8h-8zm2-6h4v4h-4z"
@@ -195,16 +236,22 @@ const isModeToggleDisabled = computed(() => {
           </button>
           <button
             class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors"
-            :class="
+            :class="[
               appMode === AppMode.Scan
                 ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100'
-                : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
-            "
+                : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100',
+              isHeaderCollapsed ? 'py-0.5 text-xs' : 'py-1 text-sm'
+            ]"
             @click="setAppMode(AppMode.Scan)"
             :disabled="isModeToggleDisabled"
             :aria-label="t('Switch to Scan Mode')"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              :width="isHeaderCollapsed ? 14 : 18"
+              :height="isHeaderCollapsed ? 14 : 18"
+              viewBox="0 0 24 24"
+            >
               <path
                 fill="currentColor"
                 d="M12 9a3 3 0 1 0 0 6a3 3 0 0 0 0-6m0 8a5 5 0 1 1 0-10a5 5 0 0 1 0 10m0-12a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m4.5 1.5a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5M20 4h-3.17l-1.24-1.35A1.99 1.99 0 0 0 14.12 2H9.88c-.56 0-1.1.24-1.48.65L7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"
@@ -255,5 +302,18 @@ const isModeToggleDisabled = computed(() => {
   @apply shadow-sm hover:shadow p-2 focus-visible:shadow-md rounded-lg;
   @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
   @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Scroll-aware header styles */
+.scroll-header-container {
+  transition: transform 0.3s ease;
+}
+
+.header-collapsed {
+  transform: translateY(-40%);
+}
+
+.header-collapsed button {
+  transition: all 0.3s ease;
 }
 </style>
