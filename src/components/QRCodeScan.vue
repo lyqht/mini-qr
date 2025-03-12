@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import jsQR from 'jsqr'
+import { Html5Qrcode } from 'html5-qrcode'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import QRCodeCameraScanner from './QRCodeCameraScanner.vue'
@@ -11,7 +11,6 @@ defineEmits<{
 const { t } = useI18n()
 const capturedData = ref<string>('')
 const errorMessage = ref<string | null>(null)
-const canvasElement = ref<HTMLCanvasElement | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const isLoading = ref(false)
 const copySuccess = ref(false)
@@ -74,111 +73,19 @@ const handleFileUpload = (event: Event) => {
 
   isLoading.value = true
   errorMessage.value = null
-  const reader = new FileReader()
 
-  reader.onload = (e) => {
-    if (!e.target || !e.target.result) {
+  const html5QrCode = new Html5Qrcode('file-qr-reader')
+  html5QrCode
+    .scanFile(file, false)
+    .then((decodedText) => {
+      capturedData.value = decodedText
       isLoading.value = false
-      return
-    }
-
-    const img = new Image()
-    img.onload = () => {
-      if (!canvasElement.value) {
-        isLoading.value = false
-        return
-      }
-
-      const canvas = canvasElement.value
-      const context = canvas.getContext('2d')
-
-      if (!context) {
-        isLoading.value = false
-        return
-      }
-
-      canvas.width = img.width
-      canvas.height = img.height
-
-      context.drawImage(img, 0, 0, canvas.width, canvas.height)
-
-      // Try with original image first
-      let imageData = context.getImageData(0, 0, canvas.width, canvas.height)
-      let code = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: 'attemptBoth'
-      })
-
-      // If no code found, try with preprocessed image
-      if (!code) {
-        // Save original image
-        const originalData = context.getImageData(0, 0, canvas.width, canvas.height)
-
-        // Try preprocessing
-        imageData = preprocessImage(context, canvas.width, canvas.height)
-        code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: 'attemptBoth'
-        })
-
-        // Restore original image
-        context.putImageData(originalData, 0, 0)
-      }
-
-      if (code) {
-        capturedData.value = code.data
-      } else {
-        errorMessage.value = t('No QR code found in the image.')
-      }
-
+    })
+    .catch((err) => {
+      console.error('Error scanning file:', err)
+      errorMessage.value = t('No QR code found in the image.')
       isLoading.value = false
-    }
-
-    img.src = e.target.result as string
-  }
-
-  reader.onerror = () => {
-    isLoading.value = false
-    errorMessage.value = t('Error reading file')
-  }
-
-  reader.readAsDataURL(file)
-}
-
-// Preprocessing function for image enhancement
-const preprocessImage = (context: CanvasRenderingContext2D, width: number, height: number) => {
-  const imageData = context.getImageData(0, 0, width, height)
-  const data = imageData.data
-
-  // First pass: find min and max values
-  let minVal = 255
-  let maxVal = 0
-
-  for (let i = 0; i < data.length; i += 4) {
-    const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
-    minVal = Math.min(minVal, gray)
-    maxVal = Math.max(maxVal, gray)
-  }
-
-  // Avoid division by zero
-  const range = maxVal - minVal || 1
-
-  // Second pass: normalize and apply threshold
-  for (let i = 0; i < data.length; i += 4) {
-    const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
-
-    // Normalize to full range
-    const normalized = ((gray - minVal) / range) * 255
-
-    // Apply threshold
-    const threshold = 128
-    const newValue = normalized < threshold ? 0 : 255
-
-    data[i] = data[i + 1] = data[i + 2] = newValue
-  }
-
-  // Put the modified data back
-  context.putImageData(imageData, 0, 0)
-
-  return context.getImageData(0, 0, width, height)
+    })
 }
 
 // Reset the component state
@@ -287,7 +194,8 @@ defineExpose({
         <p>{{ t('Processing...') }}</p>
       </div>
 
-      <canvas ref="canvasElement" class="hidden"></canvas>
+      <!-- Hidden div for file QR reader -->
+      <div id="file-qr-reader" class="hidden"></div>
 
       <div class="flex flex-col items-center gap-4" v-if="!isLoading">
         <!-- Upload QR Code Image option -->
@@ -332,7 +240,6 @@ defineExpose({
             {{ errorMessage }}
           </p>
 
-          <!-- TODO: add this back when camera feature is more stable -->
           <!-- Helpful tip -->
           <p class="mt-2 text-sm text-gray-500">
             {{ t('Tip: For best results, use a clear image with good lighting.') }}
