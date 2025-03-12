@@ -115,5 +115,12 @@
   "Failed to copy to clipboard": "Failed to copy to clipboard",
   "Scan with Camera": "Scan with Camera",
   "or": "or",
-  "Note: QR code scanning may not work well with front cameras or in low lighting conditions. For best results, use a high-resolution image.": "Note: QR code scanning may not work well with front cameras or in low lighting conditions. For best results, use a high-resolution image."
+  "Note: QR code scanning may not work well with front cameras or in low lighting conditions. For best results, use a high-resolution image.": "Note: QR code scanning may not work well with front cameras or in low lighting conditions. For best results, use a high-resolution image.",
+  "Camera access denied. Please allow camera access to use this feature.": "Camera access denied. Please allow camera access to use this feature.",
+  "Camera access denied. Please allow camera access in your browser settings.": "Camera access denied. Please allow camera access in your browser settings.",
+  "No camera found on this device": "No camera found on this device",
+  "Camera is already in use by another application": "Camera is already in use by another application",
+  "Could not start QR code scanner": "Could not start QR code scanner",
+  "Cancel": "Cancel",
+  "Error checking camera availability": "Error checking camera availability"
 }

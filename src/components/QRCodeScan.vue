@@ -276,11 +276,7 @@ defineExpose({
     </div>
 
     <div v-else-if="showCameraScanner" class="mb-4 w-full">
-      <QRCodeCameraScanner
-        :is-active="showCameraScanner"
-        @qr-detected="onQRDetected"
-        @cancel="onCameraScannerCancel"
-      />
+      <QRCodeCameraScanner @qr-detected="onQRDetected" @cancel="onCameraScannerCancel" />
     </div>
 
     <div v-else class="capture-controls">
@@ -343,7 +339,7 @@ defineExpose({
           </p>
 
           <!-- Camera option -->
-          <div class="mt-4">
+          <div class="mt-4 flex flex-col items-center gap-2">
             <p class="mb-2">{{ t('or') }}</p>
             <button
               class="z-40 flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700"
@@ -358,15 +354,6 @@ defineExpose({
               </svg>
               {{ t('Scan with Camera') }}
             </button>
-
-            <!-- Info message about camera limitations -->
-            <div class="mb-4 mt-2 max-w-md text-center text-sm text-amber-600">
-              {{
-                t(
-                  'Note: QR code scanning may not work well with front cameras or in low lighting conditions. For best results, use a high-resolution image.'
-                )
-              }}
-            </div>
           </div>
         </div>
       </div>

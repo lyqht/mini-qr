@@ -29,6 +29,7 @@
     "dom-to-image": "^2.6.0",
     "dom-to-svg": "^0.12.2",
     "file-saver": "^2.0.5",
+    "html5-qrcode": "^2.3.8",
     "jsqr": "^1.4.0",
     "jszip": "^3.10.1",
     "lucide-vue-next": "^0.321.0",
