@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Html5Qrcode } from 'html5-qrcode'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import QRCodeCameraScanner from './QRCodeCameraScanner.vue'
 
@@ -16,8 +16,10 @@ const isLoading = ref(false)
 const copySuccess = ref(false)
 const showCameraScanner = ref(false)
 const isDraggingOver = ref(false)
+const isCapturedDataLink = computed(() => {
+  return capturedData.value.startsWith('http')
+})
 
-// Function to copy captured data to clipboard
 const copyToClipboard = async () => {
   if (!capturedData.value) return
 
@@ -34,18 +36,15 @@ const copyToClipboard = async () => {
   }
 }
 
-// Handle QR code detected from camera
 const onQRDetected = (data: string) => {
   capturedData.value = data
   showCameraScanner.value = false
 }
 
-// Handle camera scanner cancel
 const onCameraScannerCancel = () => {
   showCameraScanner.value = false
 }
 
-// Start camera scanning
 const startCameraScanning = () => {
   errorMessage.value = null
   showCameraScanner.value = true
@@ -88,7 +87,6 @@ const handleFileUpload = (event: Event) => {
     })
 }
 
-// Reset the component state
 const resetCapture = () => {
   capturedData.value = ''
   errorMessage.value = null
@@ -96,18 +94,15 @@ const resetCapture = () => {
   showCameraScanner.value = false
 }
 
-// Handle dragover event
 const handleDragOver = (event: DragEvent) => {
   event.preventDefault()
   isDraggingOver.value = true
 }
 
-// Handle dragleave event
 const handleDragLeave = () => {
   isDraggingOver.value = false
 }
 
-// Handle drop event
 const handleDrop = (event: DragEvent) => {
   event.preventDefault()
   isDraggingOver.value = false
@@ -125,38 +120,36 @@ defineExpose({
 <template>
   <div class="relative mx-auto w-full max-w-[500px]">
     <div v-if="capturedData" class="capture-result">
-      <p class="mb-2 text-xl font-semibold">{{ t('QR Code Content') }}</p>
-      <button
-        class="relative mb-1 w-full cursor-pointer overflow-auto rounded-lg bg-zinc-100 p-4 ps-6 text-left transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700"
-        @click="copyToClipboard"
+      <p class="mb-8 text-xl font-semibold">{{ t('QR Code Content') }}</p>
+      <component
+        :is="isCapturedDataLink ? 'a' : 'span'"
+        :href="isCapturedDataLink ? capturedData : undefined"
+        :target="isCapturedDataLink ? '_blank' : undefined"
+        class="flex w-full flex-row items-center justify-center gap-1 text-center"
       >
-        <pre class="whitespace-pre-wrap break-words ps-6">{{ capturedData }}</pre>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          class="absolute start-2 top-1/2 -translate-y-1/2"
-        >
-          <g
-            fill="none"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          >
-            <path d="M8 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z" />
-            <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
-          </g>
-        </svg>
-      </button>
-      <div v-if="copySuccess" class="mb-4 text-center text-sm text-green-600">
-        {{ t('Data copied to clipboard') }}
-      </div>
-
-      <div class="mt-8 flex flex-col justify-center gap-4 md:mt-16">
+        {{ capturedData }}
+      </component>
+      <div class="mt-8 flex flex-col items-center justify-center gap-4 md:mt-16">
         <button
-          class="flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+          class="button flex w-full flex-row items-center justify-start gap-4"
+          @click="copyToClipboard"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <g
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            >
+              <path d="M8 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z" />
+              <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+            </g>
+          </svg>
+          <span>{{ t('Copy to clipboard') }}</span>
+        </button>
+        <button
+          class="button flex w-full flex-row items-center justify-start gap-4"
           @click="resetCapture"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
@@ -165,10 +158,10 @@ defineExpose({
               d="M12 16q1.875 0 3.188-1.313T16.5 11.5q0-1.875-1.313-3.188T12 7q-1.875 0-3.188 1.313T7.5 11.5q0 1.875 1.313 3.188T12 16m0-1.8q-1.125 0-1.913-.788T9.3 11.5q0-1.125.788-1.913T12 8.8q1.125 0 1.913.788T14.7 11.5q0 1.125-.788 1.913T12 14.2M12 22q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"
             />
           </svg>
-          {{ t('Scan Another') }}
+          <span>{{ t('Scan Another') }}</span>
         </button>
         <button
-          class="flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+          class="button flex w-full flex-row items-center justify-start gap-4"
           @click="$emit('create-qr', capturedData)"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
@@ -177,7 +170,7 @@ defineExpose({
               d="M3 11h8V3H3zm2-6h4v4H5zM3 21h8v-8H3zm2-6h4v4H5zM13 3v8h8V3zm6 6h-4V5h4zM13 13h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2zm0 4h2v2h-2z"
             />
           </svg>
-          {{ t('Create QR Code with this data') }}
+          <span>{{ t('Create QR Code with this data') }}</span>
         </button>
       </div>
     </div>
