@@ -9,16 +9,162 @@ defineEmits<{
 }>()
 
 const { t } = useI18n()
+
+// #region Core QR Code Data
 const capturedData = ref<string>('')
 const errorMessage = ref<string | null>(null)
-const fileInput = ref<HTMLInputElement | null>(null)
-const isLoading = ref(false)
+// #endregion Core QR Code Data
+
+// #region QR Code Type Detection
+const qrCodeType = computed(() => {
+  const data = capturedData.value
+
+  // URL detection (more comprehensive than just http)
+  if (/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i.test(data)) {
+    return 'url'
+  }
+
+  // Email detection
+  if (
+    /^mailto:(.+)$/i.test(data) ||
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(data)
+  ) {
+    return 'email'
+  }
+
+  // Phone number detection
+  if (/^tel:(.+)$/i.test(data) || /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/.test(data)) {
+    return 'tel'
+  }
+
+  // SMS detection
+  if (/^sms:(.+)$/i.test(data)) {
+    return 'sms'
+  }
+
+  // WiFi detection
+  if (/^WIFI:(.+)$/i.test(data)) {
+    return 'wifi'
+  }
+
+  // vCard detection
+  if (/^BEGIN:VCARD[\s\S]*END:VCARD$/i.test(data)) {
+    return 'vcard'
+  }
+
+  // Calendar event detection
+  if (/^BEGIN:VEVENT[\s\S]*END:VEVENT$/i.test(data)) {
+    return 'calendar'
+  }
+
+  // Geo location detection
+  if (/^geo:(.+)$/i.test(data)) {
+    return 'geo'
+  }
+
+  // Default to text
+  return 'text'
+})
+
+const formattedData = computed(() => {
+  const data = capturedData.value
+  const type = qrCodeType.value
+
+  switch (type) {
+    case 'url':
+      return data
+    case 'email':
+      return data.startsWith('mailto:') ? data : `mailto:${data}`
+    case 'tel':
+      return data.startsWith('tel:') ? data : `tel:${data}`
+    case 'sms':
+      return data.startsWith('sms:') ? data : `sms:${data}`
+    case 'wifi':
+      // Return as is for display purposes
+      return data
+    case 'vcard':
+    case 'calendar':
+    case 'geo':
+      return data
+    default:
+      return data
+  }
+})
+
+const isActionable = computed(() => {
+  return ['url', 'email', 'tel', 'sms', 'geo'].includes(qrCodeType.value)
+})
+// #endregion QR Code Type Detection
+
+// #region UI Display Properties
+const qrCodeTypeIcon = computed(() => {
+  switch (qrCodeType.value) {
+    case 'url':
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5m-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4zm-3-4h8v2H8z"/></svg>`
+    case 'email':
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"/></svg>`
+    case 'tel':
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02z"/></svg>`
+    case 'sms':
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2M9 11H7V9h2zm4 0h-2V9h2zm4 0h-2V9h2z"/></svg>`
+    case 'wifi':
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9m8 8l3 3l3-3a4.237 4.237 0 0 0-6 0m-4-4l2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>`
+    case 'vcard':
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m-7 2h2.5v12H13zm-2 12H8.5V6H11zM4 6h2.5v12H4zm16 12h-2.5V6H20z"/></svg>`
+    case 'calendar':
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 16H5V8h14zm-7-5h5v5h-5z"/></svg>`
+    case 'geo':
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5z"/></svg>`
+    default:
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83l3.75 3.75l1.83-1.83a.996.996 0 0 0 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29m-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/></svg>`
+  }
+})
+
+const actionText = computed(() => {
+  switch (qrCodeType.value) {
+    case 'url':
+      return t('Open Link')
+    case 'email':
+      return t('Send Email')
+    case 'tel':
+      return t('Call Number')
+    case 'sms':
+      return t('Send SMS')
+    case 'geo':
+      return t('View Location')
+    default:
+      return t('Copy to clipboard')
+  }
+})
+
+const typeLabel = computed(() => {
+  switch (qrCodeType.value) {
+    case 'url':
+      return t('URL')
+    case 'email':
+      return t('Email')
+    case 'tel':
+      return t('Phone Number')
+    case 'sms':
+      return t('SMS')
+    case 'wifi':
+      return t('WiFi')
+    case 'vcard':
+      return t('Contact Card')
+    case 'calendar':
+      return t('Calendar Event')
+    case 'geo':
+      return t('Location')
+    default:
+      return t('Text')
+  }
+})
+
+// #endregion UI Display Properties
+
+// #region User Actions
 const copySuccess = ref(false)
 const showCameraScanner = ref(false)
-const isDraggingOver = ref(false)
-const isCapturedDataLink = computed(() => {
-  return capturedData.value.startsWith('http')
-})
 
 const copyToClipboard = async () => {
   if (!capturedData.value) return
@@ -49,6 +195,19 @@ const startCameraScanning = () => {
   errorMessage.value = null
   showCameraScanner.value = true
 }
+
+const resetCapture = () => {
+  capturedData.value = ''
+  errorMessage.value = null
+  copySuccess.value = false
+  showCameraScanner.value = false
+}
+// #endregion User Actions
+
+// #region File Handling
+const fileInput = ref<HTMLInputElement | null>(null)
+const isLoading = ref(false)
+const isDraggingOver = ref(false)
 
 const handleFileUpload = (event: Event) => {
   let file: File | null = null
@@ -87,13 +246,6 @@ const handleFileUpload = (event: Event) => {
     })
 }
 
-const resetCapture = () => {
-  capturedData.value = ''
-  errorMessage.value = null
-  copySuccess.value = false
-  showCameraScanner.value = false
-}
-
 const handleDragOver = (event: DragEvent) => {
   event.preventDefault()
   isDraggingOver.value = true
@@ -108,6 +260,7 @@ const handleDrop = (event: DragEvent) => {
   isDraggingOver.value = false
   handleFileUpload(event)
 }
+// #endregion File Handling
 
 defineExpose({
   capturedData,
@@ -120,16 +273,28 @@ defineExpose({
 <template>
   <div class="relative mx-auto w-full max-w-[500px]">
     <div v-if="capturedData" class="capture-result">
-      <p class="mb-8 text-xl font-semibold">{{ t('QR Code Content') }}</p>
+      <p class="mb-4 text-xl font-semibold">{{ t('QR Code Content') }}</p>
+
+      <!-- QR Code Type Badge -->
+      <div class="mb-4 flex items-center justify-center">
+        <span
+          class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800"
+          v-html="qrCodeTypeIcon + ' ' + typeLabel"
+        ></span>
+      </div>
+
+      <!-- QR Code Content -->
       <component
-        :is="isCapturedDataLink ? 'a' : 'span'"
-        :href="isCapturedDataLink ? capturedData : undefined"
-        :target="isCapturedDataLink ? '_blank' : undefined"
+        :is="isActionable ? 'a' : 'span'"
+        :href="isActionable ? formattedData : undefined"
+        :target="qrCodeType === 'url' ? '_blank' : undefined"
         class="flex w-full flex-row items-center justify-center gap-1 text-center"
       >
         {{ capturedData }}
       </component>
+
       <div class="mt-8 flex flex-col items-center justify-center gap-4 md:mt-16">
+        <!-- Copy Button -->
         <button
           class="button flex w-full flex-row items-center justify-start gap-4"
           @click="copyToClipboard"
