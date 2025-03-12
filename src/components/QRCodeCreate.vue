@@ -577,20 +577,69 @@ const mainContentContainer = ref<HTMLElement | null>(null)
     ></div>
     <Drawer v-else>
       <DrawerTrigger
-        class="fixed inset-x-0 bottom-0 rounded-t-lg bg-white shadow-2xl dark:bg-black"
-        >{{ t('Export options') }}</DrawerTrigger
+        id="drawer-preview-container"
+        class="fixed inset-x-0 bottom-0 rounded-t-lg border-t border-solid border-slate-300 bg-white shadow-2xl dark:bg-black"
       >
-      <DrawerContent>
+        <div class="flex flex-col items-center">
+          <!-- Handle indicator for bottom sheet -->
+          <div class="mt-2 h-1 w-16 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+          <div class="h-[150px] w-full overflow-hidden pt-2">
+            <div class="grid place-items-center">
+              <div
+                class="grid place-items-center overflow-hidden"
+                :style="[
+                  style,
+                  {
+                    width: '120px',
+                    height: '120px',
+                    maxWidth: '100%',
+                    maxHeight: '100%'
+                  }
+                ]"
+              >
+                <StyledQRCode
+                  v-bind="{
+                    ...qrCodeProps,
+                    data: data?.length > 0 ? data : t('Have nice day!'),
+                    width: 120,
+                    height: 120
+                  }"
+                  role="img"
+                  aria-label="QR code preview"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-1 pb-2 text-center text-sm text-gray-600 dark:text-gray-400"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              class="inline"
+            >
+              <path fill="currentColor" d="M12 8l-6 6l1.41 1.41L12 10.83l4.59 4.58L18 14z" />
+            </svg>
+            {{ t('Export') }}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              class="inline"
+            >
+              <path fill="currentColor" d="M12 8l-6 6l1.41 1.41L12 10.83l4.59 4.58L18 14z" />
+            </svg>
+          </div>
+        </div>
+      </DrawerTrigger>
+      <DrawerContent class="grid h-screen place-items-center">
         <DrawerHeader>
-          <DrawerTitle>QR Code Generator</DrawerTitle>
-          <DrawerDescription>Customize your QR code</DrawerDescription>
+          <DrawerTitle>{{ t('Export options') }}</DrawerTitle>
           <div ref="mainContentContainer" id="main-content-container"></div>
         </DrawerHeader>
-        <DrawerFooter>
-          <DrawerClose>
-            <button>Close</button>
-          </DrawerClose>
-        </DrawerFooter>
       </DrawerContent>
     </Drawer>
     <Teleport to="#main-content-container" v-if="mainContentContainer != null">
