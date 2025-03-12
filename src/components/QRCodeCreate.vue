@@ -149,7 +149,11 @@ const selectedPreset = ref<
   Preset & { key?: string; qrOptions?: { errorCorrectionLevel: ErrorCorrectionLevel } }
 >(defaultPreset)
 watch(selectedPreset, () => {
-  data.value = selectedPreset.value.data
+  // Only update data from preset if there's no initialData or if data is empty
+  if (!props.initialData || data.value === '') {
+    data.value = selectedPreset.value.data
+  }
+
   image.value = selectedPreset.value.image
   width.value = selectedPreset.value.width
   height.value = selectedPreset.value.height
