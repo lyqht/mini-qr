@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import StyledQRCode from '@/components/StyledQRCode.vue'
 import { Combobox } from '@/components/ui/Combobox'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger
+} from '@/components/ui/drawer'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
 import {
   copyImageToClipboard,
@@ -12,6 +22,7 @@ import {
 } from '@/utils/convertToImage'
 import { getNumericCSSValue } from '@/utils/formatting'
 import { allPresets, type Preset } from '@/utils/presets'
+import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
 import {
   type CornerDotType,
@@ -28,6 +39,8 @@ import { useI18n } from 'vue-i18n'
 const props = defineProps<{
   initialData?: string
 }>()
+
+const isLarge = useMediaQuery('(min-width: 768px)')
 
 //#region /** locale */
 const { t } = useI18n()
@@ -550,125 +563,96 @@ const isExportButtonDisabled = computed(() => {
   }
   return dataStringsFromCsv.value.length === 0
 })
+
+const mainContentContainer = ref<HTMLElement | null>(null)
 </script>
 
 <template>
-  <!-- Original QR code creation UI -->
   <div class="flex flex-col-reverse items-start justify-center gap-4 md:flex-row md:gap-12">
     <div
-      id="main-content"
+      v-if="isLarge"
+      ref="mainContentContainer"
+      id="main-content-container"
       class="sticky top-0 flex w-full shrink-0 flex-col items-center justify-center p-4 md:w-fit"
-    >
-      <div id="qr-code-container">
-        <div
-          class="grid place-items-center overflow-hidden"
-          :style="[
-            style,
-            {
-              width: '200px',
-              height: '200px'
-            }
-          ]"
-        >
-          <StyledQRCode
-            v-bind="{
-              ...qrCodeProps,
-              data: data?.length > 0 ? data : t('Have nice day!'),
-              width: 200,
-              height: 200
-            }"
-            role="img"
-            aria-label="QR code"
-          />
+    ></div>
+    <Drawer v-else>
+      <DrawerTrigger
+        class="fixed inset-x-0 bottom-0 rounded-t-lg bg-white shadow-2xl dark:bg-black"
+        >{{ t('Export options') }}</DrawerTrigger
+      >
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>QR Code Generator</DrawerTitle>
+          <DrawerDescription>Customize your QR code</DrawerDescription>
+          <div ref="mainContentContainer" id="main-content-container"></div>
+        </DrawerHeader>
+        <DrawerFooter>
+          <DrawerClose>
+            <button>Close</button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+    <Teleport to="#main-content-container" v-if="mainContentContainer != null">
+      <div id="main-content">
+        <div id="qr-code-container" class="grid place-items-center">
+          <div
+            class="grid place-items-center overflow-hidden"
+            :style="[
+              style,
+              {
+                width: '200px',
+                height: '200px'
+              }
+            ]"
+          >
+            <StyledQRCode
+              v-bind="{
+                ...qrCodeProps,
+                data: data?.length > 0 ? data : t('Have nice day!'),
+                width: 200,
+                height: 200
+              }"
+              role="img"
+              aria-label="QR code"
+            />
+          </div>
         </div>
-      </div>
-      <div class="mt-4 flex flex-col items-center gap-2">
-        <div class="flex flex-col items-center justify-center gap-3">
-          <button
-            v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED && exportMode !== ExportMode.Batch"
-            id="copy-qr-image-button"
-            class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
-            @click="copyQRToClipboard"
-            :disabled="isExportButtonDisabled"
-            :title="
-              isExportButtonDisabled
-                ? t('Please enter data to encode first')
-                : t('Copy QR Code to clipboard')
-            "
-            :aria-label="t('Copy QR Code to clipboard')"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <g
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              >
-                <path d="M8 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z" />
-                <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
-              </g>
-            </svg>
-            <p>{{ t('Copy QR Code to clipboard') }}</p>
-          </button>
-          <button
-            id="save-qr-code-config-button"
-            class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
-            @click="downloadQRConfig"
-            :title="t('Save QR Code configuration')"
-            :aria-label="t('Save QR Code configuration')"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <g
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              >
-                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-4v-6" />
-                <path d="M9.5 13.5L12 11l2.5 2.5" />
-              </g>
-            </svg>
-            <p>{{ t('Save QR Code configuration') }}</p>
-          </button>
-          <button
-            id="load-qr-code-config-button"
-            class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
-            @click="loadQrConfigFromFile"
-            :aria-label="t('Load QR Code configuration')"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <g
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              >
-                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-10v6" />
-                <path d="M9.5 13.5L12 11l2.5 2.5" />
-              </g>
-            </svg>
-            <p>{{ t('Load QR Code configuration') }}</p>
-          </button>
-        </div>
-        <div id="export-options" class="pt-4">
-          <p class="pb-2 text-zinc-900 dark:text-zinc-100">{{ t('Export as') }}</p>
-          <div class="flex flex-row items-center justify-center gap-2">
+        <div class="mt-4 flex flex-col items-center gap-2">
+          <div class="flex flex-col items-center justify-center gap-3">
             <button
-              id="download-qr-image-button-png"
-              class="button"
-              @click="downloadQRImageAsPng"
+              v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED && exportMode !== ExportMode.Batch"
+              id="copy-qr-image-button"
+              class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
+              @click="copyQRToClipboard"
               :disabled="isExportButtonDisabled"
               :title="
                 isExportButtonDisabled
                   ? t('Please enter data to encode first')
-                  : t('Download QR Code as PNG')
+                  : t('Copy QR Code to clipboard')
               "
-              :aria-label="t('Download QR Code as PNG')"
+              :aria-label="t('Copy QR Code to clipboard')"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <g
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                >
+                  <path d="M8 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z" />
+                  <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+                </g>
+              </svg>
+              <p>{{ t('Copy QR Code to clipboard') }}</p>
+            </button>
+            <button
+              id="save-qr-code-config-button"
+              class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
+              @click="downloadQRConfig"
+              :title="t('Save QR Code configuration')"
+              :aria-label="t('Save QR Code configuration')"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                 <g
@@ -680,22 +664,18 @@ const isExportButtonDisabled = computed(() => {
                 >
                   <path d="M14 3v4a1 1 0 0 0 1 1h4" />
                   <path
-                    d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4m1 3h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3M5 18h1.5a1.5 1.5 0 0 0 0-3H5v6m6 0v-6l3 6v-6"
+                    d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-4v-6"
                   />
+                  <path d="M9.5 13.5L12 11l2.5 2.5" />
                 </g>
               </svg>
+              <p>{{ t('Save QR Code configuration') }}</p>
             </button>
             <button
-              id="download-qr-image-button-svg"
-              class="button"
-              @click="downloadQRImageAsSvg"
-              :disabled="isExportButtonDisabled"
-              :title="
-                isExportButtonDisabled
-                  ? t('Please enter data to encode first')
-                  : t('Download QR Code as SVG')
-              "
-              :aria-label="t('Download QR Code as SVG')"
+              id="load-qr-code-config-button"
+              class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
+              @click="loadQrConfigFromFile"
+              :aria-label="t('Load QR Code configuration')"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                 <g
@@ -707,15 +687,77 @@ const isExportButtonDisabled = computed(() => {
                 >
                   <path d="M14 3v4a1 1 0 0 0 1 1h4" />
                   <path
-                    d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4M4 20.25c0 .414.336.75.75.75H6a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h1.25a.75.75 0 0 1 .75.75m3-.75l2 6l2-6m6 0h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3"
+                    d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-10v6"
                   />
+                  <path d="M9.5 13.5L12 11l2.5 2.5" />
                 </g>
               </svg>
+              <p>{{ t('Load QR Code configuration') }}</p>
             </button>
+          </div>
+          <div id="export-options" class="pt-4">
+            <p class="pb-2 text-zinc-900 dark:text-zinc-100">{{ t('Export as') }}</p>
+            <div class="flex flex-row items-center justify-center gap-2">
+              <button
+                id="download-qr-image-button-png"
+                class="button"
+                @click="downloadQRImageAsPng"
+                :disabled="isExportButtonDisabled"
+                :title="
+                  isExportButtonDisabled
+                    ? t('Please enter data to encode first')
+                    : t('Download QR Code as PNG')
+                "
+                :aria-label="t('Download QR Code as PNG')"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  >
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path
+                      d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4m1 3h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3M5 18h1.5a1.5 1.5 0 0 0 0-3H5v6m6 0v-6l3 6v-6"
+                    />
+                  </g>
+                </svg>
+              </button>
+              <button
+                id="download-qr-image-button-svg"
+                class="button"
+                @click="downloadQRImageAsSvg"
+                :disabled="isExportButtonDisabled"
+                :title="
+                  isExportButtonDisabled
+                    ? t('Please enter data to encode first')
+                    : t('Download QR Code as SVG')
+                "
+                :aria-label="t('Download QR Code as SVG')"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  >
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path
+                      d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4M4 20.25c0 .414.336.75.75.75H6a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h1.25a.75.75 0 0 1 .75.75m3-.75l2 6l2-6m6 0h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3"
+                    />
+                  </g>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
+
     <div id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
       <div>
         <label>{{ t('Preset') }}</label>
