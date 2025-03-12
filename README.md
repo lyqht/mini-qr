@@ -28,6 +28,7 @@ A customizable QR code generator to create beautiful and unique QR codes.
 - 🖼️ Upload custom image for logo
 - 🎭 Presets: Pre-crafted QR code styles
 - 🛡️ Error correction level: affects the size of the QR code and logo within. Use lower correction levels for bigger pieces of data to ensure that it can be read.
+- 📱 QR Code Scanner: Scan QR codes using your camera or by uploading images, with intelligent detection for URLs, emails, phone numbers, WiFi credentials, and more
 - 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once.
 
 ## Demo
