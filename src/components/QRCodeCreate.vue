@@ -568,7 +568,9 @@ const mainContentContainer = ref<HTMLElement | null>(null)
 </script>
 
 <template>
-  <div class="flex flex-col-reverse items-start justify-center gap-4 md:flex-row md:gap-12">
+  <div
+    class="flex flex-col-reverse items-start justify-center gap-4 pb-[180px] md:flex-row md:gap-12 md:pb-0"
+  >
     <div
       v-if="isLarge"
       ref="mainContentContainer"
