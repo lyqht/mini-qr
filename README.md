@@ -1,8 +1,8 @@
-# Mini QR Code Generator
+# Mini QR
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-A customizable QR code generator to create beautiful and unique QR codes.
+An app to create beautiful QR codes and scan various QR code types.
 
 <div style="display:flex; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:8px;">
     <a href="https://esteetey.dev"><img width="100" src="public/presets/lyqht.svg" /></a>
