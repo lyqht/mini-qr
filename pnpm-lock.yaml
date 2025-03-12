@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@floating-ui/vue':
+        specifier: ^1.1.6
+        version: 1.1.6(vue@3.5.13(typescript@5.8.2))
       '@vitejs/plugin-vue':
         specifier: ^5.2.1
         version: 5.2.1(vite@5.4.14(@types/node@20.17.23))(vue@3.5.13(typescript@5.8.2))
@@ -35,6 +38,9 @@ importers:
       file-saver:
         specifier: ^2.0.5
         version: 2.0.5
+      html5-qrcode:
+        specifier: ^2.3.8
+        version: 2.3.8
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
@@ -1179,6 +1185,9 @@ packages:
   html-tags@3.3.1:
     resolution: {integrity: sha512-ztqyC3kLto0e9WbNp0aeP+M3kTt+nbaIveGmUxAtZa+8iFgKLUOD4YKM5j+f3QD89bra7UeumolZHKuOXnTmeQ==}
     engines: {node: '>=8'}
+
+  html5-qrcode@2.3.8:
+    resolution: {integrity: sha512-jsr4vafJhwoLVEDW3n1KvPnCCXWaQfRng0/EEYk1vNcQGcG/htAdhJX0be8YyqMoSz7+hZvOZSTAepsabiuhiQ==}
 
   human-signals@5.0.0:
     resolution: {integrity: sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==}
@@ -3020,6 +3029,8 @@ snapshots:
       function-bind: 1.1.2
 
   html-tags@3.3.1: {}
+
+  html5-qrcode@2.3.8: {}
 
   human-signals@5.0.0: {}
 

@@ -1,8 +1,8 @@
-# Mini QR Code Generator
+# Mini QR
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-A customizable QR code generator to create beautiful and unique QR codes.
+An app to create beautiful QR codes and scan various QR code types.
 
 <div style="display:flex; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:8px;">
     <a href="https://esteetey.dev"><img width="100" src="public/presets/lyqht.svg" /></a>
@@ -28,6 +28,7 @@ A customizable QR code generator to create beautiful and unique QR codes.
 - 🖼️ Upload custom image for logo
 - 🎭 Presets: Pre-crafted QR code styles
 - 🛡️ Error correction level: affects the size of the QR code and logo within. Use lower correction levels for bigger pieces of data to ensure that it can be read.
+- 📱 QR Code Scanner: Scan QR codes using your camera or by uploading images, with intelligent detection for URLs, emails, phone numbers, WiFi credentials, and more
 - 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once.
 
 ## Demo
@@ -39,6 +40,10 @@ https://github.com/lyqht/mini-qr/assets/35736525/991b2d7e-f168-4354-9091-1678d2c
 Batch data export is also now supported.
 
 https://github.com/user-attachments/assets/fef17e6a-c226-4136-9501-8d3e951671e0
+
+Scanning QR codes is also possible at MiniQR.
+
+https://github.com/user-attachments/assets/5ad58b35-0a16-43a4-839a-e2197bfc273a
 
 ## Self-hosting with Docker 🐋
 
