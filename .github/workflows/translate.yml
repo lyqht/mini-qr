@@ -6,14 +6,14 @@ on:
       - merged
     paths:
       - 'locales/en.json'
-  
+
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Translate locales json
-        uses: lyqht/deepl-translate-github-action@v2.1.0
+        uses: lyqht/deepl-translate-github-action@v2.1.1
         with:
           target_languages: all
           input_file_path: locales/en.json
