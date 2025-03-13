@@ -131,7 +131,7 @@ const isModeToggleDisabled = computed(() => {
       <div class="flex items-center justify-end gap-2">
         <a
           class="icon-button"
-          href="https://github.com/lyqht/styled-qr-code-generator"
+          href="https://github.com/lyqht/mini-qr"
           target="_blank"
           :aria-label="t('GitHub repository for this project')"
         >
