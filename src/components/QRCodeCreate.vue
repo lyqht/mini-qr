@@ -568,9 +568,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
 </script>
 
 <template>
-  <div
-    class="flex flex-col-reverse items-start justify-center gap-4 pb-[180px] md:flex-row md:gap-12 md:pb-0"
-  >
+  <div class="flex items-start justify-center gap-4 pb-[180px] md:flex-row md:gap-12 md:pb-0">
     <div
       v-if="isLarge"
       ref="mainContentContainer"
@@ -637,11 +635,11 @@ const mainContentContainer = ref<HTMLElement | null>(null)
           </div>
         </div>
       </DrawerTrigger>
-      <DrawerContent class="grid h-screen place-items-center">
-        <DrawerHeader>
-          <DrawerTitle>{{ t('Export options') }}</DrawerTitle>
-          <div ref="mainContentContainer" id="main-content-container"></div>
-        </DrawerHeader>
+      <DrawerContent class="flex h-screen flex-col items-center justify-between">
+        <div class="flex grow flex-col items-center justify-center gap-4">
+          <DrawerTitle>{{ t('Export') }}</DrawerTitle>
+          <div ref="mainContentContainer" id="main-content-container" class="w-full"></div>
+        </div>
       </DrawerContent>
     </Drawer>
     <Teleport to="#main-content-container" v-if="mainContentContainer != null">
@@ -674,7 +672,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
             <button
               v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED && exportMode !== ExportMode.Batch"
               id="copy-qr-image-button"
-              class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
+              class="button flex w-fit max-w-full flex-row items-center gap-1"
               @click="copyQRToClipboard"
               :disabled="isExportButtonDisabled"
               :title="
@@ -700,7 +698,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
             </button>
             <button
               id="save-qr-code-config-button"
-              class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
+              class="button flex w-fit max-w-full flex-row items-center gap-1"
               @click="downloadQRConfig"
               :title="t('Save QR Code configuration')"
               :aria-label="t('Save QR Code configuration')"
@@ -724,7 +722,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
             </button>
             <button
               id="load-qr-code-config-button"
-              class="button flex w-fit max-w-[200px] flex-row items-center gap-1"
+              class="button flex w-fit max-w-full flex-row items-center gap-1"
               @click="loadQrConfigFromFile"
               :aria-label="t('Load QR Code configuration')"
             >
