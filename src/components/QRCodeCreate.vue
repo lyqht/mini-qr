@@ -968,7 +968,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
             </template>
           </div>
 
-          <div class="w-full border-l-2 border-gray-300 pl-4 sm:w-1/3">
+          <div class="w-full sm:w-1/3 sm:border-l-2 sm:border-gray-300 sm:pl-4">
             <fieldset class="h-full" role="radiogroup" tabindex="0">
               <div class="flex flex-row items-center gap-2">
                 <legend>{{ t('Error correction level') }}</legend>
