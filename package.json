@@ -58,6 +58,7 @@
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "typescript": "^5.8.2",
+    "vite-plugin-pwa": "^0.21.1",
     "vue-eslint-parser": "^9.4.3"
   }
 }
