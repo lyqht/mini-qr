@@ -30,6 +30,29 @@ An app to create beautiful QR codes and scan various QR code types.
 - 🛡️ Error correction level: affects the size of the QR code and logo within. Use lower correction levels for bigger pieces of data to ensure that it can be read.
 - 📱 QR Code Scanner: Scan QR codes using your camera or by uploading images, with intelligent detection for URLs, emails, phone numbers, WiFi credentials, and more
 - 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once.
+- 📲 PWA Support: Install MiniQR as a desktop or mobile app
+
+## Installation as PWA
+
+MiniQR can be installed as a Progressive Web App (PWA) on your device:
+
+1. **Desktop (Chrome/Edge)**:
+   - Visit [mini-qr.vercel.app](https://mini-qr.vercel.app)
+   - Click the install icon (➕) in the address bar
+   - Click "Install" in the prompt
+
+2. **Mobile (Android)**:
+   - Visit [mini-qr.vercel.app](https://mini-qr.vercel.app)
+   - Tap the "Add to Home Screen" option in your browser menu
+   - Tap "Install" or "Add"
+
+3. **iOS (Safari)**:
+   - Visit [mini-qr.vercel.app](https://mini-qr.vercel.app)
+   - Tap the Share button
+   - Scroll down and tap "Add to Home Screen"
+   - Tap "Add"
+
+Once installed, MiniQR will work offline and provide a native app-like experience.
 
 ## Demo
 
