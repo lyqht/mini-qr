@@ -32,9 +32,10 @@ An app to create beautiful QR codes and scan various QR code types.
 - 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once.
 - 📲 PWA Support: Install MiniQR as a desktop or mobile app
 
-## Installation as PWA
+### Installation as PWA
 
-MiniQR can be installed as a Progressive Web App (PWA) on your device:
+<details>
+<summary>MiniQR can also be installed as a Progressive Web App (PWA) on your device</summary>
 
 1. **Desktop (Chrome/Edge)**:
    - Visit [mini-qr.vercel.app](https://mini-qr.vercel.app)
@@ -53,6 +54,8 @@ MiniQR can be installed as a Progressive Web App (PWA) on your device:
    - Tap "Add"
 
 Once installed, MiniQR will work offline and provide a native app-like experience.
+
+</details>
 
 ## Demo
 

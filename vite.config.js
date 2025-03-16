@@ -13,8 +13,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: [
         'app_icons/web/favicon.ico',
-        'app_icons/web/apple-splash-dark.png',
-        'app_icons/web/apple-splash-light.png'
+        'app_icons/web/splash-750x1334@2x.png',
+        'app_icons/web/splash-1170x2532@3x.png',
+        'app_icons/web/splash-1290x2796@3x.png',
+        'app_icons/web/splash-2048x2732@2x.png'
       ],
       manifest: {
         name: 'MiniQR',
@@ -51,13 +53,13 @@ export default defineConfig({
         screenshots: [
           {
             src: 'app_icons/web/screenshot-narrow.png',
-            sizes: '1170x2532',
+            sizes: '3510x7596',
             type: 'image/png',
             form_factor: 'narrow'
           },
           {
             src: 'app_icons/web/screenshot-wide.png',
-            sizes: '2532x1170',
+            sizes: '7596x3510',
             type: 'image/png',
             form_factor: 'wide'
           }
