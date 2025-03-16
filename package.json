@@ -10,7 +10,8 @@
     "type-check": "vue-tsc --noEmit",
     "lint": "eslint --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore --ignore-pattern \"*.json\"",
     "format": "prettier --write",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "generate-splash": "node scripts/generate-splash-screens.js"
   },
   "lint-staged": {
     "*.{vue,js,jsx,ts,tsx,json}": [
@@ -57,7 +58,9 @@
     "lint-staged": "^15.4.3",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
+    "sharp": "^0.33.5",
     "typescript": "^5.8.2",
+    "vite-plugin-pwa": "^0.21.1",
     "vue-eslint-parser": "^9.4.3"
   }
 }
