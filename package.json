@@ -34,7 +34,7 @@
     "html5-qrcode": "^2.3.8",
     "jszip": "^3.10.1",
     "lucide-vue-next": "^0.321.0",
-    "qr-code-styling": "^1.9.1",
+    "qr-code-styling": "^1.6.0-rc.1",
     "radix-vue": "^1.9.17",
     "reka-ui": "^2.0.2",
     "tailwind-merge": "^2.6.0",
