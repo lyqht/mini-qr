@@ -21,40 +21,38 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <div class="flex w-full items-center justify-center">
-    <div
-      class="w-fit"
-      :class="[
-        textPosition === 'left' || textPosition === 'right' ? 'flex-row' : 'flex-col',
-        {
-          'flex-row-reverse': textPosition === 'left',
-          'flex-col-reverse': textPosition === 'top'
-        }
-      ]"
+  <div
+    :class="[
+      'w-fit',
+      textPosition === 'left' || textPosition === 'right' ? 'flex-row' : 'flex-col',
+      {
+        'flex-row-reverse': textPosition === 'left',
+        'flex-col-reverse': textPosition === 'top'
+      }
+    ]"
+    :style="{
+      backgroundColor: frameStyle.backgroundColor,
+      borderColor: frameStyle.borderColor,
+      borderWidth: frameStyle.borderWidth,
+      borderRadius: frameStyle.borderRadius,
+      padding: frameStyle.padding,
+      borderStyle: frameStyle.borderColor ? 'solid' : 'none',
+      gap: '1rem',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }"
+  >
+    <slot name="qr-code"></slot>
+    <p
       :style="{
-        backgroundColor: frameStyle.backgroundColor,
-        borderColor: frameStyle.borderColor,
-        borderWidth: frameStyle.borderWidth,
-        borderRadius: frameStyle.borderRadius,
-        padding: frameStyle.padding,
-        borderStyle: frameStyle.borderColor ? 'solid' : 'none',
-        gap: '1rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
+        color: frameStyle.textColor,
+        margin: 0,
+        textAlign: 'center',
+        [textPosition === 'left' || textPosition === 'right' ? 'width' : 'maxWidth']: '200px'
       }"
     >
-      <slot name="qr-code"></slot>
-      <p
-        :style="{
-          color: frameStyle.textColor,
-          margin: 0,
-          textAlign: 'center',
-          [textPosition === 'left' || textPosition === 'right' ? 'width' : 'maxWidth']: '200px'
-        }"
-      >
-        {{ frameText }}
-      </p>
-    </div>
+      {{ frameText }}
+    </p>
   </div>
 </template>

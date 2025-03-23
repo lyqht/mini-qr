@@ -78,29 +78,15 @@ const lastBackground = ref(defaultPreset.style.background)
 const DEFAULT_FRAME_TEXT = 'Scan for more info'
 const frameText = ref(DEFAULT_FRAME_TEXT)
 const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
-const showFrame = ref(true)
+const showFrame = ref(false)
 const frameStyle = ref({
   textColor: '#000000',
-  backgroundColor: 'transparent',
-  borderColor: '',
+  backgroundColor: '#ffffff',
+  borderColor: '#000000',
   borderWidth: '1px',
   borderRadius: '8px',
   padding: '16px'
 })
-
-function resetFrameTemplate() {
-  frameText.value = DEFAULT_FRAME_TEXT
-  frameTextPosition.value = 'bottom'
-  showFrame.value = true
-  frameStyle.value = {
-    textColor: '#000000',
-    backgroundColor: 'transparent',
-    borderColor: '',
-    borderWidth: '1px',
-    borderRadius: '8px',
-    padding: '16px'
-  }
-}
 
 const includeBackground = ref(true)
 watch(
@@ -739,64 +725,64 @@ const mainContentContainer = ref<HTMLElement | null>(null)
     </Drawer>
     <Teleport to="#main-content-container" v-if="mainContentContainer != null">
       <div id="main-content">
-        <div ref="exportElementRef">
-          <QRCodeFrame
-            v-if="showFrame"
-            :frame-text="frameText"
-            :text-position="frameTextPosition"
-            :frame-style="frameStyle"
-          >
-            <template #qr-code>
-              <div id="qr-code-container" class="grid place-items-center">
-                <div
-                  class="grid place-items-center overflow-hidden"
-                  :style="[
-                    style,
-                    {
-                      width: '200px',
-                      height: '200px'
-                    }
-                  ]"
-                >
-                  <StyledQRCode
-                    v-bind="{
-                      ...qrCodeProps,
-                      data: data?.length > 0 ? data : t('Have nice day!'),
-                      width: 200,
-                      height: 200
-                    }"
-                    role="img"
-                    aria-label="QR code"
-                  />
+        <div id="qr-code-container" class="grid place-items-center">
+          <div v-if="showFrame" ref="exportElementRef" class="w-fit">
+            <QRCodeFrame
+              :frame-text="frameText"
+              :text-position="frameTextPosition"
+              :frame-style="frameStyle"
+            >
+              <template #qr-code>
+                <div id="qr-code-container" class="grid place-items-center">
+                  <div
+                    ref="exportElementRef"
+                    class="grid place-items-center overflow-hidden"
+                    :style="[
+                      style,
+                      {
+                        width: '200px',
+                        height: '200px'
+                      }
+                    ]"
+                  >
+                    <StyledQRCode
+                      v-bind="{
+                        ...qrCodeProps,
+                        data: data?.length > 0 ? data : t('Have nice day!'),
+                        width: 200,
+                        height: 200
+                      }"
+                      role="img"
+                      aria-label="QR code"
+                    />
+                  </div>
                 </div>
-              </div>
-            </template>
-          </QRCodeFrame>
-          <template v-else>
-            <div id="qr-code-container" class="grid place-items-center">
-              <div
-                class="grid place-items-center overflow-hidden"
-                :style="[
-                  style,
-                  {
-                    width: '200px',
-                    height: '200px'
-                  }
-                ]"
-              >
-                <StyledQRCode
-                  v-bind="{
-                    ...qrCodeProps,
-                    data: data?.length > 0 ? data : t('Have nice day!'),
-                    width: 200,
-                    height: 200
-                  }"
-                  role="img"
-                  aria-label="QR code"
-                />
-              </div>
-            </div>
-          </template>
+              </template>
+            </QRCodeFrame>
+          </div>
+          <div
+            v-else
+            class="grid place-items-center overflow-hidden"
+            :style="[
+              style,
+              {
+                width: '200px',
+                height: '200px'
+              }
+            ]"
+            ref="exportElementRef"
+          >
+            <StyledQRCode
+              v-bind="{
+                ...qrCodeProps,
+                data: data?.length > 0 ? data : t('Have nice day!'),
+                width: 200,
+                height: 200
+              }"
+              role="img"
+              aria-label="QR code"
+            />
+          </div>
         </div>
         <div class="mt-4 flex flex-col items-center gap-8">
           <div class="flex flex-col items-center justify-center gap-3">
