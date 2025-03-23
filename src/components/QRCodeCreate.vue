@@ -1,21 +1,14 @@
 <script setup lang="ts">
 import StyledQRCode from '@/components/StyledQRCode.vue'
 import { Combobox } from '@/components/ui/Combobox'
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger
-} from '@/components/ui/drawer'
+import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
 import {
   copyImageToClipboard,
+  downloadJpgElement,
   downloadPngElement,
   downloadSvgElement,
+  getJpgElement,
   getPngElement,
   getSvgString,
   IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED
@@ -239,25 +232,21 @@ const options = computed(() => ({
   height: height.value
 }))
 
+const exportElementRef = ref<HTMLElement | null>(null)
+const elementToBeExported = computed(() => exportElementRef.value as HTMLElement)
+
 async function copyQRToClipboard() {
-  console.debug('Copying image to clipboard')
-  const qrCode = document.querySelector('#qr-code-container')
-  if (qrCode) {
-    await copyImageToClipboard(qrCode as HTMLElement, options.value)
-  }
+  await copyImageToClipboard(elementToBeExported.value, options.value)
 }
 
 function downloadQRImageAsPng() {
   if (exportMode.value === ExportMode.Single) {
-    const qrCode = document.querySelector('#qr-code-container')
-    if (qrCode) {
-      downloadPngElement(
-        qrCode as HTMLElement,
-        'qr-code.png',
-        options.value,
-        styledBorderRadiusFormatted.value
-      )
-    }
+    downloadPngElement(
+      elementToBeExported.value,
+      'qr-code.png',
+      options.value,
+      styledBorderRadiusFormatted.value
+    )
   } else {
     generateBatchQRCodes('png')
   }
@@ -265,17 +254,27 @@ function downloadQRImageAsPng() {
 
 function downloadQRImageAsSvg() {
   if (exportMode.value === ExportMode.Single) {
-    const qrCode = document.querySelector('#qr-code-container')
-    if (qrCode) {
-      downloadSvgElement(
-        qrCode as HTMLElement,
-        'qr-code.svg',
-        options.value,
-        styledBorderRadiusFormatted.value
-      )
-    }
+    downloadSvgElement(
+      elementToBeExported.value,
+      'qr-code.svg',
+      options.value,
+      styledBorderRadiusFormatted.value
+    )
   } else {
     generateBatchQRCodes('svg')
+  }
+}
+
+function downloadQRImageAsJpg() {
+  if (exportMode.value === ExportMode.Single) {
+    downloadJpgElement(
+      elementToBeExported.value,
+      'qr-code.jpg',
+      { ...options.value, bgcolor: 'white' },
+      styledBorderRadiusFormatted.value
+    )
+  } else {
+    generateBatchQRCodes('jpg')
   }
 }
 
@@ -480,7 +479,7 @@ const createZipFile = (
   zip: typeof JSZip,
   dataUrl: string,
   index: number,
-  format: 'png' | 'svg'
+  format: 'png' | 'svg' | 'jpg'
 ) => {
   const dataString = filteredDataStringsFromCsv.value[index]
   let fileName = dataString.trim()
@@ -500,16 +499,15 @@ const createZipFile = (
 
   usedFilenames.add(fileName)
 
-  if (format === 'png') {
+  if (format === 'png' || format === 'jpg') {
     zip.file(`${fileName}.${format}`, dataUrl.split(',')[1], { base64: true })
   } else {
     // For SVG, we don't need to split and use base64
     zip.file(`${fileName}.${format}`, dataUrl)
   }
 }
-async function generateBatchQRCodes(format: 'png' | 'svg') {
+async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
   isExportingBatchQRs.value = true
-  const qrCode = document.querySelector('#qr-code-container')
   const zip = new JSZip()
   let numQrCodesCreated = 0
 
@@ -522,13 +520,19 @@ async function generateBatchQRCodes(format: 'png' | 'svg') {
       let dataUrl: string = ''
       if (format === 'png') {
         dataUrl = await getPngElement(
-          qrCode as HTMLElement,
+          elementToBeExported.value,
+          options.value,
+          styledBorderRadiusFormatted.value
+        )
+      } else if (format === 'jpg') {
+        dataUrl = await getJpgElement(
+          elementToBeExported.value,
           options.value,
           styledBorderRadiusFormatted.value
         )
       } else {
         dataUrl = await getSvgString(
-          qrCode as HTMLElement,
+          elementToBeExported.value,
           options.value,
           styledBorderRadiusFormatted.value
         )
@@ -646,6 +650,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
       <div id="main-content">
         <div id="qr-code-container" class="grid place-items-center">
           <div
+            ref="exportElementRef"
             class="grid place-items-center overflow-hidden"
             :style="[
               style,
@@ -667,7 +672,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
             />
           </div>
         </div>
-        <div class="mt-4 flex flex-col items-center gap-2">
+        <div class="mt-4 flex flex-col items-center gap-8">
           <div class="flex flex-col items-center justify-center gap-3">
             <button
               v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED && exportMode !== ExportMode.Batch"
@@ -744,8 +749,8 @@ const mainContentContainer = ref<HTMLElement | null>(null)
               <p>{{ t('Load QR Code configuration') }}</p>
             </button>
           </div>
-          <div id="export-options" class="pt-4">
-            <p class="pb-2 text-zinc-900 dark:text-zinc-100">{{ t('Export as') }}</p>
+          <div id="export-options" class="grid place-items-center gap-4">
+            <p class="text-zinc-900 dark:text-zinc-100">{{ t('Export as') }}</p>
             <div class="flex flex-row items-center justify-center gap-2">
               <button
                 id="download-qr-image-button-png"
@@ -760,17 +765,50 @@ const mainContentContainer = ref<HTMLElement | null>(null)
                 :aria-label="t('Download QR Code as PNG')"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <g
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  >
+                  <g fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                    <path
-                      d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4m1 3h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3M5 18h1.5a1.5 1.5 0 0 0 0-3H5v6m6 0v-6l3 6v-6"
-                    />
+                    <path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4" />
+                    <text
+                      x="1"
+                      y="22"
+                      fill="currentColor"
+                      stroke="none"
+                      font-size="11px"
+                      font-family="monospace"
+                      font-weight="600"
+                    >
+                      PNG
+                    </text>
+                  </g>
+                </svg>
+              </button>
+              <button
+                id="download-qr-image-button-jpg"
+                class="button"
+                @click="downloadQRImageAsJpg"
+                :disabled="isExportButtonDisabled"
+                :title="
+                  isExportButtonDisabled
+                    ? t('Please enter data to encode first')
+                    : t('Download QR Code as JPG')
+                "
+                :aria-label="t('Download QR Code as JPG')"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4" />
+                    <text
+                      x="1"
+                      y="22"
+                      fill="currentColor"
+                      stroke="none"
+                      font-size="11px"
+                      font-family="monospace"
+                      font-weight="600"
+                    >
+                      JPG
+                    </text>
                   </g>
                 </svg>
               </button>
@@ -787,17 +825,20 @@ const mainContentContainer = ref<HTMLElement | null>(null)
                 :aria-label="t('Download QR Code as SVG')"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <g
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  >
+                  <g fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                    <path
-                      d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4M4 20.25c0 .414.336.75.75.75H6a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h1.25a.75.75 0 0 1 .75.75m3-.75l2 6l2-6m6 0h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1v-3"
-                    />
+                    <path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4" />
+                    <text
+                      x="1"
+                      y="22"
+                      fill="currentColor"
+                      stroke="none"
+                      font-size="11px"
+                      font-family="monospace"
+                      font-weight="600"
+                    >
+                      SVG
+                    </text>
                   </g>
                 </svg>
               </button>
