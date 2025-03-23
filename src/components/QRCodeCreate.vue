@@ -35,11 +35,11 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion'
 
-// Define props
 const props = defineProps<{
   initialData?: string
 }>()
 
+const PREVIEW_QRCODE_DIM_UNIT = 200
 const isLarge = useMediaQuery('(min-width: 768px)')
 
 //#region /** locale */
@@ -247,10 +247,19 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
 //#endregion
 
 //#region /* export image utils */
-const options = computed(() => ({
-  width: width.value,
-  height: height.value
-}))
+const options = computed(() => {
+  if (!showFrame.value) {
+    return {
+      width: width.value,
+      height: height.value
+    }
+  }
+
+  return {
+    width: (elementToBeExported.value.offsetWidth / PREVIEW_QRCODE_DIM_UNIT) * width.value,
+    height: (elementToBeExported.value.offsetHeight / PREVIEW_QRCODE_DIM_UNIT) * height.value
+  }
+})
 
 const exportElementRef = ref<HTMLElement | null>(null)
 const elementToBeExported = computed(() => exportElementRef.value as HTMLElement)
@@ -726,7 +735,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
     <Teleport to="#main-content-container" v-if="mainContentContainer != null">
       <div id="main-content">
         <div id="qr-code-container" class="grid place-items-center">
-          <div v-if="showFrame" ref="exportElementRef" class="w-fit">
+          <div v-if="showFrame" ref="exportElementRef">
             <QRCodeFrame
               :frame-text="frameText"
               :text-position="frameTextPosition"
@@ -749,8 +758,8 @@ const mainContentContainer = ref<HTMLElement | null>(null)
                       v-bind="{
                         ...qrCodeProps,
                         data: data?.length > 0 ? data : t('Have nice day!'),
-                        width: 200,
-                        height: 200
+                        width: PREVIEW_QRCODE_DIM_UNIT,
+                        height: PREVIEW_QRCODE_DIM_UNIT
                       }"
                       role="img"
                       aria-label="QR code"
@@ -766,8 +775,8 @@ const mainContentContainer = ref<HTMLElement | null>(null)
             :style="[
               style,
               {
-                width: '200px',
-                height: '200px'
+                width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
+                height: `${PREVIEW_QRCODE_DIM_UNIT}px`
               }
             ]"
             ref="exportElementRef"
@@ -776,8 +785,8 @@ const mainContentContainer = ref<HTMLElement | null>(null)
               v-bind="{
                 ...qrCodeProps,
                 data: data?.length > 0 ? data : t('Have nice day!'),
-                width: 200,
-                height: 200
+                width: PREVIEW_QRCODE_DIM_UNIT,
+                height: PREVIEW_QRCODE_DIM_UNIT
               }"
               role="img"
               aria-label="QR code"
