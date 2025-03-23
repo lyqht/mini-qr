@@ -78,6 +78,7 @@ const lastBackground = ref(defaultPreset.style.background)
 const DEFAULT_FRAME_TEXT = 'Scan for more info'
 const frameText = ref(DEFAULT_FRAME_TEXT)
 const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
+const showFrame = ref(true)
 const frameStyle = ref({
   textColor: '#000000',
   backgroundColor: 'transparent',
@@ -90,6 +91,7 @@ const frameStyle = ref({
 function resetFrameTemplate() {
   frameText.value = DEFAULT_FRAME_TEXT
   frameTextPosition.value = 'bottom'
+  showFrame.value = true
   frameStyle.value = {
     textColor: '#000000',
     backgroundColor: 'transparent',
@@ -338,11 +340,13 @@ function createQrConfig() {
   return {
     props: qrCodeProps.value,
     style: style.value,
-    frame: {
-      text: frameText.value,
-      position: frameTextPosition.value,
-      style: frameStyle.value
-    }
+    frame: showFrame.value
+      ? {
+          text: frameText.value,
+          position: frameTextPosition.value,
+          style: frameStyle.value
+        }
+      : null
   }
 }
 
@@ -636,31 +640,69 @@ const mainContentContainer = ref<HTMLElement | null>(null)
         <div class="flex flex-col items-center">
           <!-- Handle indicator for bottom sheet -->
           <div class="mt-2 h-1 w-16 rounded-full bg-gray-300 dark:bg-gray-700"></div>
-          <div class="h-[150px] w-full overflow-hidden pt-2">
+          <div class="w-full p-4">
             <div class="grid place-items-center">
-              <div
-                class="grid place-items-center overflow-hidden"
-                :style="[
-                  style,
-                  {
-                    width: '120px',
-                    height: '120px',
-                    maxWidth: '100%',
-                    maxHeight: '100%'
-                  }
-                ]"
+              <QRCodeFrame
+                v-if="showFrame"
+                :frame-text="frameText"
+                :text-position="frameTextPosition"
+                :frame-style="frameStyle"
               >
-                <StyledQRCode
-                  v-bind="{
-                    ...qrCodeProps,
-                    data: data?.length > 0 ? data : t('Have nice day!'),
-                    width: 120,
-                    height: 120
-                  }"
-                  role="img"
-                  aria-label="QR code preview"
-                />
-              </div>
+                <template #qr-code>
+                  <div class="grid place-items-center">
+                    <div
+                      class="grid place-items-center overflow-hidden"
+                      :style="[
+                        style,
+                        {
+                          width: '120px',
+                          height: '120px',
+                          maxWidth: '100%',
+                          maxHeight: '100%'
+                        }
+                      ]"
+                    >
+                      <StyledQRCode
+                        v-bind="{
+                          ...qrCodeProps,
+                          data: data?.length > 0 ? data : t('Have nice day!'),
+                          width: 120,
+                          height: 120
+                        }"
+                        role="img"
+                        aria-label="QR code preview"
+                      />
+                    </div>
+                  </div>
+                </template>
+              </QRCodeFrame>
+              <template v-else>
+                <div class="grid place-items-center">
+                  <div
+                    class="grid place-items-center overflow-hidden"
+                    :style="[
+                      style,
+                      {
+                        width: '120px',
+                        height: '120px',
+                        maxWidth: '100%',
+                        maxHeight: '100%'
+                      }
+                    ]"
+                  >
+                    <StyledQRCode
+                      v-bind="{
+                        ...qrCodeProps,
+                        data: data?.length > 0 ? data : t('Have nice day!'),
+                        width: 120,
+                        height: 120
+                      }"
+                      role="img"
+                      aria-label="QR code preview"
+                    />
+                  </div>
+                </div>
+              </template>
             </div>
           </div>
           <div
@@ -699,6 +741,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
       <div id="main-content">
         <div ref="exportElementRef">
           <QRCodeFrame
+            v-if="showFrame"
             :frame-text="frameText"
             :text-position="frameTextPosition"
             :frame-style="frameStyle"
@@ -729,6 +772,31 @@ const mainContentContainer = ref<HTMLElement | null>(null)
               </div>
             </template>
           </QRCodeFrame>
+          <template v-else>
+            <div id="qr-code-container" class="grid place-items-center">
+              <div
+                class="grid place-items-center overflow-hidden"
+                :style="[
+                  style,
+                  {
+                    width: '200px',
+                    height: '200px'
+                  }
+                ]"
+              >
+                <StyledQRCode
+                  v-bind="{
+                    ...qrCodeProps,
+                    data: data?.length > 0 ? data : t('Have nice day!'),
+                    width: 200,
+                    height: 200
+                  }"
+                  role="img"
+                  aria-label="QR code"
+                />
+              </div>
+            </div>
+          </template>
         </div>
         <div class="mt-4 flex flex-col items-center gap-8">
           <div class="flex flex-col items-center justify-center gap-3">
@@ -908,6 +976,132 @@ const mainContentContainer = ref<HTMLElement | null>(null)
 
     <div id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
       <Accordion type="single" collapsible class="w-full" default-value="qr-code-settings">
+        <AccordionItem value="frame-settings">
+          <AccordionTrigger class="text-2xl font-semibold text-gray-700 dark:text-gray-100"
+            ><span class="flex flex-row items-center gap-2"
+              ><span>{{ t('Frame settings') }}</span>
+              <span
+                class="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
+              >
+                {{ t('New!') }}
+              </span></span
+            ></AccordionTrigger
+          >
+          <AccordionContent>
+            <div class="space-y-4 pt-4">
+              <div class="flex flex-row items-center gap-2">
+                <label for="show-frame">{{ t('Add frame') }}</label>
+                <input id="show-frame" type="checkbox" class="checkbox" v-model="showFrame" />
+              </div>
+
+              <div v-if="showFrame">
+                <div class="mb-2 flex flex-row items-center gap-2">
+                  <label for="frame-text">{{ t('Frame text') }}</label>
+                </div>
+                <textarea
+                  name="frame-text"
+                  class="text-input"
+                  id="frame-text"
+                  rows="2"
+                  :placeholder="t('Text to display with QR code')"
+                  v-model="frameText"
+                />
+              </div>
+
+              <div v-if="showFrame">
+                <label class="mb-2 block">{{ t('Text position') }}</label>
+                <fieldset class="flex-1" role="radiogroup" tabindex="0">
+                  <div
+                    class="radiogroup"
+                    v-for="position in ['top', 'bottom', 'left', 'right']"
+                    :key="position"
+                  >
+                    <input
+                      :id="'frameTextPosition-' + position"
+                      type="radio"
+                      v-model="frameTextPosition"
+                      :value="position"
+                    />
+                    <label :for="'frameTextPosition-' + position">{{ t(position) }}</label>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div v-if="showFrame">
+                <label class="mb-2 block">{{ t('Frame style') }}</label>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label for="frame-text-color" class="mb-1 block text-sm">{{
+                      t('Text color')
+                    }}</label>
+                    <input
+                      id="frame-text-color"
+                      type="color"
+                      class="color-input"
+                      v-model="frameStyle.textColor"
+                    />
+                  </div>
+                  <div>
+                    <label for="frame-bg-color" class="mb-1 block text-sm">{{
+                      t('Background color')
+                    }}</label>
+                    <input
+                      id="frame-bg-color"
+                      type="color"
+                      class="color-input"
+                      v-model="frameStyle.backgroundColor"
+                    />
+                  </div>
+                  <div>
+                    <label for="frame-border-color" class="mb-1 block text-sm">{{
+                      t('Border color')
+                    }}</label>
+                    <input
+                      id="frame-border-color"
+                      type="color"
+                      class="color-input"
+                      v-model="frameStyle.borderColor"
+                    />
+                  </div>
+                  <div>
+                    <label for="frame-border-width" class="mb-1 block text-sm">{{
+                      t('Border width')
+                    }}</label>
+                    <input
+                      id="frame-border-width"
+                      type="text"
+                      class="text-input"
+                      v-model="frameStyle.borderWidth"
+                      placeholder="1px"
+                    />
+                  </div>
+                  <div>
+                    <label for="frame-border-radius" class="mb-1 block text-sm">{{
+                      t('Border radius')
+                    }}</label>
+                    <input
+                      id="frame-border-radius"
+                      type="text"
+                      class="text-input"
+                      v-model="frameStyle.borderRadius"
+                      placeholder="8px"
+                    />
+                  </div>
+                  <div>
+                    <label for="frame-padding" class="mb-1 block text-sm">{{ t('Padding') }}</label>
+                    <input
+                      id="frame-padding"
+                      type="text"
+                      class="text-input"
+                      v-model="frameStyle.padding"
+                      placeholder="16px"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
         <AccordionItem value="qr-code-settings">
           <AccordionTrigger class="text-2xl font-semibold text-gray-700 dark:text-gray-100">{{
             t('QR Code settings')
@@ -1348,124 +1542,6 @@ const mainContentContainer = ref<HTMLElement | null>(null)
                     <label :for="'cornersDotOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-              </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="frame-settings">
-          <AccordionTrigger class="text-2xl font-semibold text-gray-700 dark:text-gray-100"
-            ><span class="flex flex-row items-center gap-2"
-              ><span>{{ t('Frame settings') }}</span>
-              <span
-                class="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
-              >
-                {{ t('New!') }}
-              </span></span
-            ></AccordionTrigger
-          >
-          <AccordionContent>
-            <div class="space-y-4 pt-4">
-              <div>
-                <div class="mb-2 flex flex-row items-center gap-2">
-                  <label for="frame-text">{{ t('Frame text') }}</label>
-                </div>
-                <textarea
-                  name="frame-text"
-                  class="text-input"
-                  id="frame-text"
-                  rows="2"
-                  :placeholder="t('Text to display with QR code')"
-                  v-model="frameText"
-                />
-              </div>
-
-              <div>
-                <label class="mb-2 block">{{ t('Text position') }}</label>
-                <div class="flex flex-wrap gap-2">
-                  <button
-                    v-for="position in ['top', 'bottom', 'left', 'right']"
-                    :key="position"
-                    class="secondary-button"
-                    :class="{ 'opacity-50': frameTextPosition !== position }"
-                    @click="frameTextPosition = position as 'top' | 'bottom' | 'left' | 'right'"
-                  >
-                    {{ t(position) }}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label class="mb-2 block">{{ t('Frame style') }}</label>
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label for="frame-text-color" class="mb-1 block text-sm">{{
-                      t('Text color')
-                    }}</label>
-                    <input
-                      id="frame-text-color"
-                      type="color"
-                      class="color-input"
-                      v-model="frameStyle.textColor"
-                    />
-                  </div>
-                  <div>
-                    <label for="frame-bg-color" class="mb-1 block text-sm">{{
-                      t('Background color')
-                    }}</label>
-                    <input
-                      id="frame-bg-color"
-                      type="color"
-                      class="color-input"
-                      v-model="frameStyle.backgroundColor"
-                    />
-                  </div>
-                  <div>
-                    <label for="frame-border-color" class="mb-1 block text-sm">{{
-                      t('Border color')
-                    }}</label>
-                    <input
-                      id="frame-border-color"
-                      type="color"
-                      class="color-input"
-                      v-model="frameStyle.borderColor"
-                    />
-                  </div>
-                  <div>
-                    <label for="frame-border-width" class="mb-1 block text-sm">{{
-                      t('Border width')
-                    }}</label>
-                    <input
-                      id="frame-border-width"
-                      type="text"
-                      class="text-input"
-                      v-model="frameStyle.borderWidth"
-                      placeholder="1px"
-                    />
-                  </div>
-                  <div>
-                    <label for="frame-border-radius" class="mb-1 block text-sm">{{
-                      t('Border radius')
-                    }}</label>
-                    <input
-                      id="frame-border-radius"
-                      type="text"
-                      class="text-input"
-                      v-model="frameStyle.borderRadius"
-                      placeholder="8px"
-                    />
-                  </div>
-                  <div>
-                    <label for="frame-padding" class="mb-1 block text-sm">{{ t('Padding') }}</label>
-                    <input
-                      id="frame-padding"
-                      type="text"
-                      class="text-input"
-                      v-model="frameStyle.padding"
-                      placeholder="16px"
-                    />
-                  </div>
-                </div>
               </div>
             </div>
           </AccordionContent>
