@@ -60,7 +60,23 @@ export async function copyImageToClipboard(
 
 export async function getPngElement(element: HTMLElement, options: Options, borderRadius?: string) {
   const formattedOptions = getFormattedOptions(element, options, borderRadius)
-  return domtoimage.toPng(element, formattedOptions)
+  return new Promise<string>((resolve, reject) => {
+    domtoimage
+      .toBlob(element, formattedOptions)
+      .then((blob: Blob) => {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          if (typeof reader.result === 'string') {
+            resolve(reader.result)
+          } else {
+            reject(new Error('Failed to convert blob to data URL'))
+          }
+        }
+        reader.onerror = () => reject(reader.error)
+        reader.readAsDataURL(blob)
+      })
+      .catch(reject)
+  })
 }
 
 export function downloadPngElement(
