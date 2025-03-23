@@ -16,7 +16,7 @@ const getFormattedOptions = (
     return {
       style: { scale, transformOrigin: 'left top', borderRadius: borderRadius ?? '48px' },
       quality: 100,
-      ...options
+      ...options,
     }
   }
 
@@ -58,7 +58,7 @@ export async function copyImageToClipboard(
   }
 }
 
-export function getPngElement(element: HTMLElement, options: Options, borderRadius?: string) {
+export async function getPngElement(element: HTMLElement, options: Options, borderRadius?: string) {
   const formattedOptions = getFormattedOptions(element, options, borderRadius)
   return domtoimage.toPng(element, formattedOptions)
 }
@@ -78,6 +78,29 @@ export function downloadPngElement(
     })
     .catch((error: Error) => {
       console.error('Error converting element to PNG:', error)
+    })
+}
+
+export async function getJpgElement(element: HTMLElement, options: Options, borderRadius?: string) {
+  const formattedOptions = getFormattedOptions(element, options, borderRadius)
+  return domtoimage.toJpeg(element, formattedOptions)
+}
+
+export function downloadJpgElement(
+  element: HTMLElement,
+  filename: string,
+  options: Options,
+  borderRadius?: string
+) {
+  getJpgElement(element, options, borderRadius)
+    .then((dataUrl: string) => {
+      const link = document.createElement('a')
+      link.href = dataUrl
+      link.download = filename
+      link.click()
+    })
+    .catch((error: Error) => {
+      console.error('Error converting element to JPG:', error)
     })
 }
 
