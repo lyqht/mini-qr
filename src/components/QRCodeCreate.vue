@@ -672,7 +672,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
             />
           </div>
         </div>
-        <div class="mt-4 flex flex-col items-center gap-2">
+        <div class="mt-4 flex flex-col items-center gap-8">
           <div class="flex flex-col items-center justify-center gap-3">
             <button
               v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED && exportMode !== ExportMode.Batch"
@@ -749,8 +749,8 @@ const mainContentContainer = ref<HTMLElement | null>(null)
               <p>{{ t('Load QR Code configuration') }}</p>
             </button>
           </div>
-          <div id="export-options" class="pt-4">
-            <p class="pb-2 text-zinc-900 dark:text-zinc-100">{{ t('Export as') }}</p>
+          <div id="export-options" class="grid place-items-center gap-4">
+            <p class="text-zinc-900 dark:text-zinc-100">{{ t('Export as') }}</p>
             <div class="flex flex-row items-center justify-center gap-2">
               <button
                 id="download-qr-image-button-png"
