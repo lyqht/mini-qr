@@ -247,6 +247,12 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
 
 //#region /* export image utils */
 const PREVIEW_QRCODE_DIM_UNIT = 200
+
+/**
+ * Computes the dimensions for QR code export
+ * When frame is enabled (showFrame = true), dimensions are calculated from the actual rendered element
+ * to include the frame's size. Otherwise, uses the configured width and height values.
+ */
 const options = computed(() => {
   if (!showFrame.value) {
     return {
@@ -268,42 +274,26 @@ async function copyQRToClipboard() {
   await copyImageToClipboard(elementToBeExported.value, options.value)
 }
 
-function downloadQRImageAsPng() {
+/**
+ * Downloads QR code in specified format, handling both single and batch exports
+ * @param format The format to download: 'png', 'svg', or 'jpg'
+ */
+function downloadQRImage(format: 'png' | 'svg' | 'jpg') {
   if (exportMode.value === ExportMode.Single) {
-    downloadPngElement(
-      elementToBeExported.value,
-      'qr-code.png',
-      options.value,
-      styledBorderRadiusFormatted.value
-    )
-  } else {
-    generateBatchQRCodes('png')
-  }
-}
+    const formatConfig = {
+      png: { fn: downloadPngElement, filename: 'qr-code.png' },
+      svg: { fn: downloadSvgElement, filename: 'qr-code.svg' },
+      jpg: { fn: downloadJpgElement, filename: 'qr-code.jpg', extraOptions: { bgcolor: 'white' } }
+    }[format]
 
-function downloadQRImageAsSvg() {
-  if (exportMode.value === ExportMode.Single) {
-    downloadSvgElement(
+    formatConfig.fn(
       elementToBeExported.value,
-      'qr-code.svg',
-      options.value,
+      formatConfig.filename,
+      { ...options.value, ...formatConfig.extraOptions },
       styledBorderRadiusFormatted.value
     )
   } else {
-    generateBatchQRCodes('svg')
-  }
-}
-
-function downloadQRImageAsJpg() {
-  if (exportMode.value === ExportMode.Single) {
-    downloadJpgElement(
-      elementToBeExported.value,
-      'qr-code.jpg',
-      { ...options.value, bgcolor: 'white' },
-      styledBorderRadiusFormatted.value
-    )
-  } else {
-    generateBatchQRCodes('jpg')
+    generateBatchQRCodes(format)
   }
 }
 
@@ -878,7 +868,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
               <button
                 id="download-qr-image-button-png"
                 class="button"
-                @click="downloadQRImageAsPng"
+                @click="() => downloadQRImage('png')"
                 :disabled="isExportButtonDisabled"
                 :title="
                   isExportButtonDisabled
@@ -908,7 +898,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
               <button
                 id="download-qr-image-button-jpg"
                 class="button"
-                @click="downloadQRImageAsJpg"
+                @click="() => downloadQRImage('jpg')"
                 :disabled="isExportButtonDisabled"
                 :title="
                   isExportButtonDisabled
@@ -938,7 +928,7 @@ const mainContentContainer = ref<HTMLElement | null>(null)
               <button
                 id="download-qr-image-button-svg"
                 class="button"
-                @click="downloadQRImageAsSvg"
+                @click="() => downloadQRImage('svg')"
                 :disabled="isExportButtonDisabled"
                 :title="
                   isExportButtonDisabled
