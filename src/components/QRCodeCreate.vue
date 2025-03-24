@@ -39,7 +39,6 @@ const props = defineProps<{
   initialData?: string
 }>()
 
-const PREVIEW_QRCODE_DIM_UNIT = 200
 const isLarge = useMediaQuery('(min-width: 768px)')
 
 //#region /** locale */
@@ -247,6 +246,7 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
 //#endregion
 
 //#region /* export image utils */
+const PREVIEW_QRCODE_DIM_UNIT = 200
 const options = computed(() => {
   if (!showFrame.value) {
     return {
