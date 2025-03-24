@@ -293,36 +293,44 @@ const isExportButtonDisabled = computed(() => {
 const PREVIEW_QRCODE_DIM_UNIT = 200
 
 /**
- * Computes the dimensions for QR code export
+ * Calculates the dimensions for QR code export
  * When frame is enabled (showFrame = true), dimensions are calculated from the actual rendered element
  * to include the frame's size. Otherwise, uses the configured width and height values.
  */
-const options = computed(() => {
-  if (showFrame.value) {
-    console.debug(
-      `=== ~ options ~ elementToBeExported.value.offsetWidth:`,
-      elementToBeExported.value.offsetWidth
-    )
-    console.debug(
-      `=== ~ options ~ (elementToBeExported.value.offsetWidth / PREVIEW_QRCODE_DIM_UNIT) * width.value:`,
-      (elementToBeExported.value.offsetWidth / PREVIEW_QRCODE_DIM_UNIT) * width.value
-    )
+function getExportDimensions() {
+  if (!showFrame.value) {
     return {
-      width: (elementToBeExported.value.offsetWidth / PREVIEW_QRCODE_DIM_UNIT) * width.value,
-      height: (elementToBeExported.value.offsetHeight / PREVIEW_QRCODE_DIM_UNIT) * height.value
+      width: width.value,
+      height: height.value
     }
   }
-  return {
-    width: width.value,
-    height: height.value
+  const el = document.getElementById('element-to-export')
+  if (!el) {
+    return {
+      width: width.value,
+      height: height.value
+    }
   }
-})
 
-const exportElementRef = ref<HTMLElement | null>(null)
-const elementToBeExported = computed(() => exportElementRef.value as HTMLElement)
+  // Calculate the scale factor based on the preview size
+  const scaleFactor = width.value / PREVIEW_QRCODE_DIM_UNIT
+
+  const elWidth = el.offsetWidth
+  const elHeight = el.offsetHeight
+
+  // Get the actual dimensions including the frame and apply the scale factor
+  return {
+    width: elWidth * scaleFactor,
+    height: elHeight * scaleFactor
+  }
+}
 
 async function copyQRToClipboard() {
-  await copyImageToClipboard(elementToBeExported.value, options.value)
+  const el = document.getElementById('element-to-export')
+  if (!el) {
+    return
+  }
+  await copyImageToClipboard(el, getExportDimensions())
 }
 
 /**
@@ -337,10 +345,15 @@ function downloadQRImage(format: 'png' | 'svg' | 'jpg') {
       jpg: { fn: downloadJpgElement, filename: 'qr-code.jpg', extraOptions: { bgcolor: 'white' } }
     }[format]
 
+    const el = document.getElementById('element-to-export')
+    if (!el) {
+      return
+    }
+
     formatConfig.fn(
-      elementToBeExported.value,
+      el,
       formatConfig.filename,
-      { ...options.value, ...formatConfig.extraOptions },
+      { ...getExportDimensions(), ...formatConfig.extraOptions },
       styledBorderRadiusFormatted.value
     )
   } else {
@@ -593,6 +606,10 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
   isExportingBatchQRs.value = true
   const zip = new JSZip()
   let numQrCodesCreated = 0
+  const el = document.getElementById('element-to-export')
+  if (!el) {
+    return
+  }
 
   try {
     for (let index = 0; index < filteredDataStringsFromCsv.value.length; index++) {
@@ -602,23 +619,11 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
       await sleep(1000)
       let dataUrl: string = ''
       if (format === 'png') {
-        dataUrl = await getPngElement(
-          elementToBeExported.value,
-          options.value,
-          styledBorderRadiusFormatted.value
-        )
+        dataUrl = await getPngElement(el, getExportDimensions(), styledBorderRadiusFormatted.value)
       } else if (format === 'jpg') {
-        dataUrl = await getJpgElement(
-          elementToBeExported.value,
-          options.value,
-          styledBorderRadiusFormatted.value
-        )
+        dataUrl = await getJpgElement(el, getExportDimensions(), styledBorderRadiusFormatted.value)
       } else {
-        dataUrl = await getSvgString(
-          elementToBeExported.value,
-          options.value,
-          styledBorderRadiusFormatted.value
-        )
+        dataUrl = await getSvgString(el, getExportDimensions(), styledBorderRadiusFormatted.value)
       }
       createZipFile(zip, dataUrl, index, format)
       numQrCodesCreated++
@@ -761,7 +766,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
     <Teleport to="#main-content-container" v-if="mainContentContainer != null">
       <div id="main-content">
         <div id="qr-code-container" class="grid place-items-center">
-          <div v-if="showFrame" ref="exportElementRef">
+          <div v-if="showFrame" id="element-to-export">
             <QRCodeFrame
               :frame-text="frameText"
               :text-position="frameTextPosition"
@@ -770,13 +775,13 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
               <template #qr-code>
                 <div id="qr-code-container" class="grid place-items-center">
                   <div
-                    ref="exportElementRef"
+                    id="element-to-export"
                     class="grid place-items-center overflow-hidden"
                     :style="[
                       style,
                       {
-                        width: '200px',
-                        height: '200px'
+                        width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
+                        height: `${PREVIEW_QRCODE_DIM_UNIT}px`
                       }
                     ]"
                   >
@@ -805,7 +810,6 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                 height: `${PREVIEW_QRCODE_DIM_UNIT}px`
               }
             ]"
-            ref="exportElementRef"
           >
             <StyledQRCode
               v-bind="{
