@@ -35,6 +35,15 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion'
 
+interface FrameStyle {
+  textColor: string
+  backgroundColor: string
+  borderColor: string
+  borderWidth: string
+  borderRadius: string
+  padding: string
+}
+
 const props = defineProps<{
   initialData?: string
 }>()
@@ -78,7 +87,7 @@ const DEFAULT_FRAME_TEXT = 'Scan for more info'
 const frameText = ref(DEFAULT_FRAME_TEXT)
 const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
 const showFrame = ref(false)
-const frameStyle = ref({
+const frameStyle = ref<FrameStyle>({
   textColor: '#000000',
   backgroundColor: '#ffffff',
   borderColor: '#000000',
@@ -321,7 +330,22 @@ function uploadImage() {
 //#endregion
 
 //#region /* QR Config Utils */
-function createQrConfig() {
+interface QRCodeConfig {
+  props: StyledQRCodeProps & {
+    name?: string
+  }
+  style: {
+    borderRadius: string
+    background?: string
+  }
+  frame?: {
+    text: string
+    position: 'top' | 'bottom' | 'left' | 'right'
+    style: FrameStyle
+  } | null
+}
+
+function createQrConfig(): QRCodeConfig {
   return {
     props: qrCodeProps.value,
     style: style.value,
@@ -354,7 +378,7 @@ function saveQRConfigToLocalStorage() {
 }
 
 function loadQRConfig(jsonString: string, key?: string) {
-  const qrCodeConfig = JSON.parse(jsonString)
+  const qrCodeConfig = JSON.parse(jsonString) as QRCodeConfig
   const qrCodeProps = qrCodeConfig.props
   const qrCodeStyle = qrCodeConfig.style
   const frameConfig = qrCodeConfig.frame
@@ -362,7 +386,7 @@ function loadQRConfig(jsonString: string, key?: string) {
   const preset = {
     ...qrCodeProps,
     style: qrCodeStyle
-  }
+  } as Preset
 
   if (key) {
     preset.name = key
@@ -372,9 +396,8 @@ function loadQRConfig(jsonString: string, key?: string) {
 
   selectedPreset.value = preset
 
-  showFrame.value = !!frameConfig
-
   if (frameConfig) {
+    showFrame.value = true
     frameText.value = frameConfig.text || DEFAULT_FRAME_TEXT
     frameTextPosition.value = frameConfig.position || 'bottom'
     frameStyle.value = {
