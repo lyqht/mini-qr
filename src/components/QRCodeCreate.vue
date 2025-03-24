@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import StyledQRCode from '@/components/StyledQRCode.vue'
 import QRCodeFrame from '@/components/QRCodeFrame.vue'
+import StyledQRCode from '@/components/StyledQRCode.vue'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '@/components/ui/accordion'
 import { Combobox } from '@/components/ui/Combobox'
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
@@ -28,12 +34,6 @@ import {
 import { computed, onMounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from '@/components/ui/accordion'
 
 interface FrameStyle {
   textColor: string
@@ -216,6 +216,8 @@ watch(selectedPreset, () => {
     selectedPreset.value.qrOptions && selectedPreset.value.qrOptions.errorCorrectionLevel
       ? selectedPreset.value.qrOptions.errorCorrectionLevel
       : 'Q'
+  // Most presets don't have a frame, so we set it to false by default
+  showFrame.value = false
 })
 
 const LAST_LOADED_LOCALLY_PRESET_KEY = 'Last saved locally'
@@ -296,16 +298,23 @@ const PREVIEW_QRCODE_DIM_UNIT = 200
  * to include the frame's size. Otherwise, uses the configured width and height values.
  */
 const options = computed(() => {
-  if (!showFrame.value) {
+  if (showFrame.value) {
+    console.debug(
+      `=== ~ options ~ elementToBeExported.value.offsetWidth:`,
+      elementToBeExported.value.offsetWidth
+    )
+    console.debug(
+      `=== ~ options ~ (elementToBeExported.value.offsetWidth / PREVIEW_QRCODE_DIM_UNIT) * width.value:`,
+      (elementToBeExported.value.offsetWidth / PREVIEW_QRCODE_DIM_UNIT) * width.value
+    )
     return {
-      width: width.value,
-      height: height.value
+      width: (elementToBeExported.value.offsetWidth / PREVIEW_QRCODE_DIM_UNIT) * width.value,
+      height: (elementToBeExported.value.offsetHeight / PREVIEW_QRCODE_DIM_UNIT) * height.value
     }
   }
-
   return {
-    width: (elementToBeExported.value.offsetWidth / PREVIEW_QRCODE_DIM_UNIT) * width.value,
-    height: (elementToBeExported.value.offsetHeight / PREVIEW_QRCODE_DIM_UNIT) * height.value
+    width: width.value,
+    height: height.value
   }
 })
 
