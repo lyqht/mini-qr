@@ -48,13 +48,14 @@ const props = defineProps<{
   initialData?: string
 }>()
 
+const mainContentContainer = ref<HTMLElement | null>(null)
 const isLarge = useMediaQuery('(min-width: 768px)')
 
 //#region /** locale */
 const { t } = useI18n()
 //#endregion
 
-//#region /** styling states and computed properties */
+//#region /* QR code style settings */
 const defaultPreset = allPresets[0]
 const data = ref(props.initialData || '')
 const image = ref()
@@ -82,20 +83,6 @@ const styleBorderRadius = ref()
 const styledBorderRadiusFormatted = computed(() => `${styleBorderRadius.value}px`)
 const styleBackground = ref(defaultPreset.style.background)
 const lastBackground = ref(defaultPreset.style.background)
-
-const DEFAULT_FRAME_TEXT = 'Scan for more info'
-const frameText = ref(DEFAULT_FRAME_TEXT)
-const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
-const showFrame = ref(false)
-const frameStyle = ref<FrameStyle>({
-  textColor: '#000000',
-  backgroundColor: '#ffffff',
-  borderColor: '#000000',
-  borderWidth: '1px',
-  borderRadius: '8px',
-  padding: '16px'
-})
-
 const includeBackground = ref(true)
 watch(
   includeBackground,
@@ -172,6 +159,29 @@ function randomizeStyleSettings() {
   styleBackground.value = createRandomColor()
 }
 
+function uploadImage() {
+  console.debug('Uploading image')
+  const imageInput = document.createElement('input')
+  imageInput.type = 'file'
+  imageInput.accept = 'image/*'
+  imageInput.onchange = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    if (target.files) {
+      const file = target.files[0]
+      const reader = new FileReader()
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        const target = event.target as FileReader
+        const result = target.result as string
+        image.value = result
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+  imageInput.click()
+}
+// #endregion
+
+// #region /* Preset settings */
 const isPresetSelectOpen = ref(false)
 const allPresetOptions = computed(() => {
   const options = lastCustomLoadedPreset.value
@@ -230,8 +240,9 @@ watch(
   },
   { immediate: true }
 )
+//#endregion
 
-//#region /* error correction level */
+//#region /* Error correction level */
 const errorCorrectionLevels: ErrorCorrectionLevel[] = ['L', 'M', 'Q', 'H']
 const errorCorrectionLevel = ref<ErrorCorrectionLevel>('Q')
 const ERROR_CORRECTION_LEVEL_LABELS: Record<ErrorCorrectionLevel, string> = {
@@ -254,7 +265,29 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
 })
 //#endregion
 
-//#region /* export image utils */
+//#region /* Frame settings */
+const DEFAULT_FRAME_TEXT = 'Scan for more info'
+const frameText = ref(DEFAULT_FRAME_TEXT)
+const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
+const showFrame = ref(false)
+const frameStyle = ref<FrameStyle>({
+  textColor: '#000000',
+  backgroundColor: '#ffffff',
+  borderColor: '#000000',
+  borderWidth: '1px',
+  borderRadius: '8px',
+  padding: '16px'
+})
+//#endregion
+
+//#region /* General Export - download qr code and copy to clipboard */
+const isExportButtonDisabled = computed(() => {
+  if (exportMode.value === ExportMode.Single) {
+    return !data.value
+  }
+  return dataStringsFromCsv.value.length === 0
+})
+
 const PREVIEW_QRCODE_DIM_UNIT = 200
 
 /**
@@ -305,31 +338,9 @@ function downloadQRImage(format: 'png' | 'svg' | 'jpg') {
     generateBatchQRCodes(format)
   }
 }
-
-function uploadImage() {
-  console.debug('Uploading image')
-  const imageInput = document.createElement('input')
-  imageInput.type = 'file'
-  imageInput.accept = 'image/*'
-  imageInput.onchange = (event: Event) => {
-    const target = event.target as HTMLInputElement
-    if (target.files) {
-      const file = target.files[0]
-      const reader = new FileReader()
-      reader.onload = (event: ProgressEvent<FileReader>) => {
-        const target = event.target as FileReader
-        const result = target.result as string
-        image.value = result
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-  imageInput.click()
-}
-
 //#endregion
 
-//#region /* QR Config Utils */
+//#region /* QR Config Utils - Saving, Loading and Downloading */
 interface QRCodeConfig {
   props: StyledQRCodeProps & {
     name?: string
@@ -623,15 +634,6 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
   }
 }
 //#endregion
-
-const isExportButtonDisabled = computed(() => {
-  if (exportMode.value === ExportMode.Single) {
-    return !data.value
-  }
-  return dataStringsFromCsv.value.length === 0
-})
-
-const mainContentContainer = ref<HTMLElement | null>(null)
 </script>
 
 <template>
