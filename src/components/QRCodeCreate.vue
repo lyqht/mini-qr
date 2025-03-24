@@ -377,11 +377,13 @@ function loadQRConfig(jsonString: string, key?: string) {
   if (key) {
     preset.name = key
     lastCustomLoadedPreset.value = preset
+    selectedPresetKey.value = key
   }
 
   selectedPreset.value = preset
 
-  // Load frame settings if they exist
+  showFrame.value = !!frameConfig
+
   if (frameConfig) {
     frameText.value = frameConfig.text || DEFAULT_FRAME_TEXT
     frameTextPosition.value = frameConfig.position || 'bottom'
@@ -424,7 +426,7 @@ function loadQRConfigFromLocalStorage() {
 }
 
 watch(
-  [qrCodeProps, style],
+  [qrCodeProps, style, showFrame],
   () => {
     saveQRConfigToLocalStorage()
   },
