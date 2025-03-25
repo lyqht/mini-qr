@@ -652,12 +652,14 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
 
 <template>
   <div class="flex items-start justify-center gap-4 pb-[180px] md:flex-row md:gap-12 md:pb-0">
+    <!-- Sticky sidebar on large screens -->
     <div
       v-if="isLarge"
       ref="mainContentContainer"
       id="main-content-container"
       class="sticky top-0 flex w-full shrink-0 flex-col items-center justify-center p-4 md:w-fit"
     ></div>
+    <!-- Bottom sheet on small screens -->
     <Drawer v-else>
       <DrawerTrigger
         id="drawer-preview-container"
@@ -682,7 +684,6 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                 <template #qr-code>
                   <div id="qr-code-container" class="grid place-items-center">
                     <div
-                      id="element-to-export"
                       class="grid place-items-center overflow-hidden"
                       :style="[
                         style,
@@ -765,6 +766,8 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
         </div>
       </DrawerContent>
     </Drawer>
+
+    <!-- Main content -->
     <Teleport to="#main-content-container" v-if="mainContentContainer != null">
       <div id="main-content">
         <div
@@ -783,7 +786,6 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
               <template #qr-code>
                 <div id="qr-code-container" class="grid place-items-center">
                   <div
-                    id="element-to-export"
                     class="grid place-items-center overflow-hidden"
                     :style="[
                       style,
@@ -810,7 +812,8 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
           </div>
           <div
             v-else
-            class="grid place-items-center overflow-hidden"
+            id="element-to-export"
+            class="grid place-items-center"
             :style="[
               style,
               {
