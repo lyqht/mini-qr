@@ -666,8 +666,13 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
         <div class="flex flex-col items-center">
           <!-- Handle indicator for bottom sheet -->
           <div class="mt-2 h-1 w-16 rounded-full bg-gray-300 dark:bg-gray-700"></div>
-          <div class="w-full p-4">
-            <div class="grid place-items-center">
+          <div
+            :class="[
+              'w-full',
+              showFrame && ['left', 'right'].includes(frameTextPosition) ? '-my-4' : '-my-8'
+            ]"
+          >
+            <div class="flex origin-center scale-[0.7] items-center justify-center md:scale-100">
               <QRCodeFrame
                 v-if="showFrame"
                 :frame-text="frameText"
@@ -675,16 +680,15 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                 :frame-style="frameStyle"
               >
                 <template #qr-code>
-                  <div class="grid place-items-center">
+                  <div id="qr-code-container" class="grid place-items-center">
                     <div
+                      id="element-to-export"
                       class="grid place-items-center overflow-hidden"
                       :style="[
                         style,
                         {
-                          width: '120px',
-                          height: '120px',
-                          maxWidth: '100%',
-                          maxHeight: '100%'
+                          width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
+                          height: `${PREVIEW_QRCODE_DIM_UNIT}px`
                         }
                       ]"
                     >
@@ -692,11 +696,11 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                         v-bind="{
                           ...qrCodeProps,
                           data: data?.length > 0 ? data : t('Have nice day!'),
-                          width: 120,
-                          height: 120
+                          width: PREVIEW_QRCODE_DIM_UNIT,
+                          height: PREVIEW_QRCODE_DIM_UNIT
                         }"
                         role="img"
-                        aria-label="QR code preview"
+                        aria-label="QR code"
                       />
                     </div>
                   </div>
@@ -709,10 +713,8 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                     :style="[
                       style,
                       {
-                        width: '120px',
-                        height: '120px',
-                        maxWidth: '100%',
-                        maxHeight: '100%'
+                        width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
+                        height: `${PREVIEW_QRCODE_DIM_UNIT}px`
                       }
                     ]"
                   >
@@ -720,8 +722,8 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                       v-bind="{
                         ...qrCodeProps,
                         data: data?.length > 0 ? data : t('Have nice day!'),
-                        width: 120,
-                        height: 120
+                        width: PREVIEW_QRCODE_DIM_UNIT,
+                        height: PREVIEW_QRCODE_DIM_UNIT
                       }"
                       role="img"
                       aria-label="QR code preview"
@@ -765,7 +767,13 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
     </Drawer>
     <Teleport to="#main-content-container" v-if="mainContentContainer != null">
       <div id="main-content">
-        <div id="qr-code-container" class="grid place-items-center">
+        <div
+          id="qr-code-container"
+          :class="[
+            'grid origin-center place-items-center',
+            showFrame && ['left', 'right'].includes(frameTextPosition) && 'scale-[0.7] md:scale-100'
+          ]"
+        >
           <div v-if="showFrame" id="element-to-export">
             <QRCodeFrame
               :frame-text="frameText"
