@@ -84,3 +84,7 @@ docker compose up -d
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+
+This is a group project
+group members:
+...
