@@ -1013,20 +1013,26 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
     </Teleport>
 
     <div id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
-      <Accordion type="single" collapsible class="w-full" default-value="qr-code-settings">
+      <Accordion
+        type="multiple"
+        collapsible
+        class="flex w-full flex-col gap-4"
+        default-value="qr-code-settings"
+      >
         <AccordionItem value="frame-settings">
-          <AccordionTrigger class="text-2xl font-semibold text-gray-700 dark:text-gray-100"
+          <AccordionTrigger
+            class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
             ><span class="flex flex-row items-center gap-2"
               ><span>{{ t('Frame settings') }}</span>
               <span
-                class="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
+                class="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
               >
                 {{ t('New!') }}
               </span></span
             ></AccordionTrigger
           >
-          <AccordionContent>
-            <div class="space-y-4 pt-4">
+          <AccordionContent class="px-2 pb-8 pt-4">
+            <div class="space-y-4">
               <div class="flex flex-row items-center gap-2">
                 <label for="show-frame">{{ t('Add frame') }}</label>
                 <input id="show-frame" type="checkbox" class="checkbox" v-model="showFrame" />
@@ -1141,11 +1147,12 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="qr-code-settings">
-          <AccordionTrigger class="text-2xl font-semibold text-gray-700 dark:text-gray-100">{{
-            t('QR Code settings')
-          }}</AccordionTrigger>
-          <AccordionContent>
-            <div class="space-y-8 pt-4">
+          <AccordionTrigger
+            class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
+            >{{ t('QR Code settings') }}</AccordionTrigger
+          >
+          <AccordionContent class="px-2 pb-8 pt-4">
+            <div class="space-y-8">
               <div>
                 <label>{{ t('Preset') }}</label>
                 <div class="flex flex-row items-center justify-start gap-2">
@@ -1157,7 +1164,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                     :insert-divider-at-indexes="[0, 2]"
                   />
                   <button
-                    class="icon-button"
+                    class="button"
                     @click="randomizeStyleSettings"
                     :aria-label="t('Randomize style')"
                   >

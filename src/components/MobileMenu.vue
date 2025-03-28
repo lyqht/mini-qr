@@ -60,7 +60,7 @@ onUnmounted(() => {
     <!-- Hamburger menu button -->
     <button
       ref="reference"
-      class="flex size-9 items-center justify-center rounded-md border border-zinc-300 bg-zinc-100 text-zinc-800 hover:bg-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+      class="flex size-9 items-center justify-center rounded-md border border-zinc-300 bg-zinc-100 text-zinc-800 outline-none hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
       @click="toggleMenu"
       :aria-label="t('Menu')"
       aria-haspopup="true"
