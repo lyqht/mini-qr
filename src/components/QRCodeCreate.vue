@@ -663,17 +663,12 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
     <Drawer v-else>
       <DrawerTrigger
         id="drawer-preview-container"
-        class="fixed inset-x-0 bottom-0 rounded-t-lg border-t border-solid border-slate-300 bg-white shadow-2xl dark:bg-black"
+        class="fixed inset-x-0 bottom-0 rounded-t-lg border-t border-solid border-slate-300 bg-white shadow-2xl outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:bg-black dark:focus-visible:ring-zinc-200"
       >
         <div class="flex flex-col items-center">
           <!-- Handle indicator for bottom sheet -->
           <div class="mt-2 h-1 w-16 rounded-full bg-gray-300 dark:bg-gray-700"></div>
-          <div
-            :class="[
-              'w-full',
-              showFrame && ['left', 'right'].includes(frameTextPosition) ? '-my-4' : '-my-8'
-            ]"
-          >
+          <div :class="['w-full', '-my-8']">
             <div class="flex origin-center scale-[0.7] items-center justify-center md:scale-100">
               <QRCodeFrame
                 v-if="showFrame"
@@ -735,7 +730,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
             </div>
           </div>
           <div
-            class="flex items-center gap-1 pb-2 text-center text-sm text-gray-600 dark:text-gray-400"
+            class="flex items-center gap-1 py-2 text-center text-sm text-gray-600 dark:text-gray-400"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
