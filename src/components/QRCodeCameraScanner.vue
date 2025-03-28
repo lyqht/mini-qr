@@ -29,6 +29,11 @@ const startScanning = async () => {
   errorMessage.value = null
   isLoading.value = true
 
+  // Stop scanning if already running
+  if (isScanning.value) {
+    await stopScanning()
+  }
+
   try {
     if (!html5QrCodeScanner.value) {
       html5QrCodeScanner.value = new Html5Qrcode(scannerContainerId)
@@ -70,11 +75,6 @@ const startScanning = async () => {
         firstCameraLabel.includes('selfie')
       isFrontCamera.value = isFront
       localStorage.setItem(CAMERA_PREFERENCE_KEY, isFront ? 'front' : 'back')
-    }
-
-    // Stop scanning if already running
-    if (isScanning.value) {
-      await stopScanning()
     }
 
     await html5QrCodeScanner.value!.start(
