@@ -217,7 +217,6 @@ watch(selectedPreset, () => {
       ? selectedPreset.value.qrOptions.errorCorrectionLevel
       : 'Q'
   // Most presets don't have a frame, so we set it to false by default
-  showFrame.value = false
 })
 
 const LAST_LOADED_LOCALLY_PRESET_KEY = 'Last saved locally'
@@ -280,6 +279,11 @@ const frameStyle = ref<FrameStyle>({
   borderRadius: '8px',
   padding: '16px'
 })
+const frameSettings = computed(() => ({
+  text: frameText.value,
+  position: frameTextPosition.value,
+  style: frameStyle.value
+}))
 //#endregion
 
 //#region /* General Export - download qr code and copy to clipboard */
@@ -382,13 +386,7 @@ function createQrConfig(): QRCodeConfig {
   return {
     props: qrCodeProps.value,
     style: style.value,
-    frame: showFrame.value
-      ? {
-          text: frameText.value,
-          position: frameTextPosition.value,
-          style: frameStyle.value
-        }
-      : null
+    frame: showFrame.value ? frameSettings.value : null
   }
 }
 
@@ -472,7 +470,7 @@ function loadQRConfigFromLocalStorage() {
 }
 
 watch(
-  [qrCodeProps, style, showFrame],
+  [qrCodeProps, style, showFrame, frameSettings],
   () => {
     saveQRConfigToLocalStorage()
   },
