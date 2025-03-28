@@ -19,7 +19,7 @@ An app to create beautiful QR codes and scan various QR code types.
 
 - ✅ Accessible: minimally WCAG A compliant
 - 🎨 Customizable colors and styles
-- 🖼️ Export to SVG and PNG
+- 🖼️ Export to PNG, JPG, SVG
 - 📋 Copy to clipboard
 - 🌓 Light/dark/system-preference mode toggle
 - 🎲 Randomize style button
@@ -27,6 +27,7 @@ An app to create beautiful QR codes and scan various QR code types.
 - 💾 Save & Load QR Code config
 - 🖼️ Upload custom image for logo
 - 🎭 Presets: Pre-crafted QR code styles
+- 🖌️ Frame customization: Add text labels and style the frame around your QR code
 - 🛡️ Error correction level: affects the size of the QR code and logo within. Use lower correction levels for bigger pieces of data to ensure that it can be read.
 - 📱 QR Code Scanner: Scan QR codes using your camera or by uploading images, with intelligent detection for URLs, emails, phone numbers, WiFi credentials, and more
 - 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once.
@@ -38,11 +39,13 @@ An app to create beautiful QR codes and scan various QR code types.
 <summary>MiniQR can also be installed as a Progressive Web App (PWA) on your device</summary>
 
 1. **Desktop (Chrome/Edge)**:
+
    - Visit [mini-qr.vercel.app](https://mini-qr.vercel.app)
    - Click the install icon (➕) in the address bar
    - Click "Install" in the prompt
 
 2. **Mobile (Android)**:
+
    - Visit [mini-qr.vercel.app](https://mini-qr.vercel.app)
    - Tap the "Add to Home Screen" option in your browser menu
    - Tap "Install" or "Add"
