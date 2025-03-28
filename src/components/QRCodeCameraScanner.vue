@@ -25,25 +25,30 @@ const toggleCamera = () => {
   startScanning()
 }
 
+const stopScanner = async () => {
+  try {
+    // Check if scanner is in scanning state before stopping
+    if (html5QrCodeScanner.value?.getState() === Html5QrcodeScannerState.SCANNING) {
+      await html5QrCodeScanner.value.stop()
+    }
+  } catch (err) {
+    console.error('Error stopping QR scanner:', err)
+  } finally {
+    isScanning.value = false
+  }
+}
+
+const stopScanning = async () => {
+  await stopScanner()
+  emit('cancel')
+}
+
 const startScanning = async () => {
   errorMessage.value = null
   isLoading.value = true
 
   // Stop scanning if already running
-  if (isScanning.value) {
-    if (html5QrCodeScanner.value && isScanning.value) {
-      try {
-        // Check if scanner is in scanning state before stopping
-        if (html5QrCodeScanner.value.getState() === Html5QrcodeScannerState.SCANNING) {
-          await html5QrCodeScanner.value.stop()
-        }
-      } catch (err) {
-        console.error('Error stopping QR scanner:', err)
-      } finally {
-        isScanning.value = false
-      }
-    }
-  }
+  await stopScanner()
 
   try {
     if (!html5QrCodeScanner.value) {
@@ -123,24 +128,6 @@ const startScanning = async () => {
     }
 
     isLoading.value = false
-  }
-}
-
-const stopScanning = async () => {
-  if (html5QrCodeScanner.value && isScanning.value) {
-    try {
-      // Check if scanner is in scanning state before stopping
-      if (html5QrCodeScanner.value.getState() === Html5QrcodeScannerState.SCANNING) {
-        await html5QrCodeScanner.value.stop()
-      }
-    } catch (err) {
-      console.error('Error stopping QR scanner:', err)
-    } finally {
-      isScanning.value = false
-      emit('cancel')
-    }
-  } else {
-    emit('cancel')
   }
 }
 
