@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+
+const props = defineProps<{
+  useFrontCamera?: boolean
+}>()
 
 const emit = defineEmits<{
   'qr-detected': [data: string]
@@ -15,18 +19,27 @@ const hasCamera = ref(false)
 const scannerContainerId = 'html5-qrcode-scanner'
 const html5QrCodeScanner = ref<Html5Qrcode | null>(null)
 const isScanning = ref(false)
+const isFrontCamera = ref(false)
+const hasMultipleCameras = ref(false)
 
 const checkCameraAvailability = async () => {
   try {
     const devices = await Html5Qrcode.getCameras()
     hasCamera.value = devices && devices.length > 0
+    hasMultipleCameras.value = devices && devices.length > 1
     return hasCamera.value
   } catch (err) {
     console.error('Error checking camera availability:', err)
     hasCamera.value = false
+    hasMultipleCameras.value = false
     errorMessage.value = t('Camera access denied. Please allow camera access to use this feature.')
     return false
   }
+}
+
+const toggleCamera = () => {
+  isFrontCamera.value = !isFrontCamera.value
+  startScanning()
 }
 
 const startScanning = async () => {
@@ -54,14 +67,21 @@ const startScanning = async () => {
       return
     }
 
-    // Try to use back camera first (usually better for QR scanning)
+    // Select camera based on internal state instead of prop
     const cameraId =
-      devices.find(
-        (device) =>
-          device.label.toLowerCase().includes('back') ||
-          device.label.toLowerCase().includes('rear') ||
-          device.label.toLowerCase().includes('environment')
-      )?.id || devices[0].id
+      devices.find((device) => {
+        const label = device.label.toLowerCase()
+        if (isFrontCamera.value) {
+          return label.includes('front') || label.includes('user') || label.includes('selfie')
+        } else {
+          return label.includes('back') || label.includes('rear') || label.includes('environment')
+        }
+      })?.id || devices[0].id
+
+    // Stop scanning if already running
+    if (isScanning.value) {
+      await stopScanning()
+    }
 
     await html5QrCodeScanner.value.start(
       cameraId,
@@ -150,19 +170,40 @@ defineExpose({
     <div class="scanner-container relative z-50 mb-4 overflow-hidden rounded-lg">
       <div :id="scannerContainerId" class="mx-auto w-full max-w-md"></div>
 
-      <!-- Close button -->
-      <button
-        v-if="isScanning"
-        class="absolute right-2 top-2 rounded-full bg-white/80 p-2 text-black shadow-md dark:bg-black/80 dark:text-white"
-        @click="stopScanning"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-          <path
-            fill="currentColor"
-            d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41z"
-          />
-        </svg>
-      </button>
+      <!-- Control buttons -->
+      <div v-if="isScanning" class="absolute end-2 top-2 flex gap-2">
+        <!-- Switch Camera button - only show if multiple cameras are available -->
+        <button
+          v-if="hasMultipleCameras"
+          class="rounded-full bg-white/80 p-2 text-black shadow-md transition-colors hover:bg-white/90 dark:bg-black/80 dark:text-white dark:hover:bg-black/90"
+          @click="toggleCamera"
+          type="button"
+          :aria-label="t('Switch Camera')"
+          :title="t('Switch Camera')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+            <path
+              fill="currentColor"
+              d="M20 5h-3.17L15.5 3.12C15.12 2.44 14.33 2 13.5 2h-3c-.83 0-1.62.44-2 1.12L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2m-5 11.5V13H9v3.5L5.5 12L9 7.5V11h6V7.5l3.5 4.5z"
+            />
+          </svg>
+        </button>
+
+        <!-- Close button -->
+        <button
+          class="rounded-full bg-white/80 p-2 text-black shadow-md transition-colors hover:bg-white/90 dark:bg-black/80 dark:text-white dark:hover:bg-black/90"
+          @click="stopScanning"
+          :aria-label="t('Close Scanner')"
+          :title="t('Close Scanner')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+            <path
+              fill="currentColor"
+              d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41z"
+            />
+          </svg>
+        </button>
+      </div>
     </div>
 
     <button v-if="isScanning && !isLoading" class="button mt-4" @click="stopScanning">
