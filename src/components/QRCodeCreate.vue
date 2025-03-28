@@ -1017,7 +1017,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
         type="multiple"
         collapsible
         class="flex w-full flex-col gap-4"
-        default-value="qr-code-settings"
+        :default-value="['qr-code-settings']"
       >
         <AccordionItem value="frame-settings">
           <AccordionTrigger
@@ -1264,7 +1264,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                           <a
                             href="/6_strings_batch.csv"
                             download
-                            class="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200"
+                            class="inline-flex items-center gap-1 text-sm text-zinc-500 outline-none hover:text-zinc-700 hover:underline focus-visible:ring-1 focus-visible:ring-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-200"
                           >
                             {{ t('Example file') }}
                             <svg

@@ -362,6 +362,7 @@ defineExpose({
 
           <button
             :class="[
+              'outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200',
               'flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-4 py-6 text-center transition-colors',
               isDraggingOver
                 ? 'border-blue-400 bg-blue-50 dark:border-blue-600 dark:bg-blue-900/20'
@@ -407,7 +408,7 @@ defineExpose({
           <div class="mt-4 flex flex-col items-center gap-2">
             <p class="mb-2">{{ t('or') }}</p>
             <button
-              class="z-40 flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+              class="z-40 flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
               @click="startCameraScanning"
               type="button"
             >
