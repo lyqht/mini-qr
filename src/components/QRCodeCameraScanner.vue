@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode'
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-
-const props = defineProps<{
-  useFrontCamera?: boolean
-}>()
 
 const emit = defineEmits<{
   'qr-detected': [data: string]
@@ -19,26 +15,13 @@ const hasCamera = ref(false)
 const scannerContainerId = 'html5-qrcode-scanner'
 const html5QrCodeScanner = ref<Html5Qrcode | null>(null)
 const isScanning = ref(false)
-const isFrontCamera = ref(false)
+const CAMERA_PREFERENCE_KEY = 'qr-scanner-camera-preference'
+const isFrontCamera = ref(localStorage.getItem(CAMERA_PREFERENCE_KEY) === 'front')
 const hasMultipleCameras = ref(false)
-
-const checkCameraAvailability = async () => {
-  try {
-    const devices = await Html5Qrcode.getCameras()
-    hasCamera.value = devices && devices.length > 0
-    hasMultipleCameras.value = devices && devices.length > 1
-    return hasCamera.value
-  } catch (err) {
-    console.error('Error checking camera availability:', err)
-    hasCamera.value = false
-    hasMultipleCameras.value = false
-    errorMessage.value = t('Camera access denied. Please allow camera access to use this feature.')
-    return false
-  }
-}
 
 const toggleCamera = () => {
   isFrontCamera.value = !isFrontCamera.value
+  localStorage.setItem(CAMERA_PREFERENCE_KEY, isFrontCamera.value ? 'front' : 'back')
   startScanning()
 }
 
@@ -47,14 +30,6 @@ const startScanning = async () => {
   isLoading.value = true
 
   try {
-    if (!hasCamera.value) {
-      const cameraAvailable = await checkCameraAvailability()
-      if (!cameraAvailable) {
-        isLoading.value = false
-        return
-      }
-    }
-
     if (!html5QrCodeScanner.value) {
       html5QrCodeScanner.value = new Html5Qrcode(scannerContainerId)
     }
@@ -67,23 +42,40 @@ const startScanning = async () => {
       return
     }
 
-    // Select camera based on internal state instead of prop
-    const cameraId =
-      devices.find((device) => {
-        const label = device.label.toLowerCase()
-        if (isFrontCamera.value) {
-          return label.includes('front') || label.includes('user') || label.includes('selfie')
-        } else {
-          return label.includes('back') || label.includes('rear') || label.includes('environment')
-        }
-      })?.id || devices[0].id
+    // Select camera based on internal state and availability
+    const preferredType = isFrontCamera.value ? 'front' : 'back'
+
+    // Try to find the preferred camera type
+    const preferredCamera = devices.find((device) => {
+      const label = device.label.toLowerCase()
+      if (preferredType === 'front') {
+        return label.includes('front') || label.includes('user') || label.includes('selfie')
+      } else {
+        return label.includes('back') || label.includes('rear') || label.includes('environment')
+      }
+    })
+
+    let cameraId = devices[0].id
+    // If preferred camera type is found, use it
+    if (preferredCamera) {
+      cameraId = preferredCamera.id
+    } else {
+      // If preferred camera type isn't available, update the state to match what we're actually using
+      const firstCameraLabel = devices[0].label.toLowerCase()
+      const isFront =
+        firstCameraLabel.includes('front') ||
+        firstCameraLabel.includes('user') ||
+        firstCameraLabel.includes('selfie')
+      isFrontCamera.value = isFront
+      localStorage.setItem(CAMERA_PREFERENCE_KEY, isFront ? 'front' : 'back')
+    }
 
     // Stop scanning if already running
     if (isScanning.value) {
       await stopScanning()
     }
 
-    await html5QrCodeScanner.value.start(
+    await html5QrCodeScanner.value!.start(
       cameraId,
       {
         fps: 10,
@@ -92,13 +84,11 @@ const startScanning = async () => {
         disableFlip: false
       },
       (decodedText) => {
-        // QR code detected successfully
         emit('qr-detected', decodedText)
         stopScanning()
       },
       (_errorMessage) => {
-        // QR code detection error (this is normal when no QR code is in view)
-        // We don't need to handle these errors as they occur continuously during scanning
+        // QR code detection error (normal when no QR code is in view)
       }
     )
 
@@ -146,11 +136,7 @@ onUnmounted(() => {
 })
 
 onMounted(async () => {
-  await checkCameraAvailability()
-
-  if (hasCamera.value) {
-    startScanning()
-  }
+  startScanning()
 })
 
 defineExpose({
