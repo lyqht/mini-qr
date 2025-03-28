@@ -85,15 +85,15 @@ const isModeToggleDisabled = computed(() => {
 
         <!-- Mode toggle button - only visible on desktop -->
         <div
-          class="ml-4 flex items-center rounded-lg border border-zinc-300 bg-zinc-100 p-1 dark:border-zinc-700 dark:bg-zinc-800"
+          class="ml-4 flex items-center gap-1 rounded-lg border border-zinc-300 bg-zinc-100 p-1 dark:border-zinc-700 dark:bg-zinc-800"
         >
           <button
-            class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors md:gap-2 md:px-3 md:py-1.5 md:text-base"
-            :class="
+            :class="[
+              'flex items-center gap-1 rounded-md px-2 py-1 text-sm outline-none transition-colors focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200 md:gap-2 md:px-3 md:py-1.5 md:text-base',
               appMode === AppMode.Create
                 ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100'
                 : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
-            "
+            ]"
             @click="setAppMode(AppMode.Create)"
             :disabled="isModeToggleDisabled"
             :aria-label="t('Switch to Create Mode')"
@@ -107,12 +107,12 @@ const isModeToggleDisabled = computed(() => {
             <span>{{ t('Create') }}</span>
           </button>
           <button
-            class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors md:gap-2 md:px-3 md:py-1.5 md:text-base"
-            :class="
+            :class="[
+              'flex items-center gap-1 rounded-md px-2 py-1 text-sm outline-none transition-colors focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200 md:gap-2 md:px-3 md:py-1.5 md:text-base',
               appMode === AppMode.Scan
                 ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100'
                 : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
-            "
+            ]"
             @click="setAppMode(AppMode.Scan)"
             :disabled="isModeToggleDisabled"
             :aria-label="t('Switch to Scan Mode')"
@@ -207,11 +207,11 @@ const isModeToggleDisabled = computed(() => {
     >
       <div class="flex justify-center">
         <div
-          class="relative flex items-center rounded-lg border border-zinc-300 bg-zinc-100 p-1 shadow-lg transition-all duration-300 dark:border-zinc-700 dark:bg-zinc-800 dark:shadow-slate-800"
+          class="relative flex items-center gap-1 rounded-lg border border-zinc-300 bg-zinc-100 p-1 shadow-lg transition-all duration-300 dark:border-zinc-700 dark:bg-zinc-800 dark:shadow-slate-800"
         >
           <button
-            class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors"
             :class="[
+              'flex items-center gap-1 rounded-md px-2 py-1 text-sm outline-none transition-colors focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200',
               appMode === AppMode.Create
                 ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100'
                 : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100',
@@ -235,8 +235,8 @@ const isModeToggleDisabled = computed(() => {
             <span>{{ t('Create') }}</span>
           </button>
           <button
-            class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors"
             :class="[
+              'flex items-center gap-1 rounded-md px-2 py-1 text-sm outline-none transition-colors focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200',
               appMode === AppMode.Scan
                 ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100'
                 : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100',
@@ -274,8 +274,8 @@ const isModeToggleDisabled = computed(() => {
       class="relative grid min-h-screen place-items-center items-start bg-white p-8 pt-16 dark:bg-zinc-900 md:px-6 md:pt-8"
     >
       <!-- Main content area with conditional rendering based on app mode -->
-      <div class="w-full md:w-5/6">
-        <div v-if="appMode === AppMode.Create" class="create-mode">
+      <div class="w-full lg:w-5/6">
+        <div v-if="appMode === AppMode.Create">
           <QRCodeCreate :initial-data="capturedData" />
         </div>
         <div v-else class="flex flex-col items-center justify-center py-8">
