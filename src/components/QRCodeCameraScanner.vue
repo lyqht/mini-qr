@@ -31,7 +31,18 @@ const startScanning = async () => {
 
   // Stop scanning if already running
   if (isScanning.value) {
-    await stopScanning()
+    if (html5QrCodeScanner.value && isScanning.value) {
+      try {
+        // Check if scanner is in scanning state before stopping
+        if (html5QrCodeScanner.value.getState() === Html5QrcodeScannerState.SCANNING) {
+          await html5QrCodeScanner.value.stop()
+        }
+      } catch (err) {
+        console.error('Error stopping QR scanner:', err)
+      } finally {
+        isScanning.value = false
+      }
+    }
   }
 
   try {
