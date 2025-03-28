@@ -42,6 +42,8 @@ const startScanning = async () => {
       return
     }
 
+    hasMultipleCameras.value = devices && devices.length > 1
+
     // Select camera based on internal state and availability
     const preferredType = isFrontCamera.value ? 'front' : 'back'
 
