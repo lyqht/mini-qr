@@ -164,8 +164,8 @@ defineExpose({
           class="rounded-full bg-white/80 p-2 text-black shadow-md transition-colors hover:bg-white/90 dark:bg-black/80 dark:text-white dark:hover:bg-black/90"
           @click="toggleCamera"
           type="button"
-          :aria-label="t('Switch Camera')"
-          :title="t('Switch Camera')"
+          :aria-label="t('Switch camera')"
+          :title="t('Switch camera')"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
             <path
@@ -179,8 +179,8 @@ defineExpose({
         <button
           class="rounded-full bg-white/80 p-2 text-black shadow-md transition-colors hover:bg-white/90 dark:bg-black/80 dark:text-white dark:hover:bg-black/90"
           @click="stopScanning"
-          :aria-label="t('Close Scanner')"
-          :title="t('Close Scanner')"
+          :aria-label="t('Close scanner')"
+          :title="t('Close scanner')"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
             <path
