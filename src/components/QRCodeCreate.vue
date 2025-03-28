@@ -123,7 +123,7 @@ const qrOptions = computed(() => ({
 }))
 
 const qrCodeProps = computed<StyledQRCodeProps>(() => ({
-  data: data.value,
+  data: data.value || 'Have a beautiful day!',
   image: image.value,
   width: width.value,
   height: height.value,
