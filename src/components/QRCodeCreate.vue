@@ -651,7 +651,9 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
 </script>
 
 <template>
-  <div class="flex items-start justify-center gap-4 pb-[180px] md:flex-row md:gap-12 md:pb-0">
+  <div
+    class="flex items-start justify-center gap-4 pb-[180px] md:flex-row md:gap-6 lg:gap-12 lg:pb-0"
+  >
     <!-- Sticky sidebar on large screens -->
     <div
       v-if="isLarge"
@@ -1317,7 +1319,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                     </template>
                   </div>
 
-                  <div class="w-full sm:w-1/3 sm:border-l-2 sm:border-gray-300 sm:pl-4">
+                  <div class="w-full sm:border-l-2 sm:border-gray-300 sm:pl-4 lg:w-1/3">
                     <fieldset class="h-full" role="radiogroup" tabindex="0">
                       <div class="flex flex-row items-center gap-2">
                         <legend>{{ t('Error correction level') }}</legend>

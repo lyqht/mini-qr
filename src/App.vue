@@ -274,8 +274,8 @@ const isModeToggleDisabled = computed(() => {
       class="relative grid min-h-screen place-items-center items-start bg-white p-8 pt-16 dark:bg-zinc-900 md:px-6 md:pt-8"
     >
       <!-- Main content area with conditional rendering based on app mode -->
-      <div class="w-full md:w-5/6">
-        <div v-if="appMode === AppMode.Create" class="create-mode">
+      <div class="w-full lg:w-5/6">
+        <div v-if="appMode === AppMode.Create">
           <QRCodeCreate :initial-data="capturedData" />
         </div>
         <div v-else class="flex flex-col items-center justify-center py-8">
