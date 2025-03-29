@@ -1040,7 +1040,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                   class="text-input"
                   id="frame-text"
                   rows="2"
-                  :placeholder="t('Text to display with QR code')"
+                  :placeholder="t('Scan for more info')"
                   v-model="frameText"
                 />
               </div>
@@ -1050,7 +1050,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                 <fieldset class="flex-1" role="radiogroup" tabindex="0">
                   <div
                     class="radiogroup"
-                    v-for="position in ['top', 'bottom', 'left', 'right']"
+                    v-for="position in ['top', 'bottom', 'right', 'left']"
                     :key="position"
                   >
                     <input
