@@ -66,13 +66,26 @@ Try it out [here](https://mini-qr.vercel.app/) ✨
 
 https://github.com/lyqht/mini-qr/assets/35736525/991b2d7e-f168-4354-9091-1678d2c1bddb
 
-Batch data export is also now supported.
+<details>
+<summary>Batch data export (added in v0.9.0)</summary>
 
 https://github.com/user-attachments/assets/fef17e6a-c226-4136-9501-8d3e951671e0
 
-Scanning QR codes is also possible at MiniQR.
+</details>
+
+<details>
+<summary>Scanning QR code (added in v0.13.0)</summary>
 
 https://github.com/user-attachments/assets/5ad58b35-0a16-43a4-839a-e2197bfc273a
+
+</details>
+
+<details>
+<summary>Basic frame settings (added in v0.15.0)</summary>
+
+https://github.com/user-attachments/assets/e160d60d-3c7f-4bbb-908c-efd11fec20e8
+
+</details>
 
 ## Self-hosting with Docker 🐋
 
