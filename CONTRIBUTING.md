@@ -76,6 +76,27 @@ Then add it to the `allPresets` array in `src/utils/presets.ts`. New presets sho
 
 You will then see your new preset in the Presets dropdown in the website.
 
+## Contributing Translations
+
+### Getting Started with Crowdin
+
+1. Follow [this documentation](https://support.crowdin.com/for-translators/#requesting-a-new-language) to create a free account on [Crowdin](https://crowdin.com)
+2. Visit our [Mini QR Crowdin project](https://crowdin.com/project/miniqr)
+3. Select the language you want to translate to
+4. Start translating! No approval needed to begin
+
+### Adding a New Language
+
+If your language isn't available:
+
+1. Open an issue requesting the new language
+2. Wait for confirmation from @lyqht
+3. Once added, you can begin translating
+
+### Translation Status
+
+You can check the current translation status on our [Crowdin project page](https://crowdin.com/project/mini-qr).
+
 ## License
 
 By contributing to Mini QR, you agree that your contributions will be licensed under the GPL v3 license.
