@@ -23,7 +23,7 @@ An app to create beautiful QR codes and scan various QR code types.
 - 📋 Copy to clipboard
 - 🌓 Light/dark/system-preference mode toggle
 - 🎲 Randomize style button
-- 🌐 Available in 29+ languages thanks to [deepl-translate-github-action](https://github.com/lyqht/deepl-translate-github-action)
+- 🌐 Available in 30+ languages
 - 💾 Save & Load QR Code config
 - 🖼️ Upload custom image for logo
 - 🎭 Presets: Pre-crafted QR code styles
