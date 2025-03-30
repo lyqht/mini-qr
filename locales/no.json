@@ -140,5 +140,6 @@
   "left": "venstre",
   "right": "høyre",
   "Close scanner": "Lukk skanner",
-  "Switch camera": "Bytt kamera"
+  "Switch camera": "Bytt kamera",
+  "Ignore header row": "Ignore header row"
 }

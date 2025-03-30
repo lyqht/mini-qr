@@ -140,5 +140,6 @@
   "left": "à gauche",
   "right": "à droite",
   "Close scanner": "Fermer le scanner",
-  "Switch camera": "Changer de caméra"
+  "Switch camera": "Changer de caméra",
+  "Ignore header row": "Ignorer la ligne d'en-tête"
 }

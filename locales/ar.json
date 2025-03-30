@@ -140,5 +140,6 @@
   "left": "اليسار",
   "right": "يمين",
   "Close scanner": "إغلاق الماسح الضوئي",
-  "Switch camera": "تبديل الكاميرا"
+  "Switch camera": "تبديل الكاميرا",
+  "Ignore header row": "تجاهل صف الرأس"
 }

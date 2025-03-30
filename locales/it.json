@@ -140,5 +140,6 @@
   "left": "sinistra",
   "right": "destra",
   "Close scanner": "Chiudi scanner",
-  "Switch camera": "Cambia fotocamera"
+  "Switch camera": "Cambia fotocamera",
+  "Ignore header row": "Ignorare la riga di intestazione"
 }

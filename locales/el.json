@@ -140,5 +140,6 @@
   "left": "αριστερά",
   "right": "δεξιά",
   "Close scanner": "Κλείσιμο σαρωτή",
-  "Switch camera": "Εναλλαγή κάμερας"
+  "Switch camera": "Εναλλαγή κάμερας",
+  "Ignore header row": "Αγνοήστε τη γραμμή κεφαλίδας"
 }

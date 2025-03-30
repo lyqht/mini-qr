@@ -140,5 +140,6 @@
   "left": "sol",
   "right": "doğru",
   "Close scanner": "Tarayıcıyı kapat",
-  "Switch camera": "Kamera değiştir"
+  "Switch camera": "Kamera değiştir",
+  "Ignore header row": "Başlık satırını yoksay"
 }

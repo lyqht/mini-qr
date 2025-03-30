@@ -140,5 +140,6 @@
   "left": "balra",
   "right": "jobbra",
   "Close scanner": "Szkenner bezárása",
-  "Switch camera": "Kamera váltás"
+  "Switch camera": "Kamera váltás",
+  "Ignore header row": "Fejléc sor figyelmen kívül hagyása"
 }

@@ -140,5 +140,6 @@
   "left": "vasen",
   "right": "oikea",
   "Close scanner": "Sulje skanneri",
-  "Switch camera": "Vaihda kameraa"
+  "Switch camera": "Vaihda kameraa",
+  "Ignore header row": "Jätä otsikkorivi huomiotta"
 }

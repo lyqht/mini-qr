@@ -140,5 +140,6 @@
   "left": "links",
   "right": "rechts",
   "Close scanner": "Sluit scanner",
-  "Switch camera": "Wijzig camera"
+  "Switch camera": "Wijzig camera",
+  "Ignore header row": "Kopregel negeren"
 }

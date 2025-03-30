@@ -140,5 +140,6 @@
   "left": "stânga",
   "right": "dreapta",
   "Close scanner": "Închide scanerul",
-  "Switch camera": "Comutați camera foto"
+  "Switch camera": "Comutați camera foto",
+  "Ignore header row": "Ignorați rândul de antet"
 }

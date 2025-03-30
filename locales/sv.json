@@ -140,5 +140,6 @@
   "left": "vänster",
   "right": "höger",
   "Close scanner": "Stäng scanner",
-  "Switch camera": "Växla kamera"
+  "Switch camera": "Växla kamera",
+  "Ignore header row": "Ignorera rubrikraden"
 }

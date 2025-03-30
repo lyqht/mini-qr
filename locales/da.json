@@ -140,5 +140,6 @@
   "left": "venstre",
   "right": "højre",
   "Close scanner": "Luk scanner",
-  "Switch camera": "Skift kamera"
+  "Switch camera": "Skift kamera",
+  "Ignore header row": "Ignorer overskriftsrække"
 }

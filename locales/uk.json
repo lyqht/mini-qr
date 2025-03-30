@@ -140,5 +140,6 @@
   "left": "ліворуч",
   "right": "правий",
   "Close scanner": "Закрити сканер",
-  "Switch camera": "Змінити камеру"
+  "Switch camera": "Змінити камеру",
+  "Ignore header row": "Ігнорувати рядок заголовка"
 }

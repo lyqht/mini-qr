@@ -140,5 +140,6 @@
   "left": "left",
   "right": "right",
   "Close scanner": "Close scanner",
-  "Switch camera": "Switch camera"
+  "Switch camera": "Switch camera",
+  "Ignore header row": "Ignore header row"
 }

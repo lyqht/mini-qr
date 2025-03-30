@@ -140,5 +140,6 @@
   "left": "左邊",
   "right": "對",
   "Close scanner": "關閉掃描器",
-  "Switch camera": "切換攝影機"
+  "Switch camera": "切換攝影機",
+  "Ignore header row": "忽略標頭行"
 }

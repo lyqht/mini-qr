@@ -140,5 +140,6 @@
   "left": "左",
   "right": "右|右",
   "Close scanner": "スキャナーを閉じる",
-  "Switch camera": "カメラを切り替える"
+  "Switch camera": "カメラを切り替える",
+  "Ignore header row": "ヘッダー行を無視する"
 }

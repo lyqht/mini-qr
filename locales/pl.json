@@ -140,5 +140,6 @@
   "left": "w lewo",
   "right": "po prawej",
   "Close scanner": "Zamknij skaner",
-  "Switch camera": "Przełącz aparat"
+  "Switch camera": "Przełącz aparat",
+  "Ignore header row": "Ignorowanie wiersza nagłówka"
 }

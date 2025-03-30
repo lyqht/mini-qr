@@ -140,5 +140,6 @@
   "left": "왼쪽",
   "right": "오른쪽",
   "Close scanner": "스캐너 닫기",
-  "Switch camera": "카메라 전환"
+  "Switch camera": "카메라 전환",
+  "Ignore header row": "헤더 행 무시"
 }
