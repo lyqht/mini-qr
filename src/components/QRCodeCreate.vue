@@ -1040,7 +1040,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                   class="text-input"
                   id="frame-text"
                   rows="2"
-                  :placeholder="t('Text to display with QR code')"
+                  :placeholder="t('Scan for more info')"
                   v-model="frameText"
                 />
               </div>
@@ -1050,7 +1050,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                 <fieldset class="flex-1" role="radiogroup" tabindex="0">
                   <div
                     class="radiogroup"
-                    v-for="position in ['top', 'bottom', 'left', 'right']"
+                    v-for="position in ['top', 'bottom', 'right', 'left']"
                     :key="position"
                   >
                     <input
@@ -1142,7 +1142,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
         <AccordionItem value="qr-code-settings">
           <AccordionTrigger
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
-            >{{ t('QR Code settings') }}</AccordionTrigger
+            >{{ t('QR code settings') }}</AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
             <div class="space-y-8">
