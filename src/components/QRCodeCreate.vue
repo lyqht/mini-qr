@@ -1142,7 +1142,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
         <AccordionItem value="qr-code-settings">
           <AccordionTrigger
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
-            >{{ t('QR Code settings') }}</AccordionTrigger
+            >{{ t('QR code settings') }}</AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
             <div class="space-y-8">
