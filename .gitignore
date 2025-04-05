@@ -29,3 +29,7 @@ coverage
 dev-dist
 
 .env
+
+# Playwright
+test-results/
+playwright-report/

@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test:e2e": "playwright test",
     "type-check": "vue-tsc --noEmit",
     "lint": "eslint --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore --ignore-pattern \"*.json\"",
     "format": "prettier --write",
@@ -46,6 +47,7 @@
     "vue-i18n": "^9.14.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.51.1",
     "@rushstack/eslint-patch": "^1.10.5",
     "@types/dom-to-image": "^2.6.7",
     "@types/node": "^20.17.23",
