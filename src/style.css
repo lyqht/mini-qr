@@ -50,7 +50,7 @@ body {
 }
 
 label {
-  @apply text-balance;
+  @apply text-balance self-start;
 }
 
 svg {
