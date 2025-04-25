@@ -1033,9 +1033,9 @@ const updateDataFromModal = (newData: string) => {
 
               <div v-if="showFrame">
                 <label class="mb-2 block">{{ t('Text position') }}</label>
-                <fieldset class="flex-1" role="radiogroup" tabindex="0">
+                <fieldset class="flex-1" role="radio" tabindex="0">
                   <div
-                    class="radiogroup"
+                    class="radio"
                     v-for="position in ['top', 'bottom', 'right', 'left']"
                     :key="position"
                   >
@@ -1333,7 +1333,7 @@ const updateDataFromModal = (newData: string) => {
                   </div>
 
                   <div class="w-full sm:border-l-2 sm:border-gray-300 sm:pl-4 lg:w-1/3">
-                    <fieldset class="h-full" role="radiogroup" tabindex="0">
+                    <fieldset class="h-full" role="radio" tabindex="0">
                       <div class="flex flex-row items-center gap-2">
                         <legend>{{ t('Error correction level') }}</legend>
                         <a
@@ -1356,7 +1356,7 @@ const updateDataFromModal = (newData: string) => {
                           </svg>
                         </a>
                       </div>
-                      <div v-for="level in errorCorrectionLevels" class="radiogroup" :key="level">
+                      <div v-for="level in errorCorrectionLevels" class="radio" :key="level">
                         <input
                           :id="'errorCorrectionLevel-' + level"
                           type="radio"
@@ -1537,10 +1537,10 @@ const updateDataFromModal = (newData: string) => {
                 id="dots-squares-settings"
                 class="mb-4 flex w-full flex-col flex-wrap gap-6 md:flex-row"
               >
-                <fieldset class="flex-1" role="radiogroup" tabindex="0">
+                <fieldset class="flex-1" role="radio" tabindex="0">
                   <legend>{{ t('Dots type') }}</legend>
                   <div
-                    class="radiogroup"
+                    class="radio"
                     v-for="type in [
                       'dots',
                       'rounded',
@@ -1560,13 +1560,9 @@ const updateDataFromModal = (newData: string) => {
                     <label :for="'dotsOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-                <fieldset class="flex-1" role="radiogroup" tabindex="0">
+                <fieldset class="flex-1" role="radio" tabindex="0">
                   <legend>{{ t('Corners Square type') }}</legend>
-                  <div
-                    class="radiogroup"
-                    v-for="type in ['dot', 'square', 'extra-rounded']"
-                    :key="type"
-                  >
+                  <div class="radio" v-for="type in ['dot', 'square', 'extra-rounded']" :key="type">
                     <input
                       :id="'cornersSquareOptionsType-' + type"
                       type="radio"
@@ -1576,9 +1572,9 @@ const updateDataFromModal = (newData: string) => {
                     <label :for="'cornersSquareOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-                <fieldset class="flex-1" role="radiogroup" tabindex="0">
+                <fieldset class="flex-1" role="radio" tabindex="0">
                   <legend>{{ t('Corners Dot type') }}</legend>
-                  <div class="radiogroup" v-for="type in ['dot', 'square']" :key="type">
+                  <div class="radio" v-for="type in ['dot', 'square']" :key="type">
                     <input
                       :id="'cornersDotOptionsType-' + type"
                       type="radio"

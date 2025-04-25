@@ -118,6 +118,11 @@ input[type='color'] {
   @apply bg-transparent shadow p-0 border rounded box-border text-zinc-700 dark:text-zinc-100 focus-visible:shadow;
 }
 
+
+fieldset {
+  @apply outline-none focus-visible:outline-1 focus-visible:outline-slate-500 focus-visible:outline-offset-2 rounded-sm;
+}
+
 input[type='radio'] {
   -webkit-appearance: none;
   appearance: none;
@@ -137,26 +142,22 @@ input[type='radio']:focus-visible {
   @apply outline-none ring-0;
 }
 
-.radiogroup {
+.radio {
   @apply items-center grid grid-cols-[1em_auto] gap-2 p-2 rounded-lg;
   @apply outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2;
 }
 
-.radiogroup:focus-within {
+.radio:focus-within {
   @apply outline-none ring-2 ring-slate-500;
 }
 
-fieldset {
-  @apply outline-none focus-visible:outline-1 focus-visible:outline-slate-500 focus-visible:outline-offset-2 rounded-sm;
-}
-
-.radiogroup > * > label,
-.radiogroup > label {
-  @apply font-normal font-sans leading-tight text-zinc-700 dark:text-zinc-200;
+.radio > * > label,
+.radio > label {
+  @apply font-normal text-sm font-sans text-zinc-700 dark:text-zinc-200;
 }
 
 input[type='number'] {
-  -moz-appearance: textfield;
+  @apply appearance-none;
 }
 input[type='number']::-webkit-outer-spin-button,
 input[type='number']::-webkit-inner-spin-button {
