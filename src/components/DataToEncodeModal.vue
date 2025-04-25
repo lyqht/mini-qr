@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { ref, watch, reactive } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
-  generateTextData,
-  generateUrlData,
+  detectDataType,
   generateEmailData,
+  generateEventData,
+  generateLocationData,
   generatePhoneData,
   generateSmsData,
-  generateWifiData,
+  generateTextData,
+  generateUrlData,
   generateVCardData,
-  generateLocationData,
-  generateEventData
+  generateWifiData
 } from '../utils/dataEncoding'
 
 const { t } = useI18n()
@@ -162,156 +163,74 @@ watch(eventEndTime, (newValue) => {
   }
 })
 
+// Use imported detectDataType to populate form fields
 const detectAndSetDataType = (data: string) => {
-  // vCard detection
-  if (data.match(/^BEGIN:VCARD/i)) {
-    selectedType.value = 'vcard'
+  const result = detectDataType(data)
 
-    // Extract name
-    const nameMatch = data.match(/N:([^;]*);([^;]*);([^;]*)/i)
-    if (nameMatch) {
-      vcardLastName.value = nameMatch[1] || ''
-      vcardFirstName.value = nameMatch[2] || ''
-    }
+  // Set form type
+  selectedType.value = result.type
 
-    // Extract formatted name (if no name found)
-    if (!vcardFirstName.value && !vcardLastName.value) {
-      const fnMatch = data.match(/FN[^:]*:([^\n\r]*)/i)
-      if (fnMatch && fnMatch[1]) {
-        const parts = fnMatch[1].trim().split(' ')
-        if (parts.length > 1) {
-          vcardFirstName.value = parts[0]
-          vcardLastName.value = parts.slice(1).join(' ')
-        } else {
-          vcardFirstName.value = fnMatch[1].trim()
-        }
-      }
-    }
+  // Populate fields based on detected type
+  switch (result.type) {
+    case 'text':
+      textData.value = (result.parsedData.text as string) || ''
+      break
 
-    // Extract organization
-    const orgMatch = data.match(/ORG[^:]*:([^\n\r]*)/i)
-    if (orgMatch) {
-      vcardOrg.value = orgMatch[1] || ''
-    }
+    case 'url':
+      urlData.value = (result.parsedData.url as string) || ''
+      break
 
-    // Extract position/title
-    const titleMatch = data.match(/TITLE[^:]*:([^\n\r]*)/i)
-    if (titleMatch) {
-      vcardPosition.value = titleMatch[1] || ''
-    }
+    case 'email':
+      emailAddress.value = (result.parsedData.address as string) || ''
+      emailSubject.value = (result.parsedData.subject as string) || ''
+      emailBody.value = (result.parsedData.body as string) || ''
+      break
 
-    // Extract phone numbers
-    const workPhoneMatch = data.match(/TEL[^:]*TYPE=WORK[^:]*:([^\n\r]*)/i)
-    if (workPhoneMatch) {
-      vcardPhoneWork.value = workPhoneMatch[1] || ''
-    }
+    case 'phone':
+      phoneNumber.value = (result.parsedData.phone as string) || ''
+      break
 
-    const homePhoneMatch = data.match(/TEL[^:]*TYPE=HOME[^:]*:([^\n\r]*)/i)
-    if (homePhoneMatch) {
-      vcardPhonePrivate.value = homePhoneMatch[1] || ''
-    }
+    case 'sms':
+      smsNumber.value = (result.parsedData.phone as string) || ''
+      smsMessage.value = (result.parsedData.message as string) || ''
+      break
 
-    const mobilePhoneMatch =
-      data.match(/TEL[^:]*TYPE=CELL[^:]*:([^\n\r]*)/i) ||
-      data.match(/TEL[^:]*TYPE=MOBILE[^:]*:([^\n\r]*)/i)
-    if (mobilePhoneMatch) {
-      vcardPhoneMobile.value = mobilePhoneMatch[1] || ''
-    }
+    case 'wifi':
+      wifiSSID.value = (result.parsedData.ssid as string) || ''
+      wifiEncryption.value = (result.parsedData.encryption as 'nopass' | 'WEP' | 'WPA') || 'nopass'
+      wifiPassword.value = (result.parsedData.password as string) || ''
+      wifiHidden.value = Boolean(result.parsedData.hidden)
+      break
 
-    // If no specific phone types are found, try to get any phone
-    if (!vcardPhoneWork.value && !vcardPhonePrivate.value && !vcardPhoneMobile.value) {
-      const anyPhoneMatch = data.match(/TEL[^:]*:([^\n\r]*)/i)
-      if (anyPhoneMatch) {
-        vcardPhoneMobile.value = anyPhoneMatch[1] || ''
-      }
-    }
+    case 'vcard':
+      vcardFirstName.value = (result.parsedData.firstName as string) || ''
+      vcardLastName.value = (result.parsedData.lastName as string) || ''
+      vcardOrg.value = (result.parsedData.org as string) || ''
+      vcardPosition.value = (result.parsedData.position as string) || ''
+      vcardPhoneWork.value = (result.parsedData.phoneWork as string) || ''
+      vcardPhonePrivate.value = (result.parsedData.phonePrivate as string) || ''
+      vcardPhoneMobile.value = (result.parsedData.phoneMobile as string) || ''
+      vcardEmail.value = (result.parsedData.email as string) || ''
+      vcardWebsite.value = (result.parsedData.website as string) || ''
+      vcardStreet.value = (result.parsedData.street as string) || ''
+      vcardCity.value = (result.parsedData.city as string) || ''
+      vcardState.value = (result.parsedData.state as string) || ''
+      vcardZipcode.value = (result.parsedData.zipcode as string) || ''
+      vcardCountry.value = (result.parsedData.country as string) || ''
+      break
 
-    // Extract email
-    const emailMatch = data.match(/EMAIL[^:]*:([^\n\r]*)/i)
-    if (emailMatch) {
-      vcardEmail.value = emailMatch[1] || ''
-    }
+    case 'location':
+      locationLatitude.value = (result.parsedData.latitude as string) || ''
+      locationLongitude.value = (result.parsedData.longitude as string) || ''
+      break
 
-    // Extract website
-    const urlMatch = data.match(/URL[^:]*:([^\n\r]*)/i)
-    if (urlMatch) {
-      vcardWebsite.value = urlMatch[1] || ''
-    }
-
-    // Extract address
-    const addrMatch = data.match(
-      /ADR[^:]*:([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^\n\r]*)/i
-    )
-    if (addrMatch) {
-      vcardStreet.value = addrMatch[3] || ''
-      vcardCity.value = addrMatch[4] || ''
-      vcardState.value = addrMatch[5] || ''
-      vcardZipcode.value = addrMatch[6] || ''
-      vcardCountry.value = addrMatch[7] || ''
-    }
-
-    return
+    case 'event':
+      eventTitle.value = (result.parsedData.title as string) || ''
+      eventLocation.value = (result.parsedData.location as string) || ''
+      eventStartTime.value = (result.parsedData.startTime as string) || ''
+      eventEndTime.value = (result.parsedData.endTime as string) || ''
+      break
   }
-
-  // URL detection
-  if (data.match(/^https?:\/\//i)) {
-    selectedType.value = 'url'
-    urlData.value = data
-    return
-  }
-
-  // Email detection
-  if (data.match(/^mailto:/i)) {
-    selectedType.value = 'email'
-    const emailParts = data.replace(/^mailto:/i, '').split('?')
-    emailAddress.value = emailParts[0] || ''
-
-    if (emailParts[1]) {
-      const params = new URLSearchParams(emailParts[1])
-      emailSubject.value = params.get('subject') || ''
-      emailBody.value = params.get('body') || ''
-    }
-    return
-  }
-
-  // Phone detection
-  if (data.match(/^tel:/i)) {
-    selectedType.value = 'phone'
-    phoneNumber.value = data.replace(/^tel:/i, '')
-    return
-  }
-
-  // SMS detection
-  if (data.match(/^sms:/i)) {
-    selectedType.value = 'sms'
-    const smsParts = data.replace(/^sms:/i, '').split('?')
-    smsNumber.value = smsParts[0] || ''
-
-    if (smsParts[1]) {
-      const params = new URLSearchParams(smsParts[1])
-      smsMessage.value = params.get('body') || ''
-    }
-    return
-  }
-
-  // WiFi detection
-  if (data.match(/^WIFI:/i)) {
-    selectedType.value = 'wifi'
-    const wifiRegex = /S:([^;]*);T:([^;]*);P:([^;]*);H:(true|false)?;?/i
-    const match = data.match(wifiRegex)
-
-    if (match) {
-      wifiSSID.value = match[1] || ''
-      wifiEncryption.value = match[2].toLowerCase() === 'nopass' ? 'nopass' : match[2]
-      wifiPassword.value = match[3] || ''
-      wifiHidden.value = match[4] === 'true'
-    }
-    return
-  }
-
-  // If no specific format detected, default to text
-  selectedType.value = 'text'
-  textData.value = data
 }
 
 const validateForm = () => {

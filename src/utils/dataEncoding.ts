@@ -172,3 +172,294 @@ export const generateEventData = (data: {
   // Wrap in VCALENDAR
   return `BEGIN:VCALENDAR\nVERSION:2.0\n${lines.join('\n')}\nEND:VCALENDAR`
 }
+
+// --- Data Detection ---
+
+/**
+ * Detect data type from a string and parse it into structured data
+ * @param {string} data - The input string to detect and parse
+ * @returns {object} Object containing detected type and parsed data fields
+ */
+export const detectDataType = (
+  data: string
+): {
+  type: 'text' | 'url' | 'email' | 'phone' | 'sms' | 'wifi' | 'vcard' | 'location' | 'event'
+  parsedData: Record<string, string | boolean>
+} => {
+  // Default result
+  const result: {
+    type: 'text' | 'url' | 'email' | 'phone' | 'sms' | 'wifi' | 'vcard' | 'location' | 'event'
+    parsedData: Record<string, string | boolean>
+  } = {
+    type: 'text',
+    parsedData: { text: data }
+  }
+
+  if (!data) return result
+
+  // vCard detection
+  if (data.match(/^BEGIN:VCARD/i)) {
+    result.type = 'vcard'
+    result.parsedData = {}
+
+    // Extract name with a more precise pattern
+    const fullContent = data.replace(/\r/g, '').split('\n')
+
+    // Find the N: field
+    const nField = fullContent.find((line) => line.match(/^N:/i))
+    if (nField) {
+      const nameParts = nField.substring(2).split(';')
+      if (nameParts.length >= 2) {
+        result.parsedData.lastName = nameParts[0].trim()
+        result.parsedData.firstName = nameParts[1].trim()
+      }
+    }
+
+    // Extract formatted name (if no name found)
+    if (!result.parsedData.firstName && !result.parsedData.lastName) {
+      const fnField = fullContent.find((line) => line.match(/^FN:/i))
+      if (fnField) {
+        const fnValue = fnField.substring(3).trim()
+        const parts = fnValue.split(' ')
+        if (parts.length > 1) {
+          result.parsedData.firstName = parts[0]
+          result.parsedData.lastName = parts.slice(1).join(' ')
+        } else {
+          result.parsedData.firstName = fnValue
+        }
+      }
+    }
+
+    // Extract organization
+    const orgField = fullContent.find((line) => line.match(/^ORG:/i))
+    if (orgField) {
+      result.parsedData.org = orgField.substring(4).trim()
+    }
+
+    // Extract position/title
+    const titleField = fullContent.find((line) => line.match(/^TITLE:/i))
+    if (titleField) {
+      result.parsedData.position = titleField.substring(6).trim()
+    }
+
+    // Extract phone numbers
+    for (const line of fullContent) {
+      if (line.match(/^TEL[^:]*(?:TYPE=WORK|WORK)[^:]*:/i)) {
+        result.parsedData.phoneWork = line.substring(line.indexOf(':') + 1).trim()
+      } else if (line.match(/^TEL[^:]*(?:TYPE=HOME|HOME)[^:]*:/i)) {
+        result.parsedData.phonePrivate = line.substring(line.indexOf(':') + 1).trim()
+      } else if (line.match(/^TEL[^:]*(?:TYPE=CELL|CELL|TYPE=MOBILE|MOBILE)[^:]*:/i)) {
+        result.parsedData.phoneMobile = line.substring(line.indexOf(':') + 1).trim()
+      } else if (
+        line.match(/^TEL[^:]*/i) &&
+        !result.parsedData.phoneWork &&
+        !result.parsedData.phonePrivate &&
+        !result.parsedData.phoneMobile
+      ) {
+        result.parsedData.phoneMobile = line.substring(line.indexOf(':') + 1).trim()
+      }
+    }
+
+    // Extract email
+    const emailField = fullContent.find((line) => line.match(/^EMAIL[^:]*:/i))
+    if (emailField) {
+      result.parsedData.email = emailField.substring(emailField.indexOf(':') + 1).trim()
+    }
+
+    // Extract website
+    const urlField = fullContent.find((line) => line.match(/^URL[^:]*:/i))
+    if (urlField) {
+      result.parsedData.website = urlField.substring(urlField.indexOf(':') + 1).trim()
+    }
+
+    // Extract address
+    const addrField = fullContent.find((line) => line.match(/^ADR[^:]*:/i))
+    if (addrField) {
+      const addressParts = addrField.substring(addrField.indexOf(':') + 1).split(';')
+      if (addressParts.length >= 7) {
+        result.parsedData.street = addressParts[2].trim()
+        result.parsedData.city = addressParts[3].trim()
+        result.parsedData.state = addressParts[4].trim()
+        result.parsedData.zipcode = addressParts[5].trim()
+        result.parsedData.country = addressParts[6].trim()
+      }
+    }
+
+    return result
+  }
+
+  // URL detection
+  if (data.match(/^https?:\/\//i)) {
+    result.type = 'url'
+    result.parsedData = { url: data }
+    return result
+  }
+
+  // Email detection
+  if (data.match(/^mailto:/i)) {
+    result.type = 'email'
+    result.parsedData = {}
+
+    const emailParts = data.replace(/^mailto:/i, '').split('?')
+    result.parsedData.address = emailParts[0] || ''
+
+    if (emailParts[1]) {
+      const params = new URLSearchParams(emailParts[1])
+      result.parsedData.subject = params.get('subject') || ''
+      result.parsedData.body = params.get('body') || ''
+    }
+
+    return result
+  }
+
+  // Phone detection
+  if (data.match(/^tel:/i)) {
+    result.type = 'phone'
+    result.parsedData = { phone: data.replace(/^tel:/i, '') }
+    return result
+  }
+
+  // SMS detection
+  if (data.match(/^SMSTO:/i) || data.match(/^sms:/i)) {
+    result.type = 'sms'
+    result.parsedData = {}
+
+    // Handle both SMSTO: and sms: formats
+    if (data.startsWith('SMSTO:')) {
+      const smsParts = data.replace(/^SMSTO:/i, '').split(':')
+
+      if (smsParts.length >= 1) {
+        result.parsedData.phone = smsParts[0].trim() || ''
+      }
+
+      if (smsParts.length >= 2) {
+        result.parsedData.message = smsParts[1].trim() || ''
+      }
+    } else if (data.startsWith('sms:')) {
+      // Handle sms:phone?body=message format
+      const phone = data.replace(/^sms:/i, '')
+
+      if (phone.includes('?')) {
+        const queryIndex = phone.indexOf('?')
+        const phoneNumber = phone.substring(0, queryIndex)
+        const queryString = phone.substring(queryIndex + 1)
+
+        result.parsedData.phone = phoneNumber.trim()
+
+        const params = new URLSearchParams(queryString)
+        result.parsedData.message = params.get('body') || ''
+      } else {
+        result.parsedData.phone = phone.trim()
+      }
+    }
+
+    return result
+  }
+
+  // WiFi detection
+  if (data.match(/^WIFI:/i)) {
+    result.type = 'wifi'
+    result.parsedData = {}
+
+    // Extract SSID
+    const ssidMatch = data.match(/S:([^;]*);/i)
+    if (ssidMatch) {
+      result.parsedData.ssid = ssidMatch[1] || ''
+    }
+
+    // Extract encryption type
+    const encMatch = data.match(/T:([^;]*);/i)
+    if (encMatch) {
+      const encType = encMatch[1].toUpperCase()
+      result.parsedData.encryption =
+        encType === 'NOPASS' || encType === 'WEP' || encType === 'WPA'
+          ? encType.toLowerCase()
+          : 'nopass'
+    } else {
+      result.parsedData.encryption = 'nopass'
+    }
+
+    // Extract password
+    const passMatch = data.match(/P:([^;]*);/i)
+    if (passMatch) {
+      result.parsedData.password = passMatch[1] || ''
+    }
+
+    // Extract hidden flag
+    const hiddenMatch = data.match(/H:(true|false);/i)
+    if (hiddenMatch) {
+      result.parsedData.hidden = hiddenMatch[1].toLowerCase() === 'true'
+    } else {
+      result.parsedData.hidden = false
+    }
+
+    return result
+  }
+
+  // Location detection
+  if (data.match(/^geo:/i)) {
+    result.type = 'location'
+    result.parsedData = {}
+
+    const coords = data.replace(/^geo:/i, '').split(',')
+    if (coords.length >= 2) {
+      result.parsedData.latitude = coords[0] || ''
+      result.parsedData.longitude = coords[1] || ''
+    }
+
+    return result
+  }
+
+  // Calendar/Event detection (simplified)
+  if (data.match(/BEGIN:VCALENDAR/i) || data.match(/BEGIN:VEVENT/i)) {
+    result.type = 'event'
+    result.parsedData = {}
+
+    const summaryMatch = data.match(/SUMMARY:([^\n\r]*)/i)
+    if (summaryMatch) {
+      result.parsedData.title = summaryMatch[1] || ''
+    }
+
+    const locationMatch = data.match(/LOCATION:([^\n\r]*)/i)
+    if (locationMatch) {
+      result.parsedData.location = locationMatch[1] || ''
+    }
+
+    const startMatch = data.match(/DTSTART(?:[^:]*):([^\n\r]*)/i)
+    if (startMatch && startMatch[1]) {
+      result.parsedData.startTime = formatDateFromICal(startMatch[1])
+    }
+
+    const endMatch = data.match(/DTEND(?:[^:]*):([^\n\r]*)/i)
+    if (endMatch && endMatch[1]) {
+      result.parsedData.endTime = formatDateFromICal(endMatch[1])
+    }
+
+    return result
+  }
+
+  // Default to text
+  return result
+}
+
+/**
+ * Converts an iCalendar format date to an ISO string
+ * @param {string} iCalDate - Date in iCalendar format (e.g., "20230101T120000Z")
+ * @returns {string} ISO date string, or empty string if invalid
+ */
+function formatDateFromICal(iCalDate: string): string {
+  // Handle basic format: YYYYMMDDTHHMMSSZ
+  const datePattern = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?$/
+  const match = iCalDate.match(datePattern)
+
+  if (match) {
+    try {
+      const [, year, month, day, hour, minute, second] = match
+      return `${year}-${month}-${day}T${hour}:${minute}:${second}${iCalDate.endsWith('Z') ? 'Z' : ''}`
+    } catch (e) {
+      console.error('Error parsing iCal date:', e)
+    }
+  }
+
+  return iCalDate // Return as is if not parseable
+}
