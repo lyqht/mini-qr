@@ -7,7 +7,6 @@ export default defineConfig({
   plugins: [vue()], // Include Vue plugin if testing Vue components
   test: {
     globals: true, // Use global APIs like describe, it, expect
-    environment: 'jsdom', // Simulate DOM environment for component testing
     // Exclude E2E tests
     exclude: [
       '**/node_modules/**',

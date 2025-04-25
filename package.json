@@ -58,7 +58,6 @@
     "eslint-plugin-tailwindcss": "^3.18.0",
     "eslint-plugin-vue": "^9.32.0",
     "husky": "^8.0.3",
-    "jsdom": "^26.0.0",
     "lint-staged": "^15.4.3",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
