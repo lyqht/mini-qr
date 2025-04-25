@@ -72,12 +72,10 @@ const eventEndTime = ref('')
 const invalidFields = ref<string[]>([])
 const formSubmitted = ref(false)
 
-const props = defineProps({
-  show: {
-    type: Boolean,
-    required: true
-  }
-})
+const props = defineProps<{
+  show: boolean
+  initialData?: string
+}>()
 
 const emit = defineEmits(['update:data', 'close'])
 
@@ -85,6 +83,9 @@ watch(
   () => props.show,
   (newValue: boolean) => {
     showModal.value = newValue
+    if (newValue && props.initialData) {
+      detectAndSetDataType(props.initialData)
+    }
   }
 )
 
@@ -97,69 +98,221 @@ watch(selectedType, () => {
 // Clear validation errors dynamically when fields are filled
 watch(textData, (newValue) => {
   if (newValue && invalidFields.value.includes('textData')) {
-    invalidFields.value = invalidFields.value.filter(field => field !== 'textData')
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'textData')
   }
 })
 
 watch(urlData, (newValue) => {
   if (newValue && invalidFields.value.includes('urlData')) {
-    invalidFields.value = invalidFields.value.filter(field => field !== 'urlData')
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'urlData')
   }
 })
 
 watch(emailAddress, (newValue) => {
   if (newValue && invalidFields.value.includes('emailAddress')) {
-    invalidFields.value = invalidFields.value.filter(field => field !== 'emailAddress')
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'emailAddress')
   }
 })
 
 watch(phoneNumber, (newValue) => {
   if (newValue && invalidFields.value.includes('phoneNumber')) {
-    invalidFields.value = invalidFields.value.filter(field => field !== 'phoneNumber')
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'phoneNumber')
   }
 })
 
 watch(smsNumber, (newValue) => {
   if (newValue && invalidFields.value.includes('smsNumber')) {
-    invalidFields.value = invalidFields.value.filter(field => field !== 'smsNumber')
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'smsNumber')
   }
 })
 
 watch(wifiSSID, (newValue) => {
   if (newValue && invalidFields.value.includes('wifiSSID')) {
-    invalidFields.value = invalidFields.value.filter(field => field !== 'wifiSSID')
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'wifiSSID')
   }
 })
 
 watch(locationLatitude, (newValue) => {
   if (newValue && invalidFields.value.includes('locationLatitude')) {
-    invalidFields.value = invalidFields.value.filter(field => field !== 'locationLatitude')
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'locationLatitude')
   }
 })
 
 watch(locationLongitude, (newValue) => {
   if (newValue && invalidFields.value.includes('locationLongitude')) {
-    invalidFields.value = invalidFields.value.filter(field => field !== 'locationLongitude')
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'locationLongitude')
   }
 })
 
 watch(eventTitle, (newValue) => {
   if (newValue && invalidFields.value.includes('eventTitle')) {
-    invalidFields.value = invalidFields.value.filter(field => field !== 'eventTitle')
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'eventTitle')
   }
 })
 
 watch(eventStartTime, (newValue) => {
   if (newValue && invalidFields.value.includes('eventStartTime')) {
-    invalidFields.value = invalidFields.value.filter(field => field !== 'eventStartTime')
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'eventStartTime')
   }
 })
 
 watch(eventEndTime, (newValue) => {
   if (newValue && invalidFields.value.includes('eventEndTime')) {
-    invalidFields.value = invalidFields.value.filter(field => field !== 'eventEndTime')
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'eventEndTime')
   }
 })
+
+const detectAndSetDataType = (data: string) => {
+  // vCard detection
+  if (data.match(/^BEGIN:VCARD/i)) {
+    selectedType.value = 'vcard'
+
+    // Extract name
+    const nameMatch = data.match(/N:([^;]*);([^;]*);([^;]*)/i)
+    if (nameMatch) {
+      vcardLastName.value = nameMatch[1] || ''
+      vcardFirstName.value = nameMatch[2] || ''
+    }
+
+    // Extract formatted name (if no name found)
+    if (!vcardFirstName.value && !vcardLastName.value) {
+      const fnMatch = data.match(/FN[^:]*:([^\n\r]*)/i)
+      if (fnMatch && fnMatch[1]) {
+        const parts = fnMatch[1].trim().split(' ')
+        if (parts.length > 1) {
+          vcardFirstName.value = parts[0]
+          vcardLastName.value = parts.slice(1).join(' ')
+        } else {
+          vcardFirstName.value = fnMatch[1].trim()
+        }
+      }
+    }
+
+    // Extract organization
+    const orgMatch = data.match(/ORG[^:]*:([^\n\r]*)/i)
+    if (orgMatch) {
+      vcardOrg.value = orgMatch[1] || ''
+    }
+
+    // Extract position/title
+    const titleMatch = data.match(/TITLE[^:]*:([^\n\r]*)/i)
+    if (titleMatch) {
+      vcardPosition.value = titleMatch[1] || ''
+    }
+
+    // Extract phone numbers
+    const workPhoneMatch = data.match(/TEL[^:]*TYPE=WORK[^:]*:([^\n\r]*)/i)
+    if (workPhoneMatch) {
+      vcardPhoneWork.value = workPhoneMatch[1] || ''
+    }
+
+    const homePhoneMatch = data.match(/TEL[^:]*TYPE=HOME[^:]*:([^\n\r]*)/i)
+    if (homePhoneMatch) {
+      vcardPhonePrivate.value = homePhoneMatch[1] || ''
+    }
+
+    const mobilePhoneMatch =
+      data.match(/TEL[^:]*TYPE=CELL[^:]*:([^\n\r]*)/i) ||
+      data.match(/TEL[^:]*TYPE=MOBILE[^:]*:([^\n\r]*)/i)
+    if (mobilePhoneMatch) {
+      vcardPhoneMobile.value = mobilePhoneMatch[1] || ''
+    }
+
+    // If no specific phone types are found, try to get any phone
+    if (!vcardPhoneWork.value && !vcardPhonePrivate.value && !vcardPhoneMobile.value) {
+      const anyPhoneMatch = data.match(/TEL[^:]*:([^\n\r]*)/i)
+      if (anyPhoneMatch) {
+        vcardPhoneMobile.value = anyPhoneMatch[1] || ''
+      }
+    }
+
+    // Extract email
+    const emailMatch = data.match(/EMAIL[^:]*:([^\n\r]*)/i)
+    if (emailMatch) {
+      vcardEmail.value = emailMatch[1] || ''
+    }
+
+    // Extract website
+    const urlMatch = data.match(/URL[^:]*:([^\n\r]*)/i)
+    if (urlMatch) {
+      vcardWebsite.value = urlMatch[1] || ''
+    }
+
+    // Extract address
+    const addrMatch = data.match(
+      /ADR[^:]*:([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^\n\r]*)/i
+    )
+    if (addrMatch) {
+      vcardStreet.value = addrMatch[3] || ''
+      vcardCity.value = addrMatch[4] || ''
+      vcardState.value = addrMatch[5] || ''
+      vcardZipcode.value = addrMatch[6] || ''
+      vcardCountry.value = addrMatch[7] || ''
+    }
+
+    return
+  }
+
+  // URL detection
+  if (data.match(/^https?:\/\//i)) {
+    selectedType.value = 'url'
+    urlData.value = data
+    return
+  }
+
+  // Email detection
+  if (data.match(/^mailto:/i)) {
+    selectedType.value = 'email'
+    const emailParts = data.replace(/^mailto:/i, '').split('?')
+    emailAddress.value = emailParts[0] || ''
+
+    if (emailParts[1]) {
+      const params = new URLSearchParams(emailParts[1])
+      emailSubject.value = params.get('subject') || ''
+      emailBody.value = params.get('body') || ''
+    }
+    return
+  }
+
+  // Phone detection
+  if (data.match(/^tel:/i)) {
+    selectedType.value = 'phone'
+    phoneNumber.value = data.replace(/^tel:/i, '')
+    return
+  }
+
+  // SMS detection
+  if (data.match(/^sms:/i)) {
+    selectedType.value = 'sms'
+    const smsParts = data.replace(/^sms:/i, '').split('?')
+    smsNumber.value = smsParts[0] || ''
+
+    if (smsParts[1]) {
+      const params = new URLSearchParams(smsParts[1])
+      smsMessage.value = params.get('body') || ''
+    }
+    return
+  }
+
+  // WiFi detection
+  if (data.match(/^WIFI:/i)) {
+    selectedType.value = 'wifi'
+    const wifiRegex = /S:([^;]*);T:([^;]*);P:([^;]*);H:(true|false)?;?/i
+    const match = data.match(wifiRegex)
+
+    if (match) {
+      wifiSSID.value = match[1] || ''
+      wifiEncryption.value = match[2].toLowerCase() === 'nopass' ? 'nopass' : match[2]
+      wifiPassword.value = match[3] || ''
+      wifiHidden.value = match[4] === 'true'
+    }
+    return
+  }
+
+  // If no specific format detected, default to text
+  selectedType.value = 'text'
+  textData.value = data
+}
 
 const validateForm = () => {
   formSubmitted.value = true
@@ -401,18 +554,43 @@ const closeModal = () => {
     <div
       class="relative mb-4 w-[90%] max-w-full rounded-lg bg-white p-8 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 md:mb-0 md:max-h-[85vh] md:max-w-[650px]"
     >
-    <!-- Header -->
+      <!-- Header -->
       <div class="-m-4 grid grid-cols-[auto_1fr_auto] items-center pb-8 md:grid-cols-3 md:pb-16">
         <button :aria-label="t('Close dialog')" @click="closeModal" class="button place-self-start">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 6L6 18M6 6l12 12"/>
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M18 6L6 18M6 6l12 12"
+            />
           </svg>
         </button>
-        <h2 id="data-to-encode-modal-title" class="px-2 text-center text-xl font-semibold">{{ t('Data to encode') }}</h2>
-        <button @click="fillWithExampleData" class="secondary-button place-self-start justify-self-end">
+        <h2 id="data-to-encode-modal-title" class="px-2 text-center text-xl font-semibold">
+          {{ t('Data to encode') }}
+        </h2>
+        <button
+          @click="fillWithExampleData"
+          class="secondary-button place-self-start justify-self-end"
+        >
           <span class="hidden md:inline">{{ t('Use example') }}</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="md:hidden">
-            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h8m-8 4h6m4-9H4a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            class="md:hidden"
+          >
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M8 10h8m-8 4h6m4-9H4a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"
+            />
           </svg>
         </button>
       </div>
@@ -434,7 +612,17 @@ const closeModal = () => {
       </div>
 
       <div class="grid place-items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Myna UI Icons by Praveen Juge - https://github.com/praveenjuge/mynaui-icons/blob/main/LICENSE --><path fill="none" stroke="#888888" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m6 6l6 6l6-6M6 12l6 6l6-6"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+          <!-- Icon from Myna UI Icons by Praveen Juge - https://github.com/praveenjuge/mynaui-icons/blob/main/LICENSE -->
+          <path
+            fill="none"
+            stroke="#888888"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="m6 6l6 6l6-6M6 12l6 6l6-6"
+          />
+        </svg>
       </div>
 
       <!-- data type specific inputs -->
@@ -450,7 +638,9 @@ const closeModal = () => {
             id="textData"
             v-model="textData"
             class="text-input"
-            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('textData') }"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('textData')
+            }"
             :placeholder="t('Enter any text here')"
             required
             aria-required="true"
@@ -470,7 +660,9 @@ const closeModal = () => {
             v-model="urlData"
             placeholder="https://example.com"
             class="text-input"
-            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('urlData') }"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('urlData')
+            }"
             required
             aria-required="true"
           />
@@ -489,7 +681,10 @@ const closeModal = () => {
             v-model="emailAddress"
             placeholder="recipient@example.com"
             class="text-input"
-            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('emailAddress') }"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500':
+                isFieldInvalid('emailAddress')
+            }"
             required
             aria-required="true"
           />
@@ -523,7 +718,10 @@ const closeModal = () => {
             v-model="phoneNumber"
             placeholder="+1234567890"
             class="text-input"
-            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('phoneNumber') }"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500':
+                isFieldInvalid('phoneNumber')
+            }"
             required
             aria-required="true"
           />
@@ -542,7 +740,9 @@ const closeModal = () => {
             v-model="smsNumber"
             placeholder="+1234567890"
             class="text-input"
-            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('smsNumber') }"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('smsNumber')
+            }"
             required
             aria-required="true"
           />
@@ -576,7 +776,9 @@ const closeModal = () => {
             v-model="wifiSSID"
             :placeholder="t('Your network name')"
             class="text-input"
-            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('wifiSSID') }"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('wifiSSID')
+            }"
             required
             aria-required="true"
           />
@@ -771,7 +973,10 @@ const closeModal = () => {
             v-model="locationLatitude"
             placeholder="e.g., 40.7128"
             class="text-input"
-            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('locationLatitude') }"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500':
+                isFieldInvalid('locationLatitude')
+            }"
             required
             aria-required="true"
           />
@@ -788,7 +993,10 @@ const closeModal = () => {
             v-model="locationLongitude"
             placeholder="e.g., -74.0060"
             class="text-input"
-            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('locationLongitude') }"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500':
+                isFieldInvalid('locationLongitude')
+            }"
             required
             aria-required="true"
           />
@@ -807,7 +1015,9 @@ const closeModal = () => {
             v-model="eventTitle"
             placeholder="e.g., Team Meeting"
             class="text-input"
-            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('eventTitle') }"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('eventTitle')
+            }"
             required
             aria-required="true"
           />
@@ -832,7 +1042,10 @@ const closeModal = () => {
             id="eventStartTime"
             v-model="eventStartTime"
             class="text-input"
-            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('eventStartTime') }"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500':
+                isFieldInvalid('eventStartTime')
+            }"
             :placeholder="t('YYYY-MM-DDTHH:MM')"
             required
             aria-required="true"
@@ -849,7 +1062,10 @@ const closeModal = () => {
             id="eventEndTime"
             v-model="eventEndTime"
             class="text-input"
-            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('eventEndTime') }"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500':
+                isFieldInvalid('eventEndTime')
+            }"
             :placeholder="t('YYYY-MM-DDTHH:MM')"
             required
             aria-required="true"

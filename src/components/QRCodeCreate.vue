@@ -1224,7 +1224,22 @@ const updateDataFromModal = (newData: string) => {
                         :aria-label="t('Open data type generator')"
                       >
                         <span>{{ t('More data types') }}</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><!-- Icon from Tabler Icons by Paweł Kuna - https://github.com/tabler/tabler-icons/blob/master/LICENSE --><path fill="none" stroke="#888888" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7 7l5 5l-5 5m6-10l5 5l-5 5"/></svg>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                        >
+                          <!-- Icon from Tabler Icons by Paweł Kuna - https://github.com/tabler/tabler-icons/blob/master/LICENSE -->
+                          <path
+                            fill="none"
+                            stroke="#888888"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="m7 7l5 5l-5 5m6-10l5 5l-5 5"
+                          />
+                        </svg>
                       </button>
                     </div>
                     <template v-if="exportMode === ExportMode.Batch">
@@ -1588,6 +1603,7 @@ const updateDataFromModal = (newData: string) => {
 
   <DataToEncodeModal
     :show="isDataModalVisible"
+    :initial-data="data"
     @close="closeDataModal"
     @update:data="updateDataFromModal"
   />
