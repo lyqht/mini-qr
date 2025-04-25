@@ -1014,7 +1014,7 @@ const updateDataFromModal = (newData: string) => {
             <div class="space-y-4">
               <div class="flex flex-row items-center gap-2">
                 <label for="show-frame">{{ t('Add frame') }}</label>
-                <input id="show-frame" type="checkbox" class="checkbox" v-model="showFrame" />
+                <input id="show-frame" type="checkbox" v-model="showFrame" />
               </div>
 
               <div v-if="showFrame">
@@ -1426,12 +1426,7 @@ const updateDataFromModal = (newData: string) => {
                 <label for="with-background">
                   {{ t('With background') }}
                 </label>
-                <input
-                  id="with-background"
-                  type="checkbox"
-                  class="checkbox"
-                  v-model="includeBackground"
-                />
+                <input id="with-background" type="checkbox" v-model="includeBackground" />
               </div>
               <div id="color-settings" :class="'flex w-full flex-row flex-wrap gap-4'">
                 <div

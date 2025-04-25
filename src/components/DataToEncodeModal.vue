@@ -466,7 +466,7 @@ const closeModal = () => {
 
 <template>
   <div
-    class="fixed inset-0 z-[1000] flex items-start justify-center overflow-y-auto bg-black/40 pt-4 md:items-center md:pt-0"
+    class="fixed inset-0 z-[1000] flex items-start justify-center overflow-y-auto bg-black/40 pt-4 shadow-lg md:items-center md:pt-0"
     v-if="showModal"
     role="dialog"
     aria-modal="true"
@@ -474,7 +474,7 @@ const closeModal = () => {
     @click.self="closeModal"
   >
     <div
-      class="relative mb-4 flex min-h-[200px] w-[90%] max-w-full flex-col rounded-lg bg-white p-8 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 md:mb-0 md:max-h-[85vh] md:max-w-[650px]"
+      class="relative mb-4 flex min-h-[200px] w-[90%] max-w-full flex-col rounded-lg bg-white p-8 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100 md:mb-0 md:max-h-[85vh] md:max-w-[650px]"
     >
       <!-- Header -->
       <div class="-m-4 grid grid-cols-[auto_1fr_auto] items-center pb-8 md:grid-cols-3 md:pb-16">
@@ -518,7 +518,7 @@ const closeModal = () => {
       </div>
 
       <!-- data type select -->
-      <div class="flex flex-col gap-1">
+      <div class="flex flex-col gap-1 pe-4">
         <label for="dataType" class="label">{{ t('Data type') }}</label>
         <select id="dataType" v-model="selectedType" class="mb-4 text-input">
           <option value="text">{{ t('Text') }}</option>
@@ -548,7 +548,7 @@ const closeModal = () => {
       </div>
 
       <!-- data type specific inputs -->
-      <div class="flex-1 overflow-y-auto py-4 pe-2 text-start">
+      <div class="flex-1 overflow-y-auto overflow-x-hidden py-4 pe-4 text-start">
         <!-- Required field indicator for reuse -->
         <span class="sr-only">{{ t('Required fields are marked with an asterisk (*)') }}</span>
 
@@ -734,14 +734,12 @@ const closeModal = () => {
           <p v-if="isFieldInvalid('wifiPassword')" class="mt-1 text-sm text-red-500">
             {{ t('Password is required when encryption is enabled') }}
           </p>
-
-          <label
-            class="label-inline mt-2 inline-flex items-center font-normal text-inherit"
-            for="wifiHidden"
-          >
-            <input type="checkbox" id="wifiHidden" v-model="wifiHidden" class="checkbox" />
-            {{ t('Hidden SSID') }}
-          </label>
+          <div class="flex w-fit flex-row items-center justify-center gap-2">
+            <label for="wifiHidden">
+              {{ t('Hidden SSID') }}</label
+            >
+            <input type="checkbox" id="wifiHidden" v-model="wifiHidden" class="shrink-0" />
+          </div>
         </div>
 
         <div
@@ -1020,15 +1018,6 @@ const closeModal = () => {
 </template>
 
 <style scoped>
-input[type='number'] {
-  -moz-appearance: textfield;
-}
-input[type='number']::-webkit-outer-spin-button,
-input[type='number']::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
 .border-red-500 {
   animation: shake 0.2s ease-in-out 0s 2;
 }
