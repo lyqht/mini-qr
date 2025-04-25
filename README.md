@@ -99,4 +99,5 @@ docker compose up -d
 
 ## Contributing
 
+Translations and bug fixes are welcome!
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
