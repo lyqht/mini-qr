@@ -1220,10 +1220,10 @@ const updateDataFromModal = (newData: string) => {
                         @click="openDataModal"
                         aria-haspopup="dialog"
                         :aria-expanded="isDataModalVisible"
-                        class="flex items-center self-end whitespace-nowrap p-1 text-sm text-zinc-500 underline hover:no-underline focus:outline-none focus-visible:no-underline focus-visible:ring-1 focus-visible:ring-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-200"
+                        class="secondary-button mt-2 flex items-center gap-1 self-end"
                         :aria-label="t('Open data type generator')"
                       >
-                        <span>{{ t('More data types') }}</span>
+                        <span>{{ t('Data templates') }}</span>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="16"

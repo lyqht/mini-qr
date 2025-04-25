@@ -563,7 +563,7 @@ const closeModal = () => {
             :class="{
               'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('textData')
             }"
-            :placeholder="t('Enter any text here')"
+            :placeholder="t('Have a beautiful day!')"
             required
             aria-required="true"
           ></textarea>
@@ -735,9 +735,7 @@ const closeModal = () => {
             {{ t('Password is required when encryption is enabled') }}
           </p>
           <div class="flex w-fit flex-row items-center justify-center gap-2">
-            <label for="wifiHidden">
-              {{ t('Hidden SSID') }}</label
-            >
+            <label for="wifiHidden"> {{ t('Hidden SSID') }}</label>
             <input type="checkbox" id="wifiHidden" v-model="wifiHidden" class="shrink-0" />
           </div>
         </div>
@@ -980,7 +978,7 @@ const closeModal = () => {
               'border-red-500 focus:border-red-500 focus:ring-red-500':
                 isFieldInvalid('eventStartTime')
             }"
-            :placeholder="t('YYYY-MM-DDTHH:MM')"
+            :placeholder="'YYYY-MM-DDTHH:MM'"
             required
             aria-required="true"
           />
@@ -1011,7 +1009,7 @@ const closeModal = () => {
       </div>
 
       <div class="mt-4 flex justify-end gap-2 border-t border-gray-200 pt-4 dark:border-zinc-700">
-        <button @click="generateDataString" class="button">{{ t('Create') }}</button>
+        <button @click="generateDataString" class="button">{{ t('Save') }}</button>
       </div>
     </div>
   </div>
