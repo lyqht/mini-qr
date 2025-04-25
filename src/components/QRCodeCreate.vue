@@ -808,7 +808,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
           <div
             v-else
             id="element-to-export"
-            class="grid place-items-center"
+            class="grid place-items-center overflow-hidden"
             :style="[
               style,
               {
