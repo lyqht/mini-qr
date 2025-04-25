@@ -16,6 +16,14 @@
   }
 }
 
+::selection {
+  @apply bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100;
+}
+
+::-moz-selection {
+  @apply bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100;
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;
