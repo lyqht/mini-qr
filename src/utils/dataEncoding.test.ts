@@ -9,7 +9,10 @@ import {
   generateVCardData,
   generateLocationData,
   generateEventData,
-  detectDataType
+  detectDataType,
+  escapeVCard,
+  escapeWiFi,
+  escapeICal
 } from './dataEncoding'
 
 describe('Data Encoding Functions', () => {
@@ -76,6 +79,45 @@ describe('Data Encoding Functions', () => {
     )
     expect(generateVCardData({ email: 'j.doe@example.com' })).toBe(
       'BEGIN:VCARD\nVERSION:3.0\nEMAIL:j.doe@example.com\nEND:VCARD'
+    )
+
+    // Test vCard 2.1 format
+    expect(
+      generateVCardData({
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        phoneWork: '+1234567890',
+        version: '2'
+      })
+    ).toBe(
+      'BEGIN:VCARD\nVERSION:2.1\nN:Doe;John;;;\nFN:John Doe\nTEL;WORK;VOICE:+1234567890\nEMAIL;INTERNET:john.doe@example.com\nEND:VCARD'
+    )
+
+    // Test vCard 3.0 format
+    expect(
+      generateVCardData({
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        phoneWork: '+1234567890',
+        version: '3'
+      })
+    ).toBe(
+      'BEGIN:VCARD\nVERSION:3.0\nN:Doe;John;;;\nFN:John Doe\nTEL;TYPE=WORK,VOICE:+1234567890\nEMAIL:john.doe@example.com\nEND:VCARD'
+    )
+
+    // Test vCard 4.0 format
+    expect(
+      generateVCardData({
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        phoneWork: '+1234567890',
+        version: '4'
+      })
+    ).toBe(
+      'BEGIN:VCARD\nVERSION:4.0\nN:Doe;John;;;\nFN:John Doe\nTEL;TYPE=work,voice;VALUE=uri:tel:+1234567890\nEMAIL;TYPE=work:john.doe@example.com\nEND:VCARD'
     )
   })
 
@@ -193,6 +235,41 @@ END:VCARD`
     expect(result.parsedData.state).toBe('LA')
     expect(result.parsedData.zipcode).toBe('30314')
     expect(result.parsedData.country).toBe('USA')
+    expect(result.parsedData.version).toBe('3')
+
+    // Test vCard 2.1 detection
+    const vcard21 = `BEGIN:VCARD
+VERSION:2.1
+N:Doe;John;;;
+FN:John Doe
+TEL;WORK;VOICE:+1234567890
+EMAIL;INTERNET:john.doe@example.com
+END:VCARD`
+
+    const result21 = detectDataType(vcard21)
+    expect(result21.type).toBe('vcard')
+    expect(result21.parsedData.firstName).toBe('John')
+    expect(result21.parsedData.lastName).toBe('Doe')
+    expect(result21.parsedData.phoneWork).toBe('+1234567890')
+    expect(result21.parsedData.email).toBe('john.doe@example.com')
+    expect(result21.parsedData.version).toBe('2')
+
+    // Test vCard 4.0 detection
+    const vcard40 = `BEGIN:VCARD
+VERSION:4.0
+N:Doe;John;;;
+FN:John Doe
+TEL;TYPE=work,voice;VALUE=uri:tel:+1234567890
+EMAIL;TYPE=work:john.doe@example.com
+END:VCARD`
+
+    const result40 = detectDataType(vcard40)
+    expect(result40.type).toBe('vcard')
+    expect(result40.parsedData.firstName).toBe('John')
+    expect(result40.parsedData.lastName).toBe('Doe')
+    expect(result40.parsedData.phoneWork).toBe('+1234567890')
+    expect(result40.parsedData.email).toBe('john.doe@example.com')
+    expect(result40.parsedData.version).toBe('4')
   })
 
   it('detectDataType identifies geo location data', () => {
@@ -219,5 +296,67 @@ END:VCALENDAR`
     expect(result.parsedData.location).toBe('Conference Room A')
     expect(result.parsedData.startTime).toContain('2024-01-15T10:00:00')
     expect(result.parsedData.endTime).toContain('2024-01-15T11:00:00')
+  })
+})
+
+describe('Escape Functions', () => {
+  describe('escapeVCard', () => {
+    it('escapes special characters for vCard format', () => {
+      expect(escapeVCard('Hello, World')).toBe('Hello\\, World')
+      expect(escapeVCard('Name;Surname')).toBe('Name\\;Surname')
+      expect(escapeVCard('Back\\slash')).toBe('Back\\\\slash')
+      expect(escapeVCard('')).toBe('')
+    })
+
+    it('handles multiple special characters', () => {
+      expect(escapeVCard('Test,;\\')).toBe('Test\\,\\;\\\\')
+    })
+
+    it('preserves non-special characters', () => {
+      expect(escapeVCard('Hello World')).toBe('Hello World')
+      expect(escapeVCard('12345')).toBe('12345')
+      expect(escapeVCard('test@example.com')).toBe('test@example.com')
+    })
+  })
+
+  describe('escapeWiFi', () => {
+    it('escapes special characters for WiFi format', () => {
+      expect(escapeWiFi('Network;Name')).toBe('Network\\;Name')
+      expect(escapeWiFi('Password:123')).toBe('Password\\:123')
+      expect(escapeWiFi('Test,Comma')).toBe('Test\\,Comma')
+      expect(escapeWiFi('"Quoted"')).toBe('\\"Quoted\\"')
+      expect(escapeWiFi("Single'Quote")).toBe("Single\\'Quote")
+      expect(escapeWiFi('Back\\slash')).toBe('Back\\\\slash')
+      expect(escapeWiFi('')).toBe('')
+    })
+
+    it('handles multiple special characters', () => {
+      expect(escapeWiFi('Test;,:"\'\\')).toBe('Test\\;\\,\\:\\"\\\'\\\\')
+    })
+
+    it('preserves non-special characters', () => {
+      expect(escapeWiFi('MyNetwork')).toBe('MyNetwork')
+      expect(escapeWiFi('12345')).toBe('12345')
+      expect(escapeWiFi('test@example.com')).toBe('test@example.com')
+    })
+  })
+
+  describe('escapeICal', () => {
+    it('escapes special characters for iCalendar format', () => {
+      expect(escapeICal('Event,Name')).toBe('Event\\,Name')
+      expect(escapeICal('Location;Room')).toBe('Location\\;Room')
+      expect(escapeICal('Back\\slash')).toBe('Back\\\\slash')
+      expect(escapeICal('')).toBe('')
+    })
+
+    it('handles multiple special characters', () => {
+      expect(escapeICal('Test,;\\')).toBe('Test\\,\\;\\\\')
+    })
+
+    it('preserves non-special characters', () => {
+      expect(escapeICal('Meeting')).toBe('Meeting')
+      expect(escapeICal('12345')).toBe('12345')
+      expect(escapeICal('test@example.com')).toBe('test@example.com')
+    })
   })
 })

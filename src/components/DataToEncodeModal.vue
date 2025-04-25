@@ -58,6 +58,7 @@ const vcardZipcode = ref('')
 const vcardCity = ref('')
 const vcardState = ref('')
 const vcardCountry = ref('')
+const vcardVersion = ref('2')
 
 // Location refs
 const locationLatitude = ref<number | string>('')
@@ -217,6 +218,7 @@ const detectAndSetDataType = (data: string) => {
       vcardState.value = (result.parsedData.state as string) || ''
       vcardZipcode.value = (result.parsedData.zipcode as string) || ''
       vcardCountry.value = (result.parsedData.country as string) || ''
+      vcardVersion.value = (result.parsedData.version as string) || '3'
       break
 
     case 'location':
@@ -363,7 +365,8 @@ const generateDataString = () => {
         zipcode: vcardZipcode.value,
         city: vcardCity.value,
         state: vcardState.value,
-        country: vcardCountry.value
+        country: vcardCountry.value,
+        version: vcardVersion.value
       })
       break
     // Removed mecard case
@@ -739,6 +742,14 @@ const closeModal = () => {
           v-if="selectedType === 'vcard'"
           class="grid grid-cols-1 items-start gap-3 gap-y-4 md:grid-cols-2 md:gap-x-4"
         >
+          <div class="md:col-span-2">
+            <label for="vcardVersion" class="label">{{ t('vCard Version') }}</label>
+            <select id="vcardVersion" v-model="vcardVersion" class="text-input">
+              <option value="2">vCard 2.1</option>
+              <option value="3">vCard 3.0</option>
+              <option value="4">vCard 4.0</option>
+            </select>
+          </div>
           <div>
             <label for="vcardFirstName" class="label">{{ t('First Name') }}</label>
             <input
