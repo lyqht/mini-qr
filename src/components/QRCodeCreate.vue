@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DataTemplatesModal from '@/components/DataTemplatesModal.vue'
 import QRCodeFrame from '@/components/QRCodeFrame.vue'
 import StyledQRCode from '@/components/StyledQRCode.vue'
 import {
@@ -34,7 +35,6 @@ import {
 import { computed, onMounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
-import DataToEncodeModal from './DataToEncodeModal.vue'
 
 interface FrameStyle {
   textColor: string
@@ -1596,7 +1596,7 @@ const updateDataFromModal = (newData: string) => {
     </div>
   </div>
 
-  <DataToEncodeModal
+  <DataTemplatesModal
     :show="isDataModalVisible"
     :initial-data="data"
     @close="closeDataModal"
