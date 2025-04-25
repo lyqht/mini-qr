@@ -32,6 +32,7 @@ An app to create beautiful QR codes and scan various QR code types.
 - 📱 QR Code Scanner: Scan QR codes using your camera or by uploading images, with intelligent detection for URLs, emails, phone numbers, WiFi credentials, and more
 - 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once.
 - 📲 PWA Support: Install MiniQR as a desktop or mobile app
+- 📝 Data templates: Support for various data types including text, URLs, emails, phone numbers, SMS, WiFi credentials, vCards, locations, and calendar events
 
 ### Installation as PWA
 
@@ -87,6 +88,13 @@ https://github.com/user-attachments/assets/e160d60d-3c7f-4bbb-908c-efd11fec20e8
 
 </details>
 
+<details>
+<summary>Data templates (added in v0.16.0)</summary>
+
+https://github.com/user-attachments/assets/863f9330-2645-4d23-88aa-04f5f5beaa67
+
+</details>
+
 ## Self-hosting with Docker 🐋
 
 Mini-QR can easily be self-hosted. We provide a [docker-compose.yml](docker-compose.yml) file as well as our own images. We are using GitHub's `ghrc.io` Container Registry.
@@ -99,4 +107,5 @@ docker compose up -d
 
 ## Contributing
 
+Translations and bug fixes are welcome!
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DataTemplatesModal from '@/components/DataTemplatesModal.vue'
 import QRCodeFrame from '@/components/QRCodeFrame.vue'
 import StyledQRCode from '@/components/StyledQRCode.vue'
 import {
@@ -646,6 +647,21 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
   }
 }
 //#endregion
+
+const isDataModalVisible = ref(false)
+
+const openDataModal = () => {
+  isDataModalVisible.value = true
+}
+
+const closeDataModal = () => {
+  isDataModalVisible.value = false
+}
+
+const updateDataFromModal = (newData: string) => {
+  data.value = newData
+  // Optionally trigger QR code regeneration here if needed
+}
 </script>
 
 <template>
@@ -998,7 +1014,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
             <div class="space-y-4">
               <div class="flex flex-row items-center gap-2">
                 <label for="show-frame">{{ t('Add frame') }}</label>
-                <input id="show-frame" type="checkbox" class="checkbox" v-model="showFrame" />
+                <input id="show-frame" type="checkbox" v-model="showFrame" />
               </div>
 
               <div v-if="showFrame">
@@ -1148,15 +1164,15 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
               <div class="w-full">
                 <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
                   <div class="w-full sm:w-2/3">
+                    <!-- Header row: Label + Mode Toggles + Batch Options -->
                     <div class="mb-2 flex items-center gap-4">
-                      <label for="data">
-                        {{ t('Data to encode') }}
-                      </label>
+                      <label for="data">{{ t('Data to encode') }}</label>
+                      <!-- Mode Toggle Buttons -->
                       <div class="flex grow items-center gap-2">
                         <button
                           :class="[
                             'secondary-button',
-                            { 'opacity-50': exportMode !== ExportMode.Single }
+                            { 'opacity-50': exportMode === ExportMode.Single } // Dim if active
                           ]"
                           @click="exportMode = ExportMode.Single"
                         >
@@ -1165,12 +1181,13 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                         <button
                           :class="[
                             'secondary-button',
-                            { 'opacity-50': exportMode !== ExportMode.Batch }
+                            { 'opacity-50': exportMode === ExportMode.Batch } // Dim if active
                           ]"
                           @click="exportMode = ExportMode.Batch"
                         >
                           {{ $t('Batch export') }}
                         </button>
+                        <!-- Batch specific options -->
                         <div
                           v-if="exportMode === ExportMode.Batch"
                           :class="[
@@ -1181,7 +1198,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                           <input
                             id="ignore-header"
                             type="checkbox"
-                            class="checkbox mr-2"
+                            class="checkbox me-2"
                             v-model="ignoreHeaderRow"
                             @change="onBatchInputFileUpload($event)"
                           />
@@ -1191,15 +1208,41 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                         </div>
                       </div>
                     </div>
-                    <textarea
-                      v-if="exportMode === ExportMode.Single"
-                      name="data"
-                      class="text-input"
-                      id="data"
-                      :placeholder="t('data to encode e.g. a URL or a string')"
-                      v-model="data"
-                    />
-                    <template v-else>
+                    <!-- Single Mode Input -->
+                    <div v-if="exportMode === ExportMode.Single" class="flex flex-col items-start">
+                      <textarea
+                        id="data"
+                        v-model="data"
+                        class="mr-2 grow text-input"
+                        :placeholder="t('data to encode e.g. a URL or a string')"
+                      ></textarea>
+                      <button
+                        @click="openDataModal"
+                        aria-haspopup="dialog"
+                        :aria-expanded="isDataModalVisible"
+                        class="secondary-button mt-2 flex items-center gap-1 self-end"
+                        :aria-label="t('Open data type generator')"
+                      >
+                        <span>{{ t('Data templates') }}</span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                        >
+                          <!-- Icon from Tabler Icons by Paweł Kuna - https://github.com/tabler/tabler-icons/blob/master/LICENSE -->
+                          <path
+                            fill="none"
+                            stroke="#888888"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="m7 7l5 5l-5 5m6-10l5 5l-5 5"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    <template v-if="exportMode === ExportMode.Batch">
                       <template v-if="!inputFileForBatchEncoding">
                         <button
                           class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-1 py-4 text-center text-input"
@@ -1383,12 +1426,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                 <label for="with-background">
                   {{ t('With background') }}
                 </label>
-                <input
-                  id="with-background"
-                  type="checkbox"
-                  class="checkbox"
-                  v-model="includeBackground"
-                />
+                <input id="with-background" type="checkbox" v-model="includeBackground" />
               </div>
               <div id="color-settings" :class="'flex w-full flex-row flex-wrap gap-4'">
                 <div
@@ -1557,4 +1595,11 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
       </Accordion>
     </div>
   </div>
+
+  <DataTemplatesModal
+    :show="isDataModalVisible"
+    :initial-data="data"
+    @close="closeDataModal"
+    @update:data="updateDataFromModal"
+  />
 </template>
