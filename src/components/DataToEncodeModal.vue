@@ -474,7 +474,7 @@ const closeModal = () => {
     @click.self="closeModal"
   >
     <div
-      class="relative mb-4 w-[90%] max-w-full rounded-lg bg-white p-8 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 md:mb-0 md:max-h-[85vh] md:max-w-[650px]"
+      class="relative mb-4 flex min-h-[200px] w-[90%] max-w-full flex-col rounded-lg bg-white p-8 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 md:mb-0 md:max-h-[85vh] md:max-w-[650px]"
     >
       <!-- Header -->
       <div class="-m-4 grid grid-cols-[auto_1fr_auto] items-center pb-8 md:grid-cols-3 md:pb-16">
@@ -548,7 +548,7 @@ const closeModal = () => {
       </div>
 
       <!-- data type specific inputs -->
-      <div class="grow overflow-y-auto py-4 pe-2 text-start">
+      <div class="flex-1 overflow-y-auto py-4 pe-2 text-start">
         <!-- Required field indicator for reuse -->
         <span class="sr-only">{{ t('Required fields are marked with an asterisk (*)') }}</span>
 
@@ -710,7 +710,12 @@ const closeModal = () => {
 
           <label for="wifiPassword" class="label">
             {{ t('Password') }}
-            <span v-if="wifiEncryption.toLowerCase() !== 'nopass'" class="text-red-500" aria-hidden="true">*</span>
+            <span
+              v-if="wifiEncryption.toLowerCase() !== 'nopass'"
+              class="text-red-500"
+              aria-hidden="true"
+              >*</span
+            >
           </label>
           <input
             type="password"
@@ -722,7 +727,8 @@ const closeModal = () => {
             :placeholder="t('Network password (case-sensitive)')"
             class="text-input"
             :class="{
-              'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('wifiPassword')
+              'border-red-500 focus:border-red-500 focus:ring-red-500':
+                isFieldInvalid('wifiPassword')
             }"
           />
           <p v-if="isFieldInvalid('wifiPassword')" class="mt-1 text-sm text-red-500">
@@ -1006,9 +1012,7 @@ const closeModal = () => {
         </div>
       </div>
 
-      <div
-        class="mt-auto flex justify-end gap-2 border-t border-gray-200 pt-4 dark:border-zinc-700"
-      >
+      <div class="mt-4 flex justify-end gap-2 border-t border-gray-200 pt-4 dark:border-zinc-700">
         <button @click="generateDataString" class="button">{{ t('Create') }}</button>
       </div>
     </div>
