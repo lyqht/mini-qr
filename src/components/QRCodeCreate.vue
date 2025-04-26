@@ -493,8 +493,12 @@ enum ExportMode {
 
 const exportMode = ref(ExportMode.Single)
 const dataStringsFromCsv = ref<string[]>([])
+const frameTextsFromCsv = ref<string[]>([])
 const filteredDataStringsFromCsv = computed(() =>
   ignoreHeaderRow.value ? dataStringsFromCsv.value.slice(1) : dataStringsFromCsv.value
+)
+const filteredFrameTextsFromCsv = computed(() =>
+  ignoreHeaderRow.value ? frameTextsFromCsv.value.slice(1) : frameTextsFromCsv.value
 )
 
 const inputFileForBatchEncoding = ref<File | null>(null)
@@ -516,6 +520,7 @@ const resetData = () => {
   data.value = ''
   inputFileForBatchEncoding.value = null
   dataStringsFromCsv.value = []
+  frameTextsFromCsv.value = []
   isValidCsv.value = true
   resetBatchExportProgress()
   isBatchExportSuccess.value = false
@@ -554,13 +559,32 @@ const onBatchInputFileUpload = (event: Event) => {
       isValidCsv.value = false
       return
     }
-    let links = content.split('\n').filter((link) => link.trim() !== '')
-    links = links.map((link) => link.replace('\r', ''))
-    if (ignoreHeaderRow.value && links.length > 0) {
-      links.shift()
+    const lines = content.split('\n').filter((line) => line.trim() !== '')
+    const processedLines = lines.map((line) => line.replace('\r', ''))
+
+    // Split each line into URL and frame text (if present)
+    const urls: string[] = []
+    const frameTexts: string[] = []
+    processedLines.forEach((line) => {
+      // Split by comma instead of whitespace, and handle potential quotes
+      const [url, frameText] = line.split(',').map((s) => s.trim().replace(/^["']|["']$/g, ''))
+      urls.push(url)
+      frameTexts.push(frameText || DEFAULT_FRAME_TEXT)
+    })
+
+    if (ignoreHeaderRow.value && urls.length > 0) {
+      urls.shift()
+      frameTexts.shift()
     }
-    console.debug('links', links)
-    dataStringsFromCsv.value = links
+
+    // If any non-default frame text is detected, enable frame settings
+    const hasCustomFrameText = frameTexts.some((text) => text && text !== DEFAULT_FRAME_TEXT)
+    if (hasCustomFrameText && !showFrame.value) {
+      showFrame.value = true
+    }
+
+    dataStringsFromCsv.value = urls
+    frameTextsFromCsv.value = frameTexts
     isValidCsv.value = true
   }
 
@@ -577,6 +601,7 @@ const createZipFile = (
   format: 'png' | 'svg' | 'jpg'
 ) => {
   const dataString = filteredDataStringsFromCsv.value[index]
+  const frameText = filteredFrameTextsFromCsv.value[index]
   let fileName = dataString.trim()
   if (dataString.startsWith('http')) {
     const pathSegments = dataString.split('/')
@@ -586,6 +611,12 @@ const createZipFile = (
     if (!isValidFileName) {
       fileName = pathSegments[pathSegments.length - 2] || `qr_code_${index}`
     }
+  }
+
+  // Add frame text to filename if it's not the default
+  if (frameText !== DEFAULT_FRAME_TEXT) {
+    const sanitizedFrameText = frameText.replace(/[^a-zA-Z0-9_-]/g, '_')
+    fileName = `${fileName}_${sanitizedFrameText}`
   }
 
   if (usedFilenames.has(fileName)) {
@@ -614,7 +645,9 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
     for (let index = 0; index < filteredDataStringsFromCsv.value.length; index++) {
       currentExportedQrCodeIndex.value = index
       const url = filteredDataStringsFromCsv.value[index]
+      const currentFrameText = filteredFrameTextsFromCsv.value[index]
       data.value = url
+      frameText.value = currentFrameText
       await sleep(1000)
       let dataUrl: string = ''
       if (format === 'png') {
@@ -1191,10 +1224,13 @@ const updateDataFromModal = (newData: string) => {
                         <div
                           v-if="exportMode === ExportMode.Batch"
                           :class="[
-                            'flex grow items-center justify-end',
+                            'flex grow items-center justify-end gap-2',
                             dataStringsFromCsv.length > 0 && 'opacity-80'
                           ]"
                         >
+                          <label for="ignore-header" class="!text-sm !font-normal">
+                            {{ $t('Ignore header row') }}
+                          </label>
                           <input
                             id="ignore-header"
                             type="checkbox"
@@ -1202,9 +1238,6 @@ const updateDataFromModal = (newData: string) => {
                             v-model="ignoreHeaderRow"
                             @change="onBatchInputFileUpload($event)"
                           />
-                          <label for="ignore-header" class="!text-sm !font-normal">
-                            {{ $t('Ignore header row') }}
-                          </label>
                         </div>
                       </div>
                     </div>
@@ -1303,15 +1336,81 @@ const updateDataFromModal = (newData: string) => {
                               })
                             }}
                           </p>
-                          <div v-if="dataStringsFromCsv.length > 0" class="mt-4 text-start">
-                            <p class="text-center text-sm text-zinc-500">
-                              <span class="me-2">{{ $t('First row preview:') }}</span>
-                              <span class="inline-block">
-                                <pre class="rounded bg-gray-200 text-sm">{{
-                                  `${ignoreHeaderRow ? dataStringsFromCsv[1] : dataStringsFromCsv[0]}`
-                                }}</pre>
-                              </span>
-                            </p>
+                          <div v-if="dataStringsFromCsv.length > 0" class="mt-4">
+                            <div
+                              class="flex flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800"
+                            >
+                              <p
+                                class="text-start text-sm font-medium text-gray-600 dark:text-gray-300"
+                              >
+                                {{ $t('First row preview:') }}
+                              </p>
+                              <div class="space-y-2">
+                                <div class="flex flex-col gap-1">
+                                  <span
+                                    class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                                    >{{ $t('Data:') }}</span
+                                  >
+                                  <code
+                                    class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
+                                  >
+                                    {{
+                                      ignoreHeaderRow
+                                        ? dataStringsFromCsv[1]
+                                        : dataStringsFromCsv[0]
+                                    }}
+                                  </code>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                  <span
+                                    class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                                    >{{ $t('Frame text:') }}</span
+                                  >
+                                  <code
+                                    class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
+                                  >
+                                    {{
+                                      ignoreHeaderRow ? frameTextsFromCsv[1] : frameTextsFromCsv[0]
+                                    }}
+                                  </code>
+                                </div>
+                              </div>
+                              <div
+                                v-if="
+                                  frameTextsFromCsv.some(
+                                    (text) => text && text !== DEFAULT_FRAME_TEXT
+                                  )
+                                "
+                                class="mt-2 flex items-center gap-4 rounded-md bg-blue-50 p-2 text-sm text-slate-700 dark:bg-blue-900/50 dark:text-blue-200"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  class="shrink-0"
+                                >
+                                  <path
+                                    fill="currentColor"
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+                                  />
+                                </svg>
+                                <span class="text-start">
+                                  {{
+                                    $t(
+                                      'QR codes will be generated using the frame settings you have set above.'
+                                    )
+                                  }}
+                                  <button
+                                    v-if="!showFrame"
+                                    @click="showFrame = true"
+                                    class="ml-1 underline hover:text-blue-800 dark:hover:text-blue-300"
+                                  >
+                                    {{ $t('Configure frame settings') }}
+                                  </button>
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <div v-else-if="currentExportedQrCodeIndex != null">
