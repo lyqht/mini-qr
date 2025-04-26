@@ -225,5 +225,8 @@
   "Start time is required": "A kezdési időre van szükség",
   "End time is required": "Végidőre van szükség",
   "Subject": "Tárgy:",
-  "Message": "Üzenet"
+  "Message": "Üzenet",
+  "Frame text": "Keret szöveg",
+  "QR codes will be generated using the frame settings you have set above.": "A QR-kódok a fent beállított keretbeállítások alapján lesznek létrehozva.",
+  "Configure frame settings": "Keretbeállítások konfigurálása"
 }

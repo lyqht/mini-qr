@@ -225,5 +225,8 @@
   "Start time is required": "需要開始時間",
   "End time is required": "需要結束時間",
   "Subject": "主題",
-  "Message": "訊息"
+  "Message": "訊息",
+  "Frame text": "框架文字",
+  "QR codes will be generated using the frame settings you have set above.": "QR 代碼會使用您在上面設定的框架設定來產生。",
+  "Configure frame settings": "設定框架設定"
 }

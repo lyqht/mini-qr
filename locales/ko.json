@@ -225,5 +225,8 @@
   "Start time is required": "시작 시간이 필요합니다.",
   "End time is required": "종료 시간이 필요합니다.",
   "Subject": "제목",
-  "Message": "메시지"
+  "Message": "메시지",
+  "Frame text": "프레임 텍스트",
+  "QR codes will be generated using the frame settings you have set above.": "위에서 설정한 프레임 설정을 사용하여 QR 코드가 생성됩니다.",
+  "Configure frame settings": "프레임 설정 구성"
 }

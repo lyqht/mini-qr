@@ -225,5 +225,8 @@
   "Start time is required": "Необхідно вказати час початку",
   "End time is required": "Необхідно вказати час закінчення",
   "Subject": "Тема",
-  "Message": "Повідомлення"
+  "Message": "Повідомлення",
+  "Frame text": "Текст кадру",
+  "QR codes will be generated using the frame settings you have set above.": "QR-коди будуть згенеровані з використанням налаштувань фрейму, які ви встановили вище.",
+  "Configure frame settings": "Налаштуйте параметри кадру"
 }

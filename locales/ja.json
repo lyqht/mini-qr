@@ -225,5 +225,8 @@
   "Start time is required": "開始時間が必要",
   "End time is required": "終了時間が必要",
   "Subject": "テーマ",
-  "Message": "メッセージ"
+  "Message": "メッセージ",
+  "Frame text": "フレームテキスト",
+  "QR codes will be generated using the frame settings you have set above.": "QRコードは、上記で設定したフレーム設定を使用して生成されます。",
+  "Configure frame settings": "フレームの設定"
 }

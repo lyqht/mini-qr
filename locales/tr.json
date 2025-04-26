@@ -225,5 +225,8 @@
   "Start time is required": "Başlangıç zamanı gereklidir",
   "End time is required": "Bitiş zamanı gereklidir",
   "Subject": "Konu",
-  "Message": "Mesaj"
+  "Message": "Mesaj",
+  "Frame text": "Çerçeve metni",
+  "QR codes will be generated using the frame settings you have set above.": "QR kodları, yukarıda belirlediğiniz çerçeve ayarları kullanılarak oluşturulacaktır.",
+  "Configure frame settings": "Çerçeve ayarlarını yapılandırma"
 }

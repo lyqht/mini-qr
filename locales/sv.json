@@ -225,5 +225,8 @@
   "Start time is required": "Starttid krävs",
   "End time is required": "Sluttid krävs",
   "Subject": "Ämne",
-  "Message": "Meddelande"
+  "Message": "Meddelande",
+  "Frame text": "Ramtext",
+  "QR codes will be generated using the frame settings you have set above.": "QR-koderna genereras med hjälp av de inställningar för ramen som du har angett ovan.",
+  "Configure frame settings": "Konfigurera inställningar för ram"
 }
