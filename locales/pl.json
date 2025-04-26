@@ -225,5 +225,8 @@
   "Start time is required": "Wymagany jest czas rozpoczęcia",
   "End time is required": "Wymagany jest czas zakończenia",
   "Subject": "Przedmiot",
-  "Message": "Wiadomość"
+  "Message": "Wiadomość",
+  "Frame text": "Tekst ramki",
+  "QR codes will be generated using the frame settings you have set above.": "Kody QR zostaną wygenerowane przy użyciu ustawień ramki określonych powyżej.",
+  "Configure frame settings": "Konfiguracja ustawień ramki"
 }

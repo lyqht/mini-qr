@@ -225,5 +225,8 @@
   "Start time is required": "Aloitusaika vaaditaan",
   "End time is required": "Loppuaika vaaditaan",
   "Subject": "Aihe",
-  "Message": "Viesti"
+  "Message": "Viesti",
+  "Frame text": "Kehyksen teksti",
+  "QR codes will be generated using the frame settings you have set above.": "QR-koodit luodaan käyttämällä edellä määrittämiäsi kehysasetuksia.",
+  "Configure frame settings": "Kehysasetusten määrittäminen"
 }

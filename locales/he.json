@@ -225,5 +225,8 @@
   "Start time is required": "Start time is required",
   "End time is required": "End time is required",
   "Subject": "Subject",
-  "Message": "Message"
+  "Message": "Message",
+  "Frame text": "Frame text",
+  "QR codes will be generated using the frame settings you have set above.": "QR codes will be generated using the frame settings you have set above.",
+  "Configure frame settings": "Configure frame settings"
 }

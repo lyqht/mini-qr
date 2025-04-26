@@ -225,5 +225,8 @@
   "Start time is required": "È richiesta l'ora di inizio",
   "End time is required": "L'ora di fine è richiesta",
   "Subject": "Oggetto",
-  "Message": "Messaggio"
+  "Message": "Messaggio",
+  "Frame text": "Testo della cornice",
+  "QR codes will be generated using the frame settings you have set above.": "I codici QR verranno generati utilizzando le impostazioni della cornice impostate in precedenza.",
+  "Configure frame settings": "Configurare le impostazioni della cornice"
 }

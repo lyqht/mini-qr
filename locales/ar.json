@@ -225,5 +225,8 @@
   "Start time is required": "وقت البدء مطلوب",
   "End time is required": "وقت الانتهاء مطلوب",
   "Subject": "الموضوع",
-  "Message": "الرسالة"
+  "Message": "الرسالة",
+  "Frame text": "نص الإطار",
+  "QR codes will be generated using the frame settings you have set above.": "سيتم إنشاء رموز QR باستخدام إعدادات الإطار التي قمت بتعيينها أعلاه.",
+  "Configure frame settings": "تكوين إعدادات الإطار"
 }

@@ -225,5 +225,8 @@
   "Start time is required": "Je vyžadován čas zahájení",
   "End time is required": "Je vyžadován čas ukončení",
   "Subject": "Předmět",
-  "Message": "Zpráva"
+  "Message": "Zpráva",
+  "Frame text": "Text rámečku",
+  "QR codes will be generated using the frame settings you have set above.": "Kódy QR se vygenerují pomocí nastavení rámečku, které jste nastavili výše.",
+  "Configure frame settings": "Konfigurace nastavení rámu"
 }

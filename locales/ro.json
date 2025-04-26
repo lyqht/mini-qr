@@ -225,5 +225,8 @@
   "Start time is required": "Este necesară ora de începere",
   "End time is required": "Este necesară ora finală",
   "Subject": "Subiect",
-  "Message": "Mesaj"
+  "Message": "Mesaj",
+  "Frame text": "Text cadru",
+  "QR codes will be generated using the frame settings you have set above.": "Codurile QR vor fi generate folosind setările cadrului pe care le-ați setat mai sus.",
+  "Configure frame settings": "Configurați setările cadrului"
 }

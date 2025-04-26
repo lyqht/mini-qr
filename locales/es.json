@@ -225,5 +225,8 @@
   "Start time is required": "Se requiere hora de inicio",
   "End time is required": "Se requiere hora de finalización",
   "Subject": "Asunto",
-  "Message": "Mensaje"
+  "Message": "Mensaje",
+  "Frame text": "Texto del marco",
+  "QR codes will be generated using the frame settings you have set above.": "Los códigos QR se generarán utilizando la configuración del marco que ha establecido anteriormente.",
+  "Configure frame settings": "Configurar los ajustes del marco"
 }

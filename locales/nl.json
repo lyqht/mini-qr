@@ -225,5 +225,8 @@
   "Start time is required": "Starttijd is vereist",
   "End time is required": "Eindtijd is vereist",
   "Subject": "Onderwerp",
-  "Message": "Bericht"
+  "Message": "Bericht",
+  "Frame text": "Frame tekst",
+  "QR codes will be generated using the frame settings you have set above.": "QR-codes worden gegenereerd met behulp van de frame-instellingen die je hierboven hebt ingesteld.",
+  "Configure frame settings": "Frame-instellingen configureren"
 }

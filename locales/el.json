@@ -225,5 +225,8 @@
   "Start time is required": "Απαιτείται ώρα έναρξης",
   "End time is required": "Απαιτείται χρόνος λήξης",
   "Subject": "Θέμα",
-  "Message": "Μήνυμα"
+  "Message": "Μήνυμα",
+  "Frame text": "Κείμενο πλαισίου",
+  "QR codes will be generated using the frame settings you have set above.": "Οι κωδικοί QR θα δημιουργηθούν χρησιμοποιώντας τις ρυθμίσεις πλαισίου που έχετε ορίσει παραπάνω.",
+  "Configure frame settings": "Διαμόρφωση ρυθμίσεων πλαισίου"
 }

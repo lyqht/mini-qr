@@ -225,5 +225,8 @@
   "Start time is required": "Starttidspunkt er påkrævet",
   "End time is required": "Sluttidspunkt er påkrævet",
   "Subject": "Emne",
-  "Message": "Besked"
+  "Message": "Besked",
+  "Frame text": "Ramme-tekst",
+  "QR codes will be generated using the frame settings you have set above.": "QR-koder genereres ved hjælp af de rammeindstillinger, du har angivet ovenfor.",
+  "Configure frame settings": "Konfigurer rammeindstillinger"
 }
