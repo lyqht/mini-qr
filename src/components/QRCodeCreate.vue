@@ -1018,6 +1018,36 @@ const updateDataFromModal = (newData: string) => {
                   </g>
                 </svg>
               </button>
+              <button
+                id="download-qr-image-button-svg"
+                class="button"
+                @click="() => downloadQRImage('svg')"
+                :disabled="isExportButtonDisabled"
+                :title="
+                  isExportButtonDisabled
+                    ? t('Please enter data to encode first')
+                    : t('Download QR Code as SVG')
+                "
+                :aria-label="t('Download QR Code as SVG')"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <g fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4" />
+                    <text
+                      x="1"
+                      y="22"
+                      fill="currentColor"
+                      stroke="none"
+                      font-size="11px"
+                      font-family="monospace"
+                      font-weight="600"
+                    >
+                      SVG
+                    </text>
+                  </g>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
