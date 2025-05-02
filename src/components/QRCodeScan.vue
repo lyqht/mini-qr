@@ -20,7 +20,9 @@ const qrCodeType = computed(() => {
   const data = capturedData.value
 
   // URL detection (more comprehensive than just http)
-  if (/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i.test(data)) {
+  if (
+    /^(https?:\/\/)?[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9](\.[a-zA-Z]{2,})+([/?#][^\s]*)?$/i.test(data)
+  ) {
     return 'url'
   }
 
@@ -69,10 +71,11 @@ const qrCodeType = computed(() => {
 const formattedData = computed(() => {
   const data = capturedData.value
   const type = qrCodeType.value
+  const hasProtocol = data.startsWith('http://') || data.startsWith('https://')
 
   switch (type) {
     case 'url':
-      return data
+      return hasProtocol ? data : `https://${data}`
     case 'email':
       return data.startsWith('mailto:') ? data : `mailto:${data}`
     case 'tel':
