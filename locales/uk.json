@@ -228,5 +228,11 @@
   "Message": "Повідомлення",
   "Frame text": "Текст кадру",
   "QR codes will be generated using the frame settings you have set above.": "QR-коди будуть згенеровані з використанням налаштувань фрейму, які ви встановили вище.",
-  "Configure frame settings": "Налаштуйте параметри кадру"
+  "Configure frame settings": "Налаштуйте параметри кадру",
+  "View changelog": "Переглянути журнал змін",
+  "Changelog": "Журнал змін",
+  "Close": "Закрити",
+  "Error": "Помилка.",
+  "Failed to load changelog": "Не вдалося завантажити журнал змін",
+  "Loading...": "Завантаження..."
 }

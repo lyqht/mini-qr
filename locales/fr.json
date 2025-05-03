@@ -228,5 +228,11 @@
   "Message": "Message",
   "Frame text": "Texte du cadre",
   "QR codes will be generated using the frame settings you have set above.": "Les codes QR seront générés en utilisant les paramètres de cadre que vous avez définis ci-dessus.",
-  "Configure frame settings": "Configurer les paramètres du cadre"
+  "Configure frame settings": "Configurer les paramètres du cadre",
+  "View changelog": "Voir le journal des modifications",
+  "Changelog": "Changelog",
+  "Close": "Fermer",
+  "Error": "Erreur",
+  "Failed to load changelog": "Échec du chargement du changelog",
+  "Loading...": "Chargement..."
 }

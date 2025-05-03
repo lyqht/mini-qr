@@ -228,5 +228,11 @@
   "Message": "Bericht",
   "Frame text": "Frame tekst",
   "QR codes will be generated using the frame settings you have set above.": "QR-codes worden gegenereerd met behulp van de frame-instellingen die je hierboven hebt ingesteld.",
-  "Configure frame settings": "Frame-instellingen configureren"
+  "Configure frame settings": "Frame-instellingen configureren",
+  "View changelog": "Bekijk lijst met wijzigingen",
+  "Changelog": "Changelog",
+  "Close": "Sluit",
+  "Error": "Fout",
+  "Failed to load changelog": "Changelog niet geladen",
+  "Loading...": "Aan het laden..."
 }

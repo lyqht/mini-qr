@@ -228,5 +228,11 @@
   "Message": "Zpráva",
   "Frame text": "Text rámečku",
   "QR codes will be generated using the frame settings you have set above.": "Kódy QR se vygenerují pomocí nastavení rámečku, které jste nastavili výše.",
-  "Configure frame settings": "Konfigurace nastavení rámu"
+  "Configure frame settings": "Konfigurace nastavení rámu",
+  "View changelog": "Zobrazit seznam změn",
+  "Changelog": "Seznam změn",
+  "Close": "Zavřít",
+  "Error": "Chyba",
+  "Failed to load changelog": "Nepodařilo se načíst seznam změn",
+  "Loading...": "Načítání..."
 }

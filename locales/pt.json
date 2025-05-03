@@ -228,5 +228,11 @@
   "Message": "Mensagem",
   "Frame text": "Texto do quadro",
   "QR codes will be generated using the frame settings you have set above.": "Os códigos QR serão gerados usando as configurações de quadro que você definiu acima.",
-  "Configure frame settings": "Configurar definições de quadro"
+  "Configure frame settings": "Configurar definições de quadro",
+  "View changelog": "Ver changelog",
+  "Changelog": "Registro de alterações",
+  "Close": "Fechar",
+  "Error": "Erro",
+  "Failed to load changelog": "Falha ao carregar o changelog",
+  "Loading...": "Carregando..."
 }

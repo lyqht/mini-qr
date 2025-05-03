@@ -228,5 +228,11 @@
   "Message": "الرسالة",
   "Frame text": "نص الإطار",
   "QR codes will be generated using the frame settings you have set above.": "سيتم إنشاء رموز QR باستخدام إعدادات الإطار التي قمت بتعيينها أعلاه.",
-  "Configure frame settings": "تكوين إعدادات الإطار"
+  "Configure frame settings": "تكوين إعدادات الإطار",
+  "View changelog": "عرض سجل التغييرات",
+  "Changelog": "سجل التغييرات",
+  "Close": "إغلاق",
+  "Error": "خطأ",
+  "Failed to load changelog": "فشل تحميل سجل التغيير",
+  "Loading...": "جاري التحميل..."
 }
