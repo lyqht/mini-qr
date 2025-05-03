@@ -228,5 +228,11 @@
   "Message": "Besked",
   "Frame text": "Ramme-tekst",
   "QR codes will be generated using the frame settings you have set above.": "QR-koder genereres ved hjælp af de rammeindstillinger, du har angivet ovenfor.",
-  "Configure frame settings": "Konfigurer rammeindstillinger"
+  "Configure frame settings": "Konfigurer rammeindstillinger",
+  "View changelog": "Se ændringslog",
+  "Changelog": "Changelog",
+  "Close": "Luk",
+  "Error": "Fejl",
+  "Failed to load changelog": "Kunne ikke indlæse changelog",
+  "Loading...": "Indlæser..."
 }

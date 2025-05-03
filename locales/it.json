@@ -228,5 +228,11 @@
   "Message": "Messaggio",
   "Frame text": "Testo della cornice",
   "QR codes will be generated using the frame settings you have set above.": "I codici QR verranno generati utilizzando le impostazioni della cornice impostate in precedenza.",
-  "Configure frame settings": "Configurare le impostazioni della cornice"
+  "Configure frame settings": "Configurare le impostazioni della cornice",
+  "View changelog": "Visualizza il changelog",
+  "Changelog": "Changelog",
+  "Close": "Chiudere",
+  "Error": "Errore",
+  "Failed to load changelog": "Non è riuscito a caricare il changelog",
+  "Loading...": "Caricamento..."
 }

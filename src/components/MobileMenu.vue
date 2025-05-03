@@ -3,6 +3,17 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useFloating, offset, flip, shift, autoUpdate } from '@floating-ui/vue'
 import LanguageSelector from '@/components/LanguageSelector.vue'
 import { useI18n } from 'vue-i18n'
+import { marked } from 'marked'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from '@/components/ui/dialog'
+import { X } from 'lucide-vue-next'
 
 defineProps<{
   isDarkMode: boolean
@@ -18,6 +29,38 @@ const { t } = useI18n()
 const isOpen = ref(false)
 const reference = ref<HTMLElement | null>(null)
 const floating = ref<HTMLElement | null>(null)
+
+const version = ref('...')
+const changelogContent = ref<string | null>(null)
+const isLoadingChangelog = ref(true)
+
+async function fetchAndProcessChangelog() {
+  if (changelogContent.value === null) {
+    isLoadingChangelog.value = true
+    try {
+      const response = await fetch('/CHANGELOG.md')
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const markdown = await response.text()
+
+      const versionMatch = markdown.match(/^##\s+(v\d+\.\d+\.\d+)/m)
+      if (versionMatch && versionMatch[1]) {
+        version.value = versionMatch[1]
+      } else {
+        version.value = 'N/A'
+      }
+
+      changelogContent.value = await marked.parse(markdown)
+    } catch (error) {
+      console.error('Failed to fetch or process changelog:', error)
+      version.value = t('Error')
+      changelogContent.value = `<p>${t('Failed to load changelog')}</p>`
+    } finally {
+      isLoadingChangelog.value = false
+    }
+  }
+}
 
 const { floatingStyles } = useFloating(reference, floating, {
   placement: 'bottom-end',
@@ -48,6 +91,7 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  fetchAndProcessChangelog()
 })
 
 onUnmounted(() => {
@@ -76,8 +120,45 @@ onUnmounted(() => {
       v-if="isOpen"
       ref="floating"
       :style="floatingStyles"
-      class="z-50 w-64 rounded-md border border-zinc-300 bg-white p-4 shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
+      class="relative z-50 w-64 rounded-md border border-zinc-300 bg-white p-4 shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
     >
+      <Dialog>
+        <DialogTrigger as-child>
+          <button
+            class="secondary-button absolute end-4 top-4"
+            :aria-label="t('View changelog')"
+            :disabled="isLoadingChangelog"
+          >
+            {{ isLoadingChangelog ? '...' : version }}
+          </button>
+        </DialogTrigger>
+
+        <DialogContent
+          class="flex max-h-[80vh] w-[90vw] flex-col sm:max-w-md"
+          @open-auto-focus.prevent
+        >
+          <DialogHeader>
+            <DialogTitle>{{ t('Changelog') }}</DialogTitle>
+            <DialogClose
+              class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+            >
+              <X class="size-4" />
+              <span class="sr-only">{{ t('Close') }}</span>
+            </DialogClose>
+          </DialogHeader>
+
+          <div class="flex-1 overflow-y-auto pr-2">
+            <DialogDescription
+              as="div"
+              class="prose prose-sm max-w-none text-start dark:prose-invert prose-li:my-1"
+            >
+              <div v-if="isLoadingChangelog">Loading...</div>
+              <div v-else-if="changelogContent" v-html="changelogContent"></div>
+              <div v-else>{{ t('Failed to load changelog') }}</div>
+            </DialogDescription>
+          </div>
+        </DialogContent>
+      </Dialog>
       <div class="flex flex-col gap-4">
         <!-- App title -->
         <div class="flex items-center">
@@ -157,6 +238,24 @@ onUnmounted(() => {
         <!-- Language selector -->
         <div class="px-2 py-1.5">
           <LanguageSelector />
+        </div>
+
+        <!-- Divider -->
+        <hr class="border-zinc-200 dark:border-zinc-700 md:hidden" />
+
+        <!-- Footer Section for Mobile (hidden on md and up) -->
+        <div
+          class="relative flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-400 md:hidden"
+        >
+          <div class="flex items-center justify-center gap-1">
+            <span>{{ t('Created by') }}</span>
+            <a
+              href="https://github.com/lyqht"
+              target="_blank"
+              class="text-zinc-900 hover:text-zinc-700 dark:text-zinc-100 dark:hover:text-zinc-300"
+              >Estee Tey 🐧🌻</a
+            >
+          </div>
         </div>
       </div>
     </div>

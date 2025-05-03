@@ -228,5 +228,11 @@
   "Message": "Mensaje",
   "Frame text": "Texto del marco",
   "QR codes will be generated using the frame settings you have set above.": "Los códigos QR se generarán utilizando la configuración del marco que ha establecido anteriormente.",
-  "Configure frame settings": "Configurar los ajustes del marco"
+  "Configure frame settings": "Configurar los ajustes del marco",
+  "View changelog": "Ver el registro de cambios",
+  "Changelog": "Registro de cambios",
+  "Close": "Cerrar",
+  "Error": "Error",
+  "Failed to load changelog": "Error al cargar el registro de cambios",
+  "Loading...": "Cargando..."
 }

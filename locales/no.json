@@ -228,5 +228,11 @@
   "Message": "Message",
   "Frame text": "Frame text",
   "QR codes will be generated using the frame settings you have set above.": "QR codes will be generated using the frame settings you have set above.",
-  "Configure frame settings": "Configure frame settings"
+  "Configure frame settings": "Configure frame settings",
+  "View changelog": "View changelog",
+  "Changelog": "Changelog",
+  "Close": "Close",
+  "Error": "Error",
+  "Failed to load changelog": "Failed to load changelog",
+  "Loading...": "Loading..."
 }

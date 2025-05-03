@@ -228,5 +228,11 @@
   "Message": "Meddelande",
   "Frame text": "Ramtext",
   "QR codes will be generated using the frame settings you have set above.": "QR-koderna genereras med hjälp av de inställningar för ramen som du har angett ovan.",
-  "Configure frame settings": "Konfigurera inställningar för ram"
+  "Configure frame settings": "Konfigurera inställningar för ram",
+  "View changelog": "Visa ändringslogg",
+  "Changelog": "Changelog",
+  "Close": "Nära",
+  "Error": "Fel",
+  "Failed to load changelog": "Misslyckades med att ladda changelog",
+  "Loading...": "Laddar..."
 }

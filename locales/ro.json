@@ -228,5 +228,11 @@
   "Message": "Mesaj",
   "Frame text": "Text cadru",
   "QR codes will be generated using the frame settings you have set above.": "Codurile QR vor fi generate folosind setările cadrului pe care le-ați setat mai sus.",
-  "Configure frame settings": "Configurați setările cadrului"
+  "Configure frame settings": "Configurați setările cadrului",
+  "View changelog": "Vezi changelog",
+  "Changelog": "Changelog",
+  "Close": "Închidere",
+  "Error": "Eroare",
+  "Failed to load changelog": "A eșuat încărcarea jurnalului de schimbări",
+  "Loading...": "Încărcare..."
 }

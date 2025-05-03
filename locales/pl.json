@@ -228,5 +228,11 @@
   "Message": "Wiadomość",
   "Frame text": "Tekst ramki",
   "QR codes will be generated using the frame settings you have set above.": "Kody QR zostaną wygenerowane przy użyciu ustawień ramki określonych powyżej.",
-  "Configure frame settings": "Konfiguracja ustawień ramki"
+  "Configure frame settings": "Konfiguracja ustawień ramki",
+  "View changelog": "Wyświetl dziennik zmian",
+  "Changelog": "Dziennik zmian",
+  "Close": "Zamknij",
+  "Error": "Błąd",
+  "Failed to load changelog": "Nie udało się załadować dziennika zmian",
+  "Loading...": "Ładowanie..."
 }

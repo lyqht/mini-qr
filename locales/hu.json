@@ -228,5 +228,11 @@
   "Message": "Üzenet",
   "Frame text": "Keret szöveg",
   "QR codes will be generated using the frame settings you have set above.": "A QR-kódok a fent beállított keretbeállítások alapján lesznek létrehozva.",
-  "Configure frame settings": "Keretbeállítások konfigurálása"
+  "Configure frame settings": "Keretbeállítások konfigurálása",
+  "View changelog": "Változásnapló megtekintése",
+  "Changelog": "Changelog",
+  "Close": "Zárja be a",
+  "Error": "Hiba",
+  "Failed to load changelog": "Nem sikerült betölteni a changelogot",
+  "Loading...": "Betöltés..."
 }

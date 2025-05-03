@@ -228,5 +228,11 @@
   "Message": "Μήνυμα",
   "Frame text": "Κείμενο πλαισίου",
   "QR codes will be generated using the frame settings you have set above.": "Οι κωδικοί QR θα δημιουργηθούν χρησιμοποιώντας τις ρυθμίσεις πλαισίου που έχετε ορίσει παραπάνω.",
-  "Configure frame settings": "Διαμόρφωση ρυθμίσεων πλαισίου"
+  "Configure frame settings": "Διαμόρφωση ρυθμίσεων πλαισίου",
+  "View changelog": "Προβολή καταλόγου αλλαγών",
+  "Changelog": "Changelog",
+  "Close": "Κλείστε το",
+  "Error": "Σφάλμα",
+  "Failed to load changelog": "Απέτυχε να φορτώσει το changelog",
+  "Loading...": "Φόρτωση..."
 }
