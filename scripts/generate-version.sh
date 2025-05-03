@@ -21,11 +21,6 @@ for ((i=0; i<${#tags[@]}; i++)); do
     range="$tag..$next_tag"
   fi
 
-  # Add a newline before each version section *except* the very first one
-  if [ $i -gt 0 ]; then
-    echo "" >> public/CHANGELOG.md
-  fi
-
   # Arrays to store different types of commits
   features=()
   fixes=()
@@ -172,7 +167,6 @@ for ((i=0; i<${#tags[@]}; i++)); do
     
     # Write the tag and date
     echo "## $tag ($tag_date)" >> public/CHANGELOG.md
-    echo "" >> public/CHANGELOG.md
 
     # Write features first
     for msg in "${features[@]}"; do
@@ -193,8 +187,6 @@ for ((i=0; i<${#tags[@]}; i++)); do
     for msg in "${others[@]}"; do
       echo -e "$msg" >> public/CHANGELOG.md
     done
-
-    echo "" >> public/CHANGELOG.md
   fi
 done
 
