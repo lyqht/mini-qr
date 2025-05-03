@@ -13,6 +13,7 @@ dist
 dist-ssr
 coverage
 *.local
+crowdin.yml
 
 /cypress/videos/
 /cypress/screenshots/
