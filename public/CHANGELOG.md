@@ -1,3 +1,7 @@
+## v0.18.1 (2025-05-04)
+- 🐛 vCard address formatting
+- 🐛 generate version script to put commits in correct tags ([#128](https://github.com/lyqht/mini-qr/pull/128))
+
 ## v0.18.0 (2025-05-03)
 - ✨ Add changelog footer ([#126](https://github.com/lyqht/mini-qr/pull/126))
 - 🐛 script adding extra linebreaks in changelog.md
