@@ -158,6 +158,76 @@ describe('Data Encoding Functions', () => {
     expect(resultStringDates).toContain('DTEND:20241225T220000Z')
     expect(generateEventData({})).toContain('BEGIN:VCALENDAR')
   })
+
+  it('generateVCardData formats full address correctly for vCard 3.0', () => {
+    const data = {
+      firstName: 'Jane',
+      lastName: 'Smith',
+      street: '123 Main St',
+      city: 'Anytown',
+      state: 'CA',
+      zipcode: '90210',
+      country: 'USA'
+    }
+    const expectedVCard = `BEGIN:VCARD
+VERSION:3.0
+N:Smith;Jane;;;
+FN:Jane Smith
+ADR;TYPE=WORK:;;123 Main St;Anytown;CA;90210;USA
+END:VCARD`
+    expect(generateVCardData(data)).toBe(expectedVCard)
+  })
+
+  it('generateVCardData formats partial address correctly for vCard 2.1', () => {
+    const data = {
+      firstName: 'Jane',
+      lastName: 'Smith',
+      city: 'Othertown',
+      country: 'Canada',
+      version: '2'
+    }
+    const expectedVCard = `BEGIN:VCARD
+VERSION:2.1
+N:Smith;Jane;;;
+FN:Jane Smith
+ADR;WORK:;;;Othertown;;;Canada
+END:VCARD`
+    expect(generateVCardData(data)).toBe(expectedVCard)
+  })
+
+  it('generateVCardData formats address correctly for vCard 4.0', () => {
+    const data = {
+      firstName: 'Jane',
+      lastName: 'Smith',
+      street: '456 Side St',
+      city: 'Metropolis',
+      zipcode: '12345',
+      version: '4'
+    }
+    const expectedVCard = `BEGIN:VCARD
+VERSION:4.0
+N:Smith;Jane;;;
+FN:Jane Smith
+ADR;TYPE=work:;;456 Side St;Metropolis;;12345;
+END:VCARD`
+    expect(generateVCardData(data)).toBe(expectedVCard)
+  })
+
+  it('generateVCardData omits ADR field when no address parts are provided', () => {
+    const data = {
+      firstName: 'Jane',
+      lastName: 'Smith',
+      email: 'jane@test.com'
+      // No address fields
+    }
+    const expectedVCard = `BEGIN:VCARD
+VERSION:3.0
+N:Smith;Jane;;;
+FN:Jane Smith
+EMAIL:jane@test.com
+END:VCARD`
+    expect(generateVCardData(data)).toBe(expectedVCard)
+  })
 })
 
 describe('Data Type Detection Functions', () => {
