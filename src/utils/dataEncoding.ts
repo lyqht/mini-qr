@@ -249,23 +249,22 @@ export const generateVCardData = (data: {
     }
   }
 
-  const adrParts = [
-    '',
-    '', // PO Box, Extended Addr
-    escapeVCard(data.street || ''),
-    escapeVCard(data.city || ''),
-    escapeVCard(data.state || ''),
-    escapeVCard(data.zipcode || ''),
-    escapeVCard(data.country || '')
-  ]
+  const street = escapeVCard(data.street || '')
+  const city = escapeVCard(data.city || '')
+  const state = escapeVCard(data.state || '')
+  const zipcode = escapeVCard(data.zipcode || '')
+  const country = escapeVCard(data.country || '')
+  const addressComponents = [street, city, state, zipcode, country]
 
-  if (adrParts.some((part) => part !== '')) {
+  // Only add ADR if at least one address component is present
+  if (addressComponents.some((part) => part !== '')) {
+    const adrString = `${street};${city};${state};${zipcode};${country}` // Construct the address parts string
     if (version === '2') {
-      lines.push(`ADR;WORK:;;${adrParts.join(';')}`)
+      lines.push(`ADR;WORK:;;${adrString}`)
     } else if (version === '4') {
-      lines.push(`ADR;TYPE=work:;;${adrParts.join(';')}`)
+      lines.push(`ADR;TYPE=work:;;${adrString}`)
     } else {
-      lines.push(`ADR;TYPE=WORK:;;${adrParts.join(';')}`)
+      lines.push(`ADR;TYPE=WORK:;;${adrString}`)
     }
   }
 
