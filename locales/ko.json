@@ -234,5 +234,6 @@
   "Close": "닫기",
   "Error": "오류",
   "Failed to load changelog": "변경 로그를 로드하지 못했습니다.",
-  "Loading...": "로드 중..."
+  "Loading...": "로드 중...",
+  "th": "Thai"
 }

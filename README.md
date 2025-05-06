@@ -121,5 +121,7 @@ docker compose up -d
 
 ## Contributing
 
+[![Crowdin](https://badges.crowdin.net/miniqr/localized.svg)](https://crowdin.com/project/miniqr)
+
 Translations and bug fixes are welcome!
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
