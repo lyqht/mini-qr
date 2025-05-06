@@ -26,6 +26,7 @@ const languageMap: Record<string, string> = {
   sk: 'Slovak',
   sl: 'Slovenian',
   sv: 'Swedish',
+  th: 'Thai',
   tr: 'Turkish',
   uk: 'Ukrainian',
   zh: 'Chinese'

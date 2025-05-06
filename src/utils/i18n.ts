@@ -26,6 +26,7 @@ import ru from '../../locales/ru.json'
 import sk from '../../locales/sk.json'
 import sl from '../../locales/sl.json'
 import sv from '../../locales/sv.json'
+import th from '../../locales/th.json'
 import tr from '../../locales/tr.json'
 import uk from '../../locales/uk.json'
 import zh from '../../locales/zh.json'
@@ -61,6 +62,7 @@ export const i18n = createI18n({
     sk,
     sl,
     sv,
+    th,
     tr,
     uk,
     zh
