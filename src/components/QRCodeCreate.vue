@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/accordion'
 import { Combobox } from '@/components/ui/Combobox'
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
+import VCardPreview from '@/components/VCardPreview.vue'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
 import {
   copyImageToClipboard,
@@ -21,6 +22,8 @@ import {
   getSvgString,
   IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED
 } from '@/utils/convertToImage'
+import { parseCSV, validateCSVData } from '@/utils/csv'
+import { generateVCardData } from '@/utils/dataEncoding'
 import { getNumericCSSValue } from '@/utils/formatting'
 import { allPresets, type Preset } from '@/utils/presets'
 import { useMediaQuery } from '@vueuse/core'
@@ -495,20 +498,36 @@ const exportMode = ref(ExportMode.Single)
 const dataStringsFromCsv = ref<string[]>([])
 const frameTextsFromCsv = ref<string[]>([])
 const filteredDataStringsFromCsv = computed(() =>
-  ignoreHeaderRow.value ? dataStringsFromCsv.value.slice(1) : dataStringsFromCsv.value
+  ignoreCsvHeaderRow.value ? dataStringsFromCsv.value.slice(1) : dataStringsFromCsv.value
 )
 const filteredFrameTextsFromCsv = computed(() =>
-  ignoreHeaderRow.value ? frameTextsFromCsv.value.slice(1) : frameTextsFromCsv.value
+  ignoreCsvHeaderRow.value ? frameTextsFromCsv.value.slice(1) : frameTextsFromCsv.value
 )
 
 const inputFileForBatchEncoding = ref<File | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const isValidCsv = ref(true)
-const ignoreHeaderRow = ref(false)
+const ignoreCsvHeaderRow = ref(true)
 
 const isExportingBatchQRs = ref(false)
 const isBatchExportSuccess = ref(false)
 const currentExportedQrCodeIndex = ref<number | null>(null)
+
+const parsedCsvResult = ref<{ data: any[] } | null>(null)
+const previewRowIndex = ref(0)
+const previewRow = computed(() => {
+  const idx = ignoreCsvHeaderRow.value ? previewRowIndex.value + 1 : previewRowIndex.value
+  if (dataStringsFromCsv.value.length === 0) return null
+  if (idx < 0 || idx >= dataStringsFromCsv.value.length) return null
+  if (
+    parsedCsvResult.value &&
+    parsedCsvResult.value.data &&
+    parsedCsvResult.value.data.length > idx
+  ) {
+    return parsedCsvResult.value.data[idx]
+  }
+  return null
+})
 
 const resetBatchExportProgress = () => {
   isExportingBatchQRs.value = false
@@ -559,33 +578,62 @@ const onBatchInputFileUpload = (event: Event) => {
       isValidCsv.value = false
       return
     }
-    const lines = content.split('\n').filter((line) => line.trim() !== '')
-    const processedLines = lines.map((line) => line.replace('\r', ''))
 
-    // Split each line into URL and frame text (if present)
+    const result = parseCSV(content, ignoreCsvHeaderRow.value)
+    parsedCsvResult.value = result
+    if (!result.isValid) {
+      isValidCsv.value = false
+      return
+    }
+
+    if (!validateCSVData(result.data)) {
+      isValidCsv.value = false
+      return
+    }
+
     const urls: string[] = []
     const frameTexts: string[] = []
-    processedLines.forEach((line) => {
-      // Split by comma instead of whitespace, and handle potential quotes
-      const [url, frameText] = line.split(',').map((s) => s.trim().replace(/^["']|["']$/g, ''))
-      urls.push(url)
-      frameTexts.push(frameText || DEFAULT_FRAME_TEXT)
+
+    result.data.forEach((row) => {
+      const isVCard = 'firstName' in row
+      if (isVCard) {
+        // Handle vCard data
+        const vCardString = generateVCardData({
+          firstName: row.firstName,
+          lastName: row.lastName,
+          org: row.org,
+          position: row.position,
+          phoneWork: row.phoneWork,
+          phonePrivate: row.phonePrivate,
+          phoneMobile: row.phoneMobile,
+          email: row.email,
+          website: row.website,
+          street: row.street,
+          zipcode: row.zipcode,
+          city: row.city,
+          state: row.state,
+          country: row.country,
+          version: row.version
+        })
+        urls.push(vCardString)
+      } else {
+        // Handle simple URL/text data
+        urls.push(row.url)
+      }
+
+      if (row.frameText) {
+        frameTexts.push(row.frameText)
+      }
     })
 
-    if (ignoreHeaderRow.value && urls.length > 0) {
-      urls.shift()
-      frameTexts.shift()
-    }
-
     // If any non-default frame text is detected, enable frame settings
-    const hasCustomFrameText = frameTexts.some((text) => text && text !== DEFAULT_FRAME_TEXT)
-    if (hasCustomFrameText && !showFrame.value) {
-      showFrame.value = true
-    }
+    const hasCustomFrameText = frameTexts.length > 0
+    showFrame.value = hasCustomFrameText
 
     dataStringsFromCsv.value = urls
     frameTextsFromCsv.value = frameTexts
     isValidCsv.value = true
+    previewRowIndex.value = 0 // Reset preview to first row on new upload
   }
 
   reader.readAsText(file)
@@ -602,23 +650,39 @@ const createZipFile = (
 ) => {
   const dataString = filteredDataStringsFromCsv.value[index]
   const frameText = filteredFrameTextsFromCsv.value[index]
-  let fileName = dataString.trim()
-  if (dataString.startsWith('http')) {
-    const pathSegments = dataString.split('/')
-    const lastPathSegment = pathSegments[pathSegments.length - 1]
-    // Check if lastPathSegment is only alphanumeric or underscores
-    const isValidFileName = /^[a-zA-Z0-9_]+$/.test(lastPathSegment)
-    if (!isValidFileName) {
-      fileName = pathSegments[pathSegments.length - 2] || `qr_code_${index}`
+  let fileName = ''
+
+  // If frame text is provided, use it as the filename
+  if (frameText) {
+    fileName = frameText
+  } else {
+    // For vCard data, use firstName_lastName
+    if (dataString.startsWith('BEGIN:VCARD')) {
+      const match = dataString.match(/FN:([^\r\n]+)/)
+      if (match) {
+        const fullName = match[1].trim()
+        fileName = fullName.replace(/\s+/g, '_')
+      }
+    } else {
+      // For simple URL/text, use the data string
+      if (dataString.startsWith('http')) {
+        const pathSegments = dataString.split('/')
+        const lastPathSegment = pathSegments[pathSegments.length - 1]
+        // Check if lastPathSegment is only alphanumeric or underscores
+        const isValidFileName = /^[a-zA-Z0-9_]+$/.test(lastPathSegment)
+        fileName = isValidFileName
+          ? lastPathSegment
+          : pathSegments[pathSegments.length - 2] || `qr_code_${index}`
+      } else {
+        fileName = dataString.trim()
+      }
     }
   }
 
-  // Add frame text to filename if it's not the default
-  if (frameText !== DEFAULT_FRAME_TEXT) {
-    const sanitizedFrameText = frameText.replace(/[^a-zA-Z0-9_-]/g, '_')
-    fileName = `${fileName}_${sanitizedFrameText}`
-  }
+  // Sanitize filename to remove invalid characters
+  fileName = fileName.replace(/[^a-zA-Z0-9_-]/g, '_')
 
+  // Ensure unique filenames
   if (usedFilenames.has(fileName)) {
     fileName = `${fileName}-${index}`
   }
@@ -1225,8 +1289,9 @@ const updateDataFromModal = (newData: string) => {
                 </div>
               </div>
               <div class="w-full">
-                <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
-                  <div class="w-full sm:w-2/3">
+                <div class="flex w-full flex-col flex-wrap gap-4 sm:flex-row sm:gap-x-8">
+                  <!-- Data to encode area -->
+                  <div class="grow">
                     <!-- Header row: Label + Mode Toggles + Batch Options -->
                     <div class="mb-2 flex items-center gap-4">
                       <label for="data">{{ t('Data to encode') }}</label>
@@ -1258,14 +1323,14 @@ const updateDataFromModal = (newData: string) => {
                             dataStringsFromCsv.length > 0 && 'opacity-80'
                           ]"
                         >
-                          <label for="ignore-header" class="!text-sm !font-normal">
+                          <label for="ignore-csv-header-row" class="!text-sm !font-normal">
                             {{ $t('Ignore header row') }}
                           </label>
                           <input
-                            id="ignore-header"
+                            id="ignore-csv-header-row"
                             type="checkbox"
                             class="checkbox me-2"
-                            v-model="ignoreHeaderRow"
+                            v-model="ignoreCsvHeaderRow"
                             @change="onBatchInputFileUpload($event)"
                           />
                         </div>
@@ -1309,18 +1374,30 @@ const updateDataFromModal = (newData: string) => {
                       <template v-if="!inputFileForBatchEncoding">
                         <button
                           class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-1 py-4 text-center text-input"
-                          :aria-label="
-                            t('Click to select a text or CSV file containing data to encode')
-                          "
+                          :aria-label="t('Choose a CSV file containing data to encode')"
                           @click="fileInput?.click()"
                           @keyup.enter="fileInput?.click()"
                           @keyup.space="fileInput?.click()"
                           @dragover.prevent
                           @drop.prevent="onBatchInputFileUpload"
                         >
-                          <p aria-hidden="true">
-                            {{ $t('Upload a text/CSV file') }}
-                          </p>
+                          <div class="flex flex-col items-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="48"
+                              height="48"
+                              viewBox="0 0 24 24"
+                              class="mb-2 text-gray-400"
+                            >
+                              <path
+                                fill="currentColor"
+                                d="M11 16V7.85l-2.6 2.6L7 9l5-5l5 5l-1.4 1.45l-2.6-2.6V16h-2Zm-5 4q-.825 0-1.413-.588T4 18v-3h2v3h12v-3h2v3q0 .825-.588 1.413T18 20H6Z"
+                              />
+                            </svg>
+                            <p aria-hidden="true" class="text-sm">
+                              {{ $t('Upload a CSV file') }}
+                            </p>
+                          </div>
                           <input
                             ref="fileInput"
                             type="file"
@@ -1329,27 +1406,50 @@ const updateDataFromModal = (newData: string) => {
                             @change="onBatchInputFileUpload"
                           />
                         </button>
-                        <p class="w-full text-end">
-                          <a
-                            href="/6_strings_batch.csv"
-                            download
-                            class="inline-flex items-center gap-1 text-sm text-zinc-500 outline-none hover:text-zinc-700 hover:underline focus-visible:ring-1 focus-visible:ring-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-200"
-                          >
-                            {{ t('Example file') }}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              class="inline"
+                        <div class="flex flex-wrap justify-end gap-x-4 pt-1">
+                          <p class="gap-1">
+                            <a
+                              href="/6_strings_batch.csv"
+                              download
+                              class="inline-flex items-center gap-1 text-sm text-zinc-500 outline-none hover:text-zinc-700 hover:underline focus-visible:ring-1 focus-visible:ring-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-200"
                             >
-                              <path
-                                fill="currentColor"
-                                d="M12 15.575q-.2 0-.375-.063q-.175-.062-.325-.212l-3.6-3.6q-.275-.275-.275-.7q0-.425.275-.7q.275-.275.7-.275q.425 0 .7.275l1.9 1.9V4q0-.425.288-.713Q11.575 3 12 3t.713.287Q13 3.575 13 4v8.2l1.9-1.9q.275-.275.7-.275q.425 0 .7.275q.275.275.275.7q0 .425-.275.7l-3.6 3.6q-.15.15-.325.212q-.175.063-.375.063M6 21q-.825 0-1.413-.587Q4 19.825 4 19v-2q0-.425.287-.713Q4.575 16 5 16t.713.287Q6 16.575 6 17v2h12v-2q0-.425.288-.713Q18.575 16 19 16t.712.287Q20 16.575 20 17v2q0 .825-.587 1.413Q18.825 21 18 21m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
-                              />
-                            </svg>
-                          </a>
-                        </p>
+                              {{ t('Example file (simple)') }}
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                class="inline"
+                              >
+                                <path
+                                  fill="currentColor"
+                                  d="M12 15.575q-.2 0-.375-.063q-.175-.062-.325-.212l-3.6-3.6q-.275-.275-.275-.7q0-.425.275-.7q.275-.275.7-.275q.425 0 .7.275l1.9 1.9V4q0-.425.288-.713Q11.575 3 12 3t.713.287Q13 3.575 13 4v8.2l1.9-1.9q.275-.275.7-.275q.425 0 .7.275q.275.275.275.7q0 .425-.275.7l-3.6 3.6q-.15.15-.325.212q-.175.063-.375.063M6 21q-.825 0-1.413-.587Q4 19.825 4 19v-2q0-.425.287-.713Q4.575 16 5 16t.713.287Q6 16.575 6 17v2h12v-2q0-.425.288-.713Q18.575 16 19 16t.712.287Q20 16.575 20 17v2q0 .825-.587 1.413Q18.825 21 18 21m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
+                                />
+                              </svg>
+                            </a>
+                          </p>
+                          <p class="gap-1">
+                            <a
+                              href="/vcard_sample.csv"
+                              download
+                              class="inline-flex items-center gap-1 text-sm text-zinc-500 outline-none hover:text-zinc-700 hover:underline focus-visible:ring-1 focus-visible:ring-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-200"
+                            >
+                              {{ t('Example file (vCard)') }}
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                class="inline"
+                              >
+                                <path
+                                  fill="currentColor"
+                                  d="M12 15.575q-.2 0-.375-.063q-.175-.062-.325-.212l-3.6-3.6q-.275-.275-.275-.7q0-.425.275-.7q.275-.275.7-.275q.425 0 .7.275l1.9 1.9V4q0-.425.288-.713Q11.575 3 12 3t.713.287Q13 3.575 13 4v8.2l1.9-1.9q.275-.275.7-.275q.425 0 .7.275q.275.275.275.7q0 .425-.275.7l-3.6 3.6q-.15.15-.325.212q-.175.063-.375.063M6 21q-.825 0-1.413-.587Q4 19.825 4 19v-2q0-.425.287-.713Q4.575 16 5 16t.713.287Q6 16.575 6 17v2h12v-2q0-.425.288-.713Q18.575 16 19 16t.712.287Q20 16.575 20 17v2q0 .825-.587 1.413Q18.825 21 18 21m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
+                                />
+                              </svg>
+                            </a>
+                          </p>
+                        </div>
                       </template>
                       <div v-else-if="isValidCsv" class="p-4 text-center">
                         <div v-if="isBatchExportSuccess">
@@ -1359,86 +1459,68 @@ const updateDataFromModal = (newData: string) => {
                           </button>
                         </div>
                         <div v-else-if="currentExportedQrCodeIndex == null && !isExportingBatchQRs">
-                          <p>
-                            {{
-                              $t('{count} piece(s) of data detected', {
-                                count: filteredDataStringsFromCsv.length
-                              })
-                            }}
-                          </p>
-                          <div v-if="dataStringsFromCsv.length > 0" class="mt-4">
+                          <div v-if="filteredDataStringsFromCsv.length > 0" class="mt-4">
                             <div
                               class="flex flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800"
                             >
-                              <p
-                                class="text-start text-sm font-medium text-gray-600 dark:text-gray-300"
-                              >
-                                {{ $t('First row preview:') }}
-                              </p>
-                              <div class="space-y-2">
-                                <div class="flex flex-col gap-1">
-                                  <span
-                                    class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                                    >{{ $t('Data:') }}</span
-                                  >
-                                  <code
-                                    class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
-                                  >
-                                    {{
-                                      ignoreHeaderRow
-                                        ? dataStringsFromCsv[1]
-                                        : dataStringsFromCsv[0]
-                                    }}
-                                  </code>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                  <span
-                                    class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                                    >{{ $t('Frame text:') }}</span
-                                  >
-                                  <code
-                                    class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
-                                  >
-                                    {{
-                                      ignoreHeaderRow ? frameTextsFromCsv[1] : frameTextsFromCsv[0]
-                                    }}
-                                  </code>
+                              <div v-if="previewRow && 'firstName' in previewRow">
+                                <VCardPreview :vCard="previewRow" />
+                              </div>
+                              <div v-else>
+                                <div class="space-y-2">
+                                  <div class="flex flex-col gap-1">
+                                    <span
+                                      class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                                      >{{ $t('Data:') }}</span
+                                    >
+                                    <code
+                                      class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
+                                    >
+                                      {{
+                                        ignoreCsvHeaderRow
+                                          ? dataStringsFromCsv[previewRowIndex + 1]
+                                          : dataStringsFromCsv[previewRowIndex]
+                                      }}
+                                    </code>
+                                  </div>
+                                  <div v-if="frameTextsFromCsv.length > 0">
+                                    <span
+                                      class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                                      >{{ $t('Frame text:') }}</span
+                                    >
+                                    <code
+                                      class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
+                                    >
+                                      {{
+                                        ignoreCsvHeaderRow
+                                          ? frameTextsFromCsv[previewRowIndex + 1]
+                                          : frameTextsFromCsv[previewRowIndex]
+                                      }}
+                                    </code>
+                                  </div>
                                 </div>
                               </div>
-                              <div
-                                v-if="
-                                  frameTextsFromCsv.some(
-                                    (text) => text && text !== DEFAULT_FRAME_TEXT
-                                  )
-                                "
-                                class="mt-2 flex items-center gap-4 rounded-md bg-blue-50 p-2 text-sm text-slate-700 dark:bg-blue-900/50 dark:text-blue-200"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  viewBox="0 0 24 24"
-                                  class="shrink-0"
+                              <div class="mt-2 flex items-center justify-between">
+                                <button
+                                  class="rounded bg-gray-200 px-2 py-1 text-gray-700 disabled:opacity-50 dark:bg-gray-700 dark:text-gray-200 dark:disabled:opacity-60"
+                                  :disabled="previewRowIndex === 0"
+                                  @click="previewRowIndex--"
                                 >
-                                  <path
-                                    fill="currentColor"
-                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
-                                  />
-                                </svg>
-                                <span class="text-start">
-                                  {{
-                                    $t(
-                                      'QR codes will be generated using the frame settings you have set above.'
-                                    )
-                                  }}
-                                  <button
-                                    v-if="!showFrame"
-                                    @click="showFrame = true"
-                                    class="ml-1 underline hover:text-blue-800 dark:hover:text-blue-300"
-                                  >
-                                    {{ $t('Configure frame settings') }}
-                                  </button>
-                                </span>
+                                  &lt;
+                                </button>
+                                <span class="text-xs text-gray-500 dark:text-gray-400"
+                                  >{{ previewRowIndex + 1 }} /
+                                  {{ filteredDataStringsFromCsv.length }}</span
+                                >
+                                <button
+                                  class="rounded bg-gray-200 px-2 py-1 text-gray-700 disabled:opacity-50 dark:bg-gray-700 dark:text-gray-200 dark:disabled:opacity-60"
+                                  :disabled="
+                                    previewRowIndex === filteredDataStringsFromCsv.length - 1
+                                  "
+                                  @click="previewRowIndex++"
+                                >
+                                  &gt;
+                                </button>
                               </div>
                             </div>
                           </div>
@@ -1461,7 +1543,8 @@ const updateDataFromModal = (newData: string) => {
                     </template>
                   </div>
 
-                  <div class="w-full sm:border-l-2 sm:border-gray-300 sm:pl-4 lg:w-1/3">
+                  <!-- Error correction level -->
+                  <div class="shrink-0">
                     <fieldset class="h-full" role="radio" tabindex="0">
                       <div class="flex flex-row items-center gap-2">
                         <legend>{{ t('Error correction level') }}</legend>
