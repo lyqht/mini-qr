@@ -333,12 +333,41 @@ function getExportDimensions() {
   }
 }
 
-async function copyQRToClipboard() {
+// State and helpers for manual copy modal (Safari fallback)
+const showCopyModal = ref(false)
+const modalImageSrc = ref<string | null>(null)
+const modalLoading = ref(false)
+
+async function openCopyModal() {
+  const el = document.getElementById('element-to-export')
+  if (!el) return
+  modalLoading.value = true
+  try {
+    modalImageSrc.value = await getPngElement(el, getExportDimensions(), styledBorderRadiusFormatted.value)
+    showCopyModal.value = true
+  } catch (error) {
+    console.error('Error preparing image for copy modal:', error)
+  } finally {
+    modalLoading.value = false
+  }
+}
+
+
+function closeCopyModal() {
+  showCopyModal.value = false
+  modalImageSrc.value = null
+}
+
+function copyQRToClipboard() {
   const el = document.getElementById('element-to-export')
   if (!el) {
     return
   }
-  await copyImageToClipboard(el, getExportDimensions())
+  if (IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED) {
+    copyImageToClipboard(el, getExportDimensions(), styledBorderRadiusFormatted.value)
+  } else {
+    openCopyModal()
+  }
 }
 
 /**
@@ -945,7 +974,7 @@ const updateDataFromModal = (newData: string) => {
         <div class="mt-4 flex flex-col items-center gap-8">
           <div class="flex flex-col items-center justify-center gap-3">
             <button
-              v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED && exportMode !== ExportMode.Batch"
+              v-if="exportMode !== ExportMode.Batch"
               id="copy-qr-image-button"
               class="button flex w-fit max-w-full flex-row items-center gap-1"
               @click="copyQRToClipboard"
@@ -1810,4 +1839,31 @@ const updateDataFromModal = (newData: string) => {
     @close="closeDataModal"
     @update:data="updateDataFromModal"
   />
+
+  <!-- Fallback modal for manual copy in Safari -->
+  <div
+    v-if="showCopyModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+  >
+    <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
+      <button
+        type="button"
+        class="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        @click="closeCopyModal"
+        aria-label="Close"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <h3 class="text-lg font-medium mb-4">{{ t('Copy QR Code') }}</h3>
+      <div v-if="modalLoading" class="flex justify-center items-center h-48">
+        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+      <div v-else-if="modalImageSrc" class="flex flex-col items-center">
+        <img :src="modalImageSrc" alt="QR Code" class="mb-4 w-48 h-48 object-contain" />
+        <p class="mt-2 text-sm text-gray-500">{{ t('Right-click the image and select Copy Image') }}</p>
+      </div>
+    </div>
+  </div>
 </template>

@@ -33,28 +33,41 @@ const getResizeScaleToFit = (child: HTMLElement, width: number, height: number):
   return maxScale
 }
 
+// Detect if browser supports async Clipboard API for writing image blobs
+// Exclude Safari/WebKit as it does not yet support writing image ClipboardItems
+const _ua = navigator.userAgent
+const _isSafari = /Safari/.test(_ua) && !/Chrome/.test(_ua) && !/Chromium/.test(_ua)
 export const IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED =
-  navigator.clipboard && navigator.clipboard.write != undefined
+  !!navigator.clipboard &&
+  typeof navigator.clipboard.write === 'function' &&
+  typeof ClipboardItem === 'function' &&
+  !_isSafari
 
+/**
+ * Copy a DOM element as an image to the clipboard.
+ * Falls back to copying a data URL string in browsers that lack Blob support (e.g., Safari).
+ */
+/**
+ * Copy a DOM element as an image to the clipboard.
+ * Uses Clipboard API in modern browsers, and a copy-event/execCommand fallback in Safari.
+ */
 export async function copyImageToClipboard(
   element: HTMLElement,
   options: Options,
   borderRadius?: string
 ) {
-  if (IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED) {
-    const formattedOptions = getFormattedOptions(element, options, borderRadius)
-    console.debug('Converting to blob')
-    domtoimage.toBlob(element, formattedOptions).then((blob: Blob) => {
-      const item = new ClipboardItem({ [blob.type]: blob })
-      navigator.clipboard.write([item]).then(
-        () => {
-          console.log('Blob copied to clipboard')
-        },
-        (error) => {
-          console.error('Error copying blob to clipboard:', error)
-        }
-      )
-    })
+  if (!IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED) {
+    console.error('Clipboard.write is not supported in this browser')
+    return
+  }
+  const formattedOptions = getFormattedOptions(element, options, borderRadius)
+  try {
+    const blob: Blob = await domtoimage.toBlob(element, formattedOptions)
+    const item = new ClipboardItem({ [blob.type]: blob })
+    await navigator.clipboard.write([item])
+    console.log('Image blob copied to clipboard')
+  } catch (error: any) {
+    console.error('Error copying image to clipboard:', error)
   }
 }
 
