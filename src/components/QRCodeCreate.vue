@@ -1856,13 +1856,13 @@ const updateDataFromModal = (newData: string) => {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-      <h3 class="text-lg font-medium mb-4">{{ t('Copy QR Code') }}</h3>
+      <h3 class="text-lg font-medium mb-4">{{ t('Copy QR Code to clipboard') }}</h3>
       <div v-if="modalLoading" class="flex justify-center items-center h-48">
         <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
       </div>
       <div v-else-if="modalImageSrc" class="flex flex-col items-center">
         <img :src="modalImageSrc" alt="QR Code" class="mb-4 w-48 h-48 object-contain" />
-        <p class="mt-2 text-sm text-gray-500">{{ t('Right-click the image and select Copy Image') }}</p>
+        <p class="mt-2 text-sm text-gray-500">{{ t('Or right-click the image and select Copy Image') }}</p>
       </div>
     </div>
   </div>
