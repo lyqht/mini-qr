@@ -3,23 +3,25 @@ export interface SimpleCSVData {
   frameText?: string
 }
 
-export interface VCardCSVData {
+export type VCardOptionalFields =
+  | 'org'
+  | 'position'
+  | 'phonework'
+  | 'phoneprivate'
+  | 'phonemobile'
+  | 'email'
+  | 'website'
+  | 'street'
+  | 'zipcode'
+  | 'city'
+  | 'state'
+  | 'country'
+  | 'version'
+  | 'frameText'
+
+export interface VCardCSVData extends Partial<Record<VCardOptionalFields, string>> {
   firstName: string
   lastName: string
-  org?: string
-  position?: string
-  phoneWork?: string
-  phonePrivate?: string
-  phoneMobile?: string
-  email?: string
-  website?: string
-  street?: string
-  zipcode?: string
-  city?: string
-  state?: string
-  country?: string
-  version?: string
-  frameText?: string
 }
 
 export type CSVData = SimpleCSVData | VCardCSVData
@@ -84,13 +86,13 @@ export const parseCSV = (csvContent: string, ignoreHeader: boolean = false): CSV
         }
         values.push(currentValue.trim().replace(/^["']|["']$/g, ''))
 
-        const vCardData: VCardCSVData = {
+        const vCardData: Partial<VCardCSVData> = {
           firstName: values[headers.indexOf('firstname')] || '',
           lastName: values[headers.indexOf('lastname')] || ''
         }
 
         // Map optional fields if they exist in the header
-        const optionalFields = [
+        const optionalFields: VCardOptionalFields[] = [
           'org',
           'position',
           'phonework',
@@ -104,22 +106,17 @@ export const parseCSV = (csvContent: string, ignoreHeader: boolean = false): CSV
           'state',
           'country',
           'version',
-          'frametext'
+          'frameText'
         ]
 
         optionalFields.forEach((field) => {
-          const index = headers.indexOf(field)
+          const index = headers.indexOf(field.toLowerCase())
           if (index !== -1 && values[index]) {
-            // Special handling for frameText field
-            if (field === 'frametext') {
-              vCardData.frameText = values[index]
-            } else {
-              vCardData[field as keyof VCardCSVData] = values[index]
-            }
+            vCardData[field as keyof VCardCSVData] = values[index]
           }
         })
 
-        data.push(vCardData)
+        data.push(vCardData as VCardCSVData)
       }
     } else {
       // Handle simple URL/text structure
