@@ -48,10 +48,9 @@ export const isVCardStructure = (header: string): boolean => {
 /**
  * Parses a CSV string into structured data
  * @param csvContent The CSV content as a string
- * @param ignoreHeader Whether to ignore the header row
  * @returns CSVParsingResult containing parsed data and validation status
  */
-export const parseCSV = (csvContent: string, ignoreHeader: boolean = false): CSVParsingResult => {
+export const parseCSV = (csvContent: string): CSVParsingResult => {
   try {
     const lines = csvContent.split('\n').filter((line) => line.trim() !== '')
     if (lines.length === 0) {
@@ -61,7 +60,7 @@ export const parseCSV = (csvContent: string, ignoreHeader: boolean = false): CSV
     const processedLines = lines.map((line) => line.replace('\r', ''))
     const header = processedLines[0].toLowerCase()
     const isVCard = isVCardStructure(header)
-    const startIndex = ignoreHeader ? 1 : 0
+    const startIndex = 0
     const data: CSVData[] = []
 
     if (isVCard) {

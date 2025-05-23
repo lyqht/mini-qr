@@ -17,7 +17,7 @@ describe('CSV Utility Functions', () => {
 John,Doe,john@example.com,+1234567890,John's QR
 Jane,Smith,jane@example.com,+0987654321,Jane's QR`
 
-      const result = parseCSV(csvContent, true)
+      const result = parseCSV(csvContent)
       expect(result.isValid).toBe(true)
       expect(result.data).toHaveLength(2)
       expect(result.data[0]).toEqual({
@@ -54,24 +54,12 @@ https://test.com,Test QR`
       expect(result.data).toHaveLength(2)
     })
 
-    it('respects ignoreHeader option', () => {
-      const csvContent = `firstname,lastname,email
-John,Doe,john@example.com
-Jane,Smith,jane@example.com`
-
-      const resultWithHeader = parseCSV(csvContent, false)
-      expect(resultWithHeader.data).toHaveLength(3) // Includes header as data
-
-      const resultWithoutHeader = parseCSV(csvContent, true)
-      expect(resultWithoutHeader.data).toHaveLength(2) // Excludes header
-    })
-
     it('handles quoted values correctly', () => {
       const csvContent = `firstname,lastname,email
 "John, Jr.",Doe,"john@example.com"
 Jane,"Smith, PhD","jane@example.com"`
 
-      const result = parseCSV(csvContent, true)
+      const result = parseCSV(csvContent)
       expect(result.isValid).toBe(true)
       expect(result.data[0]).toEqual({
         firstName: 'John, Jr.',

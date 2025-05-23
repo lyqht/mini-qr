@@ -618,7 +618,7 @@ const onBatchInputFileUpload = (event: Event) => {
       return
     }
 
-    const result = parseCSV(content, ignoreCsvHeaderRow.value)
+    const result = parseCSV(content)
     parsedCsvResult.value = result
     if (!result.isValid) {
       isValidCsv.value = false
