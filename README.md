@@ -121,17 +121,15 @@ docker compose up -d
 
 ## Contributing
 
+[![All Contributors](https://img.shields.io/github/all-contributors/lyqht/mini-qr?color=ee8449&style=flat-square)](#contributors) [![Crowdin](https://badges.crowdin.net/miniqr/localized.svg)](https://crowdin.com/project/miniqr)
+
 Translations and bug fixes are welcome!
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
-[![Crowdin](https://badges.crowdin.net/miniqr/localized.svg)](https://crowdin.com/project/miniqr)
-
 ## Contributors
 
 Thank you for everyone here for taking their time out to improve MiniQR 🧡
-
-[![All Contributors](https://img.shields.io/github/all-contributors/lyqht/miniqr?color=ee8449&style=flat-square)](#contributors)
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
