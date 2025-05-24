@@ -42,6 +42,7 @@
   "Last saved locally": "อ่านข้อมูลจากพื้นที่จัดเก็บในเครื่อง",
   "Loaded from file": "อ่านข้อมูลจากไฟล์",
   "Copy QR Code to clipboard": "คัดลอก QR Code ไปยังคลิปบอร์ด",
+  "Right click the image, and select 'Copy Image'": "Right click the image, and select 'Copy Image'",
   "Export as": "ส่งออกเป็น",
   "Download QR Code as PNG": "ดาวน์โหลด QR Code เป็น PNG",
   "Download QR Code as SVG": "ดาวน์โหลด QR Code เป็น SVG",

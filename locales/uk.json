@@ -42,6 +42,7 @@
   "Last saved locally": "Завантажено з локальної пам'яті",
   "Loaded from file": "Завантажено з файлу",
   "Copy QR Code to clipboard": "Скопіювати QR-код в буфер обміну",
+  "Right click the image, and select 'Copy Image'": "Клацніть правою кнопкою миші на зображенні та виберіть \"Копіювати зображення\"",
   "Export as": "Експортувати як",
   "Download QR Code as PNG": "Завантажити QR-код в форматі PNG",
   "Download QR Code as SVG": "Завантажити QR-код як SVG",

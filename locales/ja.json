@@ -42,6 +42,7 @@
   "Last saved locally": "ローカルストレージから読み込みました",
   "Loaded from file": "ファイルから読み込まれました",
   "Copy QR Code to clipboard": "QRコードをクリップボードにコピー",
+  "Right click the image, and select 'Copy Image'": "画像を右クリックし、「画像をコピー」を選択します",
   "Export as": "としてエクスポート",
   "Download QR Code as PNG": "QRコードをPNG形式でダウンロード",
   "Download QR Code as SVG": "QRコードをSVGとしてダウンロード",
