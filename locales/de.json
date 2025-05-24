@@ -42,7 +42,7 @@
   "Last saved locally": "Vom lokalen Speicher geladen",
   "Loaded from file": "Aus Datei geladen",
   "Copy QR Code to clipboard": "QR-Code in Zwischenablage kopieren",
-  "Or right-click the image and select Copy Image": "Klicken Sie mit der rechten Maustaste auf das Bild und wählen Sie ‚Bild kopieren‘",
+  "Right click the image, and select 'Copy Image'": "Klicken Sie mit der rechten Maustaste auf das Bild und wählen Sie ‚Bild kopieren‘",
   "Export as": "Exportieren als",
   "Download QR Code as PNG": "QR-Code als PNG herunterladen",
   "Download QR Code as SVG": "QR Code als SVG herunterladen",

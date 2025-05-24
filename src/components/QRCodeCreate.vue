@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CopyImageModal from '@/components/CopyImageModal.vue'
 import DataTemplatesModal from '@/components/DataTemplatesModal.vue'
 import QRCodeFrame from '@/components/QRCodeFrame.vue'
 import StyledQRCode from '@/components/StyledQRCode.vue'
@@ -333,30 +334,34 @@ function getExportDimensions() {
   }
 }
 
-// State and helpers for manual copy modal (Safari fallback)
-const showCopyModal = ref(false)
-const modalImageSrc = ref<string | null>(null)
-const modalLoading = ref(false)
+// #region Copy image modal (Safari fallback)
+const showSafariCopyImageModal = ref(false)
+const copyModalIsLoading = ref(false)
+const copyModalImageSrc = ref<string | null>(null)
 
 async function openCopyModal() {
   const el = document.getElementById('element-to-export')
   if (!el) return
-  modalLoading.value = true
+  copyModalIsLoading.value = true
   try {
-    modalImageSrc.value = await getPngElement(el, getExportDimensions(), styledBorderRadiusFormatted.value)
-    showCopyModal.value = true
+    copyModalImageSrc.value = await getPngElement(
+      el,
+      getExportDimensions(),
+      styledBorderRadiusFormatted.value
+    )
+    showSafariCopyImageModal.value = true
   } catch (error) {
     console.error('Error preparing image for copy modal:', error)
   } finally {
-    modalLoading.value = false
+    copyModalIsLoading.value = false
   }
 }
 
-
 function closeCopyModal() {
-  showCopyModal.value = false
-  modalImageSrc.value = null
+  showSafariCopyImageModal.value = false
+  copyModalImageSrc.value = null
 }
+// #endregion
 
 function copyQRToClipboard() {
   const el = document.getElementById('element-to-export')
@@ -1841,29 +1846,10 @@ const updateDataFromModal = (newData: string) => {
   />
 
   <!-- Fallback modal for manual copy in Safari -->
-  <div
-    v-if="showCopyModal"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-  >
-    <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
-      <button
-        type="button"
-        class="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-        @click="closeCopyModal"
-        aria-label="Close"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <h3 class="text-lg font-medium mb-4">{{ t('Copy QR Code to clipboard') }}</h3>
-      <div v-if="modalLoading" class="flex justify-center items-center h-48">
-        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
-      </div>
-      <div v-else-if="modalImageSrc" class="flex flex-col items-center">
-        <img :src="modalImageSrc" alt="QR Code" class="mb-4 w-48 h-48 object-contain" />
-        <p class="mt-2 text-sm text-gray-500">{{ t('Or right-click the image and select Copy Image') }}</p>
-      </div>
-    </div>
-  </div>
+  <CopyImageModal
+    v-if="showSafariCopyImageModal"
+    :is-loading="copyModalIsLoading"
+    :image-src="copyModalImageSrc"
+    @close="closeCopyModal"
+  />
 </template>
