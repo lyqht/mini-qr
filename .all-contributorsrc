@@ -1,0 +1,15 @@
+{
+  "projectName": "mini-qr",
+  "projectOwner": "lyqht",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 48,
+  "commit": true,
+  "commitConvention": "eslint",
+  "contributors": [],
+  "contributorsPerLine": 6,
+  "linkToUsage": true
+}

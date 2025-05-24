@@ -121,7 +121,22 @@ docker compose up -d
 
 ## Contributing
 
+Translations and bug fixes are welcome!
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+
 [![Crowdin](https://badges.crowdin.net/miniqr/localized.svg)](https://crowdin.com/project/miniqr)
 
-Translations and bug fixes are welcome!
-See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+## Contributors
+
+Thank you for everyone here for taking their time out to improve MiniQR 🧡
+
+[![All Contributors](https://img.shields.io/github/all-contributors/lyqht/miniqr?color=ee8449&style=flat-square)](#contributors)
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
