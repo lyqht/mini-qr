@@ -55,6 +55,9 @@ const props = defineProps<{
 
 const mainContentContainer = ref<HTMLElement | null>(null)
 const isLarge = useMediaQuery('(min-width: 768px)')
+const isLikelyMobileDevice = computed(() => {
+  return typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0
+})
 
 //#region /** locale */
 const { t } = useI18n()
@@ -370,7 +373,9 @@ function copyQRToClipboard() {
   }
   if (IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED) {
     copyImageToClipboard(el, getExportDimensions(), styledBorderRadiusFormatted.value)
-  } else {
+  } else if (!isLikelyMobileDevice.value) {
+    // for now we only open the copy image modal on safari desktop because
+    // this modal will be hidden behind the export image modal on mobile viewport.
     openCopyModal()
   }
 }
