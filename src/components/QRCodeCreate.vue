@@ -536,17 +536,10 @@ enum ExportMode {
 const exportMode = ref(ExportMode.Single)
 const dataStringsFromCsv = ref<string[]>([])
 const frameTextsFromCsv = ref<string[]>([])
-const filteredDataStringsFromCsv = computed(() =>
-  ignoreCsvHeaderRow.value ? dataStringsFromCsv.value.slice(1) : dataStringsFromCsv.value
-)
-const filteredFrameTextsFromCsv = computed(() =>
-  ignoreCsvHeaderRow.value ? frameTextsFromCsv.value.slice(1) : frameTextsFromCsv.value
-)
 
 const inputFileForBatchEncoding = ref<File | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const isValidCsv = ref(true)
-const ignoreCsvHeaderRow = ref(true)
 
 const isExportingBatchQRs = ref(false)
 const isBatchExportSuccess = ref(false)
@@ -555,7 +548,7 @@ const currentExportedQrCodeIndex = ref<number | null>(null)
 const parsedCsvResult = ref<{ data: any[] } | null>(null)
 const previewRowIndex = ref(0)
 const previewRow = computed(() => {
-  const idx = ignoreCsvHeaderRow.value ? previewRowIndex.value + 1 : previewRowIndex.value
+  const idx = previewRowIndex.value
   if (dataStringsFromCsv.value.length === 0) return null
   if (idx < 0 || idx >= dataStringsFromCsv.value.length) return null
   if (
@@ -687,8 +680,8 @@ const createZipFile = (
   index: number,
   format: 'png' | 'svg' | 'jpg'
 ) => {
-  const dataString = filteredDataStringsFromCsv.value[index]
-  const frameText = filteredFrameTextsFromCsv.value[index]
+  const dataString = dataStringsFromCsv.value[index]
+  const frameText = frameTextsFromCsv.value[index]
   let fileName = ''
 
   // If frame text is provided, use it as the filename
@@ -745,10 +738,10 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
   }
 
   try {
-    for (let index = 0; index < filteredDataStringsFromCsv.value.length; index++) {
+    for (let index = 0; index < dataStringsFromCsv.value.length; index++) {
       currentExportedQrCodeIndex.value = index
-      const url = filteredDataStringsFromCsv.value[index]
-      const currentFrameText = filteredFrameTextsFromCsv.value[index]
+      const url = dataStringsFromCsv.value[index]
+      const currentFrameText = frameTextsFromCsv.value[index]
       data.value = url
       frameText.value = currentFrameText
       await sleep(1000)
@@ -764,7 +757,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
       numQrCodesCreated++
     }
 
-    while (numQrCodesCreated !== filteredDataStringsFromCsv.value.length) {
+    while (numQrCodesCreated !== dataStringsFromCsv.value.length) {
       await sleep(100)
     }
 
@@ -1361,18 +1354,7 @@ const updateDataFromModal = (newData: string) => {
                             'flex grow items-center justify-end gap-2',
                             dataStringsFromCsv.length > 0 && 'opacity-80'
                           ]"
-                        >
-                          <label for="ignore-csv-header-row" class="!text-sm !font-normal">
-                            {{ $t('Ignore header row') }}
-                          </label>
-                          <input
-                            id="ignore-csv-header-row"
-                            type="checkbox"
-                            class="checkbox me-2"
-                            v-model="ignoreCsvHeaderRow"
-                            @change="onBatchInputFileUpload($event)"
-                          />
-                        </div>
+                        ></div>
                       </div>
                     </div>
                     <!-- Single Mode Input -->
@@ -1498,7 +1480,7 @@ const updateDataFromModal = (newData: string) => {
                           </button>
                         </div>
                         <div v-else-if="currentExportedQrCodeIndex == null && !isExportingBatchQRs">
-                          <div v-if="filteredDataStringsFromCsv.length > 0" class="mt-4">
+                          <div v-if="dataStringsFromCsv.length > 0" class="mt-4">
                             <div
                               class="flex flex-col gap-2 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800"
                             >
@@ -1515,11 +1497,7 @@ const updateDataFromModal = (newData: string) => {
                                     <code
                                       class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
                                     >
-                                      {{
-                                        ignoreCsvHeaderRow
-                                          ? dataStringsFromCsv[previewRowIndex + 1]
-                                          : dataStringsFromCsv[previewRowIndex]
-                                      }}
+                                      {{ dataStringsFromCsv[previewRowIndex] }}
                                     </code>
                                   </div>
                                   <div v-if="frameTextsFromCsv.length > 0">
@@ -1530,11 +1508,7 @@ const updateDataFromModal = (newData: string) => {
                                     <code
                                       class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
                                     >
-                                      {{
-                                        ignoreCsvHeaderRow
-                                          ? frameTextsFromCsv[previewRowIndex + 1]
-                                          : frameTextsFromCsv[previewRowIndex]
-                                      }}
+                                      {{ frameTextsFromCsv[previewRowIndex + 1] }}
                                     </code>
                                   </div>
                                 </div>
@@ -1548,14 +1522,11 @@ const updateDataFromModal = (newData: string) => {
                                   &lt;
                                 </button>
                                 <span class="text-xs text-gray-500 dark:text-gray-400"
-                                  >{{ previewRowIndex + 1 }} /
-                                  {{ filteredDataStringsFromCsv.length }}</span
+                                  >{{ previewRowIndex + 1 }} / {{ dataStringsFromCsv.length }}</span
                                 >
                                 <button
                                   class="rounded bg-gray-200 px-2 py-1 text-gray-700 disabled:opacity-50 dark:bg-gray-700 dark:text-gray-200 dark:disabled:opacity-60"
-                                  :disabled="
-                                    previewRowIndex === filteredDataStringsFromCsv.length - 1
-                                  "
+                                  :disabled="previewRowIndex === dataStringsFromCsv.length - 1"
                                   @click="previewRowIndex++"
                                 >
                                   &gt;
@@ -1570,7 +1541,7 @@ const updateDataFromModal = (newData: string) => {
                             {{
                               $t('{index} / {count} QR codes have been created.', {
                                 index: currentExportedQrCodeIndex + 1,
-                                count: filteredDataStringsFromCsv.length
+                                count: dataStringsFromCsv.length
                               })
                             }}
                           </p>
