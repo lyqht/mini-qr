@@ -42,6 +42,7 @@
   "Last saved locally": "Φορτώθηκε από τοπική αποθήκευση",
   "Loaded from file": "Φορτώθηκε από αρχείο",
   "Copy QR Code to clipboard": "Αντιγραφή κώδικα QR στο πρόχειρο",
+  "Right click the image, and select 'Copy Image'": "Κάντε δεξί κλικ στην εικόνα και επιλέξτε 'Αντιγραφή εικόνας'",
   "Export as": "Εξαγωγή ως",
   "Download QR Code as PNG": "Κατεβάστε τον κωδικό QR ως PNG",
   "Download QR Code as SVG": "Κατεβάστε τον κωδικό QR ως SVG",

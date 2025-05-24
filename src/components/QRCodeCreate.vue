@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CopyImageModal from '@/components/CopyImageModal.vue'
 import DataTemplatesModal from '@/components/DataTemplatesModal.vue'
 import QRCodeFrame from '@/components/QRCodeFrame.vue'
 import StyledQRCode from '@/components/StyledQRCode.vue'
@@ -54,6 +55,9 @@ const props = defineProps<{
 
 const mainContentContainer = ref<HTMLElement | null>(null)
 const isLarge = useMediaQuery('(min-width: 768px)')
+const isLikelyMobileDevice = computed(() => {
+  return typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0
+})
 
 //#region /** locale */
 const { t } = useI18n()
@@ -333,12 +337,47 @@ function getExportDimensions() {
   }
 }
 
-async function copyQRToClipboard() {
+// #region Copy image modal (Safari fallback)
+const showSafariCopyImageModal = ref(false)
+const copyModalIsLoading = ref(false)
+const copyModalImageSrc = ref<string | null>(null)
+
+async function openCopyModal() {
+  const el = document.getElementById('element-to-export')
+  if (!el) return
+  copyModalIsLoading.value = true
+  try {
+    copyModalImageSrc.value = await getPngElement(
+      el,
+      getExportDimensions(),
+      styledBorderRadiusFormatted.value
+    )
+    showSafariCopyImageModal.value = true
+  } catch (error) {
+    console.error('Error preparing image for copy modal:', error)
+  } finally {
+    copyModalIsLoading.value = false
+  }
+}
+
+function closeCopyModal() {
+  showSafariCopyImageModal.value = false
+  copyModalImageSrc.value = null
+}
+// #endregion
+
+function copyQRToClipboard() {
   const el = document.getElementById('element-to-export')
   if (!el) {
     return
   }
-  await copyImageToClipboard(el, getExportDimensions())
+  if (IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED) {
+    copyImageToClipboard(el, getExportDimensions(), styledBorderRadiusFormatted.value)
+  } else if (!isLikelyMobileDevice.value) {
+    // for now we only open the copy image modal on safari desktop because
+    // this modal will be hidden behind the export image modal on mobile viewport.
+    openCopyModal()
+  }
 }
 
 /**
@@ -945,7 +984,7 @@ const updateDataFromModal = (newData: string) => {
         <div class="mt-4 flex flex-col items-center gap-8">
           <div class="flex flex-col items-center justify-center gap-3">
             <button
-              v-if="IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED && exportMode !== ExportMode.Batch"
+              v-if="exportMode !== ExportMode.Batch"
               id="copy-qr-image-button"
               class="button flex w-fit max-w-full flex-row items-center gap-1"
               @click="copyQRToClipboard"
@@ -1809,5 +1848,13 @@ const updateDataFromModal = (newData: string) => {
     :initial-data="data"
     @close="closeDataModal"
     @update:data="updateDataFromModal"
+  />
+
+  <!-- Fallback modal for manual copy in Safari -->
+  <CopyImageModal
+    v-if="showSafariCopyImageModal"
+    :is-loading="copyModalIsLoading"
+    :image-src="copyModalImageSrc"
+    @close="closeCopyModal"
   />
 </template>
