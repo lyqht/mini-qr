@@ -59,13 +59,12 @@ export const parseCSV = (csvContent: string): CSVParsingResult => {
 
     const processedLines = lines.map((line) => line.replace('\r', ''))
     const header = processedLines[0].toLowerCase()
+    const headers = header.split(',').map((h) => h.trim().toLowerCase())
     const isVCard = isVCardStructure(header)
-    const startIndex = 0
+    const startIndex = 1
     const data: CSVData[] = []
 
     if (isVCard) {
-      const headers = processedLines[0].split(',').map((h) => h.trim().toLowerCase())
-
       for (let i = startIndex; i < processedLines.length; i++) {
         // Split by comma but respect quoted values
         const values: string[] = []
