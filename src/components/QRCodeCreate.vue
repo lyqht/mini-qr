@@ -1,4 +1,23 @@
 <script setup lang="ts">
+const expirationTime = ref<number>(0) 
+const createdAt = ref<number | null>(null) 
+const isExpired = ref(false) 
+
+watch([createdAt, expirationTime], () => {
+  if (expirationTime.value > 0 && createdAt.value) {
+    const now = Date.now()
+    const diff = (now - createdAt.value) / 1000 // saniye farkı
+
+    if (diff >= expirationTime.value) {
+      isExpired.value = true
+    } else {
+      isExpired.value = false
+      setTimeout(() => {
+        isExpired.value = true
+      }, (expirationTime.value - diff) * 1000)
+    }
+  }
+})
 import QRCodeFrame from '@/components/QRCodeFrame.vue'
 import StyledQRCode from '@/components/StyledQRCode.vue'
 import {
@@ -73,6 +92,13 @@ watch(
   }
 )
 
+
+watch(data, () => {
+  if (data.value) {
+    createdAt.value = Date.now()
+    isExpired.value = false
+  }
+})
 const dotsOptionsColor = ref()
 const dotsOptionsType = ref()
 const cornersSquareOptionsColor = ref()
@@ -688,13 +714,14 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
                         }
                       ]"
                     >
-                      <StyledQRCode
-                        v-bind="{
-                          ...qrCodeProps,
-                          data: data?.length > 0 ? data : t('Have nice day!'),
-                          width: PREVIEW_QRCODE_DIM_UNIT,
-                          height: PREVIEW_QRCODE_DIM_UNIT
-                        }"
+                    <div v-if="isExpired" class="text-red-500 font-semibold text-center">
+
+                      {{ t('QR Code Expired') }}
+                    </div>
+                    <StyledQRCode
+                    v-else
+                    v-bind="{ ...qrCodeProps, ... }"
+/>
                         role="img"
                         aria-label="QR code"
                       />
@@ -817,13 +844,18 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
               }
             ]"
           >
-            <StyledQRCode
-              v-bind="{
-                ...qrCodeProps,
-                data: data?.length > 0 ? data : t('Have nice day!'),
-                width: PREVIEW_QRCODE_DIM_UNIT,
-                height: PREVIEW_QRCODE_DIM_UNIT
-              }"
+          <div v-if="isExpired" class="text-red-500 font-semibold text-center">
+            {{ t('QR Code Expired') }}
+</div>
+<StyledQRCode
+  v-else
+  v-bind="{
+    ...qrCodeProps,
+    data: data?.length > 0 ? data : t('Have nice day!'),
+    width: PREVIEW_QRCODE_DIM_UNIT,
+    height: PREVIEW_QRCODE_DIM_UNIT
+  }"
+/>
               role="img"
               aria-label="QR code"
             />
@@ -1012,6 +1044,18 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
         class="flex w-full flex-col gap-4"
         :default-value="['qr-code-settings']"
       >
+      <div class="w-full sm:w-1/2">
+   <label for="expiration-time">
+    {{ t('Expiration time (seconds)') }}
+   </label>
+  <input
+    class="text-input"
+    id="expiration-time"
+    type="number"
+    placeholder="60"
+    v-model="expirationTime"
+/>
+</div>
         <AccordionItem value="frame-settings">
           <AccordionTrigger
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
