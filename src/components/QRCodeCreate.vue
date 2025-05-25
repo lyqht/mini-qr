@@ -6,7 +6,8 @@ const isExpired = ref(false)
 watch([createdAt, expirationTime], () => {
   if (expirationTime.value > 0 && createdAt.value) {
     const now = Date.now()
-    const diff = (now - createdAt.value) / 1000 // saniye farkı
+    const diff = (now - createdAt.value) / 
+
 
     if (diff >= expirationTime.value) {
       isExpired.value = true
