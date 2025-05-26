@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+dist
+.env
+*.local
+coverage
+.DS_Store
+.git
+.gitignore
+.vscode
+*.swp
+*.swo
+*.log
+*.pid
+*.seed
+*.pid.lock
