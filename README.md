@@ -111,13 +111,35 @@ https://github.com/lyqht/mini-qr/assets/35736525/991b2d7e-f168-4354-9091-1678d2c
 
 ## Self-hosting with Docker 🐋
 
-Mini-QR can easily be self-hosted. We provide a [docker-compose.yml](docker-compose.yml) file as well as our own images. We are using GitHub's `ghrc.io` Container Registry.
+Mini-QR can easily be self-hosted using Docker. We provide a [docker-compose.yml](docker-compose.yml) file and a production-ready multi-stage [Dockerfile](Dockerfile).
+
+### Quick Start (using prebuilt image)
 
 ```bash
 wget https://github.com/lyqht/mini-qr/raw/main/docker-compose.yml
 
 docker compose up -d
 ```
+
+This will pull the latest production image from GitHub Container Registry and start the app at [http://localhost:8081](http://localhost:8081).
+
+### Build and run locally (for development or custom builds)
+
+```bash
+docker compose up -d --build
+```
+
+Or build and run manually:
+
+```bash
+docker build -t mini-qr .
+docker run -d -p 8081:8080 mini-qr
+```
+
+### Customization
+- You can edit `nginx.conf` or mount your own static files by uncommenting the `volumes` section in `docker-compose.yml`.
+- The production image uses Nginx for optimal static file serving.
+- The `.dockerignore` file is included for smaller, faster builds.
 
 ## Contributing
 

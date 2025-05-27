@@ -1,5 +1,4 @@
 ---
-version: "3.8"
 services:
   mini-qr:
     image: ghcr.io/lyqht/mini-qr:latest
@@ -7,3 +6,10 @@ services:
     ports:
       - 8081:8080
     restart: unless-stopped
+    # Uncomment the following lines to build locally instead of pulling from ghcr.io
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    # volumes:
+    #   - ./public:/usr/share/nginx/html/public:ro
+    #   - ./nginx.conf:/etc/nginx/nginx.conf:ro
