@@ -137,6 +137,7 @@ docker run -d -p 8081:8080 mini-qr
 ```
 
 ### Customization
+
 - You can edit `nginx.conf` or mount your own static files by uncommenting the `volumes` section in `docker-compose.yml`.
 - The production image uses Nginx for optimal static file serving.
 - The `.dockerignore` file is included for smaller, faster builds.
@@ -146,6 +147,9 @@ docker run -d -p 8081:8080 mini-qr
 [![All Contributors](https://img.shields.io/github/all-contributors/lyqht/mini-qr?color=ee8449&style=flat-square)](#contributors) [![Crowdin](https://badges.crowdin.net/miniqr/localized.svg)](https://crowdin.com/project/miniqr)
 
 Translations and bug fixes are welcome!
+
+> [!NOTE]
+> For other issues, please create an issue/ raise it on the discussion board before working on them, as they may be rejected if they are not aligned with @lyqht's goals for this project.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
