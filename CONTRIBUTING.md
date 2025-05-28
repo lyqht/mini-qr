@@ -6,13 +6,26 @@ You can work on existing issues or suggest new ones. You can also share your pre
 
 Before you start, please take a moment to read through these guidelines.
 
-## Contributing Guidelines
+- [Contributing to Mini QR](#contributing-to-mini-qr)
+  - [Basic Guidelines](#basic-guidelines)
+    - [Issue Assignment](#issue-assignment)
+    - [Reporting Bugs or Suggesting Improvements](#reporting-bugs-or-suggesting-improvements)
+  - [Development environment](#development-environment)
+    - [Getting started with local development](#getting-started-with-local-development)
+    - [Codebase overview](#codebase-overview)
+  - [End-to-End (E2E) Testing](#end-to-end-e2e-testing)
+  - [Adding new presets](#adding-new-presets)
+  - [Contributing Translations](#contributing-translations)
+    - [Getting Started with Crowdin](#getting-started-with-crowdin)
+    - [Adding a New Language](#adding-a-new-language)
+    - [Translation Status](#translation-status)
+  - [License](#license)
+  - [Code of Conduct](#code-of-conduct)
+  - [Final Note](#final-note)
 
-### Issue Assignment
+## Open-source etiquette
 
-- Always request to be assigned to an issue before working on it. This helps prevent conflicting and duplicate work.
-- Comment on the issue you'd like to work on, asking to be assigned.
-- Wait for [@lyqht](https://github.com/lyqht) to assign you before starting work.
+> Please read the [official MDN docs for open source etiquette](https://developer.mozilla.org/en-US/docs/MDN/Community/Open_source_etiquette), if you're new to contributing to open source projects.
 
 ### Reporting Bugs or Suggesting Improvements
 
@@ -22,7 +35,15 @@ Before you start, please take a moment to read through these guidelines.
   - Include mockups if the change is UI-based.
   - For self-hosting related feature requests, please note that I, the main project maintainer (@lyqht) will likely not work on those. This is because I do not have docker expertise and I don't really have an interest to learn it. The current docker images are setup by kind public contributors. Thanks for your understanding!
 
-## Getting Started
+### Issue Assignment
+
+- Always request to be assigned to an issue before working on it. This helps prevent conflicting and duplicate work.
+- Comment on the issue you'd like to work on, asking to be assigned.
+- Wait for [@lyqht](https://github.com/lyqht) to assign you before starting work.
+
+## Development environment
+
+### Getting started with local development
 
 1. Fork the repository and clone it to your local machine.
 2. Install the necessary dependencies by running `pnpm install`. If you don't have pnpm installed, you can install it by running `npm install -g pnpm`.
@@ -227,7 +248,3 @@ Please refer to the [Code of Conduct](CODE_OF_CONDUCT.md) for more details.
 The project maintainer, [@lyqht](https://github.com/lyqht), has the final say on whether a pull request will be merged. Please be patient and respectful throughout the review process.
 
 Thank you for contributing to Mini QR! ✨
-
-```
-
-```
