@@ -118,6 +118,9 @@ test('save and load QR code config works with frame', async ({ page }) => {
   // Set initial data, enable frame, set text, and change position
   await textInput.fill(testData)
   await showFrameCheckbox.check()
+  const framePresetButton = page.getByLabel('Select preset').first()
+  await framePresetButton.click()
+  await page.getByText('Dark Frame').click()
   await frameTextInput.fill(frameTextData)
   await framePositionTopRadio.check() // Change from default bottom to top
 
@@ -160,6 +163,7 @@ test('save and load QR code config works with frame', async ({ page }) => {
   await expect(showFrameCheckbox).toBeChecked()
   await expect(frameTextInput).toHaveValue(frameTextData)
   await expect(framePositionTopRadio).toBeChecked() // Check if the non-default position was restored
+  await expect(page.locator('#frame-text-color')).toHaveValue('#ffffff')
 })
 
 test('QR code element with frame matches snapshot', async ({ page }) => {
