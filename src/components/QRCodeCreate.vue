@@ -27,6 +27,7 @@ import { parseCSV, validateCSVData } from '@/utils/csv'
 import { generateVCardData } from '@/utils/dataEncoding'
 import { getNumericCSSValue } from '@/utils/formatting'
 import { allPresets, type Preset } from '@/utils/presets'
+import { allFramePresets, type FramePreset } from '@/utils/framePresets'
 import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
 import {
@@ -287,6 +288,44 @@ const frameStyle = ref<FrameStyle>({
   borderRadius: '8px',
   padding: '16px'
 })
+const defaultFramePreset = allFramePresets[0]
+const selectedFramePresetKey = ref<string>(defaultFramePreset.name)
+const lastCustomLoadedFramePreset = ref<FramePreset>()
+const CUSTOM_LOADED_FRAME_PRESET_KEYS = [
+  LAST_LOADED_LOCALLY_PRESET_KEY,
+  LOADED_FROM_FILE_PRESET_KEY
+]
+const allFramePresetOptions = computed(() =>
+  allFramePresets.map((preset) => ({ value: preset.name, label: t(preset.name) }))
+)
+function applyFramePreset(preset: FramePreset) {
+  if (preset.style) {
+    frameStyle.value = { ...frameStyle.value, ...preset.style }
+  }
+  if (preset.text) frameText.value = preset.text
+  if (preset.position) frameTextPosition.value = preset.position
+  showFrame.value = true
+}
+watch(
+  selectedFramePresetKey,
+  (newKey, prevKey) => {
+    if (newKey === prevKey || !newKey) return
+
+    if (
+      CUSTOM_LOADED_FRAME_PRESET_KEYS.includes(newKey) &&
+      lastCustomLoadedFramePreset.value
+    ) {
+      applyFramePreset(lastCustomLoadedFramePreset.value)
+      return
+    }
+
+    const preset = allFramePresets.find((p) => p.name === newKey)
+    if (preset) {
+      applyFramePreset(preset)
+    }
+  },
+  { immediate: true }
+)
 const frameSettings = computed(() => ({
   text: frameText.value,
   position: frameTextPosition.value,
@@ -468,6 +507,8 @@ function loadQRConfig(jsonString: string, key?: string) {
     selectedPresetKey.value = key
   }
 
+  let framePreset: FramePreset | undefined
+
   selectedPreset.value = preset
 
   if (frameConfig) {
@@ -478,6 +519,17 @@ function loadQRConfig(jsonString: string, key?: string) {
       ...frameStyle.value,
       ...frameConfig.style
     }
+    framePreset = {
+      name: key || LAST_LOADED_LOCALLY_PRESET_KEY,
+      style: frameConfig.style,
+      text: frameConfig.text,
+      position: frameConfig.position
+    }
+  }
+
+  if (framePreset && key) {
+    lastCustomLoadedFramePreset.value = framePreset
+    selectedFramePresetKey.value = key
   }
 }
 
@@ -1174,6 +1226,15 @@ const updateDataFromModal = (newData: string) => {
               <div class="flex flex-row items-center gap-2">
                 <label for="show-frame">{{ t('Add frame') }}</label>
                 <input id="show-frame" type="checkbox" v-model="showFrame" />
+              </div>
+
+              <div v-if="showFrame" class="flex flex-row items-center gap-2">
+                <label>{{ t('Frame preset') }}</label>
+                <Combobox
+                  :items="allFramePresetOptions"
+                  v-model:value="selectedFramePresetKey"
+                  :button-label="t('Select preset')"
+                />
               </div>
 
               <div v-if="showFrame">
