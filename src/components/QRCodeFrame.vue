@@ -44,15 +44,16 @@ withDefaults(defineProps<Props>(), {
     }"
   >
     <slot name="qr-code"></slot>
-    <p
-      :style="{
-        color: frameStyle.textColor,
-        margin: 0,
-        textAlign: 'center',
-        [textPosition === 'left' || textPosition === 'right' ? 'width' : 'maxWidth']: '200px'
-      }"
-    >
-      {{ frameText }}
-    </p>
+      <p
+        :style="{
+          color: frameStyle.textColor,
+          margin: 0,
+          textAlign: 'center',
+          [textPosition === 'left' || textPosition === 'right' ? 'width' : 'maxWidth']: '200px',
+          whiteSpace: 'pre-line'
+        }"
+      >
+        {{ frameText }}
+      </p>
   </div>
 </template>

@@ -188,6 +188,28 @@ test('QR code element with frame matches snapshot', async ({ page }) => {
   await expect(qrCodeExportElement).toHaveScreenshot('qr-code-with-frame-snapshot.png')
 })
 
+test('frame text supports line breaks', async ({ page }) => {
+  const textInput = page.locator('textarea[id="data"]')
+  const frameAccordionTrigger = page.getByRole('button', { name: /Frame settings/ })
+  const showFrameCheckbox = page.locator('input[id="show-frame"]')
+  const frameTextInput = page.locator('textarea[id="frame-text"]')
+
+  // Expand the Frame settings accordion
+  await frameAccordionTrigger.click()
+
+  // Set data, enable frame, and add multiline frame text
+  await textInput.fill('Multiline Frame Test')
+  await showFrameCheckbox.check()
+  const multilineText = 'Line 1\nLine 2\nLine 3'
+  await frameTextInput.fill(multilineText)
+
+  // Locate the paragraph that displays the frame text
+  const frameTextDisplay = page.locator('#element-to-export p')
+
+  // Ensure the displayed text preserves the line breaks
+  await expect(frameTextDisplay).toHaveText(multilineText)
+})
+
 test('QR code element matches snapshot', async ({ page }) => {
   const testData = 'Snapshot Test'
   const textInput = page.locator('textarea[id="data"]')
