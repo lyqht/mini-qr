@@ -12,7 +12,12 @@ import {
 import { Combobox } from '@/components/ui/Combobox'
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import VCardPreview from '@/components/VCardPreview.vue'
-import { createRandomColor, getRandomItemInArray } from '@/utils/color'
+import {
+  createRandomColor,
+  getRandomItemInArray,
+  createComplementaryScheme,
+  getAverageImageColor
+} from '@/utils/color'
 import {
   copyImageToClipboard,
   downloadJpgElement,
@@ -156,7 +161,7 @@ const qrCodeProps = computed<StyledQRCodeProps>(() => ({
   qrOptions: qrOptions.value
 }))
 
-function randomizeStyleSettings() {
+async function randomizeStyleSettings() {
   const dotTypes: DotType[] = [
     'dots',
     'rounded',
@@ -169,15 +174,19 @@ function randomizeStyleSettings() {
   const cornerDotTypes: CornerDotType[] = ['dot', 'square']
 
   dotsOptionsType.value = getRandomItemInArray(dotTypes)
-  dotsOptionsColor.value = createRandomColor()
-
   cornersSquareOptionsType.value = getRandomItemInArray(cornerSquareTypes)
-  cornersSquareOptionsColor.value = createRandomColor()
-
   cornersDotOptionsType.value = getRandomItemInArray(cornerDotTypes)
-  cornersDotOptionsColor.value = createRandomColor()
 
-  styleBackground.value = createRandomColor()
+  const baseColor =
+    image.value && typeof window !== 'undefined'
+      ? await getAverageImageColor(image.value)
+      : null
+  const scheme = createComplementaryScheme(baseColor || createRandomColor())
+
+  dotsOptionsColor.value = scheme.primary
+  cornersSquareOptionsColor.value = scheme.secondary
+  cornersDotOptionsColor.value = scheme.accent
+  styleBackground.value = scheme.background
 }
 
 function uploadImage() {
