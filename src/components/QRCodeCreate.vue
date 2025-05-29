@@ -66,6 +66,19 @@ const { t } = useI18n()
 //#region /* QR code style settings */
 const defaultPreset = allPresets[0]
 const data = ref(props.initialData || '')
+const debouncedData = ref(data.value)
+let dataDebounceTimer: ReturnType<typeof setTimeout>
+
+watch(
+  data,
+  (newVal) => {
+    clearTimeout(dataDebounceTimer)
+    dataDebounceTimer = setTimeout(() => {
+      debouncedData.value = newVal
+    }, 500)
+  },
+  { immediate: true }
+)
 const image = ref()
 const width = ref()
 const height = ref()
@@ -131,7 +144,7 @@ const qrOptions = computed(() => ({
 }))
 
 const qrCodeProps = computed<StyledQRCodeProps>(() => ({
-  data: data.value || 'Have a beautiful day!',
+  data: debouncedData.value || 'Have a beautiful day!',
   image: image.value,
   width: width.value,
   height: height.value,
