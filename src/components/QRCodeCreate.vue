@@ -1292,7 +1292,7 @@ const mainDivPaddingStyle = computed(() => {
                     <Combobox
                       :items="allFramePresetOptions"
                       v-model:value="selectedFramePresetKey"
-                      :button-label="t('Select preset')"
+                      :button-label="t('Select frame preset')"
                     />
                   </div>
                 </div>
@@ -1421,7 +1421,7 @@ const mainDivPaddingStyle = computed(() => {
                     :items="allPresetOptions"
                     v-model:value="selectedPresetKey"
                     v-model:open="isPresetSelectOpen"
-                    :button-label="t('Select preset')"
+                    :button-label="t('Select QR code preset')"
                     :insert-divider-at-indexes="[0, 2]"
                   />
                   <button
