@@ -37,7 +37,7 @@ import {
   type ErrorCorrectionLevel,
   type Options as StyledQRCodeProps
 } from 'qr-code-styling'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, nextTick } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
 
@@ -840,10 +840,10 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
     resetBatchExportProgress()
   }
 }
-//#endregion
+// #endregion
 
+//#region /* Data modal */
 const isDataModalVisible = ref(false)
-
 const openDataModal = () => {
   isDataModalVisible.value = true
 }
@@ -856,11 +856,55 @@ const updateDataFromModal = (newData: string) => {
   data.value = newData
   // Optionally trigger QR code regeneration here if needed
 }
+// #endregion
+
+//#region /* Dynamic padding for mobile drawer */
+const drawerTriggerHeight = ref(0)
+const BUFFER_PADDING = 20 // Extra space below the drawer trigger
+
+function updateDrawerTriggerHeight() {
+  nextTick(() => {
+    const el = document.getElementById('drawer-preview-container')
+    if (el) {
+      drawerTriggerHeight.value = el.offsetHeight
+    } else {
+      drawerTriggerHeight.value = 0 // Fallback if element not found
+    }
+  })
+}
+
+watch(
+  isLarge,
+  (newIsLarge) => {
+    if (!newIsLarge) {
+      updateDrawerTriggerHeight() // Drawer is now visible
+    } else {
+      drawerTriggerHeight.value = 0 // Drawer is hidden, reset padding effect
+    }
+  },
+  { immediate: true } // Run on initial load
+)
+
+// Watch for changes that might affect the drawer trigger's height
+watch(showFrame, () => {
+  if (!isLarge.value) {
+    updateDrawerTriggerHeight()
+  }
+})
+
+const mainDivPaddingStyle = computed(() => {
+  if (!isLarge.value && drawerTriggerHeight.value > 0) {
+    return { paddingBottom: `${drawerTriggerHeight.value + BUFFER_PADDING}px` }
+  }
+  return { paddingBottom: '0px' } // Default for large screens or if height is 0
+})
+//#endregion
 </script>
 
 <template>
   <div
-    class="flex items-start justify-center gap-4 pb-[220px] md:flex-row md:gap-6 md:pb-0 lg:gap-12 lg:pb-0"
+    class="flex items-start justify-center gap-4 md:flex-row md:gap-6 lg:gap-12 lg:pb-0"
+    :style="mainDivPaddingStyle"
   >
     <!-- Sticky sidebar on large screens -->
     <div
@@ -1242,30 +1286,17 @@ const updateDataFromModal = (newData: string) => {
               </div>
 
               <template v-if="showFrame">
-                <div>
-                  <label>{{ t('Frame preset') }}</label>
-                  <Combobox
-                    :items="allFramePresetOptions"
-                    v-model:value="selectedFramePresetKey"
-                    :button-label="t('Select preset')"
-                  />
-                </div>
-
-                <div>
-                  <div class="mb-2 flex flex-row items-center gap-2">
-                    <label for="frame-text">{{ t('Frame text') }}</label>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:gap-8">
+                  <div class="flex flex-col sm:w-1/2">
+                    <label>{{ t('Frame preset') }}</label>
+                    <Combobox
+                      :items="allFramePresetOptions"
+                      v-model:value="selectedFramePresetKey"
+                      :button-label="t('Select preset')"
+                    />
                   </div>
-                  <textarea
-                    name="frame-text"
-                    class="text-input"
-                    id="frame-text"
-                    rows="2"
-                    :placeholder="t('Scan for more info')"
-                    v-model="frameText"
-                  />
                 </div>
-
-                <div>
+                <div class="flex flex-col">
                   <label class="mb-2 block">{{ t('Text position') }}</label>
                   <fieldset class="flex-1" role="radio" tabindex="0">
                     <div
@@ -1282,6 +1313,20 @@ const updateDataFromModal = (newData: string) => {
                       <label :for="'frameTextPosition-' + position">{{ t(position) }}</label>
                     </div>
                   </fieldset>
+                </div>
+
+                <div>
+                  <div class="mb-2 flex flex-row items-center gap-2">
+                    <label for="frame-text">{{ t('Frame text') }}</label>
+                  </div>
+                  <textarea
+                    name="frame-text"
+                    class="text-input"
+                    id="frame-text"
+                    rows="2"
+                    :placeholder="t('Scan for more info')"
+                    v-model="frameText"
+                  />
                 </div>
 
                 <div>
