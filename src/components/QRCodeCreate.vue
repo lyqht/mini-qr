@@ -860,7 +860,7 @@ const updateDataFromModal = (newData: string) => {
 
 <template>
   <div
-    class="flex items-start justify-center gap-4 pb-[180px] md:flex-row md:gap-6 lg:gap-12 lg:pb-0"
+    class="flex items-start justify-center gap-4 pb-[220px] md:flex-row md:gap-6 md:pb-0 lg:gap-12 lg:pb-0"
   >
     <!-- Sticky sidebar on large screens -->
     <div
