@@ -1,3 +1,28 @@
+## v0.22.0 (2025-05-31)
+- ✨ Add frame preset feature ([#161](https://github.com/lyqht/mini-qr/pull/161))
+- ✨ debounce QR code generation ([#157](https://github.com/lyqht/mini-qr/pull/157))
+- ✨ Support multiline frame text ([#156](https://github.com/lyqht/mini-qr/pull/156))
+
+## v0.21.0 (2025-05-27)
+- ✨ Add Docker support with multi-stage build and nginx configuration ([#153](https://github.com/lyqht/mini-qr/pull/153))
+- 🐛 Update contributors - add @seals187 as contributor and update @pcbimon ([#155](https://github.com/lyqht/mini-qr/pull/155))
+
+## v0.20.0 (2025-05-24)
+- ✨ Add all-contributors bot ([#147](https://github.com/lyqht/mini-qr/pull/147))
+- 🐛 update readme
+- 🐛 phone numbers not showing in batch export ([#142](https://github.com/lyqht/mini-qr/pull/142))
+- 📝 Add unililium as a contributor for code ([#148](https://github.com/lyqht/mini-qr/pull/148))
+- 🔧 Remove "Ignore header row" option from CSV processing ([#149](https://github.com/lyqht/mini-qr/pull/149))
+- 🔧 Bug fix: Copy to clipboard in Safari ([#143](https://github.com/lyqht/mini-qr/pull/143))
+
+## v0.19.0 (2025-05-16)
+- ✨ Add vCard support for batch QR code generation ([#136](https://github.com/lyqht/mini-qr/pull/136))
+- ✨ add thai language ([#133](https://github.com/lyqht/mini-qr/pull/133))
+- 🔧 update th translations ([#141](https://github.com/lyqht/mini-qr/pull/141))
+- 🔧 try fix failed deployment due to workbox-window with pnpm
+- 🔧 pwa automatic reload ([#137](https://github.com/lyqht/mini-qr/pull/137))
+- 🔧 remove unused devbox lock
+
 ## v0.18.1 (2025-05-04)
 - 🐛 vCard address formatting
 - 🐛 generate version script to put commits in correct tags ([#128](https://github.com/lyqht/mini-qr/pull/128))
