@@ -1226,7 +1226,7 @@ const updateDataFromModal = (newData: string) => {
           <AccordionTrigger
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
             ><span class="flex flex-row items-center gap-2"
-              ><span>{{ t('Frame settings') }}</span>
+              ><span id="frame-settings-title">{{ t('Frame settings') }}</span>
               <span
                 class="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
               >
@@ -1235,136 +1235,140 @@ const updateDataFromModal = (newData: string) => {
             ></AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
-            <div class="space-y-4">
+            <section class="space-y-4" aria-labelledby="frame-settings-title">
               <div class="flex flex-row items-center gap-2">
                 <label for="show-frame">{{ t('Add frame') }}</label>
                 <input id="show-frame" type="checkbox" v-model="showFrame" />
               </div>
 
-              <div v-if="showFrame">
-                <label>{{ t('Frame preset') }}</label>
-                <Combobox
-                  :items="allFramePresetOptions"
-                  v-model:value="selectedFramePresetKey"
-                  :button-label="t('Select preset')"
-                />
-              </div>
-
-              <div v-if="showFrame">
-                <div class="mb-2 flex flex-row items-center gap-2">
-                  <label for="frame-text">{{ t('Frame text') }}</label>
+              <template v-if="showFrame">
+                <div>
+                  <label>{{ t('Frame preset') }}</label>
+                  <Combobox
+                    :items="allFramePresetOptions"
+                    v-model:value="selectedFramePresetKey"
+                    :button-label="t('Select preset')"
+                  />
                 </div>
-                <textarea
-                  name="frame-text"
-                  class="text-input"
-                  id="frame-text"
-                  rows="2"
-                  :placeholder="t('Scan for more info')"
-                  v-model="frameText"
-                />
-              </div>
 
-              <div v-if="showFrame">
-                <label class="mb-2 block">{{ t('Text position') }}</label>
-                <fieldset class="flex-1" role="radio" tabindex="0">
-                  <div
-                    class="radio"
-                    v-for="position in ['top', 'bottom', 'right', 'left']"
-                    :key="position"
-                  >
-                    <input
-                      :id="'frameTextPosition-' + position"
-                      type="radio"
-                      v-model="frameTextPosition"
-                      :value="position"
-                    />
-                    <label :for="'frameTextPosition-' + position">{{ t(position) }}</label>
+                <div>
+                  <div class="mb-2 flex flex-row items-center gap-2">
+                    <label for="frame-text">{{ t('Frame text') }}</label>
                   </div>
-                </fieldset>
-              </div>
+                  <textarea
+                    name="frame-text"
+                    class="text-input"
+                    id="frame-text"
+                    rows="2"
+                    :placeholder="t('Scan for more info')"
+                    v-model="frameText"
+                  />
+                </div>
 
-              <div v-if="showFrame">
-                <label class="mb-2 block">{{ t('Frame style') }}</label>
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label for="frame-text-color" class="mb-1 block text-sm">{{
-                      t('Text color')
-                    }}</label>
-                    <input
-                      id="frame-text-color"
-                      type="color"
-                      class="color-input"
-                      v-model="frameStyle.textColor"
-                    />
-                  </div>
-                  <div>
-                    <label for="frame-bg-color" class="mb-1 block text-sm">{{
-                      t('Background color')
-                    }}</label>
-                    <input
-                      id="frame-bg-color"
-                      type="color"
-                      class="color-input"
-                      v-model="frameStyle.backgroundColor"
-                    />
-                  </div>
-                  <div>
-                    <label for="frame-border-color" class="mb-1 block text-sm">{{
-                      t('Border color')
-                    }}</label>
-                    <input
-                      id="frame-border-color"
-                      type="color"
-                      class="color-input"
-                      v-model="frameStyle.borderColor"
-                    />
-                  </div>
-                  <div>
-                    <label for="frame-border-width" class="mb-1 block text-sm">{{
-                      t('Border width')
-                    }}</label>
-                    <input
-                      id="frame-border-width"
-                      type="text"
-                      class="text-input"
-                      v-model="frameStyle.borderWidth"
-                      placeholder="1px"
-                    />
-                  </div>
-                  <div>
-                    <label for="frame-border-radius" class="mb-1 block text-sm">{{
-                      t('Border radius')
-                    }}</label>
-                    <input
-                      id="frame-border-radius"
-                      type="text"
-                      class="text-input"
-                      v-model="frameStyle.borderRadius"
-                      placeholder="8px"
-                    />
-                  </div>
-                  <div>
-                    <label for="frame-padding" class="mb-1 block text-sm">{{ t('Padding') }}</label>
-                    <input
-                      id="frame-padding"
-                      type="text"
-                      class="text-input"
-                      v-model="frameStyle.padding"
-                      placeholder="16px"
-                    />
+                <div>
+                  <label class="mb-2 block">{{ t('Text position') }}</label>
+                  <fieldset class="flex-1" role="radio" tabindex="0">
+                    <div
+                      class="radio"
+                      v-for="position in ['top', 'bottom', 'right', 'left']"
+                      :key="position"
+                    >
+                      <input
+                        :id="'frameTextPosition-' + position"
+                        type="radio"
+                        v-model="frameTextPosition"
+                        :value="position"
+                      />
+                      <label :for="'frameTextPosition-' + position">{{ t(position) }}</label>
+                    </div>
+                  </fieldset>
+                </div>
+
+                <div>
+                  <label class="mb-2 block">{{ t('Frame style') }}</label>
+                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label for="frame-text-color" class="mb-1 block text-sm">{{
+                        t('Text color')
+                      }}</label>
+                      <input
+                        id="frame-text-color"
+                        type="color"
+                        class="color-input"
+                        v-model="frameStyle.textColor"
+                      />
+                    </div>
+                    <div>
+                      <label for="frame-bg-color" class="mb-1 block text-sm">{{
+                        t('Background color')
+                      }}</label>
+                      <input
+                        id="frame-bg-color"
+                        type="color"
+                        class="color-input"
+                        v-model="frameStyle.backgroundColor"
+                      />
+                    </div>
+                    <div>
+                      <label for="frame-border-color" class="mb-1 block text-sm">{{
+                        t('Border color')
+                      }}</label>
+                      <input
+                        id="frame-border-color"
+                        type="color"
+                        class="color-input"
+                        v-model="frameStyle.borderColor"
+                      />
+                    </div>
+                    <div>
+                      <label for="frame-border-width" class="mb-1 block text-sm">{{
+                        t('Border width')
+                      }}</label>
+                      <input
+                        id="frame-border-width"
+                        type="text"
+                        class="text-input"
+                        v-model="frameStyle.borderWidth"
+                        placeholder="1px"
+                      />
+                    </div>
+                    <div>
+                      <label for="frame-border-radius" class="mb-1 block text-sm">{{
+                        t('Border radius')
+                      }}</label>
+                      <input
+                        id="frame-border-radius"
+                        type="text"
+                        class="text-input"
+                        v-model="frameStyle.borderRadius"
+                        placeholder="8px"
+                      />
+                    </div>
+                    <div>
+                      <label for="frame-padding" class="mb-1 block text-sm">{{
+                        t('Padding')
+                      }}</label>
+                      <input
+                        id="frame-padding"
+                        type="text"
+                        class="text-input"
+                        v-model="frameStyle.padding"
+                        placeholder="16px"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </template>
+            </section>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="qr-code-settings">
           <AccordionTrigger
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
-            >{{ t('QR code settings') }}</AccordionTrigger
+            ><span id="qr-code-settings-title">{{ t('QR code settings') }}</span></AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
-            <div class="space-y-8">
+            <section class="space-y-8" aria-labelledby="qr-code-settings-title">
               <div>
                 <label>{{ t('Preset') }}</label>
                 <div class="flex flex-row items-center justify-start gap-2">
@@ -1376,14 +1380,14 @@ const updateDataFromModal = (newData: string) => {
                     :insert-divider-at-indexes="[0, 2]"
                   />
                   <button
-                    class="button"
+                    class="button grid size-10 place-items-center"
                     @click="randomizeStyleSettings"
                     :aria-label="t('Randomize style')"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="40"
-                      height="32"
+                      width="24"
+                      height="24"
                       viewBox="0 0 640 512"
                     >
                       <path
@@ -1881,7 +1885,7 @@ const updateDataFromModal = (newData: string) => {
                   </div>
                 </fieldset>
               </div>
-            </div>
+            </section>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
