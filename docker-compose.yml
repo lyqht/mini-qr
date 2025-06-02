@@ -6,6 +6,8 @@ services:
     ports:
       - 8081:8080
     restart: unless-stopped
+    environment:
+      - VITE_HIDE_CREDITS=${HIDE_CREDITS:-false}
     # Uncomment the following lines to build locally instead of pulling from ghcr.io
     # build:
     #   context: .

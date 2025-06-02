@@ -33,6 +33,9 @@ const floating = ref<HTMLElement | null>(null)
 const version = ref('...')
 const changelogContent = ref<string | null>(null)
 const isLoadingChangelog = ref(true)
+const hideCredits = ['1', 'true'].includes(
+  (import.meta.env.VITE_HIDE_CREDITS ?? '').toLowerCase()
+)
 
 async function fetchAndProcessChangelog() {
   if (changelogContent.value === null) {
@@ -245,6 +248,7 @@ onUnmounted(() => {
 
         <!-- Footer Section for Mobile (hidden on md and up) -->
         <div
+          v-if="!hideCredits"
           class="relative flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-400 md:hidden"
         >
           <div class="flex items-center justify-center gap-1">

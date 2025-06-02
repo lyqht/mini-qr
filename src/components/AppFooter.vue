@@ -17,6 +17,9 @@ const { t } = useI18n()
 const version = ref('...')
 const changelogContent = ref<string | null>(null)
 const isLoading = ref(true)
+const hideCredits = ['1', 'true'].includes(
+  (import.meta.env.VITE_HIDE_CREDITS ?? '').toLowerCase()
+)
 
 async function fetchAndProcessChangelog() {
   if (changelogContent.value === null) {
@@ -53,6 +56,7 @@ onMounted(() => {
 
 <template>
   <footer
+    v-if="!hideCredits"
     class="fixed inset-x-0 bottom-0 hidden p-4 text-sm text-zinc-600 dark:text-zinc-400 md:flex md:justify-center"
   >
     <div class="flex items-center gap-2">
