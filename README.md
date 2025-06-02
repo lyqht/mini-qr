@@ -141,6 +141,7 @@ docker run -d -p 8081:8080 mini-qr
 - You can edit `nginx.conf` or mount your own static files by uncommenting the `volumes` section in `docker-compose.yml`.
 - The production image uses Nginx for optimal static file serving.
 - The `.dockerignore` file is included for smaller, faster builds.
+- Set `HIDE_CREDITS=1` to remove the maintainer credit from the footer.
 
 ## Contributing
 
