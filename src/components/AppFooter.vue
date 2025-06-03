@@ -2,6 +2,7 @@
 import { marked } from 'marked'
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { fetchWithBasePath } from '@/utils/basePath'
 import {
   Dialog,
   DialogContent,
@@ -17,15 +18,13 @@ const { t } = useI18n()
 const version = ref('...')
 const changelogContent = ref<string | null>(null)
 const isLoading = ref(true)
-const hideCredits = ['1', 'true'].includes(
-  (import.meta.env.VITE_HIDE_CREDITS ?? '').toLowerCase()
-)
+const hideCredits = ['1', 'true'].includes((import.meta.env.VITE_HIDE_CREDITS ?? '').toLowerCase())
 
 async function fetchAndProcessChangelog() {
   if (changelogContent.value === null) {
     isLoading.value = true
     try {
-      const response = await fetch('/CHANGELOG.md')
+      const response = await fetchWithBasePath('/CHANGELOG.md')
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
@@ -69,33 +68,33 @@ onMounted(() => {
       >
       <span>|</span>
       <Dialog>
-          <DialogTrigger as-child>
-             <button class="secondary-button" :aria-label="t('View changelog')" :disabled="isLoading">
-                 {{ isLoading ? '...' : version }}
-             </button>
-          </DialogTrigger>
-          <DialogContent class="flex max-h-[80vh] flex-col sm:max-w-md" @open-auto-focus.prevent>
-            <DialogHeader>
-                <DialogTitle>{{ t('Changelog') }}</DialogTitle>
-                <DialogClose
-                class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
-                >
-                <X class="size-4" />
-                <span class="sr-only">{{ t('Close') }}</span>
-                </DialogClose>
-            </DialogHeader>
+        <DialogTrigger as-child>
+          <button class="secondary-button" :aria-label="t('View changelog')" :disabled="isLoading">
+            {{ isLoading ? '...' : version }}
+          </button>
+        </DialogTrigger>
+        <DialogContent class="flex max-h-[80vh] flex-col sm:max-w-md" @open-auto-focus.prevent>
+          <DialogHeader>
+            <DialogTitle>{{ t('Changelog') }}</DialogTitle>
+            <DialogClose
+              class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+            >
+              <X class="size-4" />
+              <span class="sr-only">{{ t('Close') }}</span>
+            </DialogClose>
+          </DialogHeader>
 
-            <div class="flex-1 overflow-y-auto pr-2">
-                <DialogDescription
-                as="div"
-                class="prose prose-sm max-w-none text-start dark:prose-invert prose-li:my-1"
-                >
-                <div v-if="isLoading">Loading...</div>
-                <div v-else-if="changelogContent" v-html="changelogContent"></div>
-                <div v-else>{{ t('Failed to load changelog') }}</div>
-                </DialogDescription>
-            </div>
-          </DialogContent>
+          <div class="flex-1 overflow-y-auto pr-2">
+            <DialogDescription
+              as="div"
+              class="prose prose-sm max-w-none text-start dark:prose-invert prose-li:my-1"
+            >
+              <div v-if="isLoading">Loading...</div>
+              <div v-else-if="changelogContent" v-html="changelogContent"></div>
+              <div v-else>{{ t('Failed to load changelog') }}</div>
+            </DialogDescription>
+          </div>
+        </DialogContent>
       </Dialog>
     </div>
   </footer>
