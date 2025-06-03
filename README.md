@@ -142,6 +142,8 @@ docker run -d -p 8081:8080 mini-qr
 - The production image uses Nginx for optimal static file serving.
 - The `.dockerignore` file is included for smaller, faster builds.
 - Set `HIDE_CREDITS=1` to remove the maintainer credit from the footer.
+- Set `DEFAULT_PRESET` or `FRAME_PRESET` to choose the default QR code and frame presets.
+- Override `PRESETS` or `FRAME_PRESETS` with a JSON array to fully customize presets.
 
 ## Contributing
 

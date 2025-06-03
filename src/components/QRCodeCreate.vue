@@ -26,8 +26,8 @@ import {
 import { parseCSV, validateCSVData } from '@/utils/csv'
 import { generateVCardData } from '@/utils/dataEncoding'
 import { getNumericCSSValue } from '@/utils/formatting'
-import { allPresets, type Preset } from '@/utils/presets'
-import { allFramePresets, type FramePreset } from '@/utils/framePresets'
+import { allPresets, defaultPreset, type Preset } from '@/utils/presets'
+import { allFramePresets, defaultFramePreset, type FramePreset } from '@/utils/framePresets'
 import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
 import {
@@ -65,7 +65,6 @@ const { t } = useI18n()
 //#endregion
 
 //#region /* QR code style settings */
-const defaultPreset = allPresets[0]
 const data = ref(props.initialData || '')
 const debouncedData = ref(data.value)
 let dataDebounceTimer: ReturnType<typeof setTimeout>
@@ -301,7 +300,6 @@ const frameStyle = ref<FrameStyle>({
   borderRadius: '8px',
   padding: '16px'
 })
-const defaultFramePreset = allFramePresets[0]
 const selectedFramePresetKey = ref<string>(defaultFramePreset.name)
 const lastCustomLoadedFramePreset = ref<FramePreset>()
 const CUSTOM_LOADED_FRAME_PRESET_KEYS = [

@@ -8,6 +8,10 @@ services:
     restart: unless-stopped
     environment:
       - VITE_HIDE_CREDITS=${HIDE_CREDITS:-false}
+      - VITE_DEFAULT_PRESET=${DEFAULT_PRESET:-}
+      - VITE_PRESETS=${PRESETS:-}
+      - VITE_FRAME_PRESET=${FRAME_PRESET:-}
+      - VITE_FRAME_PRESETS=${FRAME_PRESETS:-}
     # Uncomment the following lines to build locally instead of pulling from ghcr.io
     # build:
     #   context: .
