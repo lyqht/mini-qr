@@ -1,17 +1,37 @@
 ---
 services:
   mini-qr:
-    image: ghcr.io/lyqht/mini-qr:latest
+    # image: ghcr.io/lyqht/mini-qr:latest
     container_name: mini-qr
-    ports:
-      - 8081:8080
     restart: unless-stopped
     environment:
       - VITE_HIDE_CREDITS=${HIDE_CREDITS:-false}
+      - BASE_PATH=${BASE_PATH:-/}
     # Uncomment the following lines to build locally instead of pulling from ghcr.io
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BASE_PATH=${BASE_PATH:-/}
     # volumes:
     #   - ./public:/usr/share/nginx/html/public:ro
     #   - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - mini-qr-network
+
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - 80:80
+    restart: unless-stopped
+    volumes:
+      - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - mini-qr
+    networks:
+      - mini-qr-network
+
+networks:
+  mini-qr-network:
+    driver: bridge

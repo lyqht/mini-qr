@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_HIDE_CREDITS?: string
+  readonly BASE_PATH?: string
 }
 
 interface ImportMeta {

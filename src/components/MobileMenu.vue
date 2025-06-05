@@ -4,6 +4,7 @@ import { useFloating, offset, flip, shift, autoUpdate } from '@floating-ui/vue'
 import LanguageSelector from '@/components/LanguageSelector.vue'
 import { useI18n } from 'vue-i18n'
 import { marked } from 'marked'
+import { fetchWithBasePath } from '@/utils/basePath'
 import {
   Dialog,
   DialogContent,
@@ -33,15 +34,13 @@ const floating = ref<HTMLElement | null>(null)
 const version = ref('...')
 const changelogContent = ref<string | null>(null)
 const isLoadingChangelog = ref(true)
-const hideCredits = ['1', 'true'].includes(
-  (import.meta.env.VITE_HIDE_CREDITS ?? '').toLowerCase()
-)
+const hideCredits = ['1', 'true'].includes((import.meta.env.VITE_HIDE_CREDITS ?? '').toLowerCase())
 
 async function fetchAndProcessChangelog() {
   if (changelogContent.value === null) {
     isLoadingChangelog.value = true
     try {
-      const response = await fetch('/CHANGELOG.md')
+      const response = await fetchWithBasePath('/CHANGELOG.md')
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }

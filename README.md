@@ -142,6 +142,32 @@ docker run -d -p 8081:8080 mini-qr
 - The production image uses Nginx for optimal static file serving.
 - The `.dockerignore` file is included for smaller, faster builds.
 - Set `HIDE_CREDITS=1` to remove the maintainer credit from the footer.
+- Set `BASE_PATH=/your-path` to deploy the app under a subdirectory (e.g., for hosting at `domain.com/your-path`).
+
+#### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `HIDE_CREDITS` | Hide credits in the footer | `false` |
+| `BASE_PATH` | Base path for deployment | `/` |
+
+#### Examples
+
+Deploy at root path (default):
+```bash
+docker compose up -d
+```
+
+Deploy at subdirectory `/mini-qr`:
+```bash
+BASE_PATH=/mini-qr docker compose up -d
+```
+
+For custom builds with specific BASE_PATH:
+```bash
+docker build --build-arg BASE_PATH=/mini-qr -t mini-qr .
+docker run -d -p 8081:8080 mini-qr
+```
 
 ## Contributing
 
