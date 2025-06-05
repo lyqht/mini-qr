@@ -138,22 +138,25 @@ docker run -d -p 8081:8080 mini-qr
 
 ### Customization
 
+#### Environment Variables
+
+| Variable                     | Description                                                                        | Default   |
+| ---------------------------- | ---------------------------------------------------------------------------------- | --------- |
+| `BASE_PATH`                  | Base path for deployment                                                           | `/`       |
+| `VITE_HIDE_CREDITS`          | Set to `"true"` to hide credits in the footer                                      | `"false"` |
+| `VITE_DEFAULT_PRESET`        | Name of the default QR code preset to load (e.g., `"lyqht"`)                       | `""`      |
+| `VITE_QR_CODE_PRESETS`       | JSON string defining custom QR code presets. E.g., `'[{"name":"c1","data":"hi"}]'` | `"[]"`    |
+| `VITE_FRAME_PRESET`          | Name of the default frame preset to load (e.g., `"default"`)                       | `""`      |
+| `VITE_FRAME_PRESETS`         | JSON string defining custom frame presets. E.g., `'[{"name":"fA","text":"QR"}]'`   | `"[]"`    |
+| `VITE_DISABLE_LOCAL_STORAGE` | Set to `"true"` to disable loading saved settings from local storage on startup    | `"false"` |
+
+### Docker configuration
+
 - You can edit `nginx.conf` or mount your own static files by uncommenting the `volumes` section in `docker-compose.yml`.
 - The production image uses Nginx for optimal static file serving.
 - The `.dockerignore` file is included for smaller, faster builds.
-- Set `VITE_HIDE_CREDITS="true"` to remove the maintainer credit from the footer.
 - Set `BASE_PATH=/your-path` to deploy the app under a subdirectory (e.g., for hosting at `domain.com/your-path`).
-
-#### Environment Variables
-
-| Variable               | Description                                                                        | Default   |
-| ---------------------- | ---------------------------------------------------------------------------------- | --------- |
-| `BASE_PATH`            | Base path for deployment                                                           | `/`       |
-| `VITE_HIDE_CREDITS`    | Set to `"true"` to hide credits in the footer                                      | `"false"` |
-| `VITE_DEFAULT_PRESET`  | Name of the default QR code preset to load (e.g., `"lyqht"`)                       | `""`      |
-| `VITE_QR_CODE_PRESETS` | JSON string defining custom QR code presets. E.g., `'[{"name":"c1","data":"hi"}]'` | `"[]"`    |
-| `VITE_FRAME_PRESET`    | Name of the default frame preset to load (e.g., `"default"`)                       | `""`      |
-| `VITE_FRAME_PRESETS`   | JSON string defining custom frame presets. E.g., `'[{"name":"fA","text":"QR"}]'`   | `"[]"`    |
+- If you want to have a default preset to be fixed, you should set `VITE_DISABLE_LOCAL_STORAGE=true`
 
 #### Examples
 
