@@ -83,7 +83,7 @@ The project is a modern Vite-powered Vue.js 3 application with TypeScript suppor
 
 **Utilities (`src/utils/`):**
 
-- `presets.ts`: QR code style presets and preset management
+ - `qrCodePresets.ts`: QR code style presets and preset management
 - `dataEncoding.ts`: Data encoding/decoding utilities for different QR code types
 - `convertToImage.ts`: Image conversion and export utilities (PNG, JPG, SVG)
 - `csv.ts`: CSV parsing and validation for batch operations
@@ -210,7 +210,7 @@ const yourNewPreset = {
 }
 ```
 
-Then add it to the `allPresets` array in `src/utils/presets.ts`. New presets should always be added as the last item in the array.
+Then add it to the `allQrCodePresets` array in `src/utils/qrCodePresets.ts`. New presets should always be added as the last item in the array.
 
 You will then see your new preset in the Presets dropdown in the website.
 

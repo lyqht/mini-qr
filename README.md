@@ -141,29 +141,36 @@ docker run -d -p 8081:8080 mini-qr
 - You can edit `nginx.conf` or mount your own static files by uncommenting the `volumes` section in `docker-compose.yml`.
 - The production image uses Nginx for optimal static file serving.
 - The `.dockerignore` file is included for smaller, faster builds.
-- Set `HIDE_CREDITS=1` to remove the maintainer credit from the footer.
+- Set `VITE_HIDE_CREDITS="true"` to remove the maintainer credit from the footer.
 - Set `BASE_PATH=/your-path` to deploy the app under a subdirectory (e.g., for hosting at `domain.com/your-path`).
 
 #### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `HIDE_CREDITS` | Hide credits in the footer | `false` |
-| `BASE_PATH` | Base path for deployment | `/` |
+| Variable               | Description                                                                        | Default   |
+| ---------------------- | ---------------------------------------------------------------------------------- | --------- |
+| `BASE_PATH`            | Base path for deployment                                                           | `/`       |
+| `VITE_HIDE_CREDITS`    | Set to `"true"` to hide credits in the footer                                      | `"false"` |
+| `VITE_DEFAULT_PRESET`  | Name of the default QR code preset to load (e.g., `"lyqht"`)                       | `""`      |
+| `VITE_QR_CODE_PRESETS` | JSON string defining custom QR code presets. E.g., `'[{"name":"c1","data":"hi"}]'` | `"[]"`    |
+| `VITE_FRAME_PRESET`    | Name of the default frame preset to load (e.g., `"default"`)                       | `""`      |
+| `VITE_FRAME_PRESETS`   | JSON string defining custom frame presets. E.g., `'[{"name":"fA","text":"QR"}]'`   | `"[]"`    |
 
 #### Examples
 
 Deploy at root path (default):
+
 ```bash
 docker compose up -d
 ```
 
 Deploy at subdirectory `/mini-qr`:
+
 ```bash
 BASE_PATH=/mini-qr docker compose up -d
 ```
 
 For custom builds with specific BASE_PATH:
+
 ```bash
 docker build --build-arg BASE_PATH=/mini-qr -t mini-qr .
 docker run -d -p 8081:8080 mini-qr
