@@ -11,6 +11,7 @@ services:
       - VITE_QR_CODE_PRESETS=${PRESETS:-}
       - VITE_FRAME_PRESET=${FRAME_PRESET:-}
       - VITE_FRAME_PRESETS=${FRAME_PRESETS:-}
+      - VITE_DISABLE_LOCAL_STORAGE=${DISABLE_LOCAL_STORAGE:-false}
     # Uncomment the following lines to build locally instead of pulling from ghcr.io
     build:
       context: .

@@ -243,14 +243,22 @@ watch(selectedPreset, () => {
 const LAST_LOADED_LOCALLY_PRESET_KEY = 'Last saved locally'
 const LOADED_FROM_FILE_PRESET_KEY = 'Loaded from file'
 const CUSTOM_LOADED_PRESET_KEYS = [LAST_LOADED_LOCALLY_PRESET_KEY, LOADED_FROM_FILE_PRESET_KEY]
-const selectedPresetKey = ref<string>(LAST_LOADED_LOCALLY_PRESET_KEY)
+const selectedPresetKey = ref<string>(
+  import.meta.env.VITE_DISABLE_LOCAL_STORAGE === 'true'
+    ? defaultPreset.name
+    : LAST_LOADED_LOCALLY_PRESET_KEY
+)
 const lastCustomLoadedPreset = ref<Preset>()
 watch(
   selectedPresetKey,
   (newKey, prevKey) => {
     if (newKey === prevKey || !newKey) return
 
-    if (CUSTOM_LOADED_PRESET_KEYS.includes(newKey) && lastCustomLoadedPreset.value) {
+    if (
+      import.meta.env.VITE_DISABLE_LOCAL_STORAGE !== 'true' &&
+      CUSTOM_LOADED_PRESET_KEYS.includes(newKey) &&
+      lastCustomLoadedPreset.value
+    ) {
       selectedPreset.value = lastCustomLoadedPreset.value
       return
     }
@@ -325,7 +333,11 @@ watch(
   (newKey, prevKey) => {
     if (newKey === prevKey || !newKey) return
 
-    if (CUSTOM_LOADED_FRAME_PRESET_KEYS.includes(newKey) && lastCustomLoadedFramePreset.value) {
+    if (
+      import.meta.env.VITE_DISABLE_LOCAL_STORAGE !== 'true' &&
+      CUSTOM_LOADED_FRAME_PRESET_KEYS.includes(newKey) &&
+      lastCustomLoadedFramePreset.value
+    ) {
       applyFramePreset(lastCustomLoadedFramePreset.value)
       return
     }
@@ -586,7 +598,19 @@ watch(
 )
 
 onMounted(() => {
-  loadQRConfigFromLocalStorage()
+  if (import.meta.env.VITE_DISABLE_LOCAL_STORAGE !== 'true') {
+    const qrCodeConfigString = localStorage.getItem('qrCodeConfig')
+    if (qrCodeConfigString) {
+      loadQRConfig(qrCodeConfigString, LAST_LOADED_LOCALLY_PRESET_KEY)
+    }
+    // No separate frameConfig loading from localStorage noted,
+    // assuming selectedFramePresetKey watcher handles it if lastCustomLoadedFramePreset was populated by loadQRConfig
+  }
+
+  // Set initial data if provided through props
+  if (props.initialData) {
+    data.value = props.initialData
+  }
 })
 //#endregion
 
