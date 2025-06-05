@@ -14,7 +14,7 @@ export interface FramePreset {
   position?: 'top' | 'bottom' | 'left' | 'right'
 }
 
-export const defaultFramePreset: FramePreset = {
+export const plainFramePreset: FramePreset = {
   name: 'Default Frame',
   style: {
     textColor: '#000000',
@@ -50,8 +50,24 @@ export const borderlessFramePreset: FramePreset = {
   }
 }
 
-export const allFramePresets: FramePreset[] = [
-  defaultFramePreset,
+export const builtInFramePresets: FramePreset[] = [
+  plainFramePreset,
   darkFramePreset,
   borderlessFramePreset
 ]
+
+function parseFramePresetsFromEnv(envVal?: string): FramePreset[] | undefined {
+  if (!envVal) return undefined
+  try {
+    return JSON.parse(envVal) as FramePreset[]
+  } catch (err) {
+    console.error('Failed to parse VITE_FRAME_PRESETS', err)
+    return undefined
+  }
+}
+
+const envFramePresets = parseFramePresetsFromEnv(import.meta.env.VITE_FRAME_PRESETS)
+export const allFramePresets: FramePreset[] = envFramePresets ?? builtInFramePresets
+
+export const defaultFramePreset: FramePreset =
+  allFramePresets.find((p) => p.name === import.meta.env.VITE_FRAME_PRESET) ?? allFramePresets[0]
