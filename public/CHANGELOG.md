@@ -1,3 +1,10 @@
+## v0.23.0 (2025-06-08)
+- ✨ Add environment variables for presets and local storage configuration ([#167](https://github.com/lyqht/mini-qr/pull/167))
+- ✨ add BASE_PATH support for deployment and update environment variables ([#165](https://github.com/lyqht/mini-qr/pull/165))
+- ✨ add option to hide maintainer credits ([#163](https://github.com/lyqht/mini-qr/pull/163))
+- 🔧 Update italian translations ([#166](https://github.com/lyqht/mini-qr/pull/166))
+- 🔧 add VITE_DEFAULT_DATA_TO_ENCODE variable to .env.example, README, docker-compose.yml, and env.d.ts files to provide a default data value for encoding in the app ([#170](https://github.com/lyqht/mini-qr/pull/170))
+
 ## v0.22.0 (2025-05-31)
 - ✨ Add frame preset feature ([#161](https://github.com/lyqht/mini-qr/pull/161))
 - ✨ debounce QR code generation ([#157](https://github.com/lyqht/mini-qr/pull/157))
