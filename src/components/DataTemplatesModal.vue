@@ -621,7 +621,7 @@ const closeModal = () => {
           <p v-if="isFieldInvalid('emailAddress')" class="mt-1 text-sm text-red-500">
             {{ t('Email address is required') }}
           </p>
-          <label for="emailCc" class="label">{{ t('CC') }}</label>
+          <label for="emailCc" class="label sr-only">{{ t('CC') }}</label>
           <input
             type="email"
             id="emailCc"
@@ -629,7 +629,7 @@ const closeModal = () => {
             :placeholder="t('Optional CC')"
             class="text-input"
           />
-          <label for="emailBcc" class="label">{{ t('BCC') }}</label>
+          <label for="emailBcc" class="label sr-only">{{ t('BCC') }}</label>
           <input
             type="email"
             id="emailBcc"
