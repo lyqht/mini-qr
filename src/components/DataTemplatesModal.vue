@@ -29,6 +29,8 @@ const urlData = ref('')
 const emailAddress = ref('')
 const emailSubject = ref('')
 const emailBody = ref('')
+const emailCc = ref('')
+const emailBcc = ref('')
 
 // Phone refs
 const phoneNumber = ref('')
@@ -185,6 +187,8 @@ const detectAndSetDataType = (data: string) => {
       emailAddress.value = (result.parsedData.address as string) || ''
       emailSubject.value = (result.parsedData.subject as string) || ''
       emailBody.value = (result.parsedData.body as string) || ''
+      emailCc.value = (result.parsedData.cc as string) || ''
+      emailBcc.value = (result.parsedData.bcc as string) || ''
       break
 
     case 'phone':
@@ -333,7 +337,9 @@ const generateDataString = () => {
       generatedString = generateEmailData({
         address: emailAddress.value,
         subject: emailSubject.value,
-        body: emailBody.value
+        body: emailBody.value,
+        cc: emailCc.value,
+        bcc: emailBcc.value
       })
       break
     case 'phone':
@@ -415,6 +421,8 @@ const fillWithExampleData = () => {
       emailAddress.value = 'test@example.com'
       emailSubject.value = 'QR Code Test'
       emailBody.value = 'This is a test email from MiniQR!'
+      emailCc.value = 'cc@example.com'
+      emailBcc.value = 'bcc@example.com'
       break
     case 'phone':
       phoneNumber.value = '+19876543210'
@@ -619,6 +627,22 @@ const closeModal = () => {
             id="emailSubject"
             v-model="emailSubject"
             :placeholder="t('Optional subject line')"
+            class="text-input"
+          />
+          <label for="emailCc" class="label">{{ t('CC') }}</label>
+          <input
+            type="email"
+            id="emailCc"
+            v-model="emailCc"
+            :placeholder="t('Optional CC')"
+            class="text-input"
+          />
+          <label for="emailBcc" class="label">{{ t('BCC') }}</label>
+          <input
+            type="email"
+            id="emailBcc"
+            v-model="emailBcc"
+            :placeholder="t('Optional BCC')"
             class="text-input"
           />
           <label for="emailBody" class="label">{{ t('Message') }}</label>

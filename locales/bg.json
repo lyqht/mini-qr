@@ -238,5 +238,9 @@
   "Error": "Грешка",
   "Failed to load changelog": "Неуспешно зареждане на списъка с промените",
   "Loading...": "Зареждане...",
-  "th": "Тайландски"
+  "th": "Тайландски",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

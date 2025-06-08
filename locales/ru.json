@@ -238,5 +238,9 @@
   "Error": "Ошибка",
   "Failed to load changelog": "Не удалось загрузить журнал изменений",
   "Loading...": "Загрузка...",
-  "th": "Тайский"
+  "th": "Тайский",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

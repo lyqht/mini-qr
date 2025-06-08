@@ -238,5 +238,9 @@
   "Error": "Fejl",
   "Failed to load changelog": "Kunne ikke indlæse changelog",
   "Loading...": "Indlæser...",
-  "th": "Thai"
+  "th": "Thai",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

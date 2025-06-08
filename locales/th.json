@@ -238,5 +238,9 @@
   "Error": "ข้อผิดพลาด",
   "Failed to load changelog": "ไม่สามารถโหลดประวัติการเปลี่ยนแปลงได้",
   "Loading...": "กำลังโหลด...",
-  "th": "ไทย"
+  "th": "ไทย",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

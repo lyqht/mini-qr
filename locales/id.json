@@ -238,5 +238,9 @@
   "Error": "Kesalahan",
   "Failed to load changelog": "Gagal memuat log perubahan",
   "Loading...": "Memuat...",
-  "th": "Thailand"
+  "th": "Thailand",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

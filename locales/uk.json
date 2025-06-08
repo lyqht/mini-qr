@@ -238,5 +238,9 @@
   "Error": "Помилка.",
   "Failed to load changelog": "Не вдалося завантажити журнал змін",
   "Loading...": "Завантаження...",
-  "th": "Тайська"
+  "th": "Тайська",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

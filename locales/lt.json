@@ -238,5 +238,9 @@
   "Error": "Klaida",
   "Failed to load changelog": "Nepavyko įkelti pakeitimų žurnalo",
   "Loading...": "Pakraunama...",
-  "th": "Tailando"
+  "th": "Tailando",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }
