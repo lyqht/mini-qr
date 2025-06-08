@@ -65,7 +65,7 @@ const { t } = useI18n()
 //#endregion
 
 //#region /* QR code style settings */
-const data = ref(props.initialData || '')
+const data = ref(props.initialData || import.meta.env.VITE_DEFAULT_DATA_TO_ENCODE || '')
 const debouncedData = ref(data.value)
 let dataDebounceTimer: ReturnType<typeof setTimeout>
 
