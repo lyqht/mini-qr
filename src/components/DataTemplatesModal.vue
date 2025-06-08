@@ -621,14 +621,6 @@ const closeModal = () => {
           <p v-if="isFieldInvalid('emailAddress')" class="mt-1 text-sm text-red-500">
             {{ t('Email address is required') }}
           </p>
-          <label for="emailSubject" class="label">{{ t('Subject') }}</label>
-          <input
-            type="text"
-            id="emailSubject"
-            v-model="emailSubject"
-            :placeholder="t('Optional subject line')"
-            class="text-input"
-          />
           <label for="emailCc" class="label">{{ t('CC') }}</label>
           <input
             type="email"
@@ -643,6 +635,14 @@ const closeModal = () => {
             id="emailBcc"
             v-model="emailBcc"
             :placeholder="t('Optional BCC')"
+            class="text-input"
+          />
+          <label for="emailSubject" class="label">{{ t('Subject') }}</label>
+          <input
+            type="text"
+            id="emailSubject"
+            v-model="emailSubject"
+            :placeholder="t('Optional subject line')"
             class="text-input"
           />
           <label for="emailBody" class="label">{{ t('Message') }}</label>
