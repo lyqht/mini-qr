@@ -26,8 +26,8 @@ import {
 import { parseCSV, validateCSVData } from '@/utils/csv'
 import { generateVCardData } from '@/utils/dataEncoding'
 import { getNumericCSSValue } from '@/utils/formatting'
-import { allPresets, type Preset } from '@/utils/presets'
-import { allFramePresets, type FramePreset } from '@/utils/framePresets'
+import { allQrCodePresets, defaultPreset, type Preset } from '@/utils/qrCodePresets'
+import { allFramePresets, defaultFramePreset, type FramePreset } from '@/utils/framePresets'
 import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
 import {
@@ -65,7 +65,6 @@ const { t } = useI18n()
 //#endregion
 
 //#region /* QR code style settings */
-const defaultPreset = allPresets[0]
 const data = ref(props.initialData || '')
 const debouncedData = ref(data.value)
 let dataDebounceTimer: ReturnType<typeof setTimeout>
@@ -207,8 +206,8 @@ function uploadImage() {
 const isPresetSelectOpen = ref(false)
 const allPresetOptions = computed(() => {
   const options = lastCustomLoadedPreset.value
-    ? [lastCustomLoadedPreset.value, ...allPresets]
-    : allPresets
+    ? [lastCustomLoadedPreset.value, ...allQrCodePresets]
+    : allQrCodePresets
   return options.map((preset) => ({ value: preset.name, label: t(preset.name) }))
 })
 const selectedPreset = ref<
@@ -244,19 +243,29 @@ watch(selectedPreset, () => {
 const LAST_LOADED_LOCALLY_PRESET_KEY = 'Last saved locally'
 const LOADED_FROM_FILE_PRESET_KEY = 'Loaded from file'
 const CUSTOM_LOADED_PRESET_KEYS = [LAST_LOADED_LOCALLY_PRESET_KEY, LOADED_FROM_FILE_PRESET_KEY]
-const selectedPresetKey = ref<string>(LAST_LOADED_LOCALLY_PRESET_KEY)
+const selectedPresetKey = ref<string>(
+  import.meta.env.VITE_DISABLE_LOCAL_STORAGE === 'true'
+    ? defaultPreset.name
+    : localStorage.getItem('qrCodeConfig')
+      ? LAST_LOADED_LOCALLY_PRESET_KEY
+      : defaultPreset.name
+)
 const lastCustomLoadedPreset = ref<Preset>()
 watch(
   selectedPresetKey,
   (newKey, prevKey) => {
     if (newKey === prevKey || !newKey) return
 
-    if (CUSTOM_LOADED_PRESET_KEYS.includes(newKey) && lastCustomLoadedPreset.value) {
+    if (
+      import.meta.env.VITE_DISABLE_LOCAL_STORAGE !== 'true' &&
+      CUSTOM_LOADED_PRESET_KEYS.includes(newKey) &&
+      lastCustomLoadedPreset.value
+    ) {
       selectedPreset.value = lastCustomLoadedPreset.value
       return
     }
 
-    const updatedPreset = allPresets.find((preset) => preset.name === newKey)
+    const updatedPreset = allQrCodePresets.find((preset) => preset.name === newKey)
     if (updatedPreset) {
       selectedPreset.value = updatedPreset
     }
@@ -301,7 +310,6 @@ const frameStyle = ref<FrameStyle>({
   borderRadius: '8px',
   padding: '16px'
 })
-const defaultFramePreset = allFramePresets[0]
 const selectedFramePresetKey = ref<string>(defaultFramePreset.name)
 const lastCustomLoadedFramePreset = ref<FramePreset>()
 const CUSTOM_LOADED_FRAME_PRESET_KEYS = [
@@ -327,7 +335,11 @@ watch(
   (newKey, prevKey) => {
     if (newKey === prevKey || !newKey) return
 
-    if (CUSTOM_LOADED_FRAME_PRESET_KEYS.includes(newKey) && lastCustomLoadedFramePreset.value) {
+    if (
+      import.meta.env.VITE_DISABLE_LOCAL_STORAGE !== 'true' &&
+      CUSTOM_LOADED_FRAME_PRESET_KEYS.includes(newKey) &&
+      lastCustomLoadedFramePreset.value
+    ) {
       applyFramePreset(lastCustomLoadedFramePreset.value)
       return
     }
@@ -588,7 +600,23 @@ watch(
 )
 
 onMounted(() => {
-  loadQRConfigFromLocalStorage()
+  if (import.meta.env.VITE_DISABLE_LOCAL_STORAGE !== 'true') {
+    const qrCodeConfigString = localStorage.getItem('qrCodeConfig')
+    if (qrCodeConfigString) {
+      loadQRConfig(qrCodeConfigString, LAST_LOADED_LOCALLY_PRESET_KEY)
+    } else {
+      // No localStorage data found, use the environment variable default preset
+      selectedPreset.value = { ...defaultPreset }
+      selectedPresetKey.value = defaultPreset.name
+    }
+    // No separate frameConfig loading from localStorage noted,
+    // assuming selectedFramePresetKey watcher handles it if lastCustomLoadedFramePreset was populated by loadQRConfig
+  }
+
+  // Set initial data if provided through props
+  if (props.initialData) {
+    data.value = props.initialData
+  }
 })
 //#endregion
 
