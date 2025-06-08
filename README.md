@@ -140,15 +140,16 @@ docker run -d -p 8081:8080 mini-qr
 
 #### Environment Variables
 
-| Variable                     | Description                                                                        | Default   |
-| ---------------------------- | ---------------------------------------------------------------------------------- | --------- |
-| `BASE_PATH`                  | Base path for deployment                                                           | `/`       |
-| `VITE_HIDE_CREDITS`          | Set to `"true"` to hide credits in the footer                                      | `"false"` |
-| `VITE_DEFAULT_PRESET`        | Name of the default QR code preset to load (e.g., `"lyqht"`)                       | `""`      |
-| `VITE_QR_CODE_PRESETS`       | JSON string defining custom QR code presets. E.g., `'[{"name":"c1","data":"hi"}]'` | `"[]"`    |
-| `VITE_FRAME_PRESET`          | Name of the default frame preset to load (e.g., `"default"`)                       | `""`      |
-| `VITE_FRAME_PRESETS`         | JSON string defining custom frame presets. E.g., `'[{"name":"fA","text":"QR"}]'`   | `"[]"`    |
-| `VITE_DISABLE_LOCAL_STORAGE` | Set to `"true"` to disable loading saved settings from local storage on startup    | `"false"` |
+| Variable                      | Description                                                                        | Default   |
+| ----------------------------- | ---------------------------------------------------------------------------------- | --------- |
+| `BASE_PATH`                   | Base path for deployment                                                           | `/`       |
+| `VITE_HIDE_CREDITS`           | Set to `"true"` to hide credits in the footer                                      | `"false"` |
+| `VITE_DEFAULT_PRESET`         | Name of the default QR code preset to load (e.g., `"lyqht"`)                       | `""`      |
+| `VITE_DEFAULT_DATA_TO_ENCODE` | Default data to encode when the app first loads                                    | `""`      |
+| `VITE_QR_CODE_PRESETS`        | JSON string defining custom QR code presets. E.g., `'[{"name":"c1","data":"hi"}]'` | `"[]"`    |
+| `VITE_FRAME_PRESET`           | Name of the default frame preset to load (e.g., `"default"`)                       | `""`      |
+| `VITE_FRAME_PRESETS`          | JSON string defining custom frame presets. E.g., `'[{"name":"fA","text":"QR"}]'`   | `"[]"`    |
+| `VITE_DISABLE_LOCAL_STORAGE`  | Set to `"true"` to disable loading saved settings from local storage on startup    | `"false"` |
 
 ### Docker configuration
 
