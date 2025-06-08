@@ -246,7 +246,9 @@ const CUSTOM_LOADED_PRESET_KEYS = [LAST_LOADED_LOCALLY_PRESET_KEY, LOADED_FROM_F
 const selectedPresetKey = ref<string>(
   import.meta.env.VITE_DISABLE_LOCAL_STORAGE === 'true'
     ? defaultPreset.name
-    : LAST_LOADED_LOCALLY_PRESET_KEY
+    : localStorage.getItem('qrCodeConfig')
+      ? LAST_LOADED_LOCALLY_PRESET_KEY
+      : defaultPreset.name
 )
 const lastCustomLoadedPreset = ref<Preset>()
 watch(
@@ -602,6 +604,10 @@ onMounted(() => {
     const qrCodeConfigString = localStorage.getItem('qrCodeConfig')
     if (qrCodeConfigString) {
       loadQRConfig(qrCodeConfigString, LAST_LOADED_LOCALLY_PRESET_KEY)
+    } else {
+      // No localStorage data found, use the environment variable default preset
+      selectedPreset.value = { ...defaultPreset }
+      selectedPresetKey.value = defaultPreset.name
     }
     // No separate frameConfig loading from localStorage noted,
     // assuming selectedFramePresetKey watcher handles it if lastCustomLoadedFramePreset was populated by loadQRConfig
