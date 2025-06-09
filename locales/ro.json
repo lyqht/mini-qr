@@ -238,5 +238,9 @@
   "Error": "Eroare",
   "Failed to load changelog": "A eșuat încărcarea jurnalului de schimbări",
   "Loading...": "Încărcare...",
-  "th": "Thailandeză"
+  "th": "Thailandeză",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

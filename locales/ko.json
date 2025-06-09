@@ -238,5 +238,9 @@
   "Error": "오류",
   "Failed to load changelog": "변경 로그를 로드하지 못했습니다.",
   "Loading...": "로드 중...",
-  "th": "Thai"
+  "th": "Thai",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

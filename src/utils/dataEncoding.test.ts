@@ -37,13 +37,31 @@ describe('Data Encoding Functions', () => {
       'mailto:test@example.com?body=Hello%20there'
     )
     expect(
+      generateEmailData({ address: 'test@example.com', cc: 'a@test.com', bcc: 'b@test.com' })
+    ).toBe('mailto:test@example.com?cc=a%40test.com&bcc=b%40test.com')
+    expect(
       generateEmailData({
         address: 'test@example.com',
         subject: 'Hi & Bye',
         body: 'Line 1\nLine 2'
       })
     ).toBe('mailto:test@example.com?subject=Hi%20%26%20Bye&body=Line%201%0ALine%202')
+    expect(
+      generateEmailData({ address: 'test@example.com', subject: 'Hello', cc: 'a@test.com' })
+    ).toBe('mailto:test@example.com?subject=Hello&cc=a%40test.com')
     expect(generateEmailData({ address: '' })).toBe('')
+  })
+
+  it('generateEmailData handles multiple emails in CC/BCC correctly', () => {
+    expect(
+      generateEmailData({
+        address: 'test@example.com',
+        cc: 'cc1@test.com,cc2@test.com',
+        bcc: 'bcc1@test.com,bcc2@test.com'
+      })
+    ).toBe(
+      'mailto:test@example.com?cc=cc1%40test.com%2Ccc2%40test.com&bcc=bcc1%40test.com%2Cbcc2%40test.com'
+    )
   })
 
   it('generatePhoneData formats tel string correctly', () => {
@@ -244,11 +262,27 @@ describe('Data Type Detection Functions', () => {
   })
 
   it('detectDataType identifies email links', () => {
-    const result = detectDataType('mailto:test@example.com?subject=Hello&body=Hi%20there')
+    const result = detectDataType(
+      'mailto:test@example.com?subject=Hello&body=Hi%20there&cc=cc@test.com&bcc=b@test.com'
+    )
     expect(result.type).toBe('email')
     expect(result.parsedData.address).toBe('test@example.com')
     expect(result.parsedData.subject).toBe('Hello')
     expect(result.parsedData.body).toBe('Hi there')
+    expect(result.parsedData.cc).toBe('cc@test.com')
+    expect(result.parsedData.bcc).toBe('b@test.com')
+  })
+
+  it('detectDataType identifies email links with multiple CC/BCC addresses', () => {
+    const result = detectDataType(
+      'mailto:test@example.com?subject=Hello&body=Hi%20there&cc=cc1@test.com,cc2@test.com&bcc=bcc1@test.com,bcc2@test.com'
+    )
+    expect(result.type).toBe('email')
+    expect(result.parsedData.address).toBe('test@example.com')
+    expect(result.parsedData.subject).toBe('Hello')
+    expect(result.parsedData.body).toBe('Hi there')
+    expect(result.parsedData.cc).toBe('cc1@test.com,cc2@test.com')
+    expect(result.parsedData.bcc).toBe('bcc1@test.com,bcc2@test.com')
   })
 
   it('detectDataType identifies phone numbers', () => {

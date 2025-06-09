@@ -238,5 +238,9 @@
   "Error": "Fel",
   "Failed to load changelog": "Misslyckades med att ladda changelog",
   "Loading...": "Laddar...",
-  "th": "Thai"
+  "th": "Thai",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

@@ -213,6 +213,7 @@ Thank you for everyone here for taking their time out to improve MiniQR 🧡
       <td align="center" valign="top" width="16.66%"><a href="https://furycode.org/"><img src="https://avatars.githubusercontent.com/u/22378039?v=4?s=48" width="48px;" alt="Klemens Graf"/><br /><sub><b>Klemens Graf</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=klemensgraf" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/unililium"><img src="https://avatars.githubusercontent.com/u/3117172?v=4?s=48" width="48px;" alt="林都"/><br /><sub><b>林都</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=unililium" title="Code">💻</a> <a href="#translation-unililium" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/seals187"><img src="https://avatars.githubusercontent.com/u/86856086?v=4?s=48" width="48px;" alt="seals187"/><br /><sub><b>seals187</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/pulls?q=is%3Apr+reviewed-by%3Aseals187" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/olvier"><img src="https://avatars.githubusercontent.com/u/13106409?v=4?s=48" width="48px;" alt="olvier"/><br /><sub><b>olvier</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/pulls?q=is%3Apr+reviewed-by%3Aolvier" title="Reviewed Pull Requests">👀</a></td>
     </tr>
   </tbody>
   <tfoot>

@@ -238,5 +238,9 @@
   "Error": "Viga",
   "Failed to load changelog": "Ei õnnestunud laadida muutuste logi",
   "Loading...": "Laadimine...",
-  "th": "Tai"
+  "th": "Tai",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

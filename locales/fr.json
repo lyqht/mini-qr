@@ -238,5 +238,9 @@
   "Error": "Erreur",
   "Failed to load changelog": "Échec du chargement du changelog",
   "Loading...": "Chargement...",
-  "th": "Thaïlande"
+  "th": "Thaïlande",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

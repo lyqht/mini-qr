@@ -238,5 +238,9 @@
   "Error": "Virhe",
   "Failed to load changelog": "Changelogin lataaminen epäonnistui",
   "Loading...": "Ladataan...",
-  "th": "Thai"
+  "th": "Thai",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

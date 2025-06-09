@@ -238,5 +238,9 @@
   "Error": "Erro",
   "Failed to load changelog": "Falha ao carregar o changelog",
   "Loading...": "Carregando...",
-  "th": "Tailandês"
+  "th": "Tailandês",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }

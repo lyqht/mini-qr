@@ -79,17 +79,23 @@ export const generateUrlData = (data: { url: string }): string => {
  * @param {string} data.address - Email address of the recipient
  * @param {string} [data.subject] - Optional email subject
  * @param {string} [data.body] - Optional email body text
+ * @param {string} [data.cc] - Optional CC recipients
+ * @param {string} [data.bcc] - Optional BCC recipients
  * @returns {string} - Formatted mailto URI string
  */
 export const generateEmailData = (data: {
   address: string
   subject?: string
   body?: string
+  cc?: string
+  bcc?: string
 }): string => {
   if (!data.address) return ''
   const parts: string[] = []
   if (data.subject) parts.push(`subject=${encodeURIComponent(data.subject)}`)
   if (data.body) parts.push(`body=${encodeURIComponent(data.body)}`)
+  if (data.cc) parts.push(`cc=${encodeURIComponent(data.cc)}`)
+  if (data.bcc) parts.push(`bcc=${encodeURIComponent(data.bcc)}`)
   return `mailto:${data.address}${parts.length > 0 ? '?' + parts.join('&') : ''}`
 }
 
@@ -515,6 +521,8 @@ export const detectDataType = (
       const params = new URLSearchParams(emailParts[1])
       result.parsedData.subject = params.get('subject') || ''
       result.parsedData.body = params.get('body') || ''
+      result.parsedData.cc = params.get('cc') || ''
+      result.parsedData.bcc = params.get('bcc') || ''
     }
 
     return result

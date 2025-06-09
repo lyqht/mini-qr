@@ -238,5 +238,9 @@
   "Error": "錯誤",
   "Failed to load changelog": "載入更新記錄失敗",
   "Loading...": "載入中...",
-  "th": "泰語"
+  "th": "泰語",
+  "CC": "CC",
+  "BCC": "BCC",
+  "Optional CC": "Optional CC",
+  "Optional BCC": "Optional BCC"
 }
