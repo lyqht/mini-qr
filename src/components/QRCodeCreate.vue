@@ -328,7 +328,6 @@ function applyFramePreset(preset: FramePreset) {
   }
   if (preset.text) frameText.value = preset.text
   if (preset.position) frameTextPosition.value = preset.position
-  showFrame.value = true
 }
 watch(
   selectedFramePresetKey,
