@@ -84,6 +84,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/13106409?v=4",
       "profile": "https://github.com/olvier",
       "contributions": ["review"]
+    },
+    {
+      "login": "matthewberryman",
+      "name": "Matthew Berryman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2288238?v=4",
+      "profile": "https://github.com/matthewberryman",
+      "contributions": ["code"]
     }
   ],
   "contributorsPerLine": 6,
