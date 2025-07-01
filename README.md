@@ -216,6 +216,9 @@ Thank you for everyone here for taking their time out to improve MiniQR 🧡
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/olvier"><img src="https://avatars.githubusercontent.com/u/13106409?v=4?s=48" width="48px;" alt="olvier"/><br /><sub><b>olvier</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/pulls?q=is%3Apr+reviewed-by%3Aolvier" title="Reviewed Pull Requests">👀</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/matthewberryman"><img src="https://avatars.githubusercontent.com/u/2288238?v=4?s=48" width="48px;" alt="Matthew Berryman"/><br /><sub><b>Matthew Berryman</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=matthewberryman" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/Mr-Robot-ops"><img src="https://avatars.githubusercontent.com/u/55334802?v=4?s=48" width="48px;" alt="Mr-robot-ops"/><br /><sub><b>Mr-robot-ops</b></sub></a><br /><a href="#translation-Mr-Robot-ops" title="Translation">🌍</a></td>
+    </tr>
   </tbody>
   <tfoot>
     <tr>

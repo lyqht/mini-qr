@@ -91,6 +91,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/2288238?v=4",
       "profile": "https://github.com/matthewberryman",
       "contributions": ["code"]
+    },
+    {
+      "login": "Mr-Robot-ops",
+      "name": "Mr-robot-ops",
+      "avatar_url": "https://avatars.githubusercontent.com/u/55334802?v=4",
+      "profile": "https://github.com/Mr-Robot-ops",
+      "contributions": ["translation"]
     }
   ],
   "contributorsPerLine": 6,
