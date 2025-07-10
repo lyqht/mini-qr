@@ -67,14 +67,6 @@ onMounted(() => {
         >Estee Tey 🐧🌻</a
       >
       <span>|</span>
-      <a
-        href="https://blog.esteetey.dev/sponsor"
-        target="_blank"
-        class="secondary-button"
-        :aria-label="t('Sponsor')"
-        >{{ t('Sponsor') }}</a
-      >
-      <span>|</span>
       <Dialog>
         <DialogTrigger as-child>
           <button class="secondary-button" :aria-label="t('View changelog')" :disabled="isLoading">
@@ -104,6 +96,14 @@ onMounted(() => {
           </div>
         </DialogContent>
       </Dialog>
+      <span>|</span>
+      <a
+        href="https://blog.esteetey.dev/sponsor"
+        target="_blank"
+        class="secondary-button"
+        :aria-label="t('Sponsor')"
+        >{{ t('Sponsor') }}</a
+      >
     </div>
   </footer>
 </template>
