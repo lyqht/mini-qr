@@ -96,6 +96,14 @@ onMounted(() => {
           </div>
         </DialogContent>
       </Dialog>
+      <span>|</span>
+      <a
+        href="https://blog.esteetey.dev/sponsor"
+        target="_blank"
+        class="secondary-button"
+        :aria-label="t('Sponsor')"
+        >{{ t('Sponsor') }}</a
+      >
     </div>
   </footer>
 </template>

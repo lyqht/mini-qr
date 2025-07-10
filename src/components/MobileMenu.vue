@@ -258,6 +258,14 @@ onUnmounted(() => {
               class="text-zinc-900 hover:text-zinc-700 dark:text-zinc-100 dark:hover:text-zinc-300"
               >Estee Tey 🐧🌻</a
             >
+            <span>|</span>
+            <a
+              href="https://blog.esteetey.dev/sponsor"
+              target="_blank"
+              class="secondary-button"
+              :aria-label="t('Sponsor')"
+              >{{ t('Sponsor') }}</a
+            >
           </div>
         </div>
       </div>
