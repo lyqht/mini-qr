@@ -1,3 +1,15 @@
+## v0.24.2 (2025-07-01)
+- 🔧 Update german translations ([#179](https://github.com/lyqht/mini-qr/pull/179))
+
+## v0.24.1 (2025-06-23)
+- 🐛 fixes path mismatch in docker-compose.yml ([#177](https://github.com/lyqht/mini-qr/pull/177))
+- 🔧 Accept additional VITE variables as build arguments and set them as environment variables for the build stage ([#173](https://github.com/lyqht/mini-qr/pull/173))
+
+## v0.24.0 (2025-06-21)
+- ✨ Add CC and BCC fields to email template ([#169](https://github.com/lyqht/mini-qr/pull/169))
+- 🐛 persist disabled frame setting ([#174](https://github.com/lyqht/mini-qr/pull/174))
+- 🐛 update changelog
+
 ## v0.23.0 (2025-06-08)
 - ✨ Add environment variables for presets and local storage configuration ([#167](https://github.com/lyqht/mini-qr/pull/167))
 - ✨ add BASE_PATH support for deployment and update environment variables ([#165](https://github.com/lyqht/mini-qr/pull/165))
