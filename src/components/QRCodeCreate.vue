@@ -628,6 +628,7 @@ enum ExportMode {
 const exportMode = ref(ExportMode.Single)
 const dataStringsFromCsv = ref<string[]>([])
 const frameTextsFromCsv = ref<string[]>([])
+const fileNamesFromCsv = ref<string[]>([])
 
 const inputFileForBatchEncoding = ref<File | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -664,6 +665,7 @@ const resetData = () => {
   inputFileForBatchEncoding.value = null
   dataStringsFromCsv.value = []
   frameTextsFromCsv.value = []
+  fileNamesFromCsv.value = []
   isValidCsv.value = true
   resetBatchExportProgress()
   isBatchExportSuccess.value = false
@@ -717,6 +719,7 @@ const onBatchInputFileUpload = (event: Event) => {
 
     const urls: string[] = []
     const frameTexts: string[] = []
+    const fileNames: string[] = []
 
     result.data.forEach((row) => {
       const isVCard = 'firstName' in row
@@ -748,6 +751,10 @@ const onBatchInputFileUpload = (event: Event) => {
       if (row.frameText) {
         frameTexts.push(row.frameText)
       }
+
+      if (row.fileName) {
+        fileNames.push(row.fileName)
+      }
     })
 
     // If any non-default frame text is detected, enable frame settings
@@ -756,6 +763,7 @@ const onBatchInputFileUpload = (event: Event) => {
 
     dataStringsFromCsv.value = urls
     frameTextsFromCsv.value = frameTexts
+    fileNamesFromCsv.value = fileNames
     isValidCsv.value = true
     previewRowIndex.value = 0 // Reset preview to first row on new upload
   }
@@ -774,10 +782,13 @@ const createZipFile = (
 ) => {
   const dataString = dataStringsFromCsv.value[index]
   const frameText = frameTextsFromCsv.value[index]
+  const customFileName = fileNamesFromCsv.value[index]
   let fileName = ''
 
-  // If frame text is provided, use it as the filename
-  if (frameText) {
+  // Priority: custom fileName > frameText > generated name
+  if (customFileName) {
+    fileName = customFileName
+  } else if (frameText) {
     fileName = frameText
   } else {
     // For vCard data, use firstName_lastName
@@ -1295,7 +1306,7 @@ const mainDivPaddingStyle = computed(() => {
       >
         <AccordionItem value="frame-settings">
           <AccordionTrigger
-            class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
+            class="button !px-4 text-2xl text-gray-700 outline-none md:!px-6 lg:!px-8 dark:text-gray-100"
             ><span class="flex flex-row items-center gap-2"
               ><span id="frame-settings-title">{{ t('Frame settings') }}</span>
               <span
@@ -1436,7 +1447,7 @@ const mainDivPaddingStyle = computed(() => {
         </AccordionItem>
         <AccordionItem value="qr-code-settings">
           <AccordionTrigger
-            class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
+            class="button !px-4 text-2xl text-gray-700 outline-none md:!px-6 lg:!px-8 dark:text-gray-100"
             ><span id="qr-code-settings-title">{{ t('QR code settings') }}</span></AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
@@ -1512,7 +1523,7 @@ const mainDivPaddingStyle = computed(() => {
                       <textarea
                         id="data"
                         v-model="data"
-                        class="mr-2 grow text-input"
+                        class="text-input mr-2 grow"
                         :placeholder="t('data to encode e.g. a URL or a string')"
                       ></textarea>
                       <button
@@ -1544,7 +1555,7 @@ const mainDivPaddingStyle = computed(() => {
                     <template v-if="exportMode === ExportMode.Batch">
                       <template v-if="!inputFileForBatchEncoding">
                         <button
-                          class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-1 py-4 text-center text-input"
+                          class="text-input flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-1 py-4 text-center"
                           :aria-label="t('Choose a CSV file containing data to encode')"
                           @click="fileInput?.click()"
                           @keyup.enter="fileInput?.click()"
@@ -1650,7 +1661,7 @@ const mainDivPaddingStyle = computed(() => {
                                       {{ dataStringsFromCsv[previewRowIndex] }}
                                     </code>
                                   </div>
-                                  <div v-if="frameTextsFromCsv.length > 0">
+                                  <div v-if="frameTextsFromCsv[previewRowIndex]">
                                     <span
                                       class="text-xs font-medium text-gray-500 dark:text-gray-400"
                                       >{{ $t('Frame text:') }}</span
@@ -1658,7 +1669,18 @@ const mainDivPaddingStyle = computed(() => {
                                     <code
                                       class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
                                     >
-                                      {{ frameTextsFromCsv[previewRowIndex + 1] }}
+                                      {{ frameTextsFromCsv[previewRowIndex] }}
+                                    </code>
+                                  </div>
+                                  <div v-if="fileNamesFromCsv[previewRowIndex]">
+                                    <span
+                                      class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                                      >{{ $t('File name:') }}</span
+                                    >
+                                    <code
+                                      class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
+                                    >
+                                      {{ fileNamesFromCsv[previewRowIndex] }}
                                     </code>
                                   </div>
                                 </div>

@@ -1,0 +1,6 @@
+url,frameText,fileName
+https://example.com,Scan for example,my_custom_filename_1
+https://google.com,Visit Google,google_qr_code
+https://github.com,GitHub - Code hosting,github_2024
+https://stackoverflow.com,,stackoverflow_qr
+https://mozilla.org,Mozilla Foundation,
