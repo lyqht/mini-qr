@@ -24,7 +24,7 @@ import {
   IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED
 } from '@/utils/convertToImage'
 import { parseCSV, validateCSVData } from '@/utils/csv'
-import { generateVCardData } from '@/utils/dataEncoding'
+import { processCsvDataForBatch, generateBatchExportFilename } from '@/utils/csvBatchProcessing'
 import { getNumericCSSValue } from '@/utils/formatting'
 import { allQrCodePresets, defaultPreset, type Preset } from '@/utils/qrCodePresets'
 import { allFramePresets, defaultFramePreset, type FramePreset } from '@/utils/framePresets'
@@ -578,16 +578,6 @@ function loadQrConfigFromFile() {
   qrCodeConfigInput.click()
 }
 
-function loadQRConfigFromLocalStorage() {
-  const qrCodeConfigString = localStorage.getItem('qrCodeConfig')
-  if (qrCodeConfigString) {
-    console.debug('Loading QR code config from local storage')
-    loadQRConfig(qrCodeConfigString, LAST_LOADED_LOCALLY_PRESET_KEY)
-  } else {
-    selectedPreset.value = { ...defaultPreset }
-  }
-}
-
 watch(
   [qrCodeProps, style, showFrame, frameSettings],
   () => {
@@ -717,51 +707,13 @@ const onBatchInputFileUpload = (event: Event) => {
       return
     }
 
-    const urls: string[] = []
-    const frameTexts: string[] = []
-    const fileNames: string[] = []
+    // Process CSV data using the utility function
+    const batchResult = processCsvDataForBatch(result.data)
 
-    result.data.forEach((row) => {
-      const isVCard = 'firstName' in row
-      if (isVCard) {
-        // Handle vCard data
-        const vCardString = generateVCardData({
-          firstName: row.firstName,
-          lastName: row.lastName,
-          org: row.org,
-          position: row.position,
-          phoneWork: row.phonework,
-          phonePrivate: row.phoneprivate,
-          phoneMobile: row.phonemobile,
-          email: row.email,
-          website: row.website,
-          street: row.street,
-          zipcode: row.zipcode,
-          city: row.city,
-          state: row.state,
-          country: row.country,
-          version: row.version
-        })
-        urls.push(vCardString)
-      } else {
-        // Handle simple URL/text data
-        urls.push(row.url)
-      }
-
-      // Always push frameText to maintain array alignment (empty string if not provided)
-      frameTexts.push(row.frameText || '')
-
-      // Always push fileName to maintain array alignment (empty string if not provided)
-      fileNames.push(row.fileName || '')
-    })
-
-    // If any non-default frame text is detected, enable frame settings
-    const hasCustomFrameText = frameTexts.some((text) => text && text.trim() !== '')
-    showFrame.value = hasCustomFrameText
-
-    dataStringsFromCsv.value = urls
-    frameTextsFromCsv.value = frameTexts
-    fileNamesFromCsv.value = fileNames
+    dataStringsFromCsv.value = batchResult.urls
+    frameTextsFromCsv.value = batchResult.frameTexts
+    fileNamesFromCsv.value = batchResult.fileNames
+    showFrame.value = batchResult.hasCustomFrameText
     isValidCsv.value = true
     previewRowIndex.value = 0 // Reset preview to first row on new upload
   }
@@ -781,52 +733,24 @@ const createZipFile = (
   const dataString = dataStringsFromCsv.value[index]
   const frameText = frameTextsFromCsv.value[index]
   const customFileName = fileNamesFromCsv.value[index]
-  let fileName = ''
 
-  // Priority: custom fileName > frameText > generated name
-  if (customFileName) {
-    fileName = customFileName
-  } else if (frameText) {
-    fileName = frameText
-  } else {
-    // For vCard data, use firstName_lastName
-    if (dataString.startsWith('BEGIN:VCARD')) {
-      const match = dataString.match(/FN:([^\r\n]+)/)
-      if (match) {
-        const fullName = match[1].trim()
-        fileName = fullName.replace(/\s+/g, '_')
-      }
-    } else {
-      // For simple URL/text, use the data string
-      if (dataString.startsWith('http')) {
-        const pathSegments = dataString.split('/')
-        const lastPathSegment = pathSegments[pathSegments.length - 1]
-        // Check if lastPathSegment is only alphanumeric or underscores
-        const isValidFileName = /^[a-zA-Z0-9_]+$/.test(lastPathSegment)
-        fileName = isValidFileName
-          ? lastPathSegment
-          : pathSegments[pathSegments.length - 2] || `qr_code_${index}`
-      } else {
-        fileName = dataString.trim()
-      }
-    }
-  }
+  // Generate filename using the utility function
+  const fileName = generateBatchExportFilename(
+    dataString,
+    frameText,
+    customFileName,
+    index,
+    usedFilenames
+  )
 
   // Sanitize filename to remove invalid characters
-  fileName = fileName.replace(/[^a-zA-Z0-9_-]/g, '_')
-
-  // Ensure unique filenames
-  if (usedFilenames.has(fileName)) {
-    fileName = `${fileName}-${index}`
-  }
-
-  usedFilenames.add(fileName)
+  const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9_-]/g, '_')
 
   if (format === 'png' || format === 'jpg') {
-    zip.file(`${fileName}.${format}`, dataUrl.split(',')[1], { base64: true })
+    zip.file(`${sanitizedFileName}.${format}`, dataUrl.split(',')[1], { base64: true })
   } else {
     // For SVG, we don't need to split and use base64
-    zip.file(`${fileName}.${format}`, dataUrl)
+    zip.file(`${sanitizedFileName}.${format}`, dataUrl)
   }
 }
 async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
