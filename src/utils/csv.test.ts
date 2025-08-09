@@ -65,6 +65,26 @@ https://docs.com,,documentation`
       })
     })
 
+    it('parses CSV with empty fileName correctly', () => {
+      const csvContent = `url,frameText,fileName
+https://mini-qr.com/,MiniQR Home,
+https://docs.example.com/,,documentation`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(2)
+      expect(result.data[0]).toEqual({
+        url: 'https://mini-qr.com/',
+        frameText: 'MiniQR Home',
+        fileName: ''
+      })
+      expect(result.data[1]).toEqual({
+        url: 'https://docs.example.com/',
+        frameText: '',
+        fileName: 'documentation'
+      })
+    })
+
     it('handles empty CSV content', () => {
       const result = parseCSV('')
       expect(result.isValid).toBe(false)

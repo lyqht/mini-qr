@@ -748,17 +748,15 @@ const onBatchInputFileUpload = (event: Event) => {
         urls.push(row.url)
       }
 
-      if (row.frameText) {
-        frameTexts.push(row.frameText)
-      }
+      // Always push frameText to maintain array alignment (empty string if not provided)
+      frameTexts.push(row.frameText || '')
 
-      if (row.fileName) {
-        fileNames.push(row.fileName)
-      }
+      // Always push fileName to maintain array alignment (empty string if not provided)
+      fileNames.push(row.fileName || '')
     })
 
     // If any non-default frame text is detected, enable frame settings
-    const hasCustomFrameText = frameTexts.length > 0
+    const hasCustomFrameText = frameTexts.some((text) => text && text.trim() !== '')
     showFrame.value = hasCustomFrameText
 
     dataStringsFromCsv.value = urls
@@ -1306,7 +1304,7 @@ const mainDivPaddingStyle = computed(() => {
       >
         <AccordionItem value="frame-settings">
           <AccordionTrigger
-            class="button !px-4 text-2xl text-gray-700 outline-none md:!px-6 lg:!px-8 dark:text-gray-100"
+            class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
             ><span class="flex flex-row items-center gap-2"
               ><span id="frame-settings-title">{{ t('Frame settings') }}</span>
               <span
@@ -1447,7 +1445,7 @@ const mainDivPaddingStyle = computed(() => {
         </AccordionItem>
         <AccordionItem value="qr-code-settings">
           <AccordionTrigger
-            class="button !px-4 text-2xl text-gray-700 outline-none md:!px-6 lg:!px-8 dark:text-gray-100"
+            class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
             ><span id="qr-code-settings-title">{{ t('QR code settings') }}</span></AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
@@ -1523,7 +1521,7 @@ const mainDivPaddingStyle = computed(() => {
                       <textarea
                         id="data"
                         v-model="data"
-                        class="text-input mr-2 grow"
+                        class="mr-2 grow text-input"
                         :placeholder="t('data to encode e.g. a URL or a string')"
                       ></textarea>
                       <button
@@ -1555,7 +1553,7 @@ const mainDivPaddingStyle = computed(() => {
                     <template v-if="exportMode === ExportMode.Batch">
                       <template v-if="!inputFileForBatchEncoding">
                         <button
-                          class="text-input flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-1 py-4 text-center"
+                          class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-1 py-4 text-center text-input"
                           :aria-label="t('Choose a CSV file containing data to encode')"
                           @click="fileInput?.click()"
                           @keyup.enter="fileInput?.click()"
