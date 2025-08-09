@@ -1,3 +1,9 @@
+## v0.25.0 (2025-08-10)
+- ✨ Add custom filename support for batch exports ([#188](https://github.com/lyqht/mini-qr/pull/188))
+- ✨ Add sponsor button in footer ([#182](https://github.com/lyqht/mini-qr/pull/182))
+- 🐛 Improve .env.example base path ([#184](https://github.com/lyqht/mini-qr/pull/184))
+- 🔧 Add post-commit hook for translations ([#191](https://github.com/lyqht/mini-qr/pull/191))
+
 ## v0.24.2 (2025-07-01)
 - 🔧 Update german translations ([#179](https://github.com/lyqht/mini-qr/pull/179))
 
