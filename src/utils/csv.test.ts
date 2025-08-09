@@ -29,6 +29,28 @@ Jane,Smith,jane@example.com,+0987654321,Jane's QR`
       })
     })
 
+    it('parses vCard CSV with fileName correctly', () => {
+      const csvContent = `firstname,lastname,email,fileName
+John,Doe,john@example.com,john_doe_card
+Jane,Smith,jane@example.com,jane_smith_card`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(2)
+      expect(result.data[0]).toEqual({
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        fileName: 'john_doe_card'
+      })
+      expect(result.data[1]).toEqual({
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@example.com',
+        fileName: 'jane_smith_card'
+      })
+    })
+
     it('parses simple URL/text CSV structure correctly', () => {
       const csvContent = `url,frameText
 https://example.com,Example QR
