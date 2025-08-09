@@ -1,6 +1,7 @@
 export interface SimpleCSVData {
   url: string
   frameText?: string
+  fileName?: string
 }
 
 export type VCardOptionalFields =
@@ -137,8 +138,8 @@ export const parseCSV = (csvContent: string): CSVParsingResult => {
         }
         values.push(currentValue.trim().replace(/^["']|["']$/g, ''))
 
-        const [url, frameText] = values
-        data.push({ url, frameText })
+        const [url, frameText, fileName] = values
+        data.push({ url, frameText, fileName })
       }
     }
 

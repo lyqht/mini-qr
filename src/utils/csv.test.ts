@@ -39,7 +39,29 @@ https://test.com,Test QR`
       expect(result.data).toHaveLength(2)
       expect(result.data[0]).toEqual({
         url: 'https://example.com',
-        frameText: 'Example QR'
+        frameText: 'Example QR',
+        fileName: undefined
+      })
+    })
+
+    it('parses CSV with fileName column correctly', () => {
+      const csvContent = `url,frameText,fileName
+https://example.com,Example QR,example_site
+https://test.com,Test QR,test_site
+https://docs.com,,documentation`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(3)
+      expect(result.data[0]).toEqual({
+        url: 'https://example.com',
+        frameText: 'Example QR',
+        fileName: 'example_site'
+      })
+      expect(result.data[2]).toEqual({
+        url: 'https://docs.com',
+        frameText: '',
+        fileName: 'documentation'
       })
     })
 
