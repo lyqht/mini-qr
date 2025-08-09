@@ -1,0 +1,14 @@
+# Crowdin-specific ignore patterns
+# Add any files or patterns you don't want to upload to Crowdin
+
+# Ignore all locale files except en.json (source)
+locales/*.json
+!locales/en.json
+
+# Ignore backup files
+*.backup
+*.bak
+
+# Ignore temporary files
+*.tmp
+*.temp

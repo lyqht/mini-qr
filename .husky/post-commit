@@ -1,0 +1,97 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Post-commit hook to sync translation strings with Crowdin
+# This hook:
+# 1. Uploads the updated en.json to Crowdin
+# 2. Runs pre-translation
+# 3. Downloads the translated strings
+
+# Colors for output
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+printf "${YELLOW}🔄 Starting Crowdin sync...${NC}\n"
+
+# Check if locales/en.json was modified in the last commit
+# Store the result to avoid issues with set -e
+CHANGED_FILES=$(git diff HEAD~1 HEAD --name-only || true)
+if echo "$CHANGED_FILES" | grep -q "locales/en.json"; then
+    printf "${GREEN}✓ Detected changes in locales/en.json${NC}\n"
+    
+    # Check if Crowdin CLI is installed
+    if ! command -v crowdin &> /dev/null; then
+        printf "${RED}✗ Crowdin CLI is not installed${NC}\n"
+        echo "Please install it using: npm install -g @crowdin/cli"
+        exit 1
+    fi
+    
+    # Upload source file to Crowdin
+    printf "${YELLOW}📤 Uploading source strings to Crowdin...${NC}\n"
+    if crowdin upload sources --no-progress; then
+        printf "${GREEN}✓ Source strings uploaded successfully${NC}\n"
+    else
+        printf "${RED}✗ Failed to upload source strings${NC}\n"
+        exit 1
+    fi
+    
+    # Trigger machine translation
+    printf "${YELLOW}🤖 Running machine translation...${NC}\n"
+    
+    # Try machine translation with Crowdin MT engine
+    # Note: This requires:
+    # 1. Machine Translation to be enabled in your Crowdin project
+    # 2. API token with 'mt' scope (not just 'project' scope)
+    # 3. Valid MT engine configuration in project settings
+    
+    # Capture the output to check for specific errors
+    # Temporarily disable exit on error for this command
+    set +e
+    TRANSLATE_OUTPUT=$(crowdin pre-translate --method=mt --engine-id=1 --no-progress 2>&1)
+    TRANSLATE_EXIT_CODE=$?
+    set -e
+    
+    if [ $TRANSLATE_EXIT_CODE -eq 0 ]; then
+        printf "${GREEN}✓ Machine translation completed successfully${NC}\n"
+    elif echo "$TRANSLATE_OUTPUT" | grep -q "insufficient token scopes"; then
+        printf "${YELLOW}⚠️  Machine translation skipped: API token lacks MT permissions${NC}\n"
+        printf "${YELLOW}   To fix: Generate a new token at https://crowdin.com/settings#api-key${NC}\n"
+        printf "${YELLOW}   Required scopes: 'project' AND 'mt' (Machine Translation)${NC}\n"
+        printf "${YELLOW}   Then update the token in crowdin.yml${NC}\n"
+    elif echo "$TRANSLATE_OUTPUT" | grep -q "Machine Translation Engine Not Found"; then
+        printf "${YELLOW}⚠️  Machine translation skipped: MT not configured in project${NC}\n"
+        printf "${YELLOW}   To fix: Go to your Crowdin project settings > Machine Translation${NC}\n"
+        printf "${YELLOW}   Enable MT and configure at least one engine (e.g., Crowdin MT)${NC}\n"
+    else
+        printf "${YELLOW}⚠️  Machine translation failed with error:${NC}\n"
+        echo "$TRANSLATE_OUTPUT" | head -5
+        printf "${YELLOW}   Continuing with sync anyway...${NC}\n"
+    fi
+    
+    # Download translated strings
+    printf "${YELLOW}📥 Downloading translated strings...${NC}\n"
+    if crowdin download --no-progress; then
+        printf "${GREEN}✓ Translated strings downloaded successfully${NC}\n"
+        
+        # Check if there are new translations to commit
+        if [ -n "$(git status --porcelain locales/)" ]; then
+            printf "${YELLOW}📝 New translations detected. Creating a commit...${NC}\n"
+            git add locales/
+            git commit -m "chore: update translations from Crowdin
+
+Auto-synced after changes to locales/en.json"
+            printf "${GREEN}✓ Translation commit created${NC}\n"
+        else
+            printf "${GREEN}✓ No new translations to commit${NC}\n"
+        fi
+    else
+        printf "${RED}✗ Failed to download translations${NC}\n"
+        exit 1
+    fi
+    
+    printf "${GREEN}✅ Crowdin sync completed successfully!${NC}\n"
+else
+    printf "${YELLOW}ℹ No changes detected in locales/en.json - skipping Crowdin sync${NC}\n"
+fi
