@@ -1,6 +1,7 @@
 export interface SimpleCSVData {
   url: string
   frameText?: string
+  fileName?: string
 }
 
 export type VCardOptionalFields =
@@ -22,6 +23,7 @@ export type VCardOptionalFields =
 export interface VCardCSVData extends Partial<Record<VCardOptionalFields, string>> {
   firstName: string
   lastName: string
+  fileName?: string
 }
 
 export type CSVData = SimpleCSVData | VCardCSVData
@@ -114,6 +116,12 @@ export const parseCSV = (csvContent: string): CSVParsingResult => {
           }
         })
 
+        // Handle fileName separately since it's not in VCardOptionalFields
+        const fileNameIndex = headers.indexOf('filename')
+        if (fileNameIndex !== -1) {
+          vCardData.fileName = values[fileNameIndex] || ''
+        }
+
         data.push(vCardData as VCardCSVData)
       }
     } else {
@@ -137,8 +145,8 @@ export const parseCSV = (csvContent: string): CSVParsingResult => {
         }
         values.push(currentValue.trim().replace(/^["']|["']$/g, ''))
 
-        const [url, frameText] = values
-        data.push({ url, frameText })
+        const [url, frameText, fileName] = values
+        data.push({ url, frameText, fileName })
       }
     }
 

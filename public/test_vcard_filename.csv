@@ -1,0 +1,5 @@
+firstName,lastName,email,frameText,fileName
+John,Doe,john@example.com,Contact John,john_doe_card
+Jane,Smith,jane@company.com,Jane's Card,jane_smith
+Bob,Johnson,bob@tech.com,,bob_johnson_vcard
+Alice,Williams,alice@startup.com,Scan Me,

@@ -29,6 +29,28 @@ Jane,Smith,jane@example.com,+0987654321,Jane's QR`
       })
     })
 
+    it('parses vCard CSV with fileName correctly', () => {
+      const csvContent = `firstname,lastname,email,fileName
+John,Doe,john@example.com,john_doe_card
+Jane,Smith,jane@example.com,jane_smith_card`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(2)
+      expect(result.data[0]).toEqual({
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        fileName: 'john_doe_card'
+      })
+      expect(result.data[1]).toEqual({
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@example.com',
+        fileName: 'jane_smith_card'
+      })
+    })
+
     it('parses simple URL/text CSV structure correctly', () => {
       const csvContent = `url,frameText
 https://example.com,Example QR
@@ -39,7 +61,49 @@ https://test.com,Test QR`
       expect(result.data).toHaveLength(2)
       expect(result.data[0]).toEqual({
         url: 'https://example.com',
-        frameText: 'Example QR'
+        frameText: 'Example QR',
+        fileName: undefined
+      })
+    })
+
+    it('parses CSV with fileName column correctly', () => {
+      const csvContent = `url,frameText,fileName
+https://example.com,Example QR,example_site
+https://test.com,Test QR,test_site
+https://docs.com,,documentation`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(3)
+      expect(result.data[0]).toEqual({
+        url: 'https://example.com',
+        frameText: 'Example QR',
+        fileName: 'example_site'
+      })
+      expect(result.data[2]).toEqual({
+        url: 'https://docs.com',
+        frameText: '',
+        fileName: 'documentation'
+      })
+    })
+
+    it('parses CSV with empty fileName correctly', () => {
+      const csvContent = `url,frameText,fileName
+https://mini-qr.com/,MiniQR Home,
+https://docs.example.com/,,documentation`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(2)
+      expect(result.data[0]).toEqual({
+        url: 'https://mini-qr.com/',
+        frameText: 'MiniQR Home',
+        fileName: ''
+      })
+      expect(result.data[1]).toEqual({
+        url: 'https://docs.example.com/',
+        frameText: '',
+        fileName: 'documentation'
       })
     })
 
