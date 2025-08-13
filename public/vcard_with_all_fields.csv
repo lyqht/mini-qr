@@ -1,0 +1,5 @@
+firstName,lastName,org,position,phonework,phoneprivate,phonemobile,email,website,street,zipcode,city,state,country,version,frameText,fileName
+John,Doe,Acme Inc,Software Engineer,+1-555-0123,+1-555-0124,+1-555-0125,john.doe@acme.com,https://acme.com/john,123 Tech Street,12345,San Francisco,CA,USA,4.0,Contact John,john_doe_contact
+Jane,Smith,Tech Corp,Product Manager,,,+1-555-0236,jane.smith@techcorp.com,https://techcorp.com/jane,456 Innovation Ave,67890,New York,NY,USA,4.0,Jane Smith - PM,jane_smith
+Alex,Johnson,Startup Co,CTO,+1-555-0345,,,alex.j@startup.co,,789 Silicon Blvd,54321,Austin,TX,USA,4.0,,alex_cto
+Sarah,Williams,Design Studio,Creative Director,+1-555-0456,+1-555-0457,+1-555-0458,sarah.w@design.studio,https://portfolio.sarah.com,,,Portland,OR,USA,4.0,Creative Director,

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BatchExportFieldsGuide from '@/components/BatchExportFieldsGuide.vue'
 import CopyImageModal from '@/components/CopyImageModal.vue'
 import DataTemplatesModal from '@/components/DataTemplatesModal.vue'
 import QRCodeFrame from '@/components/QRCodeFrame.vue'
@@ -1219,7 +1220,10 @@ const mainDivPaddingStyle = computed(() => {
       </div>
     </Teleport>
 
-    <div id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
+    <div
+      id="settings"
+      class="flex w-full grow flex-col items-start gap-8 overflow-hidden text-start"
+    >
       <Accordion
         type="multiple"
         collapsible
@@ -1403,10 +1407,10 @@ const mainDivPaddingStyle = computed(() => {
                   </button>
                 </div>
               </div>
-              <div class="w-full">
+              <div class="w-full overflow-hidden">
                 <div class="flex w-full flex-col flex-wrap gap-4 sm:flex-row sm:gap-x-8">
                   <!-- Data to encode area -->
-                  <div class="grow">
+                  <div class="w-full overflow-hidden sm:grow">
                     <!-- Header row: Label + Mode Toggles + Batch Options -->
                     <div class="mb-2 flex items-center gap-4">
                       <label for="data">{{ t('Data to encode') }}</label>
@@ -1476,8 +1480,9 @@ const mainDivPaddingStyle = computed(() => {
                     </div>
                     <template v-if="exportMode === ExportMode.Batch">
                       <template v-if="!inputFileForBatchEncoding">
+                        <BatchExportFieldsGuide />
                         <button
-                          class="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-1 py-4 text-center text-input"
+                          class="!ms-0 mt-4 flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-1 py-4 text-center text-input"
                           :aria-label="t('Choose a CSV file containing data to encode')"
                           @click="fileInput?.click()"
                           @keyup.enter="fileInput?.click()"
@@ -1510,50 +1515,6 @@ const mainDivPaddingStyle = computed(() => {
                             @change="onBatchInputFileUpload"
                           />
                         </button>
-                        <div class="flex flex-wrap justify-end gap-x-4 pt-1">
-                          <p class="gap-1">
-                            <a
-                              href="/6_strings_batch.csv"
-                              download
-                              class="inline-flex items-center gap-1 text-sm text-zinc-500 outline-none hover:text-zinc-700 hover:underline focus-visible:ring-1 focus-visible:ring-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-200"
-                            >
-                              {{ t('Example file (simple)') }}
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                class="inline"
-                              >
-                                <path
-                                  fill="currentColor"
-                                  d="M12 15.575q-.2 0-.375-.063q-.175-.062-.325-.212l-3.6-3.6q-.275-.275-.275-.7q0-.425.275-.7q.275-.275.7-.275q.425 0 .7.275l1.9 1.9V4q0-.425.288-.713Q11.575 3 12 3t.713.287Q13 3.575 13 4v8.2l1.9-1.9q.275-.275.7-.275q.425 0 .7.275q.275.275.275.7q0 .425-.275.7l-3.6 3.6q-.15.15-.325.212q-.175.063-.375.063M6 21q-.825 0-1.413-.587Q4 19.825 4 19v-2q0-.425.287-.713Q4.575 16 5 16t.713.287Q6 16.575 6 17v2h12v-2q0-.425.288-.713Q18.575 16 19 16t.712.287Q20 16.575 20 17v2q0 .825-.587 1.413Q18.825 21 18 21m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
-                                />
-                              </svg>
-                            </a>
-                          </p>
-                          <p class="gap-1">
-                            <a
-                              href="/vcard_sample.csv"
-                              download
-                              class="inline-flex items-center gap-1 text-sm text-zinc-500 outline-none hover:text-zinc-700 hover:underline focus-visible:ring-1 focus-visible:ring-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus-visible:ring-zinc-200"
-                            >
-                              {{ t('Example file (vCard)') }}
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                class="inline"
-                              >
-                                <path
-                                  fill="currentColor"
-                                  d="M12 15.575q-.2 0-.375-.063q-.175-.062-.325-.212l-3.6-3.6q-.275-.275-.275-.7q0-.425.275-.7q.275-.275.7-.275q.425 0 .7.275l1.9 1.9V4q0-.425.288-.713Q11.575 3 12 3t.713.287Q13 3.575 13 4v8.2l1.9-1.9q.275-.275.7-.275q.425 0 .7.275q.275.275.275.7q0 .425-.275.7l-3.6 3.6q-.15.15-.325.212q-.175.063-.375.063M6 21q-.825 0-1.413-.587Q4 19.825 4 19v-2q0-.425.287-.713Q4.575 16 5 16t.713.287Q6 16.575 6 17v2h12v-2q0-.425.288-.713Q18.575 16 19 16t.712.287Q20 16.575 20 17v2q0 .825-.587 1.413Q18.825 21 18 21m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
-                                />
-                              </svg>
-                            </a>
-                          </p>
-                        </div>
                       </template>
                       <div v-else-if="isValidCsv" class="p-4 text-center">
                         <div v-if="isBatchExportSuccess">
@@ -1645,58 +1606,6 @@ const mainDivPaddingStyle = computed(() => {
                         <p>{{ $t('Invalid CSV') }}</p>
                       </div>
                     </template>
-                  </div>
-
-                  <!-- Error correction level -->
-                  <div class="shrink-0">
-                    <fieldset class="h-full" role="radio" tabindex="0">
-                      <div class="flex flex-row items-center gap-2">
-                        <legend>{{ t('Error correction level') }}</legend>
-                        <a
-                          href="https://docs.uniqode.com/en/articles/7219782-what-is-the-recommended-error-correction-level-for-printing-a-qr-code"
-                          target="_blank"
-                          class="icon-button flex flex-row items-center"
-                          :aria-label="t('What is error correction level?')"
-                        >
-                          <svg
-                            class="me-1"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              fill="#888888"
-                              d="M11.95 18q.525 0 .888-.363t.362-.887t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362m.05 4q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
-                            />
-                          </svg>
-                        </a>
-                      </div>
-                      <div v-for="level in errorCorrectionLevels" class="radio" :key="level">
-                        <input
-                          :id="'errorCorrectionLevel-' + level"
-                          type="radio"
-                          v-model="errorCorrectionLevel"
-                          :value="level"
-                          :aria-describedby="
-                            level === recommendedErrorCorrectionLevel
-                              ? 'recommended-text'
-                              : undefined
-                          "
-                        />
-                        <div class="flex items-center gap-2">
-                          <label :for="'errorCorrectionLevel-' + level">{{
-                            t(ERROR_CORRECTION_LEVEL_LABELS[level])
-                          }}</label>
-                          <span
-                            v-if="level === recommendedErrorCorrectionLevel"
-                            class="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
-                          >
-                            {{ t('Suggested') }}
-                          </span>
-                        </div>
-                      </div>
-                    </fieldset>
                   </div>
                 </div>
               </div>
@@ -1898,6 +1807,52 @@ const mainDivPaddingStyle = computed(() => {
                       :value="type"
                     />
                     <label :for="'cornersDotOptionsType-' + type">{{ t(type) }}</label>
+                  </div>
+                </fieldset>
+                <fieldset class="flex-1" role="radio" tabindex="0">
+                  <div class="flex flex-row items-center gap-2">
+                    <legend>{{ t('Error correction level') }}</legend>
+                    <a
+                      href="https://docs.uniqode.com/en/articles/7219782-what-is-the-recommended-error-correction-level-for-printing-a-qr-code"
+                      target="_blank"
+                      class="icon-button flex flex-row items-center"
+                      :aria-label="t('What is error correction level?')"
+                    >
+                      <svg
+                        class="me-1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill="#888888"
+                          d="M11.95 18q.525 0 .888-.363t.362-.887t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362m.05 4q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m.1-12.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+                  <div v-for="level in errorCorrectionLevels" class="radio" :key="level">
+                    <input
+                      :id="'errorCorrectionLevel-' + level"
+                      type="radio"
+                      v-model="errorCorrectionLevel"
+                      :value="level"
+                      :aria-describedby="
+                        level === recommendedErrorCorrectionLevel ? 'recommended-text' : undefined
+                      "
+                    />
+                    <div class="flex items-center gap-2">
+                      <label :for="'errorCorrectionLevel-' + level">{{
+                        t(ERROR_CORRECTION_LEVEL_LABELS[level])
+                      }}</label>
+                      <span
+                        v-if="level === recommendedErrorCorrectionLevel"
+                        class="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
+                      >
+                        {{ t('Suggested') }}
+                      </span>
+                    </div>
                   </div>
                 </fieldset>
               </div>
