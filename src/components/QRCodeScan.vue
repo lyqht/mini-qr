@@ -212,6 +212,30 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const isLoading = ref(false)
 const isDraggingOver = ref(false)
 
+const catchScanFileError = async (err, file: File) => {
+  console.warn('Html5Qrcode failed, will try fallback to ZXing:', err)
+
+  const { BrowserQRCodeReader } = await import('@zxing/browser')
+
+  let url
+
+  // Fallback to ZXing lib
+  try {
+    url = URL.createObjectURL(file)
+    const reader = new BrowserQRCodeReader()
+    const result = await reader.decodeFromImageUrl(url)
+    capturedData.value = result.getText()
+  } catch (err) {
+    console.error('Fallback to ZXing failed:', err)
+    errorMessage.value = t('No QR code found in the image.')
+  } finally {
+    isLoading.value = false
+    if (url) {
+      URL.revokeObjectURL(url)
+    }
+  }
+}
+
 const handleFileUpload = (event: Event) => {
   let file: File | null = null
 
@@ -242,11 +266,7 @@ const handleFileUpload = (event: Event) => {
       capturedData.value = decodedText
       isLoading.value = false
     })
-    .catch((err) => {
-      console.error('Error scanning file:', err)
-      errorMessage.value = t('No QR code found in the image.')
-      isLoading.value = false
-    })
+    .catch((err) => catchScanFileError(err, file))
 }
 
 const handleDragOver = (event: DragEvent) => {
