@@ -136,6 +136,26 @@ docker build -t mini-qr .
 docker run -d -p 8081:8080 mini-qr
 ```
 
+## Self-hosting without Docker 🌐
+
+You can also simply compile the application directly using NPM and Vite like follows:
+
+```bash
+git clone https://github.com/lyqht/mini-qr.git
+cd mini-qr
+npm install
+npm run build
+```
+
+From there, the application will be build into `dist` folder and this folder can simply be hosted from any kind of web server.
+
+An example using PHP's built-in web server:
+
+```bash
+cd dist
+php -S localhost:8080
+```
+
 ### Customization
 
 #### Environment Variables
