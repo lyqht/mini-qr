@@ -1,3 +1,9 @@
+## v0.26.0 (2025-09-01)
+- ✨ Add csv format guide ([#194](https://github.com/lyqht/mini-qr/pull/194))
+- 🐛 Update links to MiniQR's official website
+- 🔧 Fallback to nimiq/qr-scanner library on Html5Qrcode scanFile error ([#199](https://github.com/lyqht/mini-qr/pull/199))
+- 📝 Add details on how to build without Docker ([#198](https://github.com/lyqht/mini-qr/pull/198))
+
 ## v0.25.0 (2025-08-10)
 - ✨ Add custom filename support for batch exports ([#188](https://github.com/lyqht/mini-qr/pull/188))
 - ✨ Add sponsor button in footer ([#182](https://github.com/lyqht/mini-qr/pull/182))
