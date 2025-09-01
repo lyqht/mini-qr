@@ -41,18 +41,18 @@ An app to create beautiful QR codes and scan various QR code types.
 
 1. **Desktop (Chrome/Edge)**:
 
-   - Visit [mini-qr.vercel.app](https://mini-qr.vercel.app)
+   - Visit [MiniQR's website](https://mini-qr-code-generator.vercel.app/)
    - Click the install icon (➕) in the address bar
    - Click "Install" in the prompt
 
 2. **Mobile (Android)**:
 
-   - Visit [mini-qr.vercel.app](https://mini-qr.vercel.app)
+   - Visit [MiniQR's website](https://mini-qr-code-generator.vercel.app/)
    - Tap the "Add to Home Screen" option in your browser menu
    - Tap "Install" or "Add"
 
 3. **iOS (Safari)**:
-   - Visit [mini-qr.vercel.app](https://mini-qr.vercel.app)
+   - Visit [MiniQR's website](https://mini-qr-code-generator.vercel.app/)
    - Tap the Share button
    - Scroll down and tap "Add to Home Screen"
    - Tap "Add"
@@ -63,7 +63,7 @@ Once installed, MiniQR will work offline and provide a native app-like experienc
 
 ## Demo
 
-Try it out [here](https://mini-qr.vercel.app/) ✨
+Try it out [here](https://mini-qr-code-generator.vercel.app/) ✨
 
 <details>
 
