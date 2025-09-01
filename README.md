@@ -17,6 +17,8 @@ An app to create beautiful QR codes and scan various QR code types.
 
 ## Features
 
+> [Review of 'MiniQR' that makes it easy to create good-looking QR codes](https://gigazine.net/gsc_news/en/20241104-qr-code-generator-miniqr/) - Gigazine, an Osaka based tech news website, one of the top 25 news sites by TIME.com
+
 - ✅ Accessible: minimally WCAG A compliant
 - 🎨 Customizable colors and styles
 - 🖼️ Export to PNG, JPG & SVG
@@ -109,11 +111,13 @@ https://github.com/lyqht/mini-qr/assets/35736525/991b2d7e-f168-4354-9091-1678d2c
 
 </details>
 
-## Self-hosting with Docker 🐋
+## Self-hosting
+
+### Self-hosting with Docker 🐋
 
 Mini-QR can easily be self-hosted using Docker. We provide a [docker-compose.yml](docker-compose.yml) file and a production-ready multi-stage [Dockerfile](Dockerfile).
 
-### Quick Start (using prebuilt image)
+Quick Start (using prebuilt image)
 
 ```bash
 wget https://github.com/lyqht/mini-qr/raw/main/docker-compose.yml
@@ -123,7 +127,7 @@ docker compose up -d
 
 This will pull the latest production image from GitHub Container Registry and start the app at [http://localhost:8081](http://localhost:8081).
 
-### Build and run locally (for development or custom builds)
+To build and run locally (for development or custom builds)
 
 ```bash
 docker compose up -d --build
@@ -136,7 +140,7 @@ docker build -t mini-qr .
 docker run -d -p 8081:8080 mini-qr
 ```
 
-## Self-hosting without Docker 🌐
+### Self-hosting without Docker 🌐
 
 You can also simply compile the application directly using NPM and Vite like follows:
 
@@ -157,6 +161,8 @@ php -S localhost:8080
 ```
 
 ### Customization
+
+An example of a self-hosted website with a modified MiniQR app with specific language and preset: https://qrcode.outils.restosducoeur.org/
 
 #### Environment Variables
 
