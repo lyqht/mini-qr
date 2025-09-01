@@ -119,6 +119,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/12068849?v=4",
       "profile": "https://github.com/clausjs",
       "contributions": ["doc"]
+    },
+    {
+      "login": "kennydude",
+      "name": "Joe Simpson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/198294?v=4",
+      "profile": "https://github.com/kennydude",
+      "contributions": ["doc"]
     }
   ],
   "contributorsPerLine": 6,
