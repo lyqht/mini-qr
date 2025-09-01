@@ -212,6 +212,23 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const isLoading = ref(false)
 const isDraggingOver = ref(false)
 
+const catchScanFileError = async (err, file: File) => {
+  console.warn('Html5Qrcode failed, will try fallback to nimiq/qr-scanner:', err)
+
+  const QrScanner = (await import('qr-scanner')).default
+
+  // Fallback to nimiq/qr-scanner lib
+  try {
+    const result = await QrScanner.scanImage(file, { returnDetailedScanResult: true })
+    capturedData.value = result.data
+  } catch (err) {
+    console.error('Fallback to nimiq/qr-scanner failed:', err)
+    errorMessage.value = t('No QR code found in the image.')
+  } finally {
+    isLoading.value = false
+  }
+}
+
 const handleFileUpload = (event: Event) => {
   let file: File | null = null
 
@@ -242,11 +259,7 @@ const handleFileUpload = (event: Event) => {
       capturedData.value = decodedText
       isLoading.value = false
     })
-    .catch((err) => {
-      console.error('Error scanning file:', err)
-      errorMessage.value = t('No QR code found in the image.')
-      isLoading.value = false
-    })
+    .catch((err) => catchScanFileError(err, file))
 }
 
 const handleDragOver = (event: DragEvent) => {

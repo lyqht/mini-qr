@@ -40,6 +40,7 @@
     "lucide-vue-next": "^0.321.0",
     "marked": "^15.0.11",
     "qr-code-styling": "^1.9.2",
+    "qr-scanner": "^1.4.2",
     "radix-vue": "^1.9.17",
     "reka-ui": "^2.0.2",
     "tailwind-merge": "^2.6.0",
