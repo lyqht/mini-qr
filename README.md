@@ -248,6 +248,7 @@ Thank you for everyone here for taking their time out to improve MiniQR 🧡
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/danktankk"><img src="https://avatars.githubusercontent.com/u/34148516?v=4?s=48" width="48px;" alt="danktankk"/><br /><sub><b>danktankk</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=danktankk" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/clausjs"><img src="https://avatars.githubusercontent.com/u/12068849?v=4?s=48" width="48px;" alt="Joseph Claus"/><br /><sub><b>Joseph Claus</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=clausjs" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/kennydude"><img src="https://avatars.githubusercontent.com/u/198294?v=4?s=48" width="48px;" alt="Joe Simpson"/><br /><sub><b>Joe Simpson</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=kennydude" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/toha-tiger"><img src="https://avatars.githubusercontent.com/u/8455781?v=4?s=48" width="48px;" alt="toha-tiger"/><br /><sub><b>toha-tiger</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=toha-tiger" title="Code">💻</a> <a href="#design-toha-tiger" title="Design">🎨</a></td>
     </tr>
   </tbody>
   <tfoot>
