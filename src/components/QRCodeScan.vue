@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { Html5Qrcode } from 'html5-qrcode'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import QRCodeCameraScanner from './QRCodeCameraScanner.vue'
+import {
+  IS_PASTE_IMAGE_FROM_CLIPBOARD_SUPPORTED,
+  KEY_COMBINATION_PASTE,
+  getFileFromDataTransferItemList,
+  getFileFromClipboardItems
+} from '@/utils/clipboard'
 
 defineEmits<{
   'create-qr': [data: string]
@@ -185,6 +191,37 @@ const copyToClipboard = async () => {
   }
 }
 
+/**
+ * Handle both an event of paste from clipboard and a button press 'Paste from clipboard'
+ * @param event : ClipboardEvent | null
+ */
+const pasteFromClipboard = async (event: ClipboardEvent | null) => {
+  try {
+    let file: File | null = null
+
+    if (event && event.clipboardData && event.clipboardData.items) {
+      // user action Ctrl+V
+      file = await getFileFromDataTransferItemList(event.clipboardData.items)
+    } else {
+      // button press
+      file = await getFileFromClipboardItems(await navigator.clipboard.read())
+    }
+
+    if (file == null) {
+      errorMessage.value = t('No image found in clipboard.')
+      return
+    }
+
+    scanFile(file)
+  } catch (err: any) {
+    console.error('Clipboard paste failed', err)
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('paste', pasteFromClipboard)
+})
+
 const onQRDetected = (data: string) => {
   capturedData.value = data
   showCameraScanner.value = false
@@ -229,6 +266,20 @@ const catchScanFileError = async (err, file: File) => {
   }
 }
 
+const scanFile = (file: File) => {
+  isLoading.value = true
+  errorMessage.value = null
+
+  const html5QrCode = new Html5Qrcode('file-qr-reader')
+  html5QrCode
+    .scanFile(file, false)
+    .then((decodedText) => {
+      capturedData.value = decodedText
+      isLoading.value = false
+    })
+    .catch((err) => catchScanFileError(err, file))
+}
+
 const handleFileUpload = (event: Event) => {
   let file: File | null = null
 
@@ -249,17 +300,7 @@ const handleFileUpload = (event: Event) => {
 
   if (!file) return
 
-  isLoading.value = true
-  errorMessage.value = null
-
-  const html5QrCode = new Html5Qrcode('file-qr-reader')
-  html5QrCode
-    .scanFile(file, false)
-    .then((decodedText) => {
-      capturedData.value = decodedText
-      isLoading.value = false
-    })
-    .catch((err) => catchScanFileError(err, file))
+  scanFile(file)
 }
 
 const handleDragOver = (event: DragEvent) => {
@@ -420,22 +461,42 @@ defineExpose({
             {{ t('Tip: For best results, use a clear image with good lighting.') }}
           </p>
 
-          <!-- Camera option -->
           <div class="mt-4 flex flex-col items-center gap-2">
             <p class="mb-2">{{ t('or') }}</p>
-            <button
-              class="z-40 flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
-              @click="startCameraScanning"
-              type="button"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                <path
-                  fill="currentColor"
-                  d="M12 9a3 3 0 1 0 0 6a3 3 0 0 0 0-6m0 8a5 5 0 1 1 0-10a5 5 0 0 1 0 10m0-12a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m4.5 1.5a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5M20 4h-3.17l-1.24-1.35A1.99 1.99 0 0 0 14.12 2H9.88c-.56 0-1.1.24-1.48.65L7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"
-                />
-              </svg>
-              {{ t('Scan with Camera') }}
-            </button>
+
+            <div class="flex items-center gap-2">
+              <!-- Camera option -->
+              <button
+                class="z-40 flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
+                @click="startCameraScanning"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M12 9a3 3 0 1 0 0 6a3 3 0 0 0 0-6m0 8a5 5 0 1 1 0-10a5 5 0 0 1 0 10m0-12a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m4.5 1.5a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5M20 4h-3.17l-1.24-1.35A1.99 1.99 0 0 0 14.12 2H9.88c-.56 0-1.1.24-1.48.65L7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"
+                  />
+                </svg>
+                {{ t('Scan with Camera') }}
+              </button>
+
+              <!-- Paste from clipboard option -->
+              <button
+                class="z-40 flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
+                @click="pasteFromClipboard"
+                type="button"
+                v-if="IS_PASTE_IMAGE_FROM_CLIPBOARD_SUPPORTED"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M19 2h-4.18C14.4.84 13.3 0 12 0S9.6.84 9.18 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2m-7 0c.55 0 1 .45 1 1s-.45 1-1 1s-1-.45-1-1s.45-1 1-1m7 18H5V4h2v3h10V4h2z"
+                  />
+                </svg>
+                {{ t('Paste') }}
+                <span v-html="KEY_COMBINATION_PASTE"></span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

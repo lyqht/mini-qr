@@ -21,9 +21,9 @@ import {
   downloadSvgElement,
   getJpgElement,
   getPngElement,
-  getSvgString,
-  IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED
+  getSvgString
 } from '@/utils/convertToImage'
+import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
 import { parseCSV, validateCSVData } from '@/utils/csv'
 import { processCsvDataForBatch, generateBatchExportFilename } from '@/utils/csvBatchProcessing'
 import { getNumericCSSValue } from '@/utils/formatting'
