@@ -1,3 +1,4 @@
+import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
 import domtoimage, { type Options } from 'dom-to-image'
 import { elementToSVG, inlineResources } from 'dom-to-svg'
 
@@ -16,7 +17,7 @@ const getFormattedOptions = (
     return {
       style: { scale, transformOrigin: 'left top', borderRadius: borderRadius ?? '48px' },
       quality: 100,
-      ...options,
+      ...options
     }
   }
 
@@ -32,16 +33,6 @@ const getResizeScaleToFit = (child: HTMLElement, width: number, height: number):
   const maxScale = Math.min(scaleX, scaleY)
   return maxScale
 }
-
-// Detect if browser supports async Clipboard API for writing image blobs
-// Exclude Safari/WebKit as it does not yet support writing image ClipboardItems
-const _ua = navigator.userAgent
-const _isSafari = /Safari/.test(_ua) && !/Chrome/.test(_ua) && !/Chromium/.test(_ua)
-export const IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED =
-  !!navigator.clipboard &&
-  typeof navigator.clipboard.write === 'function' &&
-  typeof ClipboardItem === 'function' &&
-  !_isSafari
 
 /**
  * Copy a DOM element as an image to the clipboard.
