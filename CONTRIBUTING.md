@@ -7,9 +7,10 @@ You can work on existing issues or suggest new ones. You can also share your pre
 Before you start, please take a moment to read through these guidelines.
 
 - [Contributing to Mini QR](#contributing-to-mini-qr)
-  - [Basic Guidelines](#basic-guidelines)
+  - [Open-source etiquette](#open-source-etiquette)
     - [Issue Assignment](#issue-assignment)
-    - [Reporting Bugs or Suggesting Improvements](#reporting-bugs-or-suggesting-improvements)
+  - [Feature requests](#feature-requests)
+    - [Reporting Bugs](#reporting-bugs)
   - [Development environment](#development-environment)
     - [Getting started with local development](#getting-started-with-local-development)
     - [Codebase overview](#codebase-overview)
@@ -27,19 +28,28 @@ Before you start, please take a moment to read through these guidelines.
 
 > Please read the [official MDN docs for open source etiquette](https://developer.mozilla.org/en-US/docs/MDN/Community/Open_source_etiquette), if you're new to contributing to open source projects.
 
-### Reporting Bugs or Suggesting Improvements
+### Issue Assignment
 
-- If you find a bug or want to suggest an improvement, please raise an issue.
-- For bug reports, provide clear steps for reproduction.
+- Please check for existing duplicate issues before opening an issue for improvement suggestion or bug report.
+- Always request to be assigned to an issue before working on it. This helps prevent conflicting and duplicate work.
+- Comment on the issue you'd like to work on, asking to be assigned.
+- Wait for [@lyqht](https://github.com/lyqht) to assign you before starting work.
+
+## Feature requests
+
 - For improvement suggestions,
   - Include mockups if the change is UI-based.
   - For self-hosting related feature requests, please note that I, the main project maintainer (@lyqht) will likely not work on those. This is because I do not have docker expertise and I don't really have an interest to learn it. The current docker images are setup by kind public contributors. Thanks for your understanding!
 
-### Issue Assignment
+### Reporting Bugs
 
-- Always request to be assigned to an issue before working on it. This helps prevent conflicting and duplicate work.
-- Comment on the issue you'd like to work on, asking to be assigned.
-- Wait for [@lyqht](https://github.com/lyqht) to assign you before starting work.
+![Screenshot of how MiniQR is a very big wrapper around qr-code-styling library](public/miniqr_extract.png)
+
+- Please note that the following issues are known and are caused by the `qr-code-styling` library, and cannot be fixed within this project.
+  - Encoding issues with accented characters
+  - Image margin inconsistency
+  - SVG export not containing actual svg paths, causing black images on certain software like Adobe Photoshop. -> Due to its unreliability, I've tried removing this export option sometime ago but many users requested to have it back since they don't use the SVG file for editing, and merely for displaying it on the web. So please stop requesting this to be removed/fixed.
+- For all other bugs, provide clear steps for reproduction.
 
 ## Development environment
 
@@ -83,7 +93,7 @@ The project is a modern Vite-powered Vue.js 3 application with TypeScript suppor
 
 **Utilities (`src/utils/`):**
 
- - `qrCodePresets.ts`: QR code style presets and preset management
+- `qrCodePresets.ts`: QR code style presets and preset management
 - `dataEncoding.ts`: Data encoding/decoding utilities for different QR code types
 - `convertToImage.ts`: Image conversion and export utilities (PNG, JPG, SVG)
 - `csv.ts`: CSV parsing and validation for batch operations

@@ -21,7 +21,7 @@ An app to create beautiful QR codes and scan various QR code types.
 
 - ✅ Accessible: minimally WCAG A compliant
 - 🎨 Customizable colors and styles
-- 🖼️ Export to PNG, JPG & SVG
+- 🖼️ Export to PNG, JPG & SVG\*
 - 📋 Copy to clipboard
 - 🌓 Light/dark/system-preference mode toggle
 - 🎲 Randomize style button
@@ -36,32 +36,7 @@ An app to create beautiful QR codes and scan various QR code types.
 - 📲 PWA Support: Install MiniQR as a desktop or mobile app
 - 📝 Data templates: Support for various data types including text, URLs, emails, phone numbers, SMS, WiFi credentials, vCards, locations, and calendar events
 
-### Installation as PWA
-
-<details>
-<summary>MiniQR can also be installed as a Progressive Web App (PWA) on your device</summary>
-
-1. **Desktop (Chrome/Edge)**:
-
-   - Visit [MiniQR's website](https://mini-qr-code-generator.vercel.app/)
-   - Click the install icon (➕) in the address bar
-   - Click "Install" in the prompt
-
-2. **Mobile (Android)**:
-
-   - Visit [MiniQR's website](https://mini-qr-code-generator.vercel.app/)
-   - Tap the "Add to Home Screen" option in your browser menu
-   - Tap "Install" or "Add"
-
-3. **iOS (Safari)**:
-   - Visit [MiniQR's website](https://mini-qr-code-generator.vercel.app/)
-   - Tap the Share button
-   - Scroll down and tap "Add to Home Screen"
-   - Tap "Add"
-
-Once installed, MiniQR will work offline and provide a native app-like experience.
-
-</details>
+\*SVG export has limited support and may not display correctly in all software. For more information, please refer to [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Demo
 
@@ -210,14 +185,10 @@ docker run -d -p 8081:8080 mini-qr
 
 [![All Contributors](https://img.shields.io/github/all-contributors/lyqht/mini-qr?color=ee8449&style=flat-square)](#contributors) [![Crowdin](https://badges.crowdin.net/miniqr/localized.svg)](https://crowdin.com/project/miniqr)
 
-Translations and bug fixes are welcome!
+Translations & bug fixes are welcome!
+For all other matters, before opening an issue or contacting the project maintainer, please read up on to [CONTRIBUTING.md](CONTRIBUTING.md).
 
-> [!NOTE]
-> For other issues, please create an issue/ raise it on the discussion board before working on them, as they may be rejected if they are not aligned with @lyqht's goals for this project.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
-
-## Contributors
+---
 
 Thank you for everyone here for taking their time out to improve MiniQR 🧡
 
