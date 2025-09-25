@@ -299,7 +299,7 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
 //#endregion
 
 //#region /* Frame settings */
-const DEFAULT_FRAME_TEXT = 'Scan for more info'
+const DEFAULT_FRAME_TEXT = t('Scan for more info')
 const frameText = ref(DEFAULT_FRAME_TEXT)
 const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
 const showFrame = ref(false)
