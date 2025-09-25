@@ -83,7 +83,7 @@
   "dot": "Punkte",
   "Drag and drop a CSV file here or click to select": "Ziehen Sie eine CSV-Datei hierher oder klicken Sie, um sie auszuwählen",
   "Click to select and upload a CSV file": "Hier klicken, um eine CSV-Datei auszuwählen und hochzuladen",
-  "{count} piece(s) of data detected": "{count} Datensätze erkannt",
+  "{count} piece(s) of data detected": "{count} Stück(e) der erkannten Daten",
   "Invalid CSV": "Ungültiges CSV",
   "Single export": "Einzelner Export",
   "Batch export": "Stapelexport",
