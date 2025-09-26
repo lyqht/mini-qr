@@ -5,10 +5,10 @@ const languageMap: Record<string, string> = {
   de: 'German',
   el: 'Greek',
   en: 'English',
-  es: 'Spanish',
   et: 'Estonian',
   fi: 'Finnish',
   fr: 'French',
+  he: 'Hebrew',
   hu: 'Hungarian',
   id: 'Indonesian',
   it: 'Italian',
@@ -18,7 +18,9 @@ const languageMap: Record<string, string> = {
   lv: 'Latvian',
   nb: 'Norwegian Bokmål',
   nl: 'Dutch',
+  no: 'Norwegian',
   pl: 'Polish',
+  pt: 'Portuguese',
   ptBR: 'Portuguese (Brazil)',
   ptPT: 'Portuguese (Portugal)',
   ro: 'Romanian',
@@ -29,7 +31,9 @@ const languageMap: Record<string, string> = {
   th: 'Thai',
   tr: 'Turkish',
   uk: 'Ukrainian',
-  zh: 'Chinese'
+  vi: 'Vietnamese',
+  zh: 'Chinese',
+  zhHANS: 'Chinese (Simplified)'
 }
 export const sortedLocales = Object.keys(languageMap).sort((a, b) => {
   return languageMap[a].localeCompare(languageMap[b])

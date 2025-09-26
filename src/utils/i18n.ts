@@ -5,10 +5,10 @@ import da from '../../locales/da.json'
 import de from '../../locales/de.json'
 import el from '../../locales/el.json'
 import en from '../../locales/en.json'
-import es from '../../locales/es.json'
 import et from '../../locales/et.json'
 import fi from '../../locales/fi.json'
 import fr from '../../locales/fr.json'
+import he from '../../locales/he.json'
 import hu from '../../locales/hu.json'
 import id from '../../locales/id.json'
 import it from '../../locales/it.json'
@@ -18,7 +18,9 @@ import lt from '../../locales/lt.json'
 import lv from '../../locales/lv.json'
 import nb from '../../locales/nb.json'
 import nl from '../../locales/nl.json'
+import no from '../../locales/no.json'
 import pl from '../../locales/pl.json'
+import pt from '../../locales/pt.json'
 import ptBR from '../../locales/pt-BR.json'
 import ptPT from '../../locales/pt-PT.json'
 import ro from '../../locales/ro.json'
@@ -29,7 +31,9 @@ import sv from '../../locales/sv.json'
 import th from '../../locales/th.json'
 import tr from '../../locales/tr.json'
 import uk from '../../locales/uk.json'
+import vi from '../../locales/vi.json'
 import zh from '../../locales/zh.json'
+import zhHANS from '../../locales/zh-HANS.json'
 
 export const i18n = createI18n({
   locale: 'en',
@@ -41,10 +45,10 @@ export const i18n = createI18n({
     de,
     el,
     en,
-    es,
     et,
     fi,
     fr,
+    he,
     hu,
     id,
     it,
@@ -54,7 +58,9 @@ export const i18n = createI18n({
     lv,
     nb,
     nl,
+    no,
     pl,
+    pt,
     ptBR,
     ptPT,
     ro,
@@ -65,6 +71,8 @@ export const i18n = createI18n({
     th,
     tr,
     uk,
-    zh
+    vi,
+    zh,
+    zhHANS
   }
 })
