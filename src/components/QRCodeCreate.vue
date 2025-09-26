@@ -145,7 +145,7 @@ const qrOptions = computed(() => ({
 }))
 
 const qrCodeProps = computed<StyledQRCodeProps>(() => ({
-  data: debouncedData.value || 'Have a beautiful day!',
+  data: debouncedData.value || defaultQRCodeText.value,
   image: image.value,
   width: width.value,
   height: height.value,
@@ -304,6 +304,9 @@ const frameText = ref<string>('')
 const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
 const showFrame = ref(false)
 
+//#region /* Default QR code text */
+const defaultQRCodeText = computed(() => t('Have nice day!'))
+
 const frameStyle = ref<FrameStyle>({
   textColor: '#000000',
   backgroundColor: '#ffffff',
@@ -389,6 +392,22 @@ onMounted(() => {
     frameText.value = defaultFrameText.value
   }
 })
+//#endregion
+
+//#region /* QR code text autofill */ Fill if empty */
+watch(locale, () => {
+  if (!props.initialData && data.value.trim() === '') {
+    data.value = defaultQRCodeText.value
+  }
+})
+
+watch(defaultQRCodeText, (now, prev) => {
+  const untouched = !props.initialData && (data.value.trim() === '' || data.value === prev)
+  if (untouched) {
+    data.value = now
+  }
+})
+
 //#endregion
 
 //#region /* General Export - download qr code and copy to clipboard */
@@ -571,7 +590,7 @@ function loadQRConfig(jsonString: string, key?: string) {
 
   if (frameConfig) {
     showFrame.value = true
-    frameText.value = frameConfig.text || DEFAULT_FRAME_TEXT
+    frameText.value = frameConfig.text || defaultFrameText.value
     frameTextPosition.value = frameConfig.position || 'bottom'
     frameStyle.value = {
       ...frameStyle.value,
@@ -636,9 +655,11 @@ onMounted(() => {
     // assuming selectedFramePresetKey watcher handles it if lastCustomLoadedFramePreset was populated by loadQRConfig
   }
 
-  // Set initial data if provided through props
+  // Set initial data if provided through props or use default
   if (props.initialData) {
     data.value = props.initialData
+  } else if (data.value.trim() === '') {
+    data.value = defaultQRCodeText.value
   }
 })
 //#endregion
@@ -939,7 +960,7 @@ const mainDivPaddingStyle = computed(() => {
                       <StyledQRCode
                         v-bind="{
                           ...qrCodeProps,
-                          data: data?.length > 0 ? data : t('Have nice day!'),
+                          data: data?.length > 0 ? data : defaultQRCodeText.value,
                           width: PREVIEW_QRCODE_DIM_UNIT,
                           height: PREVIEW_QRCODE_DIM_UNIT
                         }"
@@ -965,7 +986,7 @@ const mainDivPaddingStyle = computed(() => {
                     <StyledQRCode
                       v-bind="{
                         ...qrCodeProps,
-                        data: data?.length > 0 ? data : t('Have nice day!'),
+                        data: data?.length > 0 ? data : defaultQRCodeText.value,
                         width: PREVIEW_QRCODE_DIM_UNIT,
                         height: PREVIEW_QRCODE_DIM_UNIT
                       }"
@@ -1041,7 +1062,7 @@ const mainDivPaddingStyle = computed(() => {
                     <StyledQRCode
                       v-bind="{
                         ...qrCodeProps,
-                        data: data?.length > 0 ? data : t('Have nice day!'),
+                        data: data?.length > 0 ? data : defaultQRCodeText.value,
                         width: PREVIEW_QRCODE_DIM_UNIT,
                         height: PREVIEW_QRCODE_DIM_UNIT
                       }"
@@ -1311,19 +1332,19 @@ const mainDivPaddingStyle = computed(() => {
                     </div>
                   </fieldset>
                 </div>
-				<div>
-				  <div class="mb-2 flex flex-row items-center gap-2">
-					<label for="frame-text">{{ t('Frame text') }}</label>
-				  </div>
-				  <textarea
-					name="frame-text"
-					class="text-input"
-					id="frame-text"
-					rows="2"
-					:placeholder="defaultFrameText"
-					v-model="frameText"
-				  />
-				</div>
+                <div>
+                  <div class="mb-2 flex flex-row items-center gap-2">
+                    <label for="frame-text">{{ t('Frame text') }}</label>
+                  </div>
+                  <textarea
+                    name="frame-text"
+                    class="text-input"
+                    id="frame-text"
+                    rows="2"
+                    :placeholder="defaultFrameText"
+                    v-model="frameText"
+                  />
+                </div>
                 <div>
                   <label class="mb-2 block">{{ t('Frame style') }}</label>
                   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
