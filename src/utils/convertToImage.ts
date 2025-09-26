@@ -14,8 +14,21 @@ const getFormattedOptions = (
 ): Options => {
   if (options.width && options.height) {
     const scale = getResizeScaleToFit(element, options.width, options.height)
+
+    // Parse the border radius value
+    const radiusValue = borderRadius ? parseInt(borderRadius.replace('px', '')) : 48
+
+    // Calculate the scaled border radius to maintain visual consistency
+    // This ensures the corners appear rounded at all export sizes
+    const scaledRadius = `${radiusValue / scale}px`
+
     return {
-      style: { scale, transformOrigin: 'left top', borderRadius: borderRadius ?? '48px' },
+      style: {
+        transform: `scale(${scale})`,
+        transformOrigin: 'left top',
+        borderRadius: scaledRadius,
+        overflow: 'hidden'
+      },
       quality: 100,
       ...options
     }
