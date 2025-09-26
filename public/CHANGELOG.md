@@ -1,3 +1,12 @@
+## v0.26.1 (2025-09-26)
+- ✨ add paste from clipboard support for scan QR code ([#205](https://github.com/lyqht/mini-qr/pull/205))
+- 🐛 rounded corners not applied correctly when exported without frame ([#216](https://github.com/lyqht/mini-qr/pull/216))
+- 🐛 autofill frame text with locale fallback ([#214](https://github.com/lyqht/mini-qr/pull/214))
+- 🐛 german translations ([#211](https://github.com/lyqht/mini-qr/pull/211))
+- 🐛 "English" language name for different translations ([#204](https://github.com/lyqht/mini-qr/pull/204))
+- 🔧 add missing languages to locale selector ([#215](https://github.com/lyqht/mini-qr/pull/215))
+- ♻️ for better internationalization support ([#212](https://github.com/lyqht/mini-qr/pull/212))
+
 ## v0.26.0 (2025-09-01)
 - ✨ Add csv format guide ([#194](https://github.com/lyqht/mini-qr/pull/194))
 - 🐛 Update links to MiniQR's official website
