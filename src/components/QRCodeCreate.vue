@@ -62,7 +62,7 @@ const isLikelyMobileDevice = computed(() => {
 })
 
 //#region /** locale */
-const { t } = useI18n()
+const { t, locale } = useI18n()
 //#endregion
 
 //#region /* QR code style settings */
@@ -145,7 +145,7 @@ const qrOptions = computed(() => ({
 }))
 
 const qrCodeProps = computed<StyledQRCodeProps>(() => ({
-  data: debouncedData.value || 'Have a beautiful day!',
+  data: debouncedData.value || defaultQRCodeText.value,
   image: image.value,
   width: width.value,
   height: height.value,
@@ -298,11 +298,15 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
 })
 //#endregion
 
-//#region /* Frame settings */
-const DEFAULT_FRAME_TEXT = t('Scan for more info')
-const frameText = ref(DEFAULT_FRAME_TEXT)
+//#region /* Frame settings */ Start empty, default is set intelligently */
+const defaultFrameText = computed(() => t('Scan for more info'))
+const frameText = ref<string>('')
 const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
 const showFrame = ref(false)
+
+//#region /* Default QR code text */
+const defaultQRCodeText = computed(() => t('Have nice day!'))
+
 const frameStyle = ref<FrameStyle>({
   textColor: '#000000',
   backgroundColor: '#ffffff',
@@ -311,18 +315,21 @@ const frameStyle = ref<FrameStyle>({
   borderRadius: '8px',
   padding: '16px'
 })
+
 const selectedFramePresetKey = ref<string>(defaultFramePreset.name)
 const lastCustomLoadedFramePreset = ref<FramePreset>()
 const CUSTOM_LOADED_FRAME_PRESET_KEYS = [
   LAST_LOADED_LOCALLY_PRESET_KEY,
   LOADED_FROM_FILE_PRESET_KEY
 ]
+
 const allFramePresetOptions = computed(() => {
   const options = lastCustomLoadedFramePreset.value
     ? [lastCustomLoadedFramePreset.value, ...allFramePresets]
     : allFramePresets
   return options.map((preset) => ({ value: preset.name, label: t(preset.name) }))
 })
+
 function applyFramePreset(preset: FramePreset) {
   if (preset.style) {
     frameStyle.value = { ...frameStyle.value, ...preset.style }
@@ -330,6 +337,7 @@ function applyFramePreset(preset: FramePreset) {
   if (preset.text) frameText.value = preset.text
   if (preset.position) frameTextPosition.value = preset.position
 }
+
 watch(
   selectedFramePresetKey,
   (newKey, prevKey) => {
@@ -351,11 +359,55 @@ watch(
   },
   { immediate: true }
 )
+
 const frameSettings = computed(() => ({
   text: frameText.value,
   position: frameTextPosition.value,
   style: frameStyle.value
 }))
+//#endregion
+
+//#region /* Frame text autofill */ Fill if empty */
+watch(locale, () => {
+  if (frameText.value.trim() === '') {
+    frameText.value = defaultFrameText.value
+  }
+})
+
+watch(defaultFrameText, (now, prev) => {
+  const untouched = frameText.value.trim() === '' || frameText.value === prev
+  if (untouched) {
+    frameText.value = now
+  }
+})
+
+watch(showFrame, (on) => {
+  if (on && frameText.value.trim() === '') {
+    frameText.value = defaultFrameText.value
+  }
+})
+
+onMounted(() => {
+  if (frameText.value.trim() === '') {
+    frameText.value = defaultFrameText.value
+  }
+})
+//#endregion
+
+//#region /* QR code text autofill */ Fill if empty */
+watch(locale, () => {
+  if (!props.initialData && data.value.trim() === '') {
+    data.value = defaultQRCodeText.value
+  }
+})
+
+watch(defaultQRCodeText, (now, prev) => {
+  const untouched = !props.initialData && (data.value.trim() === '' || data.value === prev)
+  if (untouched) {
+    data.value = now
+  }
+})
+
 //#endregion
 
 //#region /* General Export - download qr code and copy to clipboard */
@@ -538,7 +590,7 @@ function loadQRConfig(jsonString: string, key?: string) {
 
   if (frameConfig) {
     showFrame.value = true
-    frameText.value = frameConfig.text || DEFAULT_FRAME_TEXT
+    frameText.value = frameConfig.text || defaultFrameText.value
     frameTextPosition.value = frameConfig.position || 'bottom'
     frameStyle.value = {
       ...frameStyle.value,
@@ -603,9 +655,11 @@ onMounted(() => {
     // assuming selectedFramePresetKey watcher handles it if lastCustomLoadedFramePreset was populated by loadQRConfig
   }
 
-  // Set initial data if provided through props
+  // Set initial data if provided through props or use default
   if (props.initialData) {
     data.value = props.initialData
+  } else if (data.value.trim() === '') {
+    data.value = defaultQRCodeText.value
   }
 })
 //#endregion
@@ -906,7 +960,7 @@ const mainDivPaddingStyle = computed(() => {
                       <StyledQRCode
                         v-bind="{
                           ...qrCodeProps,
-                          data: data?.length > 0 ? data : t('Have nice day!'),
+                          data: data?.length > 0 ? data : defaultQRCodeText.value,
                           width: PREVIEW_QRCODE_DIM_UNIT,
                           height: PREVIEW_QRCODE_DIM_UNIT
                         }"
@@ -932,7 +986,7 @@ const mainDivPaddingStyle = computed(() => {
                     <StyledQRCode
                       v-bind="{
                         ...qrCodeProps,
-                        data: data?.length > 0 ? data : t('Have nice day!'),
+                        data: data?.length > 0 ? data : defaultQRCodeText.value,
                         width: PREVIEW_QRCODE_DIM_UNIT,
                         height: PREVIEW_QRCODE_DIM_UNIT
                       }"
@@ -1008,7 +1062,7 @@ const mainDivPaddingStyle = computed(() => {
                     <StyledQRCode
                       v-bind="{
                         ...qrCodeProps,
-                        data: data?.length > 0 ? data : t('Have nice day!'),
+                        data: data?.length > 0 ? data : defaultQRCodeText.value,
                         width: PREVIEW_QRCODE_DIM_UNIT,
                         height: PREVIEW_QRCODE_DIM_UNIT
                       }"
@@ -1278,7 +1332,6 @@ const mainDivPaddingStyle = computed(() => {
                     </div>
                   </fieldset>
                 </div>
-
                 <div>
                   <div class="mb-2 flex flex-row items-center gap-2">
                     <label for="frame-text">{{ t('Frame text') }}</label>
@@ -1288,11 +1341,10 @@ const mainDivPaddingStyle = computed(() => {
                     class="text-input"
                     id="frame-text"
                     rows="2"
-                    :placeholder="t('Scan for more info')"
+                    :placeholder="defaultFrameText"
                     v-model="frameText"
                   />
                 </div>
-
                 <div>
                   <label class="mb-2 block">{{ t('Frame style') }}</label>
                   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
