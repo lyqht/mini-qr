@@ -1,0 +1,63 @@
+name: Playwright E2E Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    # Only run on changes to relevant files
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'tests/e2e/**'
+      - 'playwright.config.ts'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/playwright.yml'
+
+jobs:
+  tests_e2e:
+    name: Run Playwright E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15 # Add a timeout
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Use latest checkout action
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18 # Or your preferred LTS version
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4 # Use pnpm setup action
+        with:
+          version: 9 # Specify pnpm version if needed
+
+      - name: Install dependencies
+        run: pnpm install # Use pnpm install
+
+      - name: Install Playwright Browsers
+        # Use pnpm exec to run the playwright command from the installed dependency
+        run: pnpm exec playwright install --with-deps
+
+      - name: Update Playwright Snapshots
+        # Temporarily update snapshots instead of just running tests
+        run: pnpm test:e2e --update-snapshots
+
+      - name: Upload Linux Snapshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-snapshots
+          path: tests/e2e/**/*.png # Upload all pngs in the snapshot dir
+          retention-days: 1 # Only need it briefly
+
+      - name: Upload Playwright report
+        # Upload report only if the workflow failed
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7 # Keep reports for 7 days
