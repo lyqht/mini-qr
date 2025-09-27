@@ -555,7 +555,9 @@ console.error('Failed to apply rounded corners, falling back to original image.'
 
 /**
  * NOTE:
- * JPG export still uses domtoimage.toJpeg, but injects a scaled borderRadius
+ * Copy a DOM element as an image to the clipboard.
+ * Falls back to copying a data URL string in browsers that lack Blob support (e.g., Safari).
+ * injects a scaled borderRadius
  * to preserve the rounded look across resolutions. Quality fixed to 100%.
  */
 const getFormattedJpegOptions = (
