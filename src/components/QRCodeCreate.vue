@@ -97,6 +97,7 @@ watch(
 
 const dotsOptionsColor = ref()
 const dotsOptionsType = ref()
+const dotsOptionsRoundSize = ref(defaultPreset.dotsOptions.roundSize ?? false)
 const cornersSquareOptionsColor = ref()
 const cornersSquareOptionsType = ref()
 const cornersDotOptionsColor = ref()
@@ -121,9 +122,20 @@ watch(
   }
 )
 
+function toSafeNumber(value: unknown, fallback: number) {
+  const parsed = typeof value === 'number' ? value : Number(value)
+  return Number.isFinite(parsed) ? parsed : fallback
+}
+
+const sanitizedWidth = computed(() => toSafeNumber(width.value, defaultPreset.width))
+const sanitizedHeight = computed(() => toSafeNumber(height.value, defaultPreset.height))
+const sanitizedMargin = computed(() => toSafeNumber(margin.value, 0))
+const sanitizedImageMargin = computed(() => toSafeNumber(imageMargin.value, 0))
+
 const dotsOptions = computed(() => ({
   color: dotsOptionsColor.value,
-  type: dotsOptionsType.value
+  type: dotsOptionsType.value,
+  roundSize: dotsOptionsRoundSize.value
 }))
 const cornersSquareOptions = computed(() => ({
   color: cornersSquareOptionsColor.value,
@@ -137,8 +149,14 @@ const style = computed(() => ({
   borderRadius: styledBorderRadiusFormatted.value,
   background: styleBackground.value
 }))
+
+const previewDimensions = computed(() => {
+  const size = Math.max(PREVIEW_QRCODE_DIM_UNIT, 1)
+  const formattedSize = `${size}px`
+  return { width: formattedSize, height: formattedSize }
+})
 const imageOptions = computed(() => ({
-  margin: imageMargin.value
+  margin: sanitizedImageMargin.value
 }))
 const qrOptions = computed(() => ({
   errorCorrectionLevel: errorCorrectionLevel.value
@@ -147,9 +165,9 @@ const qrOptions = computed(() => ({
 const qrCodeProps = computed<StyledQRCodeProps>(() => ({
   data: debouncedData.value || defaultQRCodeText.value,
   image: image.value,
-  width: width.value,
-  height: height.value,
-  margin: margin.value,
+  width: sanitizedWidth.value,
+  height: sanitizedHeight.value,
+  margin: sanitizedMargin.value,
   dotsOptions: dotsOptions.value,
   cornersSquareOptions: cornersSquareOptions.value,
   cornersDotOptions: cornersDotOptions.value,
@@ -171,6 +189,7 @@ function randomizeStyleSettings() {
 
   dotsOptionsType.value = getRandomItemInArray(dotTypes)
   dotsOptionsColor.value = createRandomColor()
+  dotsOptionsRoundSize.value = false
 
   cornersSquareOptionsType.value = getRandomItemInArray(cornerSquareTypes)
   cornersSquareOptionsColor.value = createRandomColor()
@@ -227,6 +246,7 @@ watch(selectedPreset, () => {
   imageMargin.value = selectedPreset.value.imageOptions.margin
   dotsOptionsColor.value = selectedPreset.value.dotsOptions.color
   dotsOptionsType.value = selectedPreset.value.dotsOptions.type
+  dotsOptionsRoundSize.value = selectedPreset.value.dotsOptions.roundSize ?? false
   cornersSquareOptionsColor.value = selectedPreset.value.cornersSquareOptions.color
   cornersSquareOptionsType.value = selectedPreset.value.cornersSquareOptions.type
   cornersDotOptionsColor.value = selectedPreset.value.cornersDotOptions.color
@@ -426,30 +446,32 @@ const PREVIEW_QRCODE_DIM_UNIT = 200
  * to include the frame's size. Otherwise, uses the configured width and height values.
  */
 function getExportDimensions() {
+  const baseWidth = Math.max(sanitizedWidth.value, 0)
+  const baseHeight = Math.max(sanitizedHeight.value, 0)
+
   if (!showFrame.value) {
     return {
-      width: width.value,
-      height: height.value
+      width: baseWidth,
+      height: baseHeight
     }
   }
+
   const el = document.getElementById('element-to-export')
   if (!el) {
     return {
-      width: width.value,
-      height: height.value
+      width: baseWidth,
+      height: baseHeight
     }
   }
 
-  // Calculate the scale factor based on the preview size
-  const scaleFactor = width.value / PREVIEW_QRCODE_DIM_UNIT
+  const previewTotalWidth = PREVIEW_QRCODE_DIM_UNIT
+  const previewTotalHeight = PREVIEW_QRCODE_DIM_UNIT
+  const widthScale = previewTotalWidth > 0 ? baseWidth / previewTotalWidth : 1
+  const heightScale = previewTotalHeight > 0 ? baseHeight / previewTotalHeight : 1
 
-  const elWidth = el.offsetWidth
-  const elHeight = el.offsetHeight
-
-  // Get the actual dimensions including the frame and apply the scale factor
   return {
-    width: elWidth * scaleFactor,
-    height: elHeight * scaleFactor
+    width: el.offsetWidth * widthScale,
+    height: el.offsetHeight * heightScale
   }
 }
 
@@ -949,13 +971,7 @@ const mainDivPaddingStyle = computed(() => {
                   <div id="qr-code-container" class="grid place-items-center">
                     <div
                       class="grid place-items-center overflow-hidden"
-                      :style="[
-                        style,
-                        {
-                          width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
-                          height: `${PREVIEW_QRCODE_DIM_UNIT}px`
-                        }
-                      ]"
+                      :style="[style, previewDimensions]"
                     >
                       <StyledQRCode
                         v-bind="{
@@ -975,13 +991,7 @@ const mainDivPaddingStyle = computed(() => {
                 <div class="grid place-items-center">
                   <div
                     class="grid place-items-center overflow-hidden"
-                    :style="[
-                      style,
-                      {
-                        width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
-                        height: `${PREVIEW_QRCODE_DIM_UNIT}px`
-                      }
-                    ]"
+                    :style="[style, previewDimensions]"
                   >
                     <StyledQRCode
                       v-bind="{
@@ -1051,13 +1061,7 @@ const mainDivPaddingStyle = computed(() => {
                 <div id="qr-code-container" class="grid place-items-center">
                   <div
                     class="grid place-items-center overflow-hidden"
-                    :style="[
-                      style,
-                      {
-                        width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
-                        height: `${PREVIEW_QRCODE_DIM_UNIT}px`
-                      }
-                    ]"
+                    :style="[style, previewDimensions]"
                   >
                     <StyledQRCode
                       v-bind="{
@@ -1078,13 +1082,7 @@ const mainDivPaddingStyle = computed(() => {
             v-else
             id="element-to-export"
             class="grid place-items-center overflow-hidden"
-            :style="[
-              style,
-              {
-                width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
-                height: `${PREVIEW_QRCODE_DIM_UNIT}px`
-              }
-            ]"
+            :style="[style, previewDimensions]"
           >
             <StyledQRCode
               v-bind="{
@@ -1794,6 +1792,7 @@ const mainDivPaddingStyle = computed(() => {
                     id="margin"
                     type="number"
                     placeholder="0"
+                    :min="-13"
                     v-model="margin"
                   />
                 </div>
