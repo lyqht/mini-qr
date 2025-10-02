@@ -13,13 +13,11 @@ const getFormattedOptions = (
   borderRadius?: string
 ): Options => {
   if (options.width && options.height) {
-    const scale = getResizeScaleToFit(element, options.width, options.height)
-
-    // Parse the border radius value
+    const scale = Math.min(
+      options.width / element.offsetWidth,
+      options.height / element.offsetHeight
+    )
     const radiusValue = borderRadius ? parseInt(borderRadius.replace('px', '')) : 48
-
-    // Calculate the scaled border radius to maintain visual consistency
-    // This ensures the corners appear rounded at all export sizes
     const scaledRadius = `${radiusValue / scale}px`
 
     return {
@@ -33,66 +31,132 @@ const getFormattedOptions = (
       ...options
     }
   }
-
-  return defaultOptions
+  return { quality: 100, ...defaultOptions, ...options }
 }
 
-const getResizeScaleToFit = (child: HTMLElement, width: number, height: number): number => {
-  child.style.transformOrigin = 'center'
+// Canvas repaint with rounded corners for PNG/JPG
+const applyRoundedCornersToCanvas = async (
+  blob: Blob,
+  width: number,
+  height: number,
+  borderRadius?: string
+): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      const context = canvas.getContext('2d')
+      if (!context) {
+        reject(new Error('Failed to get canvas context'))
+        return
+      }
 
-  const scaleX = width / child.offsetWidth
-  const scaleY = height / child.offsetHeight
+      const radius = borderRadius ? parseInt(borderRadius.replace('px', '')) : 48
+      // Draw rounded rectangle path
+      context.beginPath()
+      context.moveTo(radius, 0)
+      context.lineTo(width - radius, 0)
+      context.arcTo(width, 0, width, radius, radius)
+      context.lineTo(width, height - radius)
+      context.arcTo(width, height, width - radius, height, radius)
+      context.lineTo(radius, height)
+      context.arcTo(0, height, 0, height - radius, radius)
+      context.lineTo(0, radius)
+      context.arcTo(0, 0, radius, 0, radius)
+      context.closePath()
+      context.clip()
+      context.drawImage(image, 0, 0, width, height)
 
-  const maxScale = Math.min(scaleX, scaleY)
-  return maxScale
+      canvas.toBlob((roundedBlob) => {
+        roundedBlob ? resolve(roundedBlob) : reject(new Error('Failed to create rounded blob'))
+      }, blob.type)
+    }
+    image.onerror = () => reject(new Error('Failed to load image'))
+    image.src = URL.createObjectURL(blob)
+  })
 }
 
-/**
- * Copy a DOM element as an image to the clipboard.
- * Falls back to copying a data URL string in browsers that lack Blob support (e.g., Safari).
- */
-/**
- * Copy a DOM element as an image to the clipboard.
- * Uses Clipboard API in modern browsers, and a copy-event/execCommand fallback in Safari.
- */
+// SVG clipPath for rounded corners
+const applySvgRoundedCorners = (svgDocument: Document, options: Options, borderRadius?: string) => {
+  const svgElement = svgDocument.documentElement
+  const radius = borderRadius ? parseInt(borderRadius.replace('px', '')) : 48
+
+  if (options.width) svgElement.setAttribute('width', options.width.toString())
+  if (options.height) svgElement.setAttribute('height', options.height.toString())
+
+  const svgNS = 'http://www.w3.org/2000/svg'
+  const defs = svgDocument.createElementNS(svgNS, 'defs')
+  const clipPath = svgDocument.createElementNS(svgNS, 'clipPath')
+  clipPath.setAttribute('id', 'rounded-clip')
+
+  const rect = svgDocument.createElementNS(svgNS, 'rect')
+  rect.setAttribute('width', (options.width || 400).toString())
+  rect.setAttribute('height', (options.height || 400).toString())
+  rect.setAttribute('rx', radius.toString())
+
+  clipPath.appendChild(rect)
+  defs.appendChild(clipPath)
+  svgElement.insertBefore(defs, svgElement.firstChild)
+
+  const wrapper = svgDocument.createElementNS(svgNS, 'g')
+  wrapper.setAttribute('clip-path', 'url(#rounded-clip)')
+  while (svgElement.children.length > 1) {
+    wrapper.appendChild(svgElement.children[1])
+  }
+  svgElement.appendChild(wrapper)
+}
+
 export async function copyImageToClipboard(
   element: HTMLElement,
   options: Options,
   borderRadius?: string
 ) {
   if (!IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED) {
-    console.error('Clipboard.write is not supported in this browser')
+    console.error('Clipboard.write is not supported')
     return
   }
-  const formattedOptions = getFormattedOptions(element, options, borderRadius)
   try {
-    const blob: Blob = await domtoimage.toBlob(element, formattedOptions)
-    const item = new ClipboardItem({ [blob.type]: blob })
-    await navigator.clipboard.write([item])
-    console.log('Image blob copied to clipboard')
+    const blob: Blob = await domtoimage.toBlob(
+      element,
+      getFormattedOptions(element, options, borderRadius)
+    )
+    const finalBlob =
+      options.width && options.height
+        ? await applyRoundedCornersToCanvas(
+            blob,
+            Number(options.width),
+            Number(options.height),
+            borderRadius
+          )
+        : blob
+    await navigator.clipboard.write([new ClipboardItem({ [finalBlob.type]: finalBlob })])
   } catch (error: any) {
     console.error('Error copying image to clipboard:', error)
   }
 }
 
 export async function getPngElement(element: HTMLElement, options: Options, borderRadius?: string) {
-  const formattedOptions = getFormattedOptions(element, options, borderRadius)
+  const blob: Blob = await domtoimage.toBlob(
+    element,
+    getFormattedOptions(element, options, borderRadius)
+  )
+  const finalBlob =
+    options.width && options.height
+      ? await applyRoundedCornersToCanvas(
+          blob,
+          Number(options.width),
+          Number(options.height),
+          borderRadius
+        )
+      : blob
+
   return new Promise<string>((resolve, reject) => {
-    domtoimage
-      .toBlob(element, formattedOptions)
-      .then((blob: Blob) => {
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          if (typeof reader.result === 'string') {
-            resolve(reader.result)
-          } else {
-            reject(new Error('Failed to convert blob to data URL'))
-          }
-        }
-        reader.onerror = () => reject(reader.error)
-        reader.readAsDataURL(blob)
-      })
-      .catch(reject)
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(reader.result as string)
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(finalBlob)
   })
 }
 
@@ -103,20 +167,17 @@ export function downloadPngElement(
   borderRadius?: string
 ) {
   getPngElement(element, options, borderRadius)
-    .then((dataUrl: string) => {
+    .then((dataUrl) => {
       const link = document.createElement('a')
       link.href = dataUrl
       link.download = filename
       link.click()
     })
-    .catch((error: Error) => {
-      console.error('Error converting element to PNG:', error)
-    })
+    .catch((error) => console.error('Error converting element to PNG:', error))
 }
 
 export async function getJpgElement(element: HTMLElement, options: Options, borderRadius?: string) {
-  const formattedOptions = getFormattedOptions(element, options, borderRadius)
-  return domtoimage.toJpeg(element, formattedOptions)
+  return domtoimage.toJpeg(element, getFormattedOptions(element, options, borderRadius))
 }
 
 export function downloadJpgElement(
@@ -126,26 +187,13 @@ export function downloadJpgElement(
   borderRadius?: string
 ) {
   getJpgElement(element, options, borderRadius)
-    .then((dataUrl: string) => {
+    .then((dataUrl) => {
       const link = document.createElement('a')
       link.href = dataUrl
       link.download = filename
       link.click()
     })
-    .catch((error: Error) => {
-      console.error('Error converting element to JPG:', error)
-    })
-}
-
-function applySvgOptions(svgDocument: Document, options: Options) {
-  const svgElement = svgDocument.documentElement
-  if (options.width) svgElement.setAttribute('width', options.width.toString())
-  if (options.height) svgElement.setAttribute('height', options.height.toString())
-  if (options.style) {
-    for (const [key, value] of Object.entries(options.style)) {
-      svgElement.style[key as any] = value as any
-    }
-  }
+    .catch((error) => console.error('Error converting element to JPG:', error))
 }
 
 export async function getSvgString(
@@ -153,10 +201,9 @@ export async function getSvgString(
   options: Options,
   borderRadius?: string
 ): Promise<string> {
-  const formattedOptions = getFormattedOptions(element, options, borderRadius)
   const svgDocument = elementToSVG(element)
   await inlineResources(svgDocument.documentElement)
-  applySvgOptions(svgDocument, formattedOptions)
+  applySvgRoundedCorners(svgDocument, options, borderRadius)
   return new XMLSerializer().serializeToString(svgDocument)
 }
 
@@ -166,8 +213,6 @@ export async function getSvgElement(
   borderRadius?: string
 ): Promise<string> {
   const svgString = await getSvgString(element, options, borderRadius)
-
-  // Convert SVG string to data URL
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`
 }
 
@@ -178,13 +223,11 @@ export function downloadSvgElement(
   borderRadius?: string
 ) {
   getSvgElement(element, options, borderRadius)
-    .then((dataUrl: string) => {
+    .then((dataUrl) => {
       const link = document.createElement('a')
       link.href = dataUrl
       link.download = filename
       link.click()
     })
-    .catch((error: Error) => {
-      console.error('Error converting element to SVG:', error)
-    })
+    .catch((error) => console.error('Error converting element to SVG:', error))
 }
