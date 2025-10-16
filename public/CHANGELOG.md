@@ -1,3 +1,9 @@
+## v0.26.3 (2025-10-16)
+- ✨ Add multiline frame text support and improve CSV parsing ([#220](https://github.com/lyqht/mini-qr/pull/220))
+
+## v0.26.2 (2025-10-02)
+- 🐛 rounded corners not applied consistently ([#217](https://github.com/lyqht/mini-qr/pull/217))
+
 ## v0.26.1 (2025-09-26)
 - ✨ add paste from clipboard support for scan QR code ([#205](https://github.com/lyqht/mini-qr/pull/205))
 - 🐛 rounded corners not applied correctly when exported without frame ([#216](https://github.com/lyqht/mini-qr/pull/216))
