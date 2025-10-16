@@ -48,33 +48,74 @@ export const isVCardStructure = (header: string): boolean => {
 }
 
 /**
+ * Splits CSV content into rows while respecting quoted fields with newlines
+ * @param csvContent The CSV content as a string
+ * @returns Array of row strings
+ */
+const splitCSVRows = (csvContent: string): string[] => {
+  const rows: string[] = []
+  let currentRow = ''
+  let insideQuotes = false
+
+  for (let i = 0; i < csvContent.length; i++) {
+    const char = csvContent[i]
+
+    if (char === '"') {
+      insideQuotes = !insideQuotes
+      currentRow += char
+    } else if (char === '\n' && !insideQuotes) {
+      // Only treat newline as row separator if not inside quotes
+      if (currentRow.trim() !== '') {
+        rows.push(currentRow.replace('\r', ''))
+      }
+      currentRow = ''
+    } else if (char === '\r' && csvContent[i + 1] === '\n' && !insideQuotes) {
+      // Handle CRLF line endings
+      if (currentRow.trim() !== '') {
+        rows.push(currentRow)
+      }
+      currentRow = ''
+      i++ // Skip the \n
+    } else {
+      currentRow += char
+    }
+  }
+
+  // Add the last row if it's not empty
+  if (currentRow.trim() !== '') {
+    rows.push(currentRow.replace('\r', ''))
+  }
+
+  return rows
+}
+
+/**
  * Parses a CSV string into structured data
  * @param csvContent The CSV content as a string
  * @returns CSVParsingResult containing parsed data and validation status
  */
 export const parseCSV = (csvContent: string): CSVParsingResult => {
   try {
-    const lines = csvContent.split('\n').filter((line) => line.trim() !== '')
+    const lines = splitCSVRows(csvContent)
     if (lines.length === 0) {
       return { data: [], isValid: false, error: 'Empty CSV file' }
     }
 
-    const processedLines = lines.map((line) => line.replace('\r', ''))
-    const header = processedLines[0].toLowerCase()
+    const header = lines[0].toLowerCase()
     const headers = header.split(',').map((h) => h.trim().toLowerCase())
     const isVCard = isVCardStructure(header)
     const startIndex = 1
     const data: CSVData[] = []
 
     if (isVCard) {
-      for (let i = startIndex; i < processedLines.length; i++) {
+      for (let i = startIndex; i < lines.length; i++) {
         // Split by comma but respect quoted values
         const values: string[] = []
         let currentValue = ''
         let insideQuotes = false
 
-        for (let j = 0; j < processedLines[i].length; j++) {
-          const char = processedLines[i][j]
+        for (let j = 0; j < lines[i].length; j++) {
+          const char = lines[i][j]
           if (char === '"') {
             insideQuotes = !insideQuotes
           } else if (char === ',' && !insideQuotes) {
@@ -126,14 +167,14 @@ export const parseCSV = (csvContent: string): CSVParsingResult => {
       }
     } else {
       // Handle simple URL/text structure
-      for (let i = startIndex; i < processedLines.length; i++) {
+      for (let i = startIndex; i < lines.length; i++) {
         // Split by comma but respect quoted values
         const values: string[] = []
         let currentValue = ''
         let insideQuotes = false
 
-        for (let j = 0; j < processedLines[i].length; j++) {
-          const char = processedLines[i][j]
+        for (let j = 0; j < lines[i].length; j++) {
+          const char = lines[i][j]
           if (char === '"') {
             insideQuotes = !insideQuotes
           } else if (char === ',' && !insideQuotes) {

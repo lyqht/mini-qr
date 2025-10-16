@@ -215,10 +215,8 @@ const selectedPreset = ref<
   Preset & { key?: string; qrOptions?: { errorCorrectionLevel: ErrorCorrectionLevel } }
 >(defaultPreset)
 watch(selectedPreset, () => {
-  // Only update data from preset if there's no initialData or if data is empty
-  if (!props.initialData || data.value === '') {
-    data.value = selectedPreset.value.data
-  }
+  // Note: We no longer auto-fill data from presets. Users can keep their own data
+  // while changing the visual style. The QR preview will show default text if empty.
 
   image.value = selectedPreset.value.image
   width.value = selectedPreset.value.width
@@ -394,20 +392,10 @@ onMounted(() => {
 })
 //#endregion
 
-//#region /* QR code text autofill */ Fill if empty */
-watch(locale, () => {
-  if (!props.initialData && data.value.trim() === '') {
-    data.value = defaultQRCodeText.value
-  }
-})
-
-watch(defaultQRCodeText, (now, prev) => {
-  const untouched = !props.initialData && (data.value.trim() === '' || data.value === prev)
-  if (untouched) {
-    data.value = now
-  }
-})
-
+//#region /* QR code text autofill */
+// Note: We don't auto-fill the data field anymore. The QR code preview
+// will show the default text when the field is empty (handled in template),
+// but we keep the input field empty to allow users to see the placeholder.
 //#endregion
 
 //#region /* General Export - download qr code and copy to clipboard */
@@ -655,12 +643,12 @@ onMounted(() => {
     // assuming selectedFramePresetKey watcher handles it if lastCustomLoadedFramePreset was populated by loadQRConfig
   }
 
-  // Set initial data if provided through props or use default
+  // Set initial data if provided through props
   if (props.initialData) {
     data.value = props.initialData
-  } else if (data.value.trim() === '') {
-    data.value = defaultQRCodeText.value
   }
+  // Note: We don't set default text here anymore. The QR code preview
+  // will show the default text when the field is empty (handled in template).
 })
 //#endregion
 
@@ -718,6 +706,20 @@ const resetData = () => {
 
 watch(exportMode, () => {
   resetData()
+  // Note: We don't fill the data field when switching to single mode.
+  // The QR code preview will show the default text when the field is empty.
+})
+
+watch(previewRowIndex, (newIndex) => {
+  if (
+    exportMode.value === ExportMode.Batch &&
+    dataStringsFromCsv.value.length > 0 &&
+    newIndex >= 0 &&
+    newIndex < dataStringsFromCsv.value.length
+  ) {
+    data.value = dataStringsFromCsv.value[newIndex]
+    frameText.value = frameTextsFromCsv.value[newIndex] || defaultFrameText.value
+  }
 })
 
 const getFileFromInputEvent = (event: InputEvent) => {
@@ -771,6 +773,12 @@ const onBatchInputFileUpload = (event: Event) => {
     showFrame.value = batchResult.hasCustomFrameText
     isValidCsv.value = true
     previewRowIndex.value = 0 // Reset preview to first row on new upload
+
+    // Update the QR code preview with the first row's data
+    if (batchResult.urls.length > 0) {
+      data.value = batchResult.urls[0]
+      frameText.value = batchResult.frameTexts[0] || defaultFrameText.value
+    }
   }
 
   reader.readAsText(file)

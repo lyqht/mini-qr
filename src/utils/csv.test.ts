@@ -133,6 +133,92 @@ Jane,"Smith, PhD","jane@example.com"`
         email: 'john@example.com'
       })
     })
+
+    it('handles multiline quoted fields in vCard CSV', () => {
+      const csvContent = `firstname,lastname,email,street
+John,Doe,john@example.com,"123 Main St
+Apt 4B"
+Jane,Smith,jane@example.com,"456 Oak Ave
+Suite 200"`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(2)
+      expect(result.data[0]).toEqual({
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        street: '123 Main St\nApt 4B'
+      })
+      expect(result.data[1]).toEqual({
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@example.com',
+        street: '456 Oak Ave\nSuite 200'
+      })
+    })
+
+    it('handles multiline quoted fields in simple URL CSV', () => {
+      const csvContent = `url,frameText,fileName
+https://example.com,"Visit us at:
+Example Site",example
+https://test.com,"Multi
+Line
+Text",test`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(2)
+      expect(result.data[0]).toEqual({
+        url: 'https://example.com',
+        frameText: 'Visit us at:\nExample Site',
+        fileName: 'example'
+      })
+      expect(result.data[1]).toEqual({
+        url: 'https://test.com',
+        frameText: 'Multi\nLine\nText',
+        fileName: 'test'
+      })
+    })
+
+    it('handles complex CSV with mixed quoted and unquoted fields with newlines', () => {
+      const csvContent = `firstname,lastname,email,org,position
+John,Doe,john@example.com,"ABC Corp
+Technology Division","Senior
+Engineer"
+Jane,Smith,jane@example.com,XYZ Inc,Manager`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(2)
+      expect(result.data[0]).toEqual({
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        org: 'ABC Corp\nTechnology Division',
+        position: 'Senior\nEngineer'
+      })
+      expect(result.data[1]).toEqual({
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@example.com',
+        org: 'XYZ Inc',
+        position: 'Manager'
+      })
+    })
+
+    it('handles CRLF line endings with multiline quoted fields', () => {
+      const csvContent = `url,frameText\r\nhttps://example.com,"Line 1\r\nLine 2"\r\nhttps://test.com,"Single line"`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(2)
+      expect(result.data[0]).toEqual({
+        url: 'https://example.com',
+        frameText: 'Line 1\r\nLine 2',
+        fileName: undefined
+      })
+    })
   })
 
   describe('validateCSVData', () => {
