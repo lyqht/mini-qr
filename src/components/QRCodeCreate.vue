@@ -1292,7 +1292,8 @@ const mainDivPaddingStyle = computed(() => {
       </div>
     </Teleport>
 
-    <div id="settings" class="flex w-full grow flex-col items-start gap-8 pt-8 text-start md:pt-0">
+    <section id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
+      <h2 class="sr-only">{{ t('Settings to customize your QR code') }}</h2>
       <Accordion
         type="multiple"
         collapsible
@@ -1927,7 +1928,7 @@ const mainDivPaddingStyle = computed(() => {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </div>
+    </section>
   </div>
 
   <DataTemplatesModal
