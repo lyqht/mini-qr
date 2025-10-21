@@ -68,7 +68,7 @@ onMounted(() => {
     <template #button-icon>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="icon -ml-1.5 size-6 shrink-0"
+        class="icon -ms-1.5 size-6 shrink-0"
         width="36"
         height="36"
         viewBox="0 0 24 24"

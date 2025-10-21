@@ -86,7 +86,7 @@ const isModeToggleDisabled = computed(() => {
 
         <!-- Mode toggle button - only visible on desktop -->
         <div
-          class="ml-4 flex items-center gap-1 rounded-lg border border-zinc-300 bg-zinc-100 p-1 dark:border-zinc-700 dark:bg-zinc-800"
+          class="ms-4 flex items-center gap-1 rounded-lg border border-zinc-300 bg-zinc-100 p-1 dark:border-zinc-700 dark:bg-zinc-800"
         >
           <button
             :class="[

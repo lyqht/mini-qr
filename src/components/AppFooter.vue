@@ -84,7 +84,7 @@ onMounted(() => {
             </DialogClose>
           </DialogHeader>
 
-          <div class="flex-1 overflow-y-auto pr-2">
+          <div class="flex-1 overflow-y-auto pe-2">
             <DialogDescription
               as="div"
               class="prose prose-sm max-w-none text-start dark:prose-invert prose-li:my-1"

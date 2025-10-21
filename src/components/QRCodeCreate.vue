@@ -1517,7 +1517,7 @@ const mainDivPaddingStyle = computed(() => {
                       <textarea
                         id="data"
                         v-model="data"
-                        class="mr-2 grow text-input"
+                        class="me-2 grow text-input"
                         :placeholder="t('data to encode e.g. a URL or a string')"
                       ></textarea>
                       <button
