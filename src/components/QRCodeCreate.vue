@@ -937,7 +937,7 @@ const mainDivPaddingStyle = computed(() => {
 
 <template>
   <div
-    class="flex items-start justify-center gap-4 md:flex-row md:gap-6 lg:gap-12 lg:pb-0"
+    class="flex items-start justify-center gap-4 overflow-x-hidden md:flex-row md:gap-6 lg:gap-12 lg:pb-0"
     :style="mainDivPaddingStyle"
   >
     <!-- Sticky sidebar on large screens -->
@@ -1040,8 +1040,10 @@ const mainDivPaddingStyle = computed(() => {
           </div>
         </div>
       </DrawerTrigger>
-      <DrawerContent class="flex h-screen flex-col items-center justify-between">
-        <div class="flex grow flex-col items-center justify-center gap-4">
+      <DrawerContent
+        class="flex max-h-[90vh] flex-col items-center justify-between overflow-y-auto overflow-x-hidden"
+      >
+        <div class="flex grow flex-col items-center justify-center gap-4 p-4">
           <DrawerTitle>{{ t('Export') }}</DrawerTitle>
           <div ref="mainContentContainer" id="main-content-container" class="w-full"></div>
         </div>
@@ -1290,10 +1292,7 @@ const mainDivPaddingStyle = computed(() => {
       </div>
     </Teleport>
 
-    <div
-      id="settings"
-      class="flex w-full grow flex-col items-start gap-8 overflow-hidden text-start"
-    >
+    <div id="settings" class="flex w-full grow flex-col items-start gap-8 pt-8 text-start md:pt-0">
       <Accordion
         type="multiple"
         collapsible
@@ -1313,7 +1312,7 @@ const mainDivPaddingStyle = computed(() => {
             ></AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
-            <section class="space-y-4" aria-labelledby="frame-settings-title">
+            <section class="w-full space-y-4" aria-labelledby="frame-settings-title">
               <div class="flex flex-row items-center gap-2">
                 <label for="show-frame">{{ t('Add frame') }}</label>
                 <input id="show-frame" type="checkbox" v-model="showFrame" />
@@ -1445,7 +1444,7 @@ const mainDivPaddingStyle = computed(() => {
             ><span id="qr-code-settings-title">{{ t('QR code settings') }}</span></AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
-            <section class="space-y-8" aria-labelledby="qr-code-settings-title">
+            <section class="w-full space-y-4" aria-labelledby="qr-code-settings-title">
               <div>
                 <label>{{ t('Preset') }}</label>
                 <div class="flex flex-row items-center justify-start gap-2">
@@ -1475,10 +1474,10 @@ const mainDivPaddingStyle = computed(() => {
                   </button>
                 </div>
               </div>
-              <div class="w-full overflow-hidden">
+              <div class="w-full">
                 <div class="flex w-full flex-col flex-wrap gap-4 sm:flex-row sm:gap-x-8">
                   <!-- Data to encode area -->
-                  <div class="w-full overflow-hidden sm:grow">
+                  <div class="w-full sm:grow">
                     <!-- Header row: Label + Mode Toggles + Batch Options -->
                     <div class="mb-2 flex items-center gap-4">
                       <label for="data">{{ t('Data to encode') }}</label>
