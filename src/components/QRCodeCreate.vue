@@ -68,6 +68,9 @@ const { t, locale } = useI18n()
 //#region /* QR code style settings */
 const data = ref(props.initialData || import.meta.env.VITE_DEFAULT_DATA_TO_ENCODE || '')
 const debouncedData = ref(data.value)
+const previewData = computed(() =>
+  debouncedData.value?.length > 0 ? debouncedData.value : defaultQRCodeText.value
+)
 let dataDebounceTimer: ReturnType<typeof setTimeout>
 
 watch(
@@ -145,7 +148,7 @@ const qrOptions = computed(() => ({
 }))
 
 const qrCodeProps = computed<StyledQRCodeProps>(() => ({
-  data: debouncedData.value || defaultQRCodeText.value,
+  data: previewData.value,
   image: image.value,
   width: width.value,
   height: height.value,
@@ -976,7 +979,6 @@ const mainDivPaddingStyle = computed(() => {
                       <StyledQRCode
                         v-bind="{
                           ...qrCodeProps,
-                          data: data?.length > 0 ? data : defaultQRCodeText.value,
                           width: PREVIEW_QRCODE_DIM_UNIT,
                           height: PREVIEW_QRCODE_DIM_UNIT
                         }"
@@ -1002,7 +1004,6 @@ const mainDivPaddingStyle = computed(() => {
                     <StyledQRCode
                       v-bind="{
                         ...qrCodeProps,
-                        data: data?.length > 0 ? data : defaultQRCodeText.value,
                         width: PREVIEW_QRCODE_DIM_UNIT,
                         height: PREVIEW_QRCODE_DIM_UNIT
                       }"
@@ -1078,7 +1079,6 @@ const mainDivPaddingStyle = computed(() => {
                     <StyledQRCode
                       v-bind="{
                         ...qrCodeProps,
-                        data: data?.length > 0 ? data : defaultQRCodeText.value,
                         width: PREVIEW_QRCODE_DIM_UNIT,
                         height: PREVIEW_QRCODE_DIM_UNIT
                       }"
