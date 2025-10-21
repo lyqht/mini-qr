@@ -1041,7 +1041,7 @@ const mainDivPaddingStyle = computed(() => {
         </div>
       </DrawerTrigger>
       <DrawerContent
-        class="flex max-h-[90vh] flex-col items-center justify-between overflow-y-auto overflow-x-hidden"
+        class="flex flex-col items-center justify-between overflow-y-auto overflow-x-hidden"
       >
         <div class="flex grow flex-col items-center justify-center gap-4 p-4">
           <DrawerTitle>{{ t('Export') }}</DrawerTitle>
