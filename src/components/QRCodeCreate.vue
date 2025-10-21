@@ -1332,7 +1332,7 @@ const mainDivPaddingStyle = computed(() => {
                 </div>
                 <div class="flex flex-col">
                   <label class="mb-2 block">{{ t('Text position') }}</label>
-                  <fieldset class="flex-1" role="radio" tabindex="0">
+                  <fieldset class="flex-1">
                     <div
                       class="radio"
                       v-for="position in ['top', 'bottom', 'right', 'left']"
@@ -1830,7 +1830,7 @@ const mainDivPaddingStyle = computed(() => {
                 id="dots-squares-settings"
                 class="mb-4 flex w-full flex-col flex-wrap gap-6 md:flex-row"
               >
-                <fieldset class="flex-1" role="radio" tabindex="0">
+                <fieldset class="flex-1">
                   <legend>{{ t('Dots type') }}</legend>
                   <div
                     class="radio"
@@ -1853,7 +1853,7 @@ const mainDivPaddingStyle = computed(() => {
                     <label :for="'dotsOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-                <fieldset class="flex-1" role="radio" tabindex="0">
+                <fieldset class="flex-1">
                   <legend>{{ t('Corners Square type') }}</legend>
                   <div class="radio" v-for="type in ['dot', 'square', 'extra-rounded']" :key="type">
                     <input
@@ -1865,7 +1865,7 @@ const mainDivPaddingStyle = computed(() => {
                     <label :for="'cornersSquareOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-                <fieldset class="flex-1" role="radio" tabindex="0">
+                <fieldset class="flex-1">
                   <legend>{{ t('Corners Dot type') }}</legend>
                   <div class="radio" v-for="type in ['dot', 'square']" :key="type">
                     <input
@@ -1877,7 +1877,7 @@ const mainDivPaddingStyle = computed(() => {
                     <label :for="'cornersDotOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-                <fieldset class="flex-1" role="radio" tabindex="0">
+                <fieldset class="flex-1">
                   <div class="flex flex-row items-center gap-2">
                     <legend>{{ t('Error correction level') }}</legend>
                     <a
