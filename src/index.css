@@ -104,9 +104,9 @@
   }
 }
  
-@layer base {
+@layer custom {
   * {
-    @apply border-border;
+    @apply box-border;
   }
   body {
     @apply bg-background text-foreground;
