@@ -183,7 +183,7 @@ Jane,Smith,Tech,jane@ex.com,Manager`
                 class="break-words text-xs text-zinc-600 dark:text-zinc-400 sm:flex-1 sm:text-sm"
               >
                 {{ field.description }}
-                <span v-if="field.required" class="ml-1 text-red-500">*</span>
+                <span v-if="field.required" class="ms-1 text-red-500">*</span>
               </span>
             </div>
           </div>
@@ -230,7 +230,7 @@ Jane,Smith,Tech,jane@ex.com,Manager`
                 class="break-words text-xs text-zinc-600 dark:text-zinc-400 sm:flex-1 sm:text-sm"
               >
                 {{ field.description }}
-                <span v-if="field.required" class="ml-1 text-red-500">*</span>
+                <span v-if="field.required" class="ms-1 text-red-500">*</span>
               </span>
             </div>
           </div>

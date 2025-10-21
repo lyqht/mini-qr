@@ -937,7 +937,7 @@ const mainDivPaddingStyle = computed(() => {
 
 <template>
   <div
-    class="flex items-start justify-center gap-4 md:flex-row md:gap-6 lg:gap-12 lg:pb-0"
+    class="flex items-start justify-center gap-4 overflow-x-hidden md:flex-row md:gap-6 lg:gap-12 lg:pb-0"
     :style="mainDivPaddingStyle"
   >
     <!-- Sticky sidebar on large screens -->
@@ -1040,8 +1040,10 @@ const mainDivPaddingStyle = computed(() => {
           </div>
         </div>
       </DrawerTrigger>
-      <DrawerContent class="flex h-screen flex-col items-center justify-between">
-        <div class="flex grow flex-col items-center justify-center gap-4">
+      <DrawerContent
+        class="flex max-h-[90vh] flex-col items-center justify-between overflow-y-auto overflow-x-hidden"
+      >
+        <div class="flex grow flex-col items-center justify-center gap-4 p-4">
           <DrawerTitle>{{ t('Export') }}</DrawerTitle>
           <div ref="mainContentContainer" id="main-content-container" class="w-full"></div>
         </div>
@@ -1290,10 +1292,8 @@ const mainDivPaddingStyle = computed(() => {
       </div>
     </Teleport>
 
-    <div
-      id="settings"
-      class="flex w-full grow flex-col items-start gap-8 overflow-hidden text-start"
-    >
+    <section id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
+      <h2 class="sr-only">{{ t('Settings to customize your QR code') }}</h2>
       <Accordion
         type="multiple"
         collapsible
@@ -1313,7 +1313,7 @@ const mainDivPaddingStyle = computed(() => {
             ></AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
-            <section class="space-y-4" aria-labelledby="frame-settings-title">
+            <section class="w-full space-y-4" aria-labelledby="frame-settings-title">
               <div class="flex flex-row items-center gap-2">
                 <label for="show-frame">{{ t('Add frame') }}</label>
                 <input id="show-frame" type="checkbox" v-model="showFrame" />
@@ -1332,7 +1332,7 @@ const mainDivPaddingStyle = computed(() => {
                 </div>
                 <div class="flex flex-col">
                   <label class="mb-2 block">{{ t('Text position') }}</label>
-                  <fieldset class="flex-1" role="radio" tabindex="0">
+                  <fieldset class="flex-1">
                     <div
                       class="radio"
                       v-for="position in ['top', 'bottom', 'right', 'left']"
@@ -1445,7 +1445,7 @@ const mainDivPaddingStyle = computed(() => {
             ><span id="qr-code-settings-title">{{ t('QR code settings') }}</span></AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
-            <section class="space-y-8" aria-labelledby="qr-code-settings-title">
+            <section class="w-full space-y-4" aria-labelledby="qr-code-settings-title">
               <div>
                 <label>{{ t('Preset') }}</label>
                 <div class="flex flex-row items-center justify-start gap-2">
@@ -1475,10 +1475,10 @@ const mainDivPaddingStyle = computed(() => {
                   </button>
                 </div>
               </div>
-              <div class="w-full overflow-hidden">
+              <div class="w-full">
                 <div class="flex w-full flex-col flex-wrap gap-4 sm:flex-row sm:gap-x-8">
                   <!-- Data to encode area -->
-                  <div class="w-full overflow-hidden sm:grow">
+                  <div class="w-full sm:grow">
                     <!-- Header row: Label + Mode Toggles + Batch Options -->
                     <div class="mb-2 flex items-center gap-4">
                       <label for="data">{{ t('Data to encode') }}</label>
@@ -1517,7 +1517,7 @@ const mainDivPaddingStyle = computed(() => {
                       <textarea
                         id="data"
                         v-model="data"
-                        class="mr-2 grow text-input"
+                        class="me-2 grow text-input"
                         :placeholder="t('data to encode e.g. a URL or a string')"
                       ></textarea>
                       <button
@@ -1830,7 +1830,7 @@ const mainDivPaddingStyle = computed(() => {
                 id="dots-squares-settings"
                 class="mb-4 flex w-full flex-col flex-wrap gap-6 md:flex-row"
               >
-                <fieldset class="flex-1" role="radio" tabindex="0">
+                <fieldset class="flex-1">
                   <legend>{{ t('Dots type') }}</legend>
                   <div
                     class="radio"
@@ -1853,7 +1853,7 @@ const mainDivPaddingStyle = computed(() => {
                     <label :for="'dotsOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-                <fieldset class="flex-1" role="radio" tabindex="0">
+                <fieldset class="flex-1">
                   <legend>{{ t('Corners Square type') }}</legend>
                   <div class="radio" v-for="type in ['dot', 'square', 'extra-rounded']" :key="type">
                     <input
@@ -1865,7 +1865,7 @@ const mainDivPaddingStyle = computed(() => {
                     <label :for="'cornersSquareOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-                <fieldset class="flex-1" role="radio" tabindex="0">
+                <fieldset class="flex-1">
                   <legend>{{ t('Corners Dot type') }}</legend>
                   <div class="radio" v-for="type in ['dot', 'square']" :key="type">
                     <input
@@ -1877,7 +1877,7 @@ const mainDivPaddingStyle = computed(() => {
                     <label :for="'cornersDotOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-                <fieldset class="flex-1" role="radio" tabindex="0">
+                <fieldset class="flex-1">
                   <div class="flex flex-row items-center gap-2">
                     <legend>{{ t('Error correction level') }}</legend>
                     <a
@@ -1928,7 +1928,7 @@ const mainDivPaddingStyle = computed(() => {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </div>
+    </section>
   </div>
 
   <DataTemplatesModal

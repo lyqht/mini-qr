@@ -149,7 +149,7 @@ onUnmounted(() => {
             </DialogClose>
           </DialogHeader>
 
-          <div class="flex-1 overflow-y-auto pr-2">
+          <div class="flex-1 overflow-y-auto pe-2">
             <DialogDescription
               as="div"
               class="prose prose-sm max-w-none text-start dark:prose-invert prose-li:my-1"
@@ -250,15 +250,17 @@ onUnmounted(() => {
           v-if="!hideCredits"
           class="relative flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-400 md:hidden"
         >
-          <div class="flex items-center justify-center gap-1">
-            <span>{{ t('Created by') }}</span>
-            <a
-              href="https://github.com/lyqht"
-              target="_blank"
-              class="text-zinc-900 hover:text-zinc-700 dark:text-zinc-100 dark:hover:text-zinc-300"
-              >Estee Tey 🐧🌻</a
-            >
-            <span>|</span>
+          <div class="flex items-center justify-between gap-1">
+            <span class="text-start">
+              {{ t('Created by') }}
+              <br />
+              <a
+                href="https://github.com/lyqht"
+                target="_blank"
+                class="text-zinc-900 hover:text-zinc-700 dark:text-zinc-100 dark:hover:text-zinc-300"
+                >Estee Tey 🐧🌻</a
+              >
+            </span>
             <a
               href="https://blog.esteetey.dev/sponsor"
               target="_blank"
