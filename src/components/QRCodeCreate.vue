@@ -392,10 +392,20 @@ onMounted(() => {
 })
 //#endregion
 
-//#region /* QR code text autofill */
-// Note: We don't auto-fill the data field anymore. The QR code preview
-// will show the default text when the field is empty (handled in template),
-// but we keep the input field empty to allow users to see the placeholder.
+//#region /* QR code text autofill -  Fill if empty */
+watch(locale, () => {
+  if (!props.initialData && data.value.trim() === '') {
+    data.value = defaultQRCodeText.value
+  }
+})
+
+watch(defaultQRCodeText, (now, prev) => {
+  const untouched = !props.initialData && (data.value.trim() === '' || data.value === prev)
+  if (untouched) {
+    data.value = now
+  }
+})
+
 //#endregion
 
 //#region /* General Export - download qr code and copy to clipboard */
@@ -646,9 +656,9 @@ onMounted(() => {
   // Set initial data if provided through props
   if (props.initialData) {
     data.value = props.initialData
+  } else if (data.value.trim() === '') {
+    data.value = defaultQRCodeText.value
   }
-  // Note: We don't set default text here anymore. The QR code preview
-  // will show the default text when the field is empty (handled in template).
 })
 //#endregion
 
@@ -706,8 +716,6 @@ const resetData = () => {
 
 watch(exportMode, () => {
   resetData()
-  // Note: We don't fill the data field when switching to single mode.
-  // The QR code preview will show the default text when the field is empty.
 })
 
 watch(previewRowIndex, (newIndex) => {
