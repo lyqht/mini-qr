@@ -19,6 +19,10 @@ services:
         - VITE_DISABLE_LOCAL_STORAGE=${DISABLE_LOCAL_STORAGE:-false}
     ports:
       - "8080:8080"
+    labels:
+      # Coolify/Traefik labels for routing
+      - "traefik.enable=true"
+      - "traefik.http.services.mini-qr.loadbalancer.server.port=8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/"]
       interval: 30s

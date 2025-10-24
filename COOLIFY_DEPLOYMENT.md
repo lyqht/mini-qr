@@ -85,6 +85,21 @@ Der Healthcheck:
 
 ## Troubleshooting
 
+### 502 Bad Gateway Error
+**Symptom:** Container läuft, Healthcheck ist OK, aber Browser zeigt 502 Error
+
+**Ursache:** Traefik weiß nicht, auf welchen Port geroutet werden soll
+
+**Lösung:**
+- Die `docker-compose.yml` enthält jetzt die notwendigen Traefik-Labels:
+  ```yaml
+  labels:
+    - "traefik.enable=true"
+    - "traefik.http.services.mini-qr.loadbalancer.server.port=8080"
+  ```
+- Nach dem Update: Redeploy in Coolify durchführen
+- Alternative: In Coolify UI den Port manuell auf 8080 setzen
+
 ### Container startet nicht
 - Prüfe die Build-Logs in Coolify
 - Stelle sicher, dass alle Build-Args korrekt gesetzt sind
@@ -93,11 +108,13 @@ Der Healthcheck:
 - Überprüfe, ob der Container auf Port 8080 lauscht
 - Prüfe die Container-Logs für Fehler
 - Stelle sicher, dass `serve` korrekt startet
+- Warte 40 Sekunden (start_period) nach Container-Start
 
 ### Routing-Probleme
 - Prüfe die Coolify Domain-Konfiguration
 - Stelle sicher, dass der richtige Port (8080) konfiguriert ist
-- Überprüfe die Traefik-Labels in Coolify
+- Überprüfe die Traefik-Labels in den Container-Details
+- Prüfe Traefik-Logs in Coolify für Routing-Fehler
 
 ## Netzwerk
 
