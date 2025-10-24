@@ -43,15 +43,19 @@ healthcheck:
    - Verbinde dein Git-Repository
 
 2. **Umgebungsvariablen konfigurieren** (optional)
+
+   Für eine Standard-Installation sind **keine** Umgebungsvariablen erforderlich.
+
+   Falls Du die App anpassen möchtest, siehe die detaillierte Dokumentation:
+   **[COOLIFY_ENV_VARS.md](./COOLIFY_ENV_VARS.md)** - Komplette Anleitung zu allen ENV-Variablen
+
+   Quick-Beispiel für häufige Anpassungen:
    ```bash
-   BASE_PATH=/                    # Standard: /
-   HIDE_CREDITS=false            # Credits anzeigen
-   DEFAULT_PRESET=               # Standard-Preset
-   DEFAULT_DATA=                 # Standard-Daten für QR-Code
-   PRESETS=                      # QR-Code-Presets (JSON)
-   FRAME_PRESET=                 # Frame-Preset
-   FRAME_PRESETS=                # Frame-Presets (JSON)
-   DISABLE_LOCAL_STORAGE=false   # LocalStorage deaktivieren
+   BASE_PATH=/                    # Standard: / (Root-Pfad)
+   HIDE_CREDITS=false            # Credits anzeigen (true = ausblenden)
+   DEFAULT_PRESET=plain          # Welcher Preset beim Start geladen wird
+   DEFAULT_DATA=                 # Vorausgefüllter Text/URL (optional)
+   DISABLE_LOCAL_STORAGE=false   # LocalStorage aktivieren
    ```
 
 3. **Domain konfigurieren**
