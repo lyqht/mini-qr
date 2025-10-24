@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - BASE_PATH=${BASE_PATH:-/mini-qr/}
+        - BASE_PATH=${BASE_PATH:-/}
         - VITE_HIDE_CREDITS=${HIDE_CREDITS:-false}
         - VITE_DEFAULT_PRESET=${DEFAULT_PRESET:-}
         - VITE_DEFAULT_DATA_TO_ENCODE=${DEFAULT_DATA:-}
@@ -17,25 +17,11 @@ services:
         - VITE_FRAME_PRESET=${FRAME_PRESET:-}
         - VITE_FRAME_PRESETS=${FRAME_PRESETS:-}
         - VITE_DISABLE_LOCAL_STORAGE=${DISABLE_LOCAL_STORAGE:-false}
-    # volumes:
-    #   - ./public:/usr/share/nginx/html/public:ro
-    #   - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    networks:
-      - mini-qr-network
-
-  nginx-proxy:
-    image: nginx:alpine
-    container_name: nginx-proxy
     ports:
-      - 80:80
-    restart: unless-stopped
-    volumes:
-      - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - mini-qr
-    networks:
-      - mini-qr-network
-
-networks:
-  mini-qr-network:
-    driver: bridge
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
