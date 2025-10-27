@@ -1044,7 +1044,7 @@ const mainDivPaddingStyle = computed(() => {
         class="flex max-h-[90vh] flex-col items-center justify-between overflow-y-auto overflow-x-hidden"
       >
         <div class="flex grow flex-col items-center justify-center gap-4 p-4">
-          <DrawerTitle>{{ t('Export') }}</DrawerTitle>
+          <DrawerTitle>{{ t('Export QR code') }}</DrawerTitle>
           <div ref="mainContentContainer" id="main-content-container" class="w-full"></div>
         </div>
       </DrawerContent>
@@ -1194,7 +1194,7 @@ const mainDivPaddingStyle = computed(() => {
             </button>
           </div>
           <div id="export-options" class="grid place-items-center gap-4">
-            <p class="text-zinc-900 dark:text-zinc-100">{{ t('Export as') }}</p>
+            <p class="text-zinc-900 dark:text-zinc-100">{{ t('Export QR code') }}</p>
             <div class="flex flex-row items-center justify-center gap-2">
               <button
                 id="download-qr-image-button-png"
@@ -1604,7 +1604,7 @@ const mainDivPaddingStyle = computed(() => {
                                   <div class="flex flex-col gap-1">
                                     <span
                                       class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                                      >{{ $t('Data:') }}</span
+                                      >{{ $t('Data') }}</span
                                     >
                                     <code
                                       class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
