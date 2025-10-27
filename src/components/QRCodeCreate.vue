@@ -509,10 +509,17 @@ function copyQRToClipboard() {
  */
 function downloadQRImage(format: 'png' | 'svg' | 'jpg') {
   if (exportMode.value === ExportMode.Single) {
+    // Sanitize filename to remove invalid characters
+    const sanitizedFilename = (exportFilename.value || 'qr-code').replace(/[^a-zA-Z0-9_-]/g, '_')
+
     const formatConfig = {
-      png: { fn: downloadPngElement, filename: 'qr-code.png' },
-      svg: { fn: downloadSvgElement, filename: 'qr-code.svg' },
-      jpg: { fn: downloadJpgElement, filename: 'qr-code.jpg', extraOptions: { bgcolor: 'white' } }
+      png: { fn: downloadPngElement, filename: `${sanitizedFilename}.png` },
+      svg: { fn: downloadSvgElement, filename: `${sanitizedFilename}.svg` },
+      jpg: {
+        fn: downloadJpgElement,
+        filename: `${sanitizedFilename}.jpg`,
+        extraOptions: { bgcolor: 'white' }
+      }
     }[format]
 
     const el = document.getElementById('element-to-export')
@@ -677,6 +684,7 @@ enum ExportMode {
   Batch = 'batch'
 }
 
+const exportFilename = ref('qr-code')
 const exportMode = ref(ExportMode.Single)
 const dataStringsFromCsv = ref<string[]>([])
 const frameTextsFromCsv = ref<string[]>([])
@@ -1155,101 +1163,134 @@ const updateDataFromModal = (newData: string) => {
               <p>{{ t('Load QR Code configuration') }}</p>
             </button>
           </div>
-          <div id="export-options" class="grid place-items-center gap-4">
-            <p class="text-zinc-900 dark:text-zinc-100">{{ t('Export QR code') }}</p>
-            <div class="flex flex-row items-center justify-center gap-2">
-              <button
-                id="download-qr-image-button-png"
-                class="button"
-                @click="() => downloadQRImage('png')"
-                :disabled="isExportButtonDisabled"
-                :title="
-                  isExportButtonDisabled
-                    ? t('Please enter data to encode first')
-                    : t('Download QR Code as PNG')
-                "
-                :aria-label="t('Download QR Code as PNG')"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <g fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                    <path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4" />
-                    <text
-                      x="1"
-                      y="22"
-                      fill="currentColor"
-                      stroke="none"
-                      font-size="11px"
-                      font-family="monospace"
-                      font-weight="600"
-                    >
-                      PNG
-                    </text>
-                  </g>
-                </svg>
-              </button>
-              <button
-                id="download-qr-image-button-jpg"
-                class="button"
-                @click="() => downloadQRImage('jpg')"
-                :disabled="isExportButtonDisabled"
-                :title="
-                  isExportButtonDisabled
-                    ? t('Please enter data to encode first')
-                    : t('Download QR Code as JPG')
-                "
-                :aria-label="t('Download QR Code as JPG')"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <g fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                    <path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4" />
-                    <text
-                      x="1"
-                      y="22"
-                      fill="currentColor"
-                      stroke="none"
-                      font-size="11px"
-                      font-family="monospace"
-                      font-weight="600"
-                    >
-                      JPG
-                    </text>
-                  </g>
-                </svg>
-              </button>
-              <button
-                id="download-qr-image-button-svg"
-                class="button"
-                @click="() => downloadQRImage('svg')"
-                :disabled="isExportButtonDisabled"
-                :title="
-                  isExportButtonDisabled
-                    ? t('Please enter data to encode first')
-                    : t('Download QR Code as SVG')
-                "
-                :aria-label="t('Download QR Code as SVG')"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <g fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                    <path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4" />
-                    <text
-                      x="1"
-                      y="22"
-                      fill="currentColor"
-                      stroke="none"
-                      font-size="11px"
-                      font-family="monospace"
-                      font-weight="600"
-                    >
-                      SVG
-                    </text>
-                  </g>
-                </svg>
-              </button>
+          <section
+            id="export-options"
+            class="flex flex-col gap-4 rounded-lg border border-zinc-300 p-4 dark:border-zinc-700"
+          >
+            <h2
+              class="mx-auto -mt-[30px] bg-white px-4 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100"
+            >
+              {{ t('Export QR code') }}
+            </h2>
+            <div class="grid place-items-center gap-4">
+              <div v-if="exportMode === ExportMode.Single" class="flex w-full flex-col gap-2">
+                <label for="export-filename" class="label">{{ t('File name') }}</label>
+                <input
+                  id="export-filename"
+                  type="text"
+                  class="text-input"
+                  v-model="exportFilename"
+                />
+              </div>
+              <div class="flex flex-row items-center justify-center gap-2">
+                <button
+                  id="download-qr-image-button-png"
+                  class="button"
+                  @click="() => downloadQRImage('png')"
+                  :disabled="isExportButtonDisabled"
+                  :title="
+                    isExportButtonDisabled
+                      ? t('Please enter data to encode first')
+                      : t('Download QR Code as PNG')
+                  "
+                  :aria-label="t('Download QR Code as PNG')"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <g fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                      <path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4" />
+                      <text
+                        x="1"
+                        y="22"
+                        fill="currentColor"
+                        stroke="none"
+                        font-size="11px"
+                        font-family="monospace"
+                        font-weight="600"
+                      >
+                        PNG
+                      </text>
+                    </g>
+                  </svg>
+                </button>
+                <button
+                  id="download-qr-image-button-jpg"
+                  class="button"
+                  @click="() => downloadQRImage('jpg')"
+                  :disabled="isExportButtonDisabled"
+                  :title="
+                    isExportButtonDisabled
+                      ? t('Please enter data to encode first')
+                      : t('Download QR Code as JPG')
+                  "
+                  :aria-label="t('Download QR Code as JPG')"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <g fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                      <path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4" />
+                      <text
+                        x="1"
+                        y="22"
+                        fill="currentColor"
+                        stroke="none"
+                        font-size="11px"
+                        font-family="monospace"
+                        font-weight="600"
+                      >
+                        JPG
+                      </text>
+                    </g>
+                  </svg>
+                </button>
+                <button
+                  id="download-qr-image-button-svg"
+                  class="button"
+                  @click="() => downloadQRImage('svg')"
+                  :disabled="isExportButtonDisabled"
+                  :title="
+                    isExportButtonDisabled
+                      ? t('Please enter data to encode first')
+                      : t('Download QR Code as SVG')
+                  "
+                  :aria-label="t('Download QR Code as SVG')"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <g fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                      <path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4" />
+                      <text
+                        x="1"
+                        y="22"
+                        fill="currentColor"
+                        stroke="none"
+                        font-size="11px"
+                        font-family="monospace"
+                        font-weight="600"
+                      >
+                        SVG
+                      </text>
+                    </g>
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </Teleport>
@@ -1577,7 +1618,7 @@ const updateDataFromModal = (newData: string) => {
                                   <div v-if="frameTextsFromCsv[previewRowIndex]">
                                     <span
                                       class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                                      >{{ $t('Frame text:') }}</span
+                                      >{{ $t('Frame text') }}</span
                                     >
                                     <code
                                       class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
@@ -1588,7 +1629,7 @@ const updateDataFromModal = (newData: string) => {
                                   <div v-if="fileNamesFromCsv[previewRowIndex]">
                                     <span
                                       class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                                      >{{ $t('File name:') }}</span
+                                      >{{ $t('File name') }}</span
                                     >
                                     <code
                                       class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
