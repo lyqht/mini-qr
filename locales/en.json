@@ -63,7 +63,7 @@
   "Loaded from file": "Loaded from file",
   "Copy QR Code to clipboard": "Copy QR Code to clipboard",
   "Right click the image, and select 'Copy Image'": "Right click the image, and select 'Copy Image'",
-  "Export as": "Export as",
+  "Export QR code": "Export QR code",
   "Download QR Code as PNG": "Download QR Code as PNG",
   "Download QR Code as SVG": "Download QR Code as SVG",
   "Download QR Code as JPG": "Download QR Code as JPG",
@@ -293,9 +293,8 @@
   "Created by": "Created by",
   "Toggle dark mode": "Toggle dark mode",
   "Open data type generator": "Open data type generator",
-  "Data:": "Data:",
-  "Frame text:": "Frame text:",
-  "File name:": "File name:",
+  "Data": "Data",
+  "File name": "File name",
   "Paste": "Paste",
   "Settings to customize your QR code": "Settings to customize your QR code"
 }
