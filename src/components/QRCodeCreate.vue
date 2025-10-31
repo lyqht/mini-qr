@@ -11,7 +11,13 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion'
 import { Combobox } from '@/components/ui/Combobox'
-import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger
+} from '@/components/ui/drawer'
 import VCardPreview from '@/components/VCardPreview.vue'
 import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
@@ -890,54 +896,11 @@ const updateDataFromModal = (newData: string) => {
   // Optionally trigger QR code regeneration here if needed
 }
 // #endregion
-
-//#region /* Dynamic padding for mobile drawer */
-const drawerTriggerHeight = ref(0)
-const BUFFER_PADDING = 20 // Extra space below the drawer trigger
-
-function updateDrawerTriggerHeight() {
-  nextTick(() => {
-    const el = document.getElementById('drawer-preview-container')
-    if (el) {
-      drawerTriggerHeight.value = el.offsetHeight
-    } else {
-      drawerTriggerHeight.value = 0 // Fallback if element not found
-    }
-  })
-}
-
-watch(
-  isLarge,
-  (newIsLarge) => {
-    if (!newIsLarge) {
-      updateDrawerTriggerHeight() // Drawer is now visible
-    } else {
-      drawerTriggerHeight.value = 0 // Drawer is hidden, reset padding effect
-    }
-  },
-  { immediate: true } // Run on initial load
-)
-
-// Watch for changes that might affect the drawer trigger's height
-watch(showFrame, () => {
-  if (!isLarge.value) {
-    updateDrawerTriggerHeight()
-  }
-})
-
-const mainDivPaddingStyle = computed(() => {
-  if (!isLarge.value && drawerTriggerHeight.value > 0) {
-    return { paddingBottom: `${drawerTriggerHeight.value + BUFFER_PADDING}px` }
-  }
-  return { paddingBottom: '0px' } // Default for large screens or if height is 0
-})
-//#endregion
 </script>
 
 <template>
   <div
     class="flex items-start justify-center gap-4 overflow-x-hidden md:flex-row md:gap-6 lg:gap-12 lg:pb-0"
-    :style="mainDivPaddingStyle"
   >
     <!-- Sticky sidebar on large screens -->
     <div
@@ -1039,11 +1002,11 @@ const mainDivPaddingStyle = computed(() => {
           </div>
         </div>
       </DrawerTrigger>
-      <DrawerContent
-        class="flex flex-col items-center justify-between overflow-y-auto overflow-x-hidden"
-      >
-        <div class="flex grow flex-col items-center justify-center gap-4 p-4">
+      <DrawerContent>
+        <DrawerHeader>
           <DrawerTitle>{{ t('Export QR code') }}</DrawerTitle>
+        </DrawerHeader>
+        <div class="overflow-y-auto overflow-x-hidden px-4 pb-4">
           <div ref="mainContentContainer" id="main-content-container" class="w-full"></div>
         </div>
       </DrawerContent>
