@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { Html5Qrcode } from 'html5-qrcode'
-import { computed, ref, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import QRCodeCameraScanner from './QRCodeCameraScanner.vue'
 import {
   IS_PASTE_IMAGE_FROM_CLIPBOARD_SUPPORTED,
   KEY_COMBINATION_PASTE,
-  getFileFromDataTransferItemList,
-  getFileFromClipboardItems
+  getFileFromClipboardItems,
+  getFileFromDataTransferItemList
 } from '@/utils/clipboard'
+import { Html5Qrcode } from 'html5-qrcode'
+import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import QRCodeCameraScanner from './QRCodeCameraScanner.vue'
 
 defineEmits<{
   'create-qr': [data: string]
@@ -129,23 +129,6 @@ const qrCodeTypeIcon = computed(() => {
   }
 })
 
-const actionText = computed(() => {
-  switch (qrCodeType.value) {
-    case 'url':
-      return t('Open Link')
-    case 'email':
-      return t('Send Email')
-    case 'tel':
-      return t('Call Number')
-    case 'sms':
-      return t('Send SMS')
-    case 'geo':
-      return t('View Location')
-    default:
-      return t('Copy to clipboard')
-  }
-})
-
 const typeLabel = computed(() => {
   switch (qrCodeType.value) {
     case 'url':
@@ -188,6 +171,7 @@ const copyToClipboard = async () => {
     }, 3000)
   } catch (err) {
     errorMessage.value = t('Failed to copy to clipboard')
+    console.error(err)
   }
 }
 
@@ -249,7 +233,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const isLoading = ref(false)
 const isDraggingOver = ref(false)
 
-const catchScanFileError = async (err, file: File) => {
+const catchScanFileError = async (err: Error, file: File) => {
   console.warn('Html5Qrcode failed, will try fallback to nimiq/qr-scanner:', err)
 
   const QrScanner = (await import('qr-scanner')).default

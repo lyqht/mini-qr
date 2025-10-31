@@ -70,7 +70,11 @@ const applyRoundedCornersToCanvas = async (
       context.drawImage(image, 0, 0, width, height)
 
       canvas.toBlob((roundedBlob) => {
-        roundedBlob ? resolve(roundedBlob) : reject(new Error('Failed to create rounded blob'))
+        if (roundedBlob) {
+          resolve(roundedBlob)
+        } else {
+          reject(new Error('Failed to create rounded blob'))
+        }
       }, blob.type)
     }
     image.onerror = () => reject(new Error('Failed to load image'))

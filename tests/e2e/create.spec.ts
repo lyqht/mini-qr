@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -12,7 +12,7 @@ test.describe('QR Code Creation and Management', () => {
     await page.goto('/')
   })
 
-  async function openFrameSettings(page: any) {
+  async function openFrameSettings(page: Page) {
     await page.getByRole('button', { name: /frame settings/i }).click()
   }
 
