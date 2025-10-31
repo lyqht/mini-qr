@@ -172,10 +172,18 @@ export function downloadPngElement(
 ) {
   getPngElement(element, options, borderRadius)
     .then((dataUrl) => {
-      const link = document.createElement('a')
-      link.href = dataUrl
-      link.download = filename
-      link.click()
+      // Convert data URL to blob for more reliable downloads
+      fetch(dataUrl)
+        .then((res) => res.blob())
+        .then((blob) => {
+          const url = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = filename
+          link.click()
+          // Clean up the object URL
+          setTimeout(() => URL.revokeObjectURL(url), 100)
+        })
     })
     .catch((error) => console.error('Error converting element to PNG:', error))
 }
@@ -192,10 +200,18 @@ export function downloadJpgElement(
 ) {
   getJpgElement(element, options, borderRadius)
     .then((dataUrl) => {
-      const link = document.createElement('a')
-      link.href = dataUrl
-      link.download = filename
-      link.click()
+      // Convert data URL to blob for more reliable downloads
+      fetch(dataUrl)
+        .then((res) => res.blob())
+        .then((blob) => {
+          const url = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = filename
+          link.click()
+          // Clean up the object URL
+          setTimeout(() => URL.revokeObjectURL(url), 100)
+        })
     })
     .catch((error) => console.error('Error converting element to JPG:', error))
 }
@@ -226,12 +242,17 @@ export function downloadSvgElement(
   options: Options,
   borderRadius?: string
 ) {
-  getSvgElement(element, options, borderRadius)
-    .then((dataUrl) => {
+  getSvgString(element, options, borderRadius)
+    .then((svgString) => {
+      // Create blob directly from SVG string for more reliable downloads
+      const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
-      link.href = dataUrl
+      link.href = url
       link.download = filename
       link.click()
+      // Clean up the object URL
+      setTimeout(() => URL.revokeObjectURL(url), 100)
     })
     .catch((error) => console.error('Error converting element to SVG:', error))
 }
