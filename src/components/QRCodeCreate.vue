@@ -797,7 +797,7 @@ const onBatchInputFileUpload = (event: Event) => {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-const usedFilenames = new Set() // zip folders cannot have duplicate filenames, otherwise they override each other
+const usedFilenames = new Set<string>()
 const createZipFile = (
   zip: typeof JSZip,
   dataUrl: string,
