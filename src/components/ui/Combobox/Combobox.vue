@@ -31,7 +31,7 @@ defineProps<{
         role="combobox"
         :aria-expanded="open"
         :aria-label="buttonLabel"
-        class="w-fit flex gap-2 items-center justify-between focus-visible:ring-1 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+        class="flex w-fit items-center justify-between gap-2 bg-zinc-50 text-zinc-900 focus-visible:ring-1 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
       >
         <slot name="button-icon"></slot>
         {{ value ? items.find((item) => item.value === value)?.label : 'Select item...' }}
@@ -39,7 +39,7 @@ defineProps<{
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-fit p-0">
-      <Command class="bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
+      <Command class="bg-zinc-50 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
         <CommandInput class="h-9" placeholder="Search item..." />
         <CommandEmpty>No item found.</CommandEmpty>
         <CommandList>
@@ -47,7 +47,7 @@ defineProps<{
             <template v-for="(item, index) in items" :key="item.value">
               <CommandItem
                 :value="item.value"
-                class="bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                class="bg-zinc-50 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
                 @select="
                   (ev) => {
                     if (typeof ev.detail.value === 'string') {

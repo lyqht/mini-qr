@@ -13,6 +13,7 @@ import {
 import { Combobox } from '@/components/ui/Combobox'
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import VCardPreview from '@/components/VCardPreview.vue'
+import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
 import {
   copyImageToClipboard,
@@ -23,12 +24,11 @@ import {
   getPngElement,
   getSvgString
 } from '@/utils/convertToImage'
-import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
-import { parseCSV, validateCSVData } from '@/utils/csv'
-import { processCsvDataForBatch, generateBatchExportFilename } from '@/utils/csvBatchProcessing'
+import { parseCSV, validateCSVData, type CSVParsingResult } from '@/utils/csv'
+import { generateBatchExportFilename, processCsvDataForBatch } from '@/utils/csvBatchProcessing'
 import { getNumericCSSValue } from '@/utils/formatting'
-import { allQrCodePresets, defaultPreset, type Preset } from '@/utils/qrCodePresets'
 import { allFramePresets, defaultFramePreset, type FramePreset } from '@/utils/framePresets'
+import { allQrCodePresets, defaultPreset, type Preset } from '@/utils/qrCodePresets'
 import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
 import {
@@ -38,7 +38,7 @@ import {
   type ErrorCorrectionLevel,
   type Options as StyledQRCodeProps
 } from 'qr-code-styling'
-import { computed, onMounted, ref, watch, nextTick } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
 
@@ -684,15 +684,15 @@ const isExportingBatchQRs = ref(false)
 const isBatchExportSuccess = ref(false)
 const currentExportedQrCodeIndex = ref<number | null>(null)
 
-const parsedCsvResult = ref<{ data: any[] } | null>(null)
+const parsedCsvResult = ref<{ data: CSVParsingResult } | null>(null)
 const previewRowIndex = ref(0)
 const previewRow = computed(() => {
   const idx = previewRowIndex.value
   if (dataStringsFromCsv.value.length === 0) return null
   if (idx < 0 || idx >= dataStringsFromCsv.value.length) return null
   if (
-    parsedCsvResult.value &&
-    parsedCsvResult.value.data &&
+    parsedCsvResult.value?.data &&
+    Array.isArray(parsedCsvResult.value.data) &&
     parsedCsvResult.value.data.length > idx
   ) {
     return parsedCsvResult.value.data[idx]
@@ -808,7 +808,6 @@ const createZipFile = (
   const frameText = frameTextsFromCsv.value[index]
   const customFileName = fileNamesFromCsv.value[index]
 
-  // Generate filename using the utility function
   const fileName = generateBatchExportFilename(
     dataString,
     frameText,
