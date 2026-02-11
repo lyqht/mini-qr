@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:lib": "pnpm build:lib:js && pnpm build:lib:types",
+    "build:lib:js": "vite build -c vite.lib.config.js",
+    "build:lib:types": "vue-tsc -p tsconfig.lib.json",
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "vitest": "vitest",
@@ -15,6 +18,19 @@
     "postinstall": "husky install",
     "generate-changelog": "sh scripts/generate-version.sh",
     "generate-splash": "node scripts/generate-splash-screens.js"
+  },
+  "main": "./dist/mini-qr.umd.js",
+  "module": "./dist/mini-qr.es.js",
+  "types": "./dist/types/lib/index.d.ts",
+  "unpkg": "./dist/mini-qr.umd.js",
+  "jsdelivr": "./dist/mini-qr.umd.js",
+  "exports": {
+    ".": {
+      "types": "./dist/types/lib/index.d.ts",
+      "import": "./dist/mini-qr.es.js",
+      "require": "./dist/mini-qr.umd.js",
+      "default": "./dist/mini-qr.es.js"
+    }
   },
   "lint-staged": {
     "*.{vue,js,jsx,ts,tsx,json}": [
@@ -50,6 +66,9 @@
     "vue": "^3.5.13",
     "vue-i18n": "^9.14.2"
   },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
   "devDependencies": {
     "@playwright/test": "^1.51.1",
     "@tailwindcss/typography": "^0.5.16",
@@ -70,6 +89,7 @@
     "typescript-eslint": "^8.46.2",
     "vite-plugin-pwa": "^0.21.1",
     "vitest": "^3.1.1",
-    "vue-eslint-parser": "^10.2.0"
+    "vue-eslint-parser": "^10.2.0",
+    "vue-tsc": "^2.2.10"
   }
 }
