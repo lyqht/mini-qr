@@ -90,12 +90,27 @@ const applySvgRoundedCorners = (svgDocument: Document, options: Options, borderR
   if (options.width) svgElement.setAttribute('width', options.width.toString())
   if (options.height) svgElement.setAttribute('height', options.height.toString())
 
+  // Read the viewBox origin so the clip rect aligns with the actual content coordinates.
+  // dom-to-svg places content at the element's absolute page position, so the viewBox
+  // min-x/min-y are non-zero. Without matching x/y on the clip rect it only covers the
+  // top-left corner of the coordinate space and clips most of the QR code.
+  let vbX = 0,
+    vbY = 0
+  const viewBox = svgElement.getAttribute('viewBox')
+  if (viewBox) {
+    const [x, y] = viewBox.split(' ').map(Number)
+    vbX = x
+    vbY = y
+  }
+
   const svgNS = 'http://www.w3.org/2000/svg'
   const defs = svgDocument.createElementNS(svgNS, 'defs')
   const clipPath = svgDocument.createElementNS(svgNS, 'clipPath')
   clipPath.setAttribute('id', 'rounded-clip')
 
   const rect = svgDocument.createElementNS(svgNS, 'rect')
+  rect.setAttribute('x', vbX.toString())
+  rect.setAttribute('y', vbY.toString())
   rect.setAttribute('width', (options.width || 400).toString())
   rect.setAttribute('height', (options.height || 400).toString())
   rect.setAttribute('rx', radius.toString())
