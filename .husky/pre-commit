@@ -1,4 +1,11 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# Run linting and formatting on staged files
 pnpm lint-staged
+
+# Sync i18n: scan for new strings → update en.json → push to Crowdin → pre-translate → pull all locales
+node scripts/sync-i18n.mjs
+
+# Stage any locale files updated by the sync
+git add locales/
