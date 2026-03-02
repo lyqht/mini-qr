@@ -3,7 +3,9 @@
   "projectOwner": "lyqht",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "files": ["README.md"],
+  "files": [
+    "README.md"
+  ],
   "imageSize": 48,
   "commit": true,
   "commitConvention": "eslint",
@@ -13,137 +15,189 @@
       "name": "tenekev",
       "avatar_url": "https://avatars.githubusercontent.com/u/30023563?v=4",
       "profile": "https://github.com/tenekev",
-      "contributions": ["code", "doc"]
+      "contributions": [
+        "code",
+        "doc"
+      ]
     },
     {
       "login": "zainfathoni",
       "name": "Zain Fathoni",
       "avatar_url": "https://avatars.githubusercontent.com/u/6315466?v=4",
       "profile": "https://zainf.dev/",
-      "contributions": ["design"]
+      "contributions": [
+        "design"
+      ]
     },
     {
       "login": "katullo11",
       "name": "Francesco",
       "avatar_url": "https://avatars.githubusercontent.com/u/129339155?v=4",
       "profile": "https://github.com/katullo11",
-      "contributions": ["translation"]
+      "contributions": [
+        "translation"
+      ]
     },
     {
       "login": "ssrahul96",
       "name": "Rahul Somasundaram",
       "avatar_url": "https://avatars.githubusercontent.com/u/15570570?v=4",
       "profile": "https://github.com/ssrahul96",
-      "contributions": ["code"]
+      "contributions": [
+        "code"
+      ]
     },
     {
       "login": "tecking",
       "name": "tecking",
       "avatar_url": "https://avatars.githubusercontent.com/u/479934?v=4",
       "profile": "https://github.com/tecking",
-      "contributions": ["translation"]
+      "contributions": [
+        "translation"
+      ]
     },
     {
       "login": "davidxhk",
       "name": "David Xie",
       "avatar_url": "https://avatars.githubusercontent.com/u/37938921?v=4",
       "profile": "https://github.com/davidxhk",
-      "contributions": ["code"]
+      "contributions": [
+        "code"
+      ]
     },
     {
       "login": "pcbimon",
       "name": "Patipat Chewprecha",
       "avatar_url": "https://avatars.githubusercontent.com/u/8252967?v=4",
       "profile": "https://github.com/pcbimon",
-      "contributions": ["translation", "code", "doc"]
+      "contributions": [
+        "translation",
+        "code",
+        "doc"
+      ]
     },
     {
       "login": "itsAnuga",
       "name": "Johan Ekström",
       "avatar_url": "https://avatars.githubusercontent.com/u/828450?v=4",
       "profile": "https://github.com/itsAnuga",
-      "contributions": ["code"]
+      "contributions": [
+        "code"
+      ]
     },
     {
       "login": "klemensgraf",
       "name": "Klemens Graf",
       "avatar_url": "https://avatars.githubusercontent.com/u/22378039?v=4",
       "profile": "https://furycode.org/",
-      "contributions": ["code"]
+      "contributions": [
+        "code"
+      ]
     },
     {
       "login": "unililium",
       "name": "林都",
       "avatar_url": "https://avatars.githubusercontent.com/u/3117172?v=4",
       "profile": "https://github.com/unililium",
-      "contributions": ["code", "translation"]
+      "contributions": [
+        "code",
+        "translation"
+      ]
     },
     {
       "login": "seals187",
       "name": "seals187",
       "avatar_url": "https://avatars.githubusercontent.com/u/86856086?v=4",
       "profile": "https://github.com/seals187",
-      "contributions": ["review"]
+      "contributions": [
+        "review"
+      ]
     },
     {
       "login": "olvier",
       "name": "olvier",
       "avatar_url": "https://avatars.githubusercontent.com/u/13106409?v=4",
       "profile": "https://github.com/olvier",
-      "contributions": ["review"]
+      "contributions": [
+        "review"
+      ]
     },
     {
       "login": "matthewberryman",
       "name": "Matthew Berryman",
       "avatar_url": "https://avatars.githubusercontent.com/u/2288238?v=4",
       "profile": "https://github.com/matthewberryman",
-      "contributions": ["code"]
+      "contributions": [
+        "code"
+      ]
     },
     {
       "login": "Mr-Robot-ops",
       "name": "Mr-robot-ops",
       "avatar_url": "https://avatars.githubusercontent.com/u/55334802?v=4",
       "profile": "https://github.com/Mr-Robot-ops",
-      "contributions": ["translation", "code"]
+      "contributions": [
+        "translation",
+        "code"
+      ]
     },
     {
       "login": "danktankk",
       "name": "danktankk",
       "avatar_url": "https://avatars.githubusercontent.com/u/34148516?v=4",
       "profile": "https://github.com/danktankk",
-      "contributions": ["code"]
+      "contributions": [
+        "code"
+      ]
     },
     {
       "login": "clausjs",
       "name": "Joseph Claus",
       "avatar_url": "https://avatars.githubusercontent.com/u/12068849?v=4",
       "profile": "https://github.com/clausjs",
-      "contributions": ["doc"]
+      "contributions": [
+        "doc"
+      ]
     },
     {
       "login": "kennydude",
       "name": "Joe Simpson",
       "avatar_url": "https://avatars.githubusercontent.com/u/198294?v=4",
       "profile": "https://github.com/kennydude",
-      "contributions": ["doc"]
+      "contributions": [
+        "doc"
+      ]
     },
     {
       "login": "toha-tiger",
       "name": "toha-tiger",
       "avatar_url": "https://avatars.githubusercontent.com/u/8455781?v=4",
       "profile": "https://github.com/toha-tiger",
-      "contributions": ["code", "design"]
+      "contributions": [
+        "code",
+        "design"
+      ]
     },
     {
       "login": "Kolophonium0",
       "name": "Yannik Herbst",
       "avatar_url": "https://avatars.githubusercontent.com/u/24278823?v=4",
       "profile": "https://github.com/Kolophonium0",
-      "contributions": ["question"]
+      "contributions": [
+        "question"
+      ]
+    },
+    {
+      "login": "r3bers",
+      "name": "Mikhail Solovev",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11983427?v=4",
+      "profile": "http://solovjov.net/",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 6,
   "linkToUsage": true,
   "commitType": "docs"
 }
-
