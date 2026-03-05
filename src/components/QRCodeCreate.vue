@@ -152,9 +152,6 @@ const imageOptions = computed(() => ({
 const qrOptions = computed(() => ({
   errorCorrectionLevel: errorCorrectionLevel.value
 }))
-const backgroundOptions = computed(() => ({
-  color: styleBackground.value === 'transparent' ? '#ffffff' : styleBackground.value
-}))
 
 const qrCodeProps = computed<StyledQRCodeProps>(() => ({
   data: previewData.value,
@@ -167,7 +164,9 @@ const qrCodeProps = computed<StyledQRCodeProps>(() => ({
   cornersDotOptions: cornersDotOptions.value,
   imageOptions: imageOptions.value,
   qrOptions: qrOptions.value,
-  backgroundOptions: backgroundOptions.value
+  backgroundOptions: {
+    color: styleBackground.value
+  }
 }))
 
 function randomizeStyleSettings() {
