@@ -33,8 +33,25 @@ import {
 import { parseCSV, validateCSVData, type CSVParsingResult } from '@/utils/csv'
 import { generateBatchExportFilename, processCsvDataForBatch } from '@/utils/csvBatchProcessing'
 import { getNumericCSSValue } from '@/utils/formatting'
-import { allFramePresets, defaultFramePreset, type FramePreset } from '@/utils/framePresets'
+import {
+  allFramePresets,
+  defaultFramePreset,
+  type FramePreset,
+  type FrameStyle
+} from '@/utils/framePresets'
 import { allQrCodePresets, defaultPreset, type Preset } from '@/utils/qrCodePresets'
+import {
+  CUSTOM_LOADED_PRESET_KEYS,
+  LAST_LOADED_LOCALLY_PRESET_KEY,
+  LOADED_FROM_FILE_PRESET_KEY,
+  hasStoredQRConfig,
+  isLocalStorageEnabled,
+  loadQRConfig,
+  saveQRConfig,
+  serializeQRConfig,
+  type QRCodeConfig,
+  type QRCodeFrameConfig
+} from '@/utils/useQRCodeStorage'
 import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
 import {
@@ -44,18 +61,9 @@ import {
   type ErrorCorrectionLevel,
   type Options as StyledQRCodeProps
 } from 'qr-code-styling'
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
-
-interface FrameStyle {
-  textColor: string
-  backgroundColor: string
-  borderColor: string
-  borderWidth: string
-  borderRadius: string
-  padding: string
-}
 
 const props = defineProps<{
   initialData?: string
@@ -248,15 +256,10 @@ watch(selectedPreset, () => {
   // Most presets don't have a frame, so we set it to false by default
 })
 
-const LAST_LOADED_LOCALLY_PRESET_KEY = 'Last saved locally'
-const LOADED_FROM_FILE_PRESET_KEY = 'Loaded from file'
-const CUSTOM_LOADED_PRESET_KEYS = [LAST_LOADED_LOCALLY_PRESET_KEY, LOADED_FROM_FILE_PRESET_KEY]
 const selectedPresetKey = ref<string>(
-  import.meta.env.VITE_DISABLE_LOCAL_STORAGE === 'true'
-    ? defaultPreset.name
-    : localStorage.getItem('qrCodeConfig')
-      ? LAST_LOADED_LOCALLY_PRESET_KEY
-      : defaultPreset.name
+  isLocalStorageEnabled() && hasStoredQRConfig()
+    ? LAST_LOADED_LOCALLY_PRESET_KEY
+    : defaultPreset.name
 )
 const lastCustomLoadedPreset = ref<Preset>()
 watch(
@@ -540,56 +543,29 @@ function downloadQRImage(format: 'png' | 'svg' | 'jpg') {
 //#endregion
 
 //#region /* QR Config Utils - Saving, Loading and Downloading */
-interface QRCodeConfig {
-  props: StyledQRCodeProps & {
-    name?: string
-  }
-  style: {
-    borderRadius: string
-    background?: string
-  }
-  frame?: {
-    text: string
-    position: 'top' | 'bottom' | 'left' | 'right'
-    style: FrameStyle
-  } | null
-}
-
-function createQrConfig(): QRCodeConfig {
-  return {
-    props: qrCodeProps.value,
-    style: style.value,
-    frame: showFrame.value ? frameSettings.value : null
-  }
+function buildCurrentQRConfig(): QRCodeConfig {
+  return serializeQRConfig(
+    qrCodeProps.value,
+    style.value,
+    showFrame.value ? (frameSettings.value as QRCodeFrameConfig) : null
+  )
 }
 
 function downloadQRConfig() {
   console.debug('Downloading QR code config')
-  const qrCodeConfig = createQrConfig()
-  const qrCodeConfigString = JSON.stringify(qrCodeConfig)
-  const qrCodeConfigBlob = new Blob([qrCodeConfigString], { type: 'application/json' })
-  const qrCodeConfigUrl = URL.createObjectURL(qrCodeConfigBlob)
-  const qrCodeConfigLink = document.createElement('a')
-  qrCodeConfigLink.href = qrCodeConfigUrl
-  qrCodeConfigLink.download = 'qr-code-config.json'
-  qrCodeConfigLink.click()
+  const config = buildCurrentQRConfig()
+  const configBlob = new Blob([JSON.stringify(config)], { type: 'application/json' })
+  const configUrl = URL.createObjectURL(configBlob)
+  const downloadLink = document.createElement('a')
+  downloadLink.href = configUrl
+  downloadLink.download = 'qr-code-config.json'
+  downloadLink.click()
 }
 
-function saveQRConfigToLocalStorage() {
-  const qrCodeConfig = createQrConfig()
-  const qrCodeConfigString = JSON.stringify(qrCodeConfig)
-  localStorage.setItem('qrCodeConfig', qrCodeConfigString)
-}
-
-function loadQRConfig(jsonString: string, key?: string) {
-  const qrCodeConfig = JSON.parse(jsonString) as QRCodeConfig
-  const qrCodeProps = qrCodeConfig.props
-  const qrCodeStyle = qrCodeConfig.style
-  const frameConfig = qrCodeConfig.frame
-
+function applyQRConfig(config: QRCodeConfig, key?: string) {
   const preset = {
-    ...qrCodeProps,
-    style: qrCodeStyle
+    ...config.props,
+    style: config.style
   } as Preset
 
   if (key) {
@@ -598,75 +574,77 @@ function loadQRConfig(jsonString: string, key?: string) {
     selectedPresetKey.value = key
   }
 
-  let framePreset: FramePreset | undefined
-
   selectedPreset.value = preset
 
-  if (frameConfig) {
+  if (config.frame) {
     showFrame.value = true
-    frameText.value = frameConfig.text || defaultFrameText.value
-    frameTextPosition.value = frameConfig.position || 'bottom'
-    frameStyle.value = {
-      ...frameStyle.value,
-      ...frameConfig.style
-    }
-    framePreset = {
+    frameText.value = config.frame.text || defaultFrameText.value
+    frameTextPosition.value = config.frame.position || 'bottom'
+    frameStyle.value = { ...frameStyle.value, ...config.frame.style }
+
+    const framePreset: FramePreset = {
       name: key || LAST_LOADED_LOCALLY_PRESET_KEY,
-      style: frameConfig.style,
-      text: frameConfig.text,
-      position: frameConfig.position
+      style: config.frame.style,
+      text: config.frame.text,
+      position: config.frame.position
+    }
+
+    if (key) {
+      lastCustomLoadedFramePreset.value = framePreset
+      selectedFramePresetKey.value = key
     }
   }
+}
 
-  if (framePreset && key) {
-    lastCustomLoadedFramePreset.value = framePreset
-    selectedFramePresetKey.value = key
+function applyQRConfigFromJsonString(jsonString: string, key?: string) {
+  try {
+    const config = JSON.parse(jsonString) as QRCodeConfig
+    applyQRConfig(config, key)
+  } catch {
+    console.error('Failed to parse QR code config JSON')
   }
 }
 
 function loadQrConfigFromFile() {
-  console.debug('Loading QR code config')
-  const qrCodeConfigInput = document.createElement('input')
-  qrCodeConfigInput.type = 'file'
-  qrCodeConfigInput.accept = 'application/json'
-  qrCodeConfigInput.onchange = (event: Event) => {
+  console.debug('Loading QR code config from file')
+  const fileInput = document.createElement('input')
+  fileInput.type = 'file'
+  fileInput.accept = 'application/json'
+  fileInput.onchange = (event: Event) => {
     const target = event.target as HTMLInputElement
     if (target.files) {
-      const file = target.files[0]
       const reader = new FileReader()
-      reader.onload = (event: ProgressEvent<FileReader>) => {
-        const target = event.target as FileReader
-        const result = target.result as string
-        loadQRConfig(result, LOADED_FROM_FILE_PRESET_KEY)
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        applyQRConfigFromJsonString(
+          (e.target as FileReader).result as string,
+          LOADED_FROM_FILE_PRESET_KEY
+        )
       }
-      reader.readAsText(file)
+      reader.readAsText(target.files[0])
     }
   }
-  qrCodeConfigInput.click()
+  fileInput.click()
 }
 
 watch(
   [qrCodeProps, style, showFrame, frameSettings],
   () => {
-    saveQRConfigToLocalStorage()
+    if (isLocalStorageEnabled()) {
+      saveQRConfig(buildCurrentQRConfig())
+    }
   },
-  {
-    deep: true
-  }
+  { deep: true }
 )
 
 onMounted(() => {
-  if (import.meta.env.VITE_DISABLE_LOCAL_STORAGE !== 'true') {
-    const qrCodeConfigString = localStorage.getItem('qrCodeConfig')
-    if (qrCodeConfigString) {
-      loadQRConfig(qrCodeConfigString, LAST_LOADED_LOCALLY_PRESET_KEY)
+  if (isLocalStorageEnabled()) {
+    const storedConfig = loadQRConfig()
+    if (storedConfig) {
+      applyQRConfig(storedConfig, LAST_LOADED_LOCALLY_PRESET_KEY)
     } else {
-      // No localStorage data found, use the environment variable default preset
       selectedPreset.value = { ...defaultPreset }
       selectedPresetKey.value = defaultPreset.name
     }
-    // No separate frameConfig loading from localStorage noted,
-    // assuming selectedFramePresetKey watcher handles it if lastCustomLoadedFramePreset was populated by loadQRConfig
   }
 
   // Set initial data if provided through props
