@@ -521,7 +521,9 @@ function downloadQRImage(format: 'png' | 'svg' | 'jpg') {
       jpg: {
         fn: downloadJpgElement,
         filename: `${sanitizedFilename}.jpg`,
-        extraOptions: { bgcolor: 'white' }
+        extraOptions: {
+          bgcolor: styleBackground.value === 'transparent' ? '#ffffff' : styleBackground.value
+        }
       }
     }[format]
 
@@ -839,7 +841,13 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
       if (format === 'png') {
         dataUrl = await getPngElement(el, getExportDimensions(), styledBorderRadiusFormatted.value)
       } else if (format === 'jpg') {
-        dataUrl = await getJpgElement(el, getExportDimensions(), styledBorderRadiusFormatted.value)
+        const jpgBgcolor =
+          styleBackground.value === 'transparent' ? '#ffffff' : styleBackground.value
+        dataUrl = await getJpgElement(
+          el,
+          { ...getExportDimensions(), bgcolor: jpgBgcolor },
+          styledBorderRadiusFormatted.value
+        )
       } else {
         dataUrl = await getSvgString(el, getExportDimensions(), styledBorderRadiusFormatted.value)
       }

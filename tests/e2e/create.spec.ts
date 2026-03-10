@@ -2,6 +2,7 @@ import { test, expect, type Page } from '@playwright/test'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import sharp from 'sharp'
 
 // Helper for ES module scope
 const __filename = fileURLToPath(import.meta.url)
@@ -196,6 +197,67 @@ test.describe('QR Code Creation and Management', () => {
 
       expect(download.suggestedFilename()).toMatch(/qr-code\.jpg$/i)
       await expect(page.locator('#element-to-export')).toHaveScreenshot('qr-with-frame-as-jpg.png')
+    })
+  })
+
+  test.describe('JPG background color preservation', () => {
+    const tempDir = path.join(__dirname, 'temp-jpg-bg')
+
+    test.beforeAll(async () => {
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true })
+      }
+    })
+
+    test.afterAll(async () => {
+      if (fs.existsSync(tempDir)) {
+        fs.rmSync(tempDir, { recursive: true, force: true })
+      }
+    })
+
+    test('saved JPG should preserve the background color set on the default preset', async ({
+      page
+    }) => {
+      // The default preset (lyqht) loads automatically with background #697d80.
+      // Set a vivid red background that is clearly distinct from white so the
+      // bug (bgcolor always 'white') is easy to detect.
+      const bgColor = '#ff0000'
+      await page.locator('#background-color').fill(bgColor)
+      // Add margin so the top-left corner area is guaranteed background colour.
+      await page.locator('#margin').fill('20')
+      await page.waitForTimeout(800)
+
+      await openFrameSettings(page)
+      const showFrameCheckbox = page.locator('#show-frame')
+      await expect(showFrameCheckbox).toBeVisible()
+      await showFrameCheckbox.uncheck()
+      await page.waitForTimeout(500)
+
+      const downloadPromise = page.waitForEvent('download')
+      await page.locator('#download-qr-image-button-jpg').click()
+      const download = await downloadPromise
+
+      expect(download.suggestedFilename()).toMatch(/\.jpg$/i)
+
+      const downloadedFilePath = path.join(tempDir, 'bg-color-test.jpg')
+      await download.saveAs(downloadedFilePath)
+      expect(fs.existsSync(downloadedFilePath)).toBeTruthy()
+
+      // Read the top-left corner pixel (within the margin / background area).
+      // With margin=20 modules, even a small QR code has several pixels of pure
+      // background at the very top-left corner.
+      const { data } = await sharp(downloadedFilePath)
+        .extract({ left: 5, top: 5, width: 1, height: 1 })
+        .raw()
+        .toBuffer({ resolveWithObject: true })
+
+      // JPEG is lossy, allow ±20 per channel
+      const r = data[0]
+      const g = data[1]
+      const b = data[2]
+      expect(r).toBeGreaterThan(200) // red channel should be high (~255)
+      expect(g).toBeLessThan(80) // green channel should be low (~0)
+      expect(b).toBeLessThan(80) // blue channel should be low (~0)
     })
   })
 
