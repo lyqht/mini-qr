@@ -71,3 +71,36 @@ export const allFramePresets: FramePreset[] = envFramePresets ?? builtInFramePre
 
 export const defaultFramePreset: FramePreset =
   allFramePresets.find((p) => p.name === import.meta.env.VITE_FRAME_PRESET) ?? allFramePresets[0]
+
+export const VALID_FRAME_POSITIONS = ['top', 'bottom', 'left', 'right'] as const
+
+import { isValidCSSColor, isValidCSSLength } from './css'
+
+export function isValidFrameStyle(value: unknown): value is FrameStyle {
+  if (!value || typeof value !== 'object') return false
+  const s = value as Record<string, unknown>
+  return (
+    typeof s.textColor === 'string' &&
+    isValidCSSColor(s.textColor) &&
+    typeof s.backgroundColor === 'string' &&
+    isValidCSSColor(s.backgroundColor) &&
+    typeof s.borderColor === 'string' &&
+    isValidCSSColor(s.borderColor) &&
+    typeof s.borderWidth === 'string' &&
+    isValidCSSLength(s.borderWidth) &&
+    typeof s.borderRadius === 'string' &&
+    isValidCSSLength(s.borderRadius) &&
+    typeof s.padding === 'string' &&
+    isValidCSSLength(s.padding)
+  )
+}
+
+export function isValidFrameConfig(value: unknown): value is FramePreset {
+  if (!value || typeof value !== 'object') return false
+  const f = value as Record<string, unknown>
+  return (
+    typeof f.text === 'string' &&
+    VALID_FRAME_POSITIONS.includes(f.position as (typeof VALID_FRAME_POSITIONS)[number]) &&
+    isValidFrameStyle(f.style)
+  )
+}

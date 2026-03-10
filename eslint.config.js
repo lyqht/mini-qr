@@ -13,7 +13,9 @@ export default [
       'node_modules/**',
       '*.config.js',
       'public/**',
-      'pnpm-lock.yaml'
+      'pnpm-lock.yaml',
+      'scripts/**',
+      '*.json'
     ]
   },
   js.configs.recommended,
@@ -58,6 +60,7 @@ export default [
         Node: 'readonly',
         XMLSerializer: 'readonly',
         ClipboardItem: 'readonly',
+        CSS: 'readonly',
         DataTransferItemList: 'readonly',
         RequestInit: 'readonly',
         Response: 'readonly',

@@ -1,4 +1,5 @@
 import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
+import { isValidFrameConfig } from './framePresets'
 import GeeksHackingConfig from '@/assets/presets/geekshacking.json'
 import SpDigitalConfig from '@/assets/presets/spdigital.json'
 import GovtechStackCommunityConfig from '@/assets/presets/govtech_stack.json'
@@ -350,8 +351,18 @@ function parsePresetsFromEnv(envVal?: string): Preset[] | undefined {
 const envPresets = parsePresetsFromEnv(import.meta.env.VITE_QR_CODE_PRESETS)
 export const allQrCodePresets: Preset[] = envPresets ?? builtInPresets
 
-export const defaultPreset: Preset =
-  import.meta.env.VITE_DEFAULT_PRESET
-    ? allQrCodePresets.find((p) => p.name === import.meta.env.VITE_DEFAULT_PRESET) ??
-      allQrCodePresets[0]
-    : allQrCodePresets[0]
+export const defaultPreset: Preset = import.meta.env.VITE_DEFAULT_PRESET
+  ? (allQrCodePresets.find((p) => p.name === import.meta.env.VITE_DEFAULT_PRESET) ??
+    allQrCodePresets[0])
+  : allQrCodePresets[0]
+
+export function isValidQRCodeConfig(value: unknown): boolean {
+  if (!value || typeof value !== 'object') return false
+  const c = value as Record<string, unknown>
+  if (!c.props || typeof c.props !== 'object') return false
+  if (!c.style || typeof c.style !== 'object') return false
+  const style = c.style as Record<string, unknown>
+  if (typeof style.borderRadius !== 'string') return false
+  if (c.frame != null && !isValidFrameConfig(c.frame)) return false
+  return true
+}
