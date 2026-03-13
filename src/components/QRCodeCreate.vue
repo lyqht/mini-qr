@@ -36,16 +36,18 @@ import { getNumericCSSValue } from '@/utils/formatting'
 import {
   allFramePresets,
   defaultFramePreset,
+  FONT_OPTIONS,
+  loadGoogleFont,
   type FramePreset,
   type FrameStyle
 } from '@/utils/framePresets'
 import { allQrCodePresets, defaultPreset, type Preset } from '@/utils/qrCodePresets'
 import {
   CUSTOM_LOADED_PRESET_KEYS,
-  LAST_LOADED_LOCALLY_PRESET_KEY,
-  LOADED_FROM_FILE_PRESET_KEY,
   hasStoredQRConfig,
   isLocalStorageEnabled,
+  LAST_LOADED_LOCALLY_PRESET_KEY,
+  LOADED_FROM_FILE_PRESET_KEY,
   loadQRConfig,
   saveQRConfig,
   serializeQRConfig,
@@ -378,6 +380,14 @@ const frameSettings = computed(() => ({
   position: frameTextPosition.value,
   style: frameStyle.value
 }))
+
+function onFontFamilyChange(value: string) {
+  frameStyle.value = { ...frameStyle.value, fontFamily: value || undefined }
+  const font = FONT_OPTIONS.find((f) => f.value === value)
+  if (font?.googleFontName) {
+    loadGoogleFont(font.googleFontName)
+  }
+}
 //#endregion
 
 //#region /* Frame text autofill */ Fill if empty */
@@ -539,7 +549,7 @@ function downloadQRImage(format: 'png' | 'svg' | 'jpg') {
       el,
       formatConfig.filename,
       { ...getExportDimensions(), ...formatConfig.extraOptions },
-      styledBorderRadiusFormatted.value
+      exportBorderRadius.value
     )
   } else {
     generateBatchQRCodes(format)
@@ -586,6 +596,14 @@ function applyQRConfig(config: QRCodeConfig, key?: string) {
     frameText.value = config.frame.text || defaultFrameText.value
     frameTextPosition.value = config.frame.position || 'bottom'
     frameStyle.value = { ...frameStyle.value, ...config.frame.style }
+
+    const restoredFontFamily = config.frame.style.fontFamily
+    if (restoredFontFamily) {
+      const font = FONT_OPTIONS.find((f) => f.value === restoredFontFamily)
+      if (font?.googleFontName) {
+        loadGoogleFont(font.googleFontName)
+      }
+    }
 
     const framePreset: FramePreset = {
       name: key || LAST_LOADED_LOCALLY_PRESET_KEY,
@@ -672,6 +690,7 @@ const exportMode = ref(ExportMode.Single)
 const dataStringsFromCsv = ref<string[]>([])
 const frameTextsFromCsv = ref<string[]>([])
 const fileNamesFromCsv = ref<string[]>([])
+const fontFamiliesFromCsv = ref<string[]>([])
 
 const inputFileForBatchEncoding = ref<File | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -709,6 +728,7 @@ const resetData = () => {
   dataStringsFromCsv.value = []
   frameTextsFromCsv.value = []
   fileNamesFromCsv.value = []
+  fontFamiliesFromCsv.value = []
   isValidCsv.value = true
   resetBatchExportProgress()
   isBatchExportSuccess.value = false
@@ -727,6 +747,10 @@ watch(previewRowIndex, (newIndex) => {
   ) {
     data.value = dataStringsFromCsv.value[newIndex]
     frameText.value = frameTextsFromCsv.value[newIndex] || defaultFrameText.value
+    const fontFamily = fontFamiliesFromCsv.value[newIndex]
+    if (fontFamily !== undefined) {
+      onFontFamilyChange(fontFamily)
+    }
   }
 })
 
@@ -778,6 +802,7 @@ const onBatchInputFileUpload = (event: Event) => {
     dataStringsFromCsv.value = batchResult.urls
     frameTextsFromCsv.value = batchResult.frameTexts
     fileNamesFromCsv.value = batchResult.fileNames
+    fontFamiliesFromCsv.value = batchResult.fontFamilies
     showFrame.value = batchResult.hasCustomFrameText
     isValidCsv.value = true
     previewRowIndex.value = 0 // Reset preview to first row on new upload
@@ -786,6 +811,10 @@ const onBatchInputFileUpload = (event: Event) => {
     if (batchResult.urls.length > 0) {
       data.value = batchResult.urls[0]
       frameText.value = batchResult.frameTexts[0] || defaultFrameText.value
+      const firstFontFamily = batchResult.fontFamilies[0]
+      if (firstFontFamily) {
+        onFontFamilyChange(firstFontFamily)
+      }
     }
   }
 
@@ -837,22 +866,26 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
       currentExportedQrCodeIndex.value = index
       const url = dataStringsFromCsv.value[index]
       const currentFrameText = frameTextsFromCsv.value[index]
+      const currentFontFamily = fontFamiliesFromCsv.value[index]
       data.value = url
       frameText.value = currentFrameText
+      if (currentFontFamily !== undefined) {
+        onFontFamilyChange(currentFontFamily)
+      }
       await sleep(1000)
       let dataUrl: string = ''
       if (format === 'png') {
-        dataUrl = await getPngElement(el, getExportDimensions(), styledBorderRadiusFormatted.value)
+        dataUrl = await getPngElement(el, getExportDimensions(), exportBorderRadius.value)
       } else if (format === 'jpg') {
         const jpgBgcolor =
           styleBackground.value === 'transparent' ? '#ffffff' : styleBackground.value
         dataUrl = await getJpgElement(
           el,
           { ...getExportDimensions(), bgcolor: jpgBgcolor },
-          styledBorderRadiusFormatted.value
+          exportBorderRadius.value
         )
       } else {
-        dataUrl = await getSvgString(el, getExportDimensions(), styledBorderRadiusFormatted.value)
+        dataUrl = await getSvgString(el, getExportDimensions(), exportBorderRadius.value)
       }
       createZipFile(zip, dataUrl, index, format)
       numQrCodesCreated++
@@ -1425,6 +1458,26 @@ const updateDataFromModal = (newData: string) => {
                         placeholder="16px"
                       />
                     </div>
+                    <div class="sm:col-span-2">
+                      <label for="frame-font-family" class="mb-1 block text-sm">{{
+                        t('Font family')
+                      }}</label>
+                      <select
+                        id="frame-font-family"
+                        class="w-full text-input"
+                        :value="frameStyle.fontFamily ?? ''"
+                        @change="onFontFamilyChange(($event.target as HTMLSelectElement).value)"
+                      >
+                        <option
+                          v-for="font in FONT_OPTIONS"
+                          :key="font.value"
+                          :value="font.value"
+                          :style="font.value ? { fontFamily: font.value } : {}"
+                        >
+                          {{ font.label }}
+                        </option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </template>
@@ -1624,6 +1677,17 @@ const updateDataFromModal = (newData: string) => {
                                       class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
                                     >
                                       {{ fileNamesFromCsv[previewRowIndex] }}
+                                    </code>
+                                  </div>
+                                  <div v-if="fontFamiliesFromCsv[previewRowIndex]">
+                                    <span
+                                      class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                                      >{{ $t('Font family') }}</span
+                                    >
+                                    <code
+                                      class="rounded bg-white px-2 py-1 font-mono text-sm dark:bg-gray-900"
+                                    >
+                                      {{ fontFamiliesFromCsv[previewRowIndex] }}
                                     </code>
                                   </div>
                                 </div>

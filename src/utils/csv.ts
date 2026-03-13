@@ -2,6 +2,7 @@ export interface SimpleCSVData {
   url: string
   frameText?: string
   fileName?: string
+  frameFontFamily?: string
 }
 
 export type VCardOptionalFields =
@@ -24,6 +25,7 @@ export interface VCardCSVData extends Partial<Record<VCardOptionalFields, string
   firstName: string
   lastName: string
   fileName?: string
+  frameFontFamily?: string
 }
 
 export type CSVData = SimpleCSVData | VCardCSVData
@@ -163,6 +165,12 @@ export const parseCSV = (csvContent: string): CSVParsingResult => {
           vCardData.fileName = values[fileNameIndex] || ''
         }
 
+        // Handle frameFontFamily separately (CSV column: frameFontFamily)
+        const frameFontFamilyIndex = headers.indexOf('framefontfamily')
+        if (frameFontFamilyIndex !== -1 && values[frameFontFamilyIndex]) {
+          vCardData.frameFontFamily = values[frameFontFamilyIndex]
+        }
+
         data.push(vCardData as VCardCSVData)
       }
     } else {
@@ -187,7 +195,10 @@ export const parseCSV = (csvContent: string): CSVParsingResult => {
         values.push(currentValue.trim().replace(/^["']|["']$/g, ''))
 
         const [url, frameText, fileName] = values
-        data.push({ url, frameText, fileName })
+        const frameFontFamilyIndex = headers.indexOf('framefontfamily')
+        const frameFontFamily =
+          frameFontFamilyIndex >= 0 ? values[frameFontFamilyIndex] || undefined : undefined
+        data.push({ url, frameText, fileName, frameFontFamily })
       }
     }
 
