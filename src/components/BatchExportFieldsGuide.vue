@@ -259,7 +259,7 @@ Jane,Smith,Tech,jane@ex.com,Manager`
 
       <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <a
-          href="/simple_with_all_fields.csv"
+          href="/batch_export_templates/simple_with_all_fields.csv"
           download
           class="inline-flex items-center justify-center gap-1 rounded-md bg-zinc-100 px-3 py-2 text-xs font-medium text-zinc-700 outline-none hover:bg-zinc-200 focus-visible:ring-2 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 sm:text-sm"
         >
@@ -282,7 +282,7 @@ Jane,Smith,Tech,jane@ex.com,Manager`
           {{ t('Download Simple Example') }}
         </a>
         <a
-          href="/vcard_with_all_fields.csv"
+          href="/batch_export_templates/vcard_with_all_fields.csv"
           download
           class="inline-flex items-center justify-center gap-1 rounded-md bg-zinc-100 px-3 py-2 text-xs font-medium text-zinc-700 outline-none hover:bg-zinc-200 focus-visible:ring-2 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 sm:text-sm"
         >
