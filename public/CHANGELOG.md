@@ -1,3 +1,27 @@
+## v0.28.0 (2026-03-13)
+- ✨ Add font family support for QR code frames ([#255](https://github.com/lyqht/mini-qr/pull/255))
+- 🐛 issue where frame is clipped in export ([#251](https://github.com/lyqht/mini-qr/pull/251))
+- 🔧 update translations ([#254](https://github.com/lyqht/mini-qr/pull/254))
+- 🔧 Organize batch export templates into dedicated folder ([#253](https://github.com/lyqht/mini-qr/pull/253))
+
+## v0.27.0 (2026-03-11)
+- ✨ Add QR config validation and browser testing setup ([#248](https://github.com/lyqht/mini-qr/pull/248))
+- ✨ Add custom filename support for QR code exports ([#232](https://github.com/lyqht/mini-qr/pull/232))
+- 🐛 Update docker compose and nginx config ([#250](https://github.com/lyqht/mini-qr/pull/250))
+- 🐛 English language label in Russian locale ([#241](https://github.com/lyqht/mini-qr/pull/241))
+- 🐛 mobile drawer height issues ([#231](https://github.com/lyqht/mini-qr/pull/231))
+- 🐛 drawer content getting clipped ([#224](https://github.com/lyqht/mini-qr/pull/224))
+- 🔧 dx: Modify i18n hook and reorganize translations ([#246](https://github.com/lyqht/mini-qr/pull/246))
+- 🔧 Upgrade Playwright to v1.58.2 and fix JPG background color handling ([#249](https://github.com/lyqht/mini-qr/pull/249))
+- 🔧 Remove Microsoft Clarity analytics for privacy ([#244](https://github.com/lyqht/mini-qr/pull/244))
+- 🔧 Migrate to ESLint v9 and update TypeScript tooling ([#233](https://github.com/lyqht/mini-qr/pull/233))
+- ♻️ update key "Export as" to "Export QR code" for clarity ([#230](https://github.com/lyqht/mini-qr/pull/230))
+
+## v0.26.4 (2025-10-21)
+- 🐛 Improve semantics and a11y of settings section ([#223](https://github.com/lyqht/mini-qr/pull/223))
+- 🐛 Improve QR code default text handling and preview consistency ([#222](https://github.com/lyqht/mini-qr/pull/222))
+- 🐛 update changelog
+
 ## v0.26.3 (2025-10-16)
 - ✨ Add multiline frame text support and improve CSV parsing ([#220](https://github.com/lyqht/mini-qr/pull/220))
 

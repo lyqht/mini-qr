@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Fetch latest tags from remote
+git fetch --tags
+
 # Create public directory if it doesn't exist
 mkdir -p public
 
