@@ -120,6 +120,9 @@ const cornersDotOptionsColor = ref()
 const cornersDotOptionsType = ref()
 const styleBorderRadius = ref()
 const styledBorderRadiusFormatted = computed(() => `${styleBorderRadius.value}px`)
+const exportBorderRadius = computed(() =>
+  showFrame.value ? frameStyle.value.borderRadius : styledBorderRadiusFormatted.value
+)
 const styleBackground = ref(defaultPreset.style.background)
 const lastBackground = ref(defaultPreset.style.background)
 const includeBackground = ref(true)
@@ -476,7 +479,7 @@ async function openCopyModal() {
     copyModalImageSrc.value = await getPngElement(
       el,
       getExportDimensions(),
-      styledBorderRadiusFormatted.value
+      exportBorderRadius.value
     )
     showSafariCopyImageModal.value = true
   } catch (error) {
@@ -498,7 +501,7 @@ function copyQRToClipboard() {
     return
   }
   if (IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED) {
-    copyImageToClipboard(el, getExportDimensions(), styledBorderRadiusFormatted.value)
+    copyImageToClipboard(el, getExportDimensions(), exportBorderRadius.value)
   } else if (!isLikelyMobileDevice.value) {
     // for now we only open the copy image modal on safari desktop because
     // this modal will be hidden behind the export image modal on mobile viewport.
