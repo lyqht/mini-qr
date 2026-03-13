@@ -107,6 +107,53 @@ https://docs.example.com/,,documentation`
       })
     })
 
+    it('parses simple CSV with frameFontFamily column correctly', () => {
+      const csvContent = `url,frameText,fileName,frameFontFamily
+https://example.com,Visit us,site,Poppins
+https://github.com,GitHub,github,Roboto
+https://linkedin.com,LinkedIn,linkedin,`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(3)
+      expect(result.data[0]).toEqual({
+        url: 'https://example.com',
+        frameText: 'Visit us',
+        fileName: 'site',
+        frameFontFamily: 'Poppins'
+      })
+      expect(result.data[1]).toEqual({
+        url: 'https://github.com',
+        frameText: 'GitHub',
+        fileName: 'github',
+        frameFontFamily: 'Roboto'
+      })
+      expect(result.data[2]).toEqual({
+        url: 'https://linkedin.com',
+        frameText: 'LinkedIn',
+        fileName: 'linkedin',
+        frameFontFamily: undefined
+      })
+    })
+
+    it('parses vCard CSV with frameFontFamily column correctly', () => {
+      const csvContent = `firstname,lastname,email,frameText,frameFontFamily
+John,Doe,john@example.com,Contact John,Poppins
+Jane,Smith,jane@example.com,Contact Jane,`
+
+      const result = parseCSV(csvContent)
+      expect(result.isValid).toBe(true)
+      expect(result.data).toHaveLength(2)
+      expect(result.data[0]).toMatchObject({
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        frameText: 'Contact John',
+        frameFontFamily: 'Poppins'
+      })
+      expect((result.data[1] as any).frameFontFamily).toBeUndefined()
+    })
+
     it('handles empty CSV content', () => {
       const result = parseCSV('')
       expect(result.isValid).toBe(false)

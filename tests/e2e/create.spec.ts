@@ -262,7 +262,50 @@ test.describe('QR Code Creation and Management', () => {
   })
 
   test.describe('Batch Export QR Codes', () => {
-    const simpleCsvPath = '6_strings_batch.csv' // Assuming it's in public folder
+    const simpleCsvPath = 'batch_export_templates/6_strings_batch.csv'
+
+    test('should display frameFontFamily from CSV in the batch preview panel', async ({ page }) => {
+      await page.getByRole('button', { name: /batch export/i }).click()
+
+      const tempCsvDir = path.join(__dirname, 'temp-csv-font')
+      if (!fs.existsSync(tempCsvDir)) {
+        fs.mkdirSync(tempCsvDir, { recursive: true })
+      }
+      const tempCsvFilePath = path.join(tempCsvDir, 'batch-font.csv')
+      const csvContent = `url,frameText,fileName,frameFontFamily
+https://example.com,Visit us,site,Poppins
+https://github.com,GitHub,github,Roboto
+https://linkedin.com,LinkedIn,linkedin,`
+      fs.writeFileSync(tempCsvFilePath, csvContent)
+
+      const fileChooserPromise = page.waitForEvent('filechooser')
+      await page.locator('button[aria-label*="Choose a CSV file"]').click()
+      const fileChooser = await fileChooserPromise
+      await fileChooser.setFiles(tempCsvFilePath)
+
+      const rowCounter = page.locator('text=/\\d+ \\/ \\d+/')
+      await expect(rowCounter).toBeVisible({ timeout: 10000 })
+
+      // Navigation buttons flank the row counter (< ... counter ... >)
+      const navContainer = page.locator('.mt-2.flex.items-center.justify-between')
+      const nextBtn = navContainer.locator('button').last()
+
+      // First row (index 0) has Poppins
+      await expect(page.getByText('Poppins')).toBeVisible()
+
+      // Navigate to second row and verify Roboto
+      await nextBtn.click()
+      await expect(rowCounter).toHaveText('2 / 3')
+      await expect(page.getByText('Roboto')).toBeVisible()
+
+      // Navigate to third row — no font family, font family section should not be shown
+      await nextBtn.click()
+      await expect(rowCounter).toHaveText('3 / 3')
+      await expect(page.getByText('Poppins')).not.toBeVisible()
+      await expect(page.getByText('Roboto')).not.toBeVisible()
+
+      fs.rmSync(tempCsvDir, { recursive: true, force: true })
+    })
 
     test('should batch export QR codes as a zip file of PNGs from CSV input', async ({ page }) => {
       // Switch to batch export mode
