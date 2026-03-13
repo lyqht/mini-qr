@@ -34,6 +34,19 @@ describe('isValidFrameStyle', () => {
     expect(isValidFrameStyle({ ...validStyle, borderWidth: '1' })).toBe(false)
     expect(isValidFrameStyle({ ...validStyle, padding: 'abc' })).toBe(false)
   })
+
+  it('returns true when fontFamily is a string', () => {
+    expect(isValidFrameStyle({ ...validStyle, fontFamily: "'Roboto', sans-serif" })).toBe(true)
+    expect(isValidFrameStyle({ ...validStyle, fontFamily: '' })).toBe(true)
+  })
+
+  it('returns true when fontFamily is absent', () => {
+    expect(isValidFrameStyle(validStyle)).toBe(true)
+  })
+
+  it('returns false when fontFamily is not a string', () => {
+    expect(isValidFrameStyle({ ...validStyle, fontFamily: 42 })).toBe(false)
+  })
 })
 
 describe('isValidFrameConfig', () => {

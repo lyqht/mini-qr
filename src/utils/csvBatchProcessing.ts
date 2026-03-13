@@ -5,6 +5,7 @@ export interface BatchProcessingResult {
   urls: string[]
   frameTexts: string[]
   fileNames: string[]
+  fontFamilies: string[]
   hasCustomFrameText: boolean
 }
 
@@ -17,6 +18,7 @@ export function processCsvDataForBatch(csvData: CSVData[]): BatchProcessingResul
   const urls: string[] = []
   const frameTexts: string[] = []
   const fileNames: string[] = []
+  const fontFamilies: string[] = []
 
   csvData.forEach((row) => {
     const isVCard = 'firstName' in row
@@ -52,6 +54,9 @@ export function processCsvDataForBatch(csvData: CSVData[]): BatchProcessingResul
 
     // Always push fileName to maintain array alignment (empty string if not provided)
     fileNames.push(row.fileName || '')
+
+    // Always push fontFamily to maintain array alignment (empty string if not provided)
+    fontFamilies.push(row.frameFontFamily || '')
   })
 
   // Check if any non-empty frame text exists
@@ -61,6 +66,7 @@ export function processCsvDataForBatch(csvData: CSVData[]): BatchProcessingResul
     urls,
     frameTexts,
     fileNames,
+    fontFamilies,
     hasCustomFrameText
   }
 }

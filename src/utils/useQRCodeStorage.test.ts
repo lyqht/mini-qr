@@ -44,6 +44,23 @@ const sampleConfigWithFrame: QRCodeConfig = {
   }
 }
 
+const sampleConfigWithFrameFont: QRCodeConfig = {
+  ...sampleConfig,
+  frame: {
+    text: 'Scan me',
+    position: 'bottom',
+    style: {
+      textColor: '#000000',
+      backgroundColor: '#ffffff',
+      borderColor: '#000000',
+      borderWidth: '1px',
+      borderRadius: '8px',
+      padding: '16px',
+      fontFamily: "'Roboto', sans-serif"
+    }
+  }
+}
+
 describe('Constants', () => {
   it('exports the correct storage key', () => {
     expect(QR_CODE_STORAGE_KEY).toBe('qrCodeConfig')
@@ -144,6 +161,30 @@ describe('saveQRConfig and loadQRConfig', () => {
     const bad = {
       ...sampleConfig,
       frame: { text: 'hi', position: 'bottom', style: { textColor: '#000' } }
+    }
+    localStorage.setItem(QR_CODE_STORAGE_KEY, JSON.stringify(bad))
+    expect(loadQRConfig()).toBeNull()
+  })
+
+  it('persists and restores fontFamily in frame style', () => {
+    saveQRConfig(sampleConfigWithFrameFont)
+    const loaded = loadQRConfig()
+    expect(loaded?.frame?.style.fontFamily).toBe("'Roboto', sans-serif")
+  })
+
+  it('loads config with fontFamily absent in frame style', () => {
+    saveQRConfig(sampleConfigWithFrame)
+    const loaded = loadQRConfig()
+    expect(loaded?.frame?.style.fontFamily).toBeUndefined()
+  })
+
+  it('returns null when fontFamily in frame style is not a string', () => {
+    const bad = {
+      ...sampleConfigWithFrame,
+      frame: {
+        ...sampleConfigWithFrame.frame,
+        style: { ...sampleConfigWithFrame.frame!.style, fontFamily: 42 }
+      }
     }
     localStorage.setItem(QR_CODE_STORAGE_KEY, JSON.stringify(bad))
     expect(loadQRConfig()).toBeNull()

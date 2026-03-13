@@ -5,6 +5,57 @@ export interface FrameStyle {
   borderWidth: string
   borderRadius: string
   padding: string
+  fontFamily?: string
+}
+
+export interface FontOption {
+  label: string
+  value: string
+  googleFontName?: string
+}
+
+/**
+ * Curated font list: system/web-safe fonts (no loading) + top Google Fonts by popularity.
+ * Sources: Google Fonts popularity rankings, web typography best practices.
+ */
+export const FONT_OPTIONS: FontOption[] = [
+  { label: 'Default', value: '' },
+  // Web-safe fonts — no external loading needed
+  { label: 'Arial', value: 'Arial, sans-serif' },
+  { label: 'Georgia', value: 'Georgia, serif' },
+  { label: 'Verdana', value: 'Verdana, sans-serif' },
+  { label: 'Courier New', value: "'Courier New', monospace" },
+  { label: 'Times New Roman', value: "'Times New Roman', serif" },
+  // Google Fonts — loaded dynamically on selection
+  { label: 'Roboto', value: "'Roboto', sans-serif", googleFontName: 'Roboto' },
+  { label: 'Open Sans', value: "'Open Sans', sans-serif", googleFontName: 'Open+Sans' },
+  { label: 'Lato', value: "'Lato', sans-serif", googleFontName: 'Lato' },
+  { label: 'Montserrat', value: "'Montserrat', sans-serif", googleFontName: 'Montserrat' },
+  { label: 'Poppins', value: "'Poppins', sans-serif", googleFontName: 'Poppins' },
+  { label: 'Oswald', value: "'Oswald', sans-serif", googleFontName: 'Oswald' },
+  { label: 'Raleway', value: "'Raleway', sans-serif", googleFontName: 'Raleway' },
+  { label: 'Nunito', value: "'Nunito', sans-serif", googleFontName: 'Nunito' },
+  {
+    label: 'Playfair Display',
+    value: "'Playfair Display', serif",
+    googleFontName: 'Playfair+Display'
+  },
+  { label: 'Pacifico', value: "'Pacifico', cursive", googleFontName: 'Pacifico' }
+]
+
+export function loadGoogleFont(fontName: string): Promise<void> {
+  const id = `gfont-${fontName}`
+  if (!document.getElementById(id)) {
+    const link = document.createElement('link')
+    link.id = id
+    link.rel = 'stylesheet'
+    link.crossOrigin = 'anonymous'
+    link.href = `https://fonts.googleapis.com/css2?family=${fontName}:wght@400;600&display=swap`
+    document.head.appendChild(link)
+  }
+  // Wait for the font to be available for rendering
+  const displayName = fontName.replace(/\+/g, ' ')
+  return document.fonts.load(`400 1em "${displayName}"`).then(() => {})
 }
 
 export interface FramePreset {
@@ -91,7 +142,8 @@ export function isValidFrameStyle(value: unknown): value is FrameStyle {
     typeof s.borderRadius === 'string' &&
     isValidCSSLength(s.borderRadius) &&
     typeof s.padding === 'string' &&
-    isValidCSSLength(s.padding)
+    isValidCSSLength(s.padding) &&
+    (s.fontFamily === undefined || typeof s.fontFamily === 'string')
   )
 }
 

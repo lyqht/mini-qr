@@ -18,7 +18,7 @@ const closeAccordion = () => {
 }
 
 const simpleFields: Array<{
-  name: keyof SimpleCSVData
+  name: string
   required: boolean
   description: string
   example: string
@@ -40,11 +40,17 @@ const simpleFields: Array<{
     required: false,
     description: 'Custom filename for the exported QR code',
     example: 'my_custom_name'
+  },
+  {
+    name: 'frameFontFamily',
+    required: false,
+    description: 'Font family for the frame text (must be one of the predefined options)',
+    example: 'Poppins'
   }
 ]
 
 const vCardFields: Array<{
-  name: keyof VCardCSVData
+  name: string
   required: boolean
   description: string
   example: string
@@ -75,17 +81,23 @@ const vCardFields: Array<{
     required: false,
     description: 'Custom filename for the exported QR code',
     example: 'john_doe_contact'
+  },
+  {
+    name: 'frameFontFamily',
+    required: false,
+    description: 'Font family for the frame text (must be one of the predefined options)',
+    example: 'Roboto'
   }
 ]
 
-const simpleCsvExample = `url,frameText,fileName
-https://example.com,Visit us,site
-https://github.com/user,GitHub,github
-https://linkedin.com,LinkedIn,linkedin`
+const simpleCsvExample = `url,frameText,fileName,frameFontFamily
+https://example.com,Visit us,site,Poppins
+https://github.com/user,GitHub,github,Roboto
+https://linkedin.com,LinkedIn,linkedin,`
 
-const vCardCsvExample = `firstName,lastName,org,email,frameText
-John,Doe,Acme,john@ex.com,Contact
-Jane,Smith,Tech,jane@ex.com,Manager`
+const vCardCsvExample = `firstName,lastName,org,email,frameText,frameFontFamily
+John,Doe,Acme,john@ex.com,Contact,Roboto
+Jane,Smith,Tech,jane@ex.com,Manager,`
 </script>
 
 <template>
