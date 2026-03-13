@@ -104,6 +104,8 @@ const missingKeys = [...foundKeys].filter((k) => !existingKeys.has(k))
 
 if (missingKeys.length === 0) {
   log(GREEN, '✓ No new translation strings found — en.json is up to date')
+  log(GREEN, '✅ Nothing to sync with Crowdin.')
+  process.exit(0)
 } else {
   log(YELLOW, `📝 Adding ${missingKeys.length} new string(s) to en.json:`)
   for (const key of missingKeys) {
