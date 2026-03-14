@@ -176,7 +176,10 @@ const qrCodeProps = computed<StyledQRCodeProps>(() => ({
   cornersSquareOptions: cornersSquareOptions.value,
   cornersDotOptions: cornersDotOptions.value,
   imageOptions: imageOptions.value,
-  qrOptions: qrOptions.value
+  qrOptions: qrOptions.value,
+  backgroundOptions: {
+    color: styleBackground.value
+  }
 }))
 
 function randomizeStyleSettings() {

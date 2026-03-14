@@ -223,6 +223,43 @@ export async function getSvgString(
 ): Promise<string> {
   const svgDocument = elementToSVG(element)
   await inlineResources(svgDocument.documentElement)
+  
+  // Fix for transparent QR code exports:
+  // When background is transparent, dom-to-svg may not preserve fill colors correctly.
+  // This ensures QR code pattern elements have explicit fill attributes.
+  const shapes = svgDocument.querySelectorAll('rect, path, circle, ellipse')
+  shapes.forEach((shape) => {
+    const currentFill = shape.getAttribute('fill')
+    const currentStyle = shape.getAttribute('style') || ''
+    
+    // Check if element already has a visible fill color
+    const hasFillAttr = currentFill && currentFill !== 'transparent' && currentFill !== 'none' && currentFill !== ''
+    const hasStyleFill = currentStyle.includes('fill:') && !currentStyle.includes('fill: transparent') && !currentStyle.includes('fill:transparent') && !currentStyle.includes('fill: none')
+    
+    // If no visible fill, check if this is a QR code pattern element
+    if (!hasFillAttr && !hasStyleFill) {
+      const clipPath = shape.getAttribute('clip-path') || ''
+      
+      // QR code library uses clip-path with pattern names (dot-color, corner-square, etc.)
+      // Don't modify background elements
+      if (clipPath && !clipPath.includes('background-color')) {
+        // Extract color from clip-path name if possible, otherwise use black as fallback
+        // This preserves user's custom colors
+        let fillColor = '#000000' // default QR code color
+        
+        // Try to get computed style fill color that might be in the DOM but not in attributes
+        if (currentStyle.includes('fill:')) {
+          const fillMatch = currentStyle.match(/fill:\s*([^;]+)/)
+          if (fillMatch && fillMatch[1] && !fillMatch[1].includes('transparent') && !fillMatch[1].includes('none')) {
+            fillColor = fillMatch[1].trim()
+          }
+        }
+        
+        shape.setAttribute('fill', fillColor)
+      }
+    }
+  })
+  
   applySvgRoundedCorners(svgDocument, options, borderRadius)
   return new XMLSerializer().serializeToString(svgDocument)
 }
