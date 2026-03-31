@@ -33,4 +33,5 @@ dev-dist
 
 # Playwright
 test-results/
-playwright-report/package-lock.json
+playwright-report/
+package-lock.json
