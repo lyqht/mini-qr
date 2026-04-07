@@ -4,6 +4,9 @@ import App from './App.vue'
 import './index.css'
 import './style.css'
 import { registerSW } from 'virtual:pwa-register'
+import { inject } from '@vercel/analytics'
+
+inject()
 
 registerSW({ immediate: true })
 
