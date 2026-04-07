@@ -6,7 +6,9 @@ import './style.css'
 import { registerSW } from 'virtual:pwa-register'
 import { inject } from '@vercel/analytics'
 
-inject()
+if (['1', 'true'].includes((import.meta.env.VITE_ENABLE_ANALYTICS ?? '').toLowerCase())) {
+  inject()
+}
 
 registerSW({ immediate: true })
 
