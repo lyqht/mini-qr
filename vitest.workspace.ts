@@ -13,6 +13,7 @@ export default defineWorkspace([
       globals: true,
       environment: 'node',
       include: [
+        'src/utils/changelogVersion.test.ts',
         'src/utils/csv.test.ts',
         'src/utils/csvBatchProcessing.test.ts',
         'src/utils/dataEncoding.test.ts'

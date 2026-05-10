@@ -3,6 +3,7 @@ import { marked } from 'marked'
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { fetchWithBasePath } from '@/utils/basePath'
+import { getDisplayVersion } from '@/utils/changelogVersion'
 import {
   Dialog,
   DialogContent,
@@ -30,12 +31,7 @@ async function fetchAndProcessChangelog() {
       }
       const markdown = await response.text()
 
-      const versionMatch = markdown.match(/^##\s+(v\d+\.\d+\.\d+)/m)
-      if (versionMatch && versionMatch[1]) {
-        version.value = versionMatch[1]
-      } else {
-        version.value = 'N/A'
-      }
+      version.value = getDisplayVersion(markdown, import.meta.env.VITE_APP_VERSION)
 
       changelogContent.value = await marked.parse(markdown)
     } catch (error) {
