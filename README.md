@@ -27,7 +27,7 @@ An app to create beautiful QR codes and scan various QR code types.
 - 🎲 Randomize style button
 - 🌐 Available in 30+ languages
 - 💾 Save & Load QR Code config
-- 🖼️ Upload custom image for logo
+- 🖼️ Upload custom image for logo with adjustable size and margin
 - 🎭 Presets: Pre-crafted QR code styles
 - 🖌️ Frame customization: Add text labels and style the frame around your QR code
 - 🛡️ Error correction level: affects the size of the QR code and logo within. Use lower correction levels for bigger pieces of data to ensure that it can be read.

@@ -53,6 +53,15 @@ describe('fromLegacyOptions', () => {
     expect(out.image?.sizeRatio).toBe(0.4)
   })
 
+  it('forwards imageOptions.imageSize to image.sizeRatio', () => {
+    const out = fromLegacyOptions({
+      data: 'x',
+      image: 'https://example.com/logo.png',
+      imageOptions: { imageSize: 0.7 }
+    })
+    expect(out.image?.sizeRatio).toBe(0.7)
+  })
+
   it('forwards hideBackgroundDots default of true', () => {
     const out = fromLegacyOptions({ data: 'x', image: 'https://example.com/logo.png' })
     expect(out.image?.hideBackgroundDots).toBe(true)

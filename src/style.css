@@ -113,6 +113,10 @@ legend {
   @apply resize-none appearance-none ms-1 p-4 rounded w-full;
 }
 
+.text-input:out-of-range {
+  @apply text-red-600 dark:text-red-400 ring-1 ring-red-500 focus-visible:ring-red-500 dark:focus-visible:ring-red-400;
+}
+
 input[type='color'] {
   @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
   @apply bg-transparent shadow p-0 border rounded box-border text-zinc-700 dark:text-zinc-100 focus-visible:shadow;

@@ -57,6 +57,8 @@ export default [
         URL: 'readonly',
         URLSearchParams: 'readonly',
         Image: 'readonly',
+        createImageBitmap: 'readonly',
+        ImageBitmap: 'readonly',
         Document: 'readonly',
         Node: 'readonly',
         XMLSerializer: 'readonly',

@@ -104,6 +104,7 @@ const width = ref()
 const height = ref()
 const margin = ref()
 const imageMargin = ref()
+const imageSize = ref<number | undefined>()
 
 watch(
   () => props.initialData,
@@ -160,8 +161,13 @@ const style = computed(() => ({
   background: styleBackground.value
 }))
 const imageOptions = computed(() => ({
-  margin: imageMargin.value
+  margin: imageMargin.value,
+  imageSize: imageSize.value
 }))
+const isImageSizeOutOfRange = computed(() => {
+  const v = imageSize.value
+  return typeof v === 'number' && (v < 0 || v > 1)
+})
 const qrOptions = computed(() => ({
   errorCorrectionLevel: errorCorrectionLevel.value
 }))
@@ -245,6 +251,7 @@ watch(selectedPreset, () => {
   height.value = selectedPreset.value.height
   margin.value = selectedPreset.value.margin
   imageMargin.value = selectedPreset.value.imageOptions.margin
+  imageSize.value = selectedPreset.value.imageOptions.imageSize
   dotsOptionsColor.value = selectedPreset.value.dotsOptions.color
   dotsOptionsType.value = selectedPreset.value.dotsOptions.type
   cornersSquareOptionsColor.value = selectedPreset.value.cornersSquareOptions.color
@@ -1893,7 +1900,7 @@ const updateDataFromModal = (newData: string) => {
                 </div>
               </div>
               <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
-                <div class="w-full sm:w-1/2">
+                <div class="w-full sm:w-1/3">
                   <label for="margin">
                     {{ t('Margin (px)') }}
                   </label>
@@ -1905,7 +1912,7 @@ const updateDataFromModal = (newData: string) => {
                     v-model="margin"
                   />
                 </div>
-                <div class="w-full sm:w-1/2">
+                <div class="w-full sm:w-1/3">
                   <label for="image-margin">
                     {{ t('Image margin (px)') }}
                   </label>
@@ -1916,6 +1923,30 @@ const updateDataFromModal = (newData: string) => {
                     placeholder="0"
                     v-model="imageMargin"
                   />
+                </div>
+                <div class="w-full sm:w-1/3">
+                  <label for="image-size">
+                    {{ t('Image size (ratio)') }}
+                  </label>
+                  <input
+                    class="text-input"
+                    id="image-size"
+                    type="number"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    placeholder="0.4"
+                    v-model.number="imageSize"
+                    :aria-invalid="isImageSizeOutOfRange"
+                    aria-describedby="image-size-error"
+                  />
+                  <p
+                    v-if="isImageSizeOutOfRange"
+                    id="image-size-error"
+                    class="ms-1 mt-1 text-xs font-normal text-red-600 dark:text-red-400"
+                  >
+                    {{ t('Must be between 0 and 1') }}
+                  </p>
                 </div>
               </div>
               <div
