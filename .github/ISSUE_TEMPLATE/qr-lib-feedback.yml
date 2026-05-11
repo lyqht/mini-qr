@@ -1,0 +1,67 @@
+name: QR lib feedback
+description: Report a bug or suggest an idea for the QR rendering engine.
+title: '[QR lib] '
+labels: [qr-lib, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to share feedback! MiniQR's QR rendering engine was rewritten in v0.29 (see [CHANGELOG.md](https://github.com/lyqht/mini-qr/blob/main/CHANGELOG.md)). Filling in as much of the form below as you can helps maintainers triage and respond quickly.
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: What kind of feedback is this?
+      description: Maintainers use this to label and prioritise the issue.
+      options:
+        - Bug — something broken or visibly wrong
+        - Idea — suggestion or feature request
+        - Question — not sure if this is a bug
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-you-did
+    attributes:
+      label: What were you doing or trying to achieve?
+      description: For bugs, walk through the steps. For ideas, describe the goal you can't reach today.
+      placeholder: |
+        e.g. Typed "Xin chào, thế giới" into "Data to encode", then clicked "Download QR Code as SVG".
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      placeholder: e.g. The exported SVG should open in Photoshop with visible vector dots.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened? (skip if this is an idea)
+      description: Attach a screenshot of the rendered or exported QR if it looks wrong, or paste the decoded text if a scanner fails.
+      placeholder: e.g. Photoshop opens a blank black image.
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser + OS
+      placeholder: e.g. Chrome 148 on macOS 14.5
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: MiniQR version
+      description: Shown in the v0.x.x button at the bottom of the page (desktop) or inside the hamburger menu (mobile).
+      placeholder: e.g. v0.29.0
+
+  - type: textarea
+    id: anything-else
+    attributes:
+      label: Anything else?
+      description: Other QR generators that handle this case, related issues, console errors, mockups — whatever helps.

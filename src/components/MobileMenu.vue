@@ -254,7 +254,7 @@ onUnmounted(() => {
              issue form pre-filled. -->
         <a
           class="flex items-center gap-2 rounded-md px-2 py-1.5 text-zinc-800 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700"
-          href="https://github.com/lyqht/mini-qr/issues/new?template=qr-lib-bug.yml"
+          href="https://github.com/lyqht/mini-qr/issues/new?template=qr-lib-feedback.yml"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -274,7 +274,7 @@ onUnmounted(() => {
             <polyline points="15 3 21 3 21 9"></polyline>
             <line x1="10" y1="14" x2="21" y2="3"></line>
           </svg>
-          <span>{{ t('Report an issue') }}</span>
+          <span>{{ t('Feedback') }}</span>
         </a>
 
         <!-- Divider -->
