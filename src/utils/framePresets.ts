@@ -8,39 +8,120 @@ export interface FrameStyle {
   fontFamily?: string
 }
 
+export type FontCategory = 'sans' | 'serif' | 'monospace' | 'display'
+
 export interface FontOption {
   label: string
   value: string
   googleFontName?: string
+  // Omitted on the "Default" entry; everything else is categorised so the UI
+  // can render an <optgroup> per category.
+  category?: FontCategory
 }
 
 /**
- * Curated font list: system/web-safe fonts (no loading) + top Google Fonts by popularity.
- * Sources: Google Fonts popularity rankings, web typography best practices.
+ * Curated font list: web-safe fonts (no loading) + top Google Fonts.
+ *
+ * Sources:
+ *  - Google Fonts popularity rankings (sans/serif/display picks).
+ *  - Programming-font catalogues + Wikipedia "Slashed zero" article
+ *    (monospace picks — all have a slashed 0 to disambiguate from O,
+ *    requested in lyqht/mini-qr#203 for WiFi-password QR codes).
  */
 export const FONT_OPTIONS: FontOption[] = [
   { label: 'Default', value: '' },
-  // Web-safe fonts — no external loading needed
-  { label: 'Arial', value: 'Arial, sans-serif' },
-  { label: 'Georgia', value: 'Georgia, serif' },
-  { label: 'Verdana', value: 'Verdana, sans-serif' },
-  { label: 'Courier New', value: "'Courier New', monospace" },
-  { label: 'Times New Roman', value: "'Times New Roman', serif" },
-  // Google Fonts — loaded dynamically on selection
-  { label: 'Roboto', value: "'Roboto', sans-serif", googleFontName: 'Roboto' },
-  { label: 'Open Sans', value: "'Open Sans', sans-serif", googleFontName: 'Open+Sans' },
-  { label: 'Lato', value: "'Lato', sans-serif", googleFontName: 'Lato' },
-  { label: 'Montserrat', value: "'Montserrat', sans-serif", googleFontName: 'Montserrat' },
-  { label: 'Poppins', value: "'Poppins', sans-serif", googleFontName: 'Poppins' },
-  { label: 'Oswald', value: "'Oswald', sans-serif", googleFontName: 'Oswald' },
-  { label: 'Raleway', value: "'Raleway', sans-serif", googleFontName: 'Raleway' },
-  { label: 'Nunito', value: "'Nunito', sans-serif", googleFontName: 'Nunito' },
+  // Sans-serif
+  { label: 'Arial', value: 'Arial, sans-serif', category: 'sans' },
+  { label: 'Verdana', value: 'Verdana, sans-serif', category: 'sans' },
+  { label: 'Roboto', value: "'Roboto', sans-serif", googleFontName: 'Roboto', category: 'sans' },
+  { label: 'Inter', value: "'Inter', sans-serif", googleFontName: 'Inter', category: 'sans' },
+  {
+    label: 'Open Sans',
+    value: "'Open Sans', sans-serif",
+    googleFontName: 'Open+Sans',
+    category: 'sans'
+  },
+  { label: 'Lato', value: "'Lato', sans-serif", googleFontName: 'Lato', category: 'sans' },
+  {
+    label: 'Montserrat',
+    value: "'Montserrat', sans-serif",
+    googleFontName: 'Montserrat',
+    category: 'sans'
+  },
+  {
+    label: 'Poppins',
+    value: "'Poppins', sans-serif",
+    googleFontName: 'Poppins',
+    category: 'sans'
+  },
+  { label: 'Oswald', value: "'Oswald', sans-serif", googleFontName: 'Oswald', category: 'sans' },
+  {
+    label: 'Raleway',
+    value: "'Raleway', sans-serif",
+    googleFontName: 'Raleway',
+    category: 'sans'
+  },
+  { label: 'Nunito', value: "'Nunito', sans-serif", googleFontName: 'Nunito', category: 'sans' },
+  // Serif
+  { label: 'Georgia', value: 'Georgia, serif', category: 'serif' },
+  { label: 'Times New Roman', value: "'Times New Roman', serif", category: 'serif' },
   {
     label: 'Playfair Display',
     value: "'Playfair Display', serif",
-    googleFontName: 'Playfair+Display'
+    googleFontName: 'Playfair+Display',
+    category: 'serif'
   },
-  { label: 'Pacifico', value: "'Pacifico', cursive", googleFontName: 'Pacifico' }
+  {
+    label: 'Merriweather',
+    value: "'Merriweather', serif",
+    googleFontName: 'Merriweather',
+    category: 'serif'
+  },
+  // Monospace — all Google entries below have a slashed 0
+  { label: 'Courier New', value: "'Courier New', monospace", category: 'monospace' },
+  {
+    label: 'JetBrains Mono',
+    value: "'JetBrains Mono', monospace",
+    googleFontName: 'JetBrains+Mono',
+    category: 'monospace'
+  },
+  {
+    label: 'Fira Code',
+    value: "'Fira Code', monospace",
+    googleFontName: 'Fira+Code',
+    category: 'monospace'
+  },
+  {
+    label: 'Source Code Pro',
+    value: "'Source Code Pro', monospace",
+    googleFontName: 'Source+Code+Pro',
+    category: 'monospace'
+  },
+  {
+    label: 'IBM Plex Mono',
+    value: "'IBM Plex Mono', monospace",
+    googleFontName: 'IBM+Plex+Mono',
+    category: 'monospace'
+  },
+  {
+    label: 'Inconsolata',
+    value: "'Inconsolata', monospace",
+    googleFontName: 'Inconsolata',
+    category: 'monospace'
+  },
+  // Display & cursive
+  {
+    label: 'Pacifico',
+    value: "'Pacifico', cursive",
+    googleFontName: 'Pacifico',
+    category: 'display'
+  },
+  {
+    label: 'Bebas Neue',
+    value: "'Bebas Neue', sans-serif",
+    googleFontName: 'Bebas+Neue',
+    category: 'display'
+  }
 ]
 
 export function loadGoogleFont(fontName: string): Promise<void> {

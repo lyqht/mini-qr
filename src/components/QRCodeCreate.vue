@@ -38,6 +38,8 @@ import {
   defaultFramePreset,
   FONT_OPTIONS,
   loadGoogleFont,
+  type FontCategory,
+  type FontOption,
   type FramePreset,
   type FrameStyle
 } from '@/utils/framePresets'
@@ -387,6 +389,34 @@ const frameSettings = computed(() => ({
   position: frameTextPosition.value,
   style: frameStyle.value
 }))
+
+const FONT_CATEGORY_LABELS: Record<FontCategory, string> = {
+  sans: 'Sans-serif',
+  serif: 'Serif',
+  monospace: 'Monospace',
+  display: 'Display & Cursive'
+}
+
+const groupedFontOptions = computed(() => {
+  const ungrouped: FontOption[] = []
+  const groups = new Map<FontCategory, FontOption[]>()
+  for (const font of FONT_OPTIONS) {
+    if (!font.category) {
+      ungrouped.push(font)
+      continue
+    }
+    const list = groups.get(font.category) ?? []
+    list.push(font)
+    groups.set(font.category, list)
+  }
+  const orderedCategories: FontCategory[] = ['sans', 'serif', 'monospace', 'display']
+  return {
+    ungrouped,
+    groups: orderedCategories
+      .filter((c) => groups.has(c))
+      .map((c) => ({ category: c, label: FONT_CATEGORY_LABELS[c], fonts: groups.get(c)! }))
+  }
+})
 
 function onFontFamilyChange(value: string): Promise<void> {
   // value may be a label name (e.g. "Poppins" from CSV) or a full CSS value (e.g. "'Poppins', sans-serif" from UI)
@@ -1512,13 +1542,27 @@ const updateDataFromModal = (newData: string) => {
                         @change="onFontFamilyChange(($event.target as HTMLSelectElement).value)"
                       >
                         <option
-                          v-for="font in FONT_OPTIONS"
+                          v-for="font in groupedFontOptions.ungrouped"
                           :key="font.value"
                           :value="font.value"
                           :style="font.value ? { fontFamily: font.value } : {}"
                         >
                           {{ font.label }}
                         </option>
+                        <optgroup
+                          v-for="group in groupedFontOptions.groups"
+                          :key="group.category"
+                          :label="t(group.label)"
+                        >
+                          <option
+                            v-for="font in group.fonts"
+                            :key="font.value"
+                            :value="font.value"
+                            :style="{ fontFamily: font.value }"
+                          >
+                            {{ font.label }}
+                          </option>
+                        </optgroup>
                       </select>
                     </div>
                   </div>
