@@ -234,6 +234,8 @@ onUnmounted(() => {
           <LanguageSelector />
         </div>
 
+        <hr class="border-zinc-200 dark:border-zinc-700" />
+
         <!-- General feedback / questions / ideas → GitHub Discussions. -->
         <a
           class="flex items-center gap-2 rounded-md px-2 py-1.5 text-zinc-800 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700"
