@@ -4,7 +4,13 @@ import type { CornerDotShape, CornerSquareShape, QRCodeConfig } from '..'
 
 const meta: Meta<typeof QRPreview> = {
   title: 'QR Lib / Corner shapes',
-  component: QRPreview
+  component: QRPreview,
+  argTypes: {
+    data: { control: 'text' }
+  },
+  args: {
+    data: 'https://github.com/lyqht/mini-qr'
+  }
 }
 export default meta
 type Story = StoryObj<typeof QRPreview>
@@ -22,9 +28,7 @@ function make(cs: CornerSquareShape, cd: CornerDotShape): QRCodeConfig {
 
 export const SquareSquare: Story = { args: { config: make('square', 'square') } }
 export const SquareDot: Story = { args: { config: make('square', 'dot') } }
-export const ExtraRoundedSquare: Story = {
-  args: { config: make('extra-rounded', 'square') }
-}
+export const ExtraRoundedSquare: Story = { args: { config: make('extra-rounded', 'square') } }
 export const ExtraRoundedDot: Story = { args: { config: make('extra-rounded', 'dot') } }
 export const DotSquare: Story = { args: { config: make('dot', 'square') } }
 export const DotDot: Story = { args: { config: make('dot', 'dot') } }

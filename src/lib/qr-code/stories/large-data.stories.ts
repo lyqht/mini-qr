@@ -2,14 +2,23 @@ import type { Meta, StoryObj } from '@storybook/vue3'
 import QRPreview from './QRPreview.vue'
 import type { QRCodeConfig } from '..'
 
+const LOREM = 'The quick brown fox jumps over the lazy dog. '.repeat(20)
+
 const meta: Meta<typeof QRPreview> = {
   title: 'QR Lib / Large payloads',
-  component: QRPreview
+  component: QRPreview,
+  argTypes: {
+    data: {
+      control: 'text',
+      description: 'Paste a large payload here to test capacity at the chosen EC level'
+    }
+  },
+  args: {
+    data: LOREM
+  }
 }
 export default meta
 type Story = StoryObj<typeof QRPreview>
-
-const LOREM = 'The quick brown fox jumps over the lazy dog. '.repeat(20)
 
 function make(data: string): QRCodeConfig {
   return {
@@ -21,7 +30,7 @@ function make(data: string): QRCodeConfig {
   }
 }
 
-export const About1KB: Story = { args: { config: make(LOREM) } }
+export const About1KB: Story = { args: { data: LOREM, config: make(LOREM) } }
 export const NearCapacity: Story = {
-  args: { config: make(LOREM + LOREM + 'EOF') }
+  args: { data: LOREM + LOREM + 'EOF', config: make(LOREM + LOREM + 'EOF') }
 }

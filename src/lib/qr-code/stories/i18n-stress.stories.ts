@@ -9,9 +9,15 @@ const meta: Meta<typeof QRPreview> = {
     docs: {
       description: {
         component:
-          'Regression guards for issue #119 — every story below scans to its exact input string in a phone QR scanner.'
+          'Regression guards for issue #119 — every story below scans to its exact input string in a phone QR scanner. Edit the `data` control to try any multibyte string.'
       }
     }
+  },
+  argTypes: {
+    data: { control: 'text' }
+  },
+  args: {
+    data: 'Hello مرحبا — 你好 — 👋🌍 — Xin chào'
   }
 }
 export default meta
@@ -27,10 +33,21 @@ function make(data: string): QRCodeConfig {
   }
 }
 
-export const Vietnamese: Story = { args: { config: make('Xin chào, thế giới') } }
-export const Japanese: Story = { args: { config: make('こんにちは世界') } }
-export const Arabic: Story = { args: { config: make('مرحبا بالعالم') } }
-export const Emoji: Story = { args: { config: make('👋🌍🎉🚀✨') } }
+export const Vietnamese: Story = {
+  args: { data: 'Xin chào, thế giới', config: make('Xin chào, thế giới') }
+}
+export const Japanese: Story = {
+  args: { data: 'こんにちは世界', config: make('こんにちは世界') }
+}
+export const Arabic: Story = {
+  args: { data: 'مرحبا بالعالم', config: make('مرحبا بالعالم') }
+}
+export const Emoji: Story = {
+  args: { data: '👋🌍🎉🚀✨', config: make('👋🌍🎉🚀✨') }
+}
 export const Mixed: Story = {
-  args: { config: make('Hello مرحبا — 你好 — 👋🌍 — Xin chào') }
+  args: {
+    data: 'Hello مرحبا — 你好 — 👋🌍 — Xin chào',
+    config: make('Hello مرحبا — 你好 — 👋🌍 — Xin chào')
+  }
 }

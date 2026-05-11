@@ -4,7 +4,13 @@ import type { QRCodeConfig } from '..'
 
 const meta: Meta<typeof QRPreview> = {
   title: 'QR Lib / Logo overlay',
-  component: QRPreview
+  component: QRPreview,
+  argTypes: {
+    data: { control: 'text' }
+  },
+  args: {
+    data: 'https://github.com/lyqht/mini-qr'
+  }
 }
 export default meta
 type Story = StoryObj<typeof QRPreview>
@@ -15,7 +21,7 @@ const base = (overrides: Partial<QRCodeConfig['image']> & { href: string }): QRC
   errorCorrectionLevel: 'H',
   dots: { shape: 'extra-rounded', color: '#000' },
   background: { color: '#ffffff' },
-  image: { sizeRatio: 0.3, hideBackgroundDots: true, ...overrides }
+  image: { sizeRatio: 0.4, hideBackgroundDots: true, ...overrides }
 })
 
 export const SvgLogoHidingBackground: Story = {

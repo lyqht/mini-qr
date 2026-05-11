@@ -56,6 +56,7 @@
   "devDependencies": {
     "@eslint/js": "^9",
     "@playwright/test": "^1.58.2",
+    "@storybook/addon-essentials": "^8.6.0",
     "@storybook/test": "^8.6.0",
     "@storybook/vue3": "^8.6.0",
     "@storybook/vue3-vite": "^8.6.0",

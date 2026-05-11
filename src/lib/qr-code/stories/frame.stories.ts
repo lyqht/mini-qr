@@ -4,7 +4,13 @@ import type { QRCodeConfig, TextPosition } from '..'
 
 const meta: Meta<typeof QRPreview> = {
   title: 'QR Lib / Frame',
-  component: QRPreview
+  component: QRPreview,
+  argTypes: {
+    data: { control: 'text' }
+  },
+  args: {
+    data: 'https://github.com/lyqht/mini-qr'
+  }
 }
 export default meta
 type Story = StoryObj<typeof QRPreview>
