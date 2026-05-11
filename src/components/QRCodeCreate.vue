@@ -1309,7 +1309,7 @@ const updateDataFromModal = (newData: string) => {
           </section>
 
           <a
-            href="https://github.com/lyqht/mini-qr/issues/new?title=%5BQR%20lib%5D%20&labels=bug%2Cqr-lib"
+            href="https://github.com/lyqht/mini-qr/issues/new?template=qr-lib-bug.yml"
             target="_blank"
             rel="noopener noreferrer"
             class="mt-4 inline-flex items-center justify-center gap-1.5 self-center rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs text-zinc-700 outline-none hover:bg-zinc-50 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
