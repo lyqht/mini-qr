@@ -34,3 +34,6 @@ dev-dist
 # Playwright
 test-results/
 playwright-report/
+
+# Storybook
+storybook-static/

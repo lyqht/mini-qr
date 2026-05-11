@@ -15,7 +15,8 @@ export default [
       'public/**',
       'pnpm-lock.yaml',
       'scripts/**',
-      '*.json'
+      '*.json',
+      'storybook-static/**'
     ]
   },
   js.configs.recommended,
