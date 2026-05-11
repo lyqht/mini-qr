@@ -36,9 +36,9 @@ const reportIssueHref = computed(() => {
   <div
     v-if="!isDismissed"
     role="status"
-    class="mb-4 flex flex-col items-start gap-2 rounded-lg border border-zinc-300 bg-zinc-100 px-3 py-2 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 sm:flex-row sm:items-center sm:justify-between"
+    class="flex flex-col items-start gap-2 rounded-lg border border-zinc-300 bg-zinc-100 px-3 py-2 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 sm:flex-row sm:items-center sm:justify-between"
   >
-    <div class="flex items-center gap-2">
+    <div class="flex min-w-0 items-center gap-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         class="shrink-0 text-[#abcbca]"
@@ -56,7 +56,7 @@ const reportIssueHref = computed(() => {
         <line x1="12" y1="16" x2="12" y2="12"></line>
         <line x1="12" y1="8" x2="12.01" y2="8"></line>
       </svg>
-      <p class="m-0">
+      <p class="m-0 truncate">
         {{ t("MiniQR's QR rendering engine has been updated") }}
       </p>
     </div>
