@@ -17,6 +17,34 @@ const closeAccordion = () => {
   }, 100)
 }
 
+/**
+ * Download a CSV template via fetch + Blob URL. Plain `<a href download>`
+ * was unreliable on the Vite dev server (the response lacked
+ * Content-Disposition so Chromium ignored the download hint silently);
+ * fetching the bytes ourselves and handing a Blob URL to a synthetic
+ * anchor is the well-trodden reliable path for both dev and prod.
+ */
+async function downloadTemplate(href: string, suggestedName: string) {
+  try {
+    const res = await fetch(href, { credentials: 'same-origin' })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = suggestedName
+    link.style.display = 'none'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    setTimeout(() => URL.revokeObjectURL(url), 200)
+  } catch (err) {
+    console.error(`Failed to download template ${suggestedName}`, err)
+    // Fall back to opening the file in a new tab so users still get the data.
+    window.open(href, '_blank', 'noopener,noreferrer')
+  }
+}
+
 const simpleFields: Array<{
   name: string
   required: boolean
@@ -270,9 +298,14 @@ Jane,Smith,Tech,jane@ex.com,Manager,`
       </div>
 
       <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-        <a
-          href="/batch_export_templates/simple_with_all_fields.csv"
-          download
+        <button
+          type="button"
+          @click="
+            downloadTemplate(
+              '/batch_export_templates/simple_with_all_fields.csv',
+              'simple_with_all_fields.csv'
+            )
+          "
           class="inline-flex items-center justify-center gap-1 rounded-md bg-zinc-100 px-3 py-2 text-xs font-medium text-zinc-700 outline-none hover:bg-zinc-200 focus-visible:ring-2 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 sm:text-sm"
         >
           <svg
@@ -292,10 +325,15 @@ Jane,Smith,Tech,jane@ex.com,Manager,`
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
           {{ t('Download Simple Example') }}
-        </a>
-        <a
-          href="/batch_export_templates/vcard_with_all_fields.csv"
-          download
+        </button>
+        <button
+          type="button"
+          @click="
+            downloadTemplate(
+              '/batch_export_templates/vcard_with_all_fields.csv',
+              'vcard_with_all_fields.csv'
+            )
+          "
           class="inline-flex items-center justify-center gap-1 rounded-md bg-zinc-100 px-3 py-2 text-xs font-medium text-zinc-700 outline-none hover:bg-zinc-200 focus-visible:ring-2 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 sm:text-sm"
         >
           <svg
@@ -315,7 +353,7 @@ Jane,Smith,Tech,jane@ex.com,Manager,`
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
           {{ t('Download vCard Example') }}
-        </a>
+        </button>
       </div>
 
       <!-- Close button -->
