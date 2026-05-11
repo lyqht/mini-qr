@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "context-extraction": {
+      "source": "crowdin/skills",
+      "sourceType": "github",
+      "computedHash": "e64234ccc0d7a9ed4fe3c74dc789c948c4e15a30b9166df6ea69ea5e0ce3e461"
+    }
+  }
+}

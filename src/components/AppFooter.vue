@@ -3,6 +3,7 @@ import { marked } from 'marked'
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { fetchWithBasePath } from '@/utils/basePath'
+import { useChangelogNotice } from '@/utils/useChangelogNotice'
 import {
   Dialog,
   DialogContent,
@@ -15,6 +16,7 @@ import {
 import { X } from 'lucide-vue-next'
 
 const { t } = useI18n()
+const { hasUnseenChangelog, markAsSeen } = useChangelogNotice()
 const version = ref('...')
 const changelogContent = ref<string | null>(null)
 const isLoading = ref(true)
@@ -69,8 +71,18 @@ onMounted(() => {
       <span>|</span>
       <Dialog>
         <DialogTrigger as-child>
-          <button class="secondary-button" :aria-label="t('View changelog')" :disabled="isLoading">
+          <button
+            class="secondary-button relative"
+            :aria-label="t('View changelog')"
+            :disabled="isLoading"
+            @click="markAsSeen"
+          >
             {{ isLoading ? '...' : version }}
+            <span
+              v-if="hasUnseenChangelog"
+              class="absolute -right-1 -top-1 block size-2.5 rounded-full bg-[#abcbca] ring-2 ring-white dark:ring-zinc-800"
+              aria-hidden="true"
+            ></span>
           </button>
         </DialogTrigger>
         <DialogContent class="flex max-h-[80vh] flex-col sm:max-w-md" @open-auto-focus.prevent>

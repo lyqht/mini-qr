@@ -1307,6 +1307,31 @@ const updateDataFromModal = (newData: string) => {
               </div>
             </div>
           </section>
+
+          <a
+            href="https://github.com/lyqht/mini-qr/issues/new?title=%5BQR%20lib%5D%20&labels=bug%2Cqr-lib"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-4 inline-flex items-center justify-center gap-1.5 self-center rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs text-zinc-700 outline-none hover:bg-zinc-50 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            {{ t('Report an issue') }}
+          </a>
         </div>
       </div>
     </Teleport>

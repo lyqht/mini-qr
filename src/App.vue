@@ -4,16 +4,13 @@ import MobileMenu from '@/components/MobileMenu.vue'
 import QRCodeScan from '@/components/QRCodeScan.vue'
 import QRCodeCreate from '@/components/QRCodeCreate.vue'
 import AppFooter from '@/components/AppFooter.vue'
-import QRLibUpdateBanner from '@/components/QRLibUpdateBanner.vue'
 import useDarkModePreference from '@/utils/useDarkModePreference'
-import { useQRLibBanner } from '@/utils/useQRLibBanner'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const { isDarkMode, isDarkModePreferenceSetBySystem, toggleDarkModePreference } =
   useDarkModePreference()
-const { isDismissed: bannerDismissed, reopen: reopenBanner } = useQRLibBanner()
 
 const capturedData = ref<string>('')
 const qrCodeScanRef = ref<InstanceType<typeof QRCodeScan> | null>(null)
@@ -82,9 +79,9 @@ const isModeToggleDisabled = computed(() => {
   <main>
     <!-- Desktop header - only visible on desktop -->
     <div
-      class="hidden md:mx-auto md:mb-4 md:mt-8 md:flex md:w-5/6 md:flex-row md:items-center md:gap-4 md:ps-4"
+      class="hidden md:mx-auto md:mb-4 md:mt-8 md:flex md:w-5/6 md:flex-row md:justify-between md:ps-4"
     >
-      <div class="flex shrink-0 items-center">
+      <div class="flex items-center">
         <h1 class="text-3xl text-gray-700 dark:text-gray-100">MiniQR</h1>
 
         <!-- Mode toggle button - only visible on desktop -->
@@ -130,46 +127,9 @@ const isModeToggleDisabled = computed(() => {
             <span>{{ t('Scan') }}</span>
           </button>
         </div>
-
-        <!-- Reopen the QR lib update banner. The dot indicates there's a
-             notice that's currently dismissed. -->
-        <button
-          v-if="bannerDismissed"
-          @click="reopenBanner"
-          :aria-label="t('Show update notice')"
-          class="relative ms-2 flex size-9 items-center justify-center rounded-md border border-zinc-300 bg-zinc-100 text-zinc-800 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-          </svg>
-          <span
-            class="absolute right-1.5 top-1.5 block size-2 rounded-full bg-[#abcbca] ring-2 ring-zinc-100 dark:ring-zinc-800"
-            aria-hidden="true"
-          ></span>
-        </button>
       </div>
 
-      <!-- QR-lib update banner inline in the desktop header. The empty
-           flex-1 wrapper keeps the right group anchored to the edge even
-           after the banner is dismissed and the inner v-if collapses. -->
-      <div class="min-w-0 flex-1">
-        <QRLibUpdateBanner />
-      </div>
-
-      <div class="flex shrink-0 items-center justify-end gap-2">
+      <div class="flex items-center justify-end gap-2">
         <a
           class="icon-button"
           href="https://github.com/lyqht/mini-qr"
@@ -305,9 +265,7 @@ const isModeToggleDisabled = computed(() => {
           <MobileMenu
             :isDarkMode="isDarkMode"
             :isDarkModePreferenceSetBySystem="isDarkModePreferenceSetBySystem"
-            :hasUpdateNotice="bannerDismissed"
             @toggle-dark-mode="toggleDarkModePreference"
-            @show-update-notice="reopenBanner"
           />
         </div>
       </div>
@@ -318,12 +276,6 @@ const isModeToggleDisabled = computed(() => {
     >
       <!-- Main content area with conditional rendering based on app mode -->
       <div class="w-full lg:w-5/6">
-        <!-- Mobile-only mount of the update banner. Desktop renders it
-             inline in the header above. Both subscribe to the same
-             composable so dismiss / reopen stay in sync. -->
-        <div class="mb-4 md:hidden">
-          <QRLibUpdateBanner />
-        </div>
         <div v-if="appMode === AppMode.Create">
           <QRCodeCreate :initial-data="capturedData" />
         </div>
