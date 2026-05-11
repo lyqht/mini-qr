@@ -41,7 +41,6 @@
     "jszip": "^3.10.1",
     "lucide-vue-next": "^0.321.0",
     "marked": "^15.0.11",
-    "qr-code-styling": "^1.9.2",
     "qr-scanner": "^1.4.2",
     "qrcode-generator": "^2.0.4",
     "radix-vue": "^1.9.17",

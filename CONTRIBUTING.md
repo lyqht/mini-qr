@@ -45,11 +45,12 @@ Before you start, please take a moment to read through these guidelines.
 
 ![Screenshot of how MiniQR is a very big wrapper around qr-code-styling library](public/miniqr_extract.png)
 
-- Please note that the following issues are known and are caused by the `qr-code-styling` library, and cannot be fixed within this project.
-  - Encoding issues with accented characters
-  - Image margin inconsistency
-  - SVG export not containing actual svg paths, causing black images on certain software like Adobe Photoshop. -> Due to its unreliability, I've tried removing this export option sometime ago but many users requested to have it back since they don't use the SVG file for editing, and merely for displaying it on the web. So please stop requesting this to be removed/fixed.
-- For all other bugs, provide clear steps for reproduction.
+> Historical note: MiniQR used to wrap the `qr-code-styling` npm package. As of v0.29, the QR matrix and rendering live in this repo under [`src/lib/qr-code/`](src/lib/qr-code/). Two long-standing upstream bugs are now fixed:
+>
+> - UTF-8 / accented characters encode correctly (Vietnamese, CJK, Arabic, emoji)
+> - SVG export contains real vector `<path>`/`<rect>` elements and opens correctly in vector editors (Photoshop, Illustrator, Inkscape)
+>
+> Image margin inconsistency may still surface in some edge cases. For all bugs, provide clear steps for reproduction.
 
 ## Development environment
 

@@ -50,9 +50,6 @@ dependencies:
   marked:
     specifier: ^15.0.11
     version: 15.0.11
-  qr-code-styling:
-    specifier: ^1.9.2
-    version: 1.9.2
   qr-scanner:
     specifier: ^1.4.2
     version: 1.4.2
@@ -5834,21 +5831,10 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /qr-code-styling@1.9.2:
-    resolution: {integrity: sha512-RgJaZJ1/RrXJ6N0j7a+pdw3zMBmzZU4VN2dtAZf8ZggCfRB5stEQ3IoDNGaNhYY3nnZKYlYSLl5YkfWN5dPutg==}
-    engines: {node: '>=18.18.0'}
-    dependencies:
-      qrcode-generator: 1.4.4
-    dev: false
-
   /qr-scanner@1.4.2:
     resolution: {integrity: sha512-kV1yQUe2FENvn59tMZW6mOVfpq9mGxGf8l6+EGaXUOd4RBOLg7tRC83OrirM5AtDvZRpdjdlXURsHreAOSPOUw==}
     dependencies:
       '@types/offscreencanvas': 2019.7.3
-    dev: false
-
-  /qrcode-generator@1.4.4:
-    resolution: {integrity: sha512-HM7yY8O2ilqhmULxGMpcHSF1EhJJ9yBj8gvDEuZ6M+KGJ0YY2hKpnXvRD+hZPLrDVck3ExIGhmPtSdcjC+guuw==}
     dev: false
 
   /qrcode-generator@2.0.4:
