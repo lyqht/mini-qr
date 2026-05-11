@@ -37,3 +37,4 @@ playwright-report/
 
 # Storybook
 storybook-static/
+package-lock.json

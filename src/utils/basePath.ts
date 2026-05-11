@@ -7,8 +7,8 @@
  */
 export function getBasePath(): string {
   // Vite makes BASE_PATH available at build time through import.meta.env
-  // If BASE_PATH is not set, default to '/'
-  return import.meta.env.BASE_PATH || '/'
+  // If BASE_PATH is not set, default to './' for relative paths
+  return import.meta.env.BASE_PATH || './'
 }
 
 /**

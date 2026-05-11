@@ -7,10 +7,11 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig(({ mode }) => {
   // Load environment variables
   const env = loadEnv(mode, '.', '')
-  // Get BASE_PATH from environment variable, default to '/'
+  // Get BASE_PATH from environment variable, default to './' for relative paths
+  // Using './' ensures the app works when deployed at any sub-path without configuration
   // Ensure base path ends with slash for proper URL construction
-  let base = env.BASE_PATH || '/'
-  if (base !== '/' && !base.endsWith('/')) {
+  let base = env.BASE_PATH || './'
+  if (!base.endsWith('/')) {
     base = base + '/'
   }
 

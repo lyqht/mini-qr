@@ -98,5 +98,7 @@ jobs:
           push: ${{ !github.event.pull_request.head.repo.fork }}
           cache-from: type=registry,ref=ghcr.io/${{ steps.sanitize_names.outputs.lowercase }}/mini-qr-build-cache:${{matrix.image}}
           cache-to: ${{ steps.cache-target.outputs.cache-to }}
+          build-args: |
+            VITE_APP_VERSION=${{ github.ref_name }}
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
