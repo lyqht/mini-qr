@@ -107,6 +107,7 @@ The project is a modern Vite-powered Vue.js 3 application with TypeScript suppor
 **Library utilities (`src/lib/`):**
 
 - `utils.ts`: Shared utility functions
+- `qr-code/`: The internal QR rendering library (see [the architecture section below](#internal-qr-library-architecture) for the build-vs-vendor split). Public entry: `src/lib/qr-code/index.ts`.
 
 **Styles:**
 
@@ -158,6 +159,40 @@ The project is a modern Vite-powered Vue.js 3 application with TypeScript suppor
 - The project uses TypeScript throughout for better type safety
 - UI components in `src/components/ui/` are auto-generated from radix-vue and should not be modified manually
 - The application supports both light and dark themes with system preference detection
+
+## Internal QR library: architecture
+
+`src/lib/qr-code/` is split deliberately between code we own and a single small vendored dependency. Two questions come up often — answered here so PR reviews don't relitigate them.
+
+### "Are we generating the QR matrix ourselves?"
+
+**No — we delegate that to [`qrcode-generator`](https://github.com/kazuhikoarase/qrcode-generator) (MIT, ~10 KB gzipped).** It owns everything QR-spec-compliance-heavy:
+
+- Reed–Solomon error correction (GF(2⁸) arithmetic, generator polynomials per L/M/Q/H level)
+- BCH coding of format-info and version-info bits
+- One of 8 mask patterns selected per the spec's penalty score
+- Finder, timing, and alignment patterns positioned per the spec for every QR version 1–40
+- Capacity tables for the four data modes (Numeric, Alphanumeric, Byte, Kanji)
+
+Inside [`src/lib/qr-code/matrix.ts`](src/lib/qr-code/matrix.ts) the call into the library is three lines: build a QR, add the bytes, ask for `isDark(r, c)` per module. The only thing we override is `qrcode.stringToBytes` so it uses `TextEncoder` (proper UTF-8) instead of the library's Latin-1 default — that override is what fixes [#119](https://github.com/lyqht/mini-qr/issues/119).
+
+### "Why not implement the matrix ourselves and drop the dep?"
+
+Re-implementing the bullet list above is roughly 2 000 LOC of QR-spec code: GF(2⁸) tables and arithmetic, BCH coding, mask penalty scoring, version-info encoding, and capacity tables for 40 × 4 × 4 combinations. The maintenance + correctness risk is large and the bundle savings would be negligible — the spec tables are most of the dependency's size and we'd have to ship them either way. `qrcode-generator` is also a decade-old, well-tested MIT library, so the supply-chain risk is small. **Bottom line: keep the dep**; it has exactly one entry point, it's MIT, and the value-per-LOC of re-implementing is near zero.
+
+We would only re-implement if we needed features the library doesn't expose — for example, structured-append (splitting one payload across multiple QR codes), micro-QR, or custom data-encoding modes. None of those are currently on the roadmap.
+
+### What we *do* own
+
+Everything *after* the matrix:
+
+- [`render/svg.ts`](src/lib/qr-code/render/svg.ts), [`render/dots.ts`](src/lib/qr-code/render/dots.ts), [`render/corners.ts`](src/lib/qr-code/render/corners.ts), [`render/neighbors.ts`](src/lib/qr-code/render/neighbors.ts), [`render/image.ts`](src/lib/qr-code/render/image.ts) — emit one aggregated `<path>` per element class. This is what makes the SVG export real vector instead of a base64 raster.
+- [`render/canvas.ts`](src/lib/qr-code/render/canvas.ts) — rasterises the generated SVG to PNG / JPG via `<canvas>`.
+- [`frame.ts`](src/lib/qr-code/frame.ts) — composes a frame (border + caption) around the QR.
+- [`legacy-adapter.ts`](src/lib/qr-code/legacy-adapter.ts) + [`legacy-types.ts`](src/lib/qr-code/legacy-types.ts) — drop-in for the old `qr-code-styling` types so the preset JSON shape and saved-config storage format stay byte-stable.
+- [`svg-export.ts`](src/lib/qr-code/svg-export.ts) — assembles the structured-state SVG used by every export path (PNG, JPG, SVG, clipboard).
+
+Storybook examples for each unit live in [`src/lib/qr-code/stories/`](src/lib/qr-code/stories/) — `pnpm storybook` to browse.
 
 ## End-to-End (E2E) Testing
 
