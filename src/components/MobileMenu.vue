@@ -19,11 +19,13 @@ import { X } from 'lucide-vue-next'
 defineProps<{
   isDarkMode: boolean
   isDarkModePreferenceSetBySystem: boolean
+  hasUpdateNotice?: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'toggle-dark-mode'): void
   (e: 'close'): void
+  (e: 'show-update-notice'): void
 }>()
 
 const { t } = useI18n()
@@ -79,6 +81,11 @@ const closeMenu = () => {
   emit('close')
 }
 
+const reopenBannerAndClose = () => {
+  emit('show-update-notice')
+  closeMenu()
+}
+
 const handleClickOutside = (event: MouseEvent) => {
   if (
     isOpen.value &&
@@ -106,7 +113,7 @@ onUnmounted(() => {
     <!-- Hamburger menu button -->
     <button
       ref="reference"
-      class="flex size-9 items-center justify-center rounded-md border border-zinc-300 bg-zinc-100 text-zinc-800 outline-none hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
+      class="relative flex size-9 items-center justify-center rounded-md border border-zinc-300 bg-zinc-100 text-zinc-800 outline-none hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
       @click="toggleMenu"
       :aria-label="t('Menu')"
       aria-haspopup="true"
@@ -115,6 +122,11 @@ onUnmounted(() => {
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
         <path fill="currentColor" d="M3 18h18v-2H3zm0-5h18v-2H3zm0-5h18V6H3z" />
       </svg>
+      <span
+        v-if="hasUpdateNotice"
+        class="absolute right-1.5 top-1.5 block size-2 rounded-full bg-[#abcbca] ring-2 ring-zinc-100 dark:ring-zinc-800"
+        aria-hidden="true"
+      ></span>
     </button>
 
     <!-- Dropdown menu -->
@@ -241,6 +253,33 @@ onUnmounted(() => {
         <div class="px-2 py-1.5">
           <LanguageSelector />
         </div>
+
+        <!-- Reopen the QR-lib update banner. Hidden once the banner is
+             visible again; reappears when the user dismisses it. -->
+        <button
+          v-if="hasUpdateNotice"
+          class="flex items-center gap-2 rounded-md px-2 py-1.5 text-zinc-800 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700"
+          @click="reopenBannerAndClose"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>{{ t('Show update notice') }}</span>
+          <span class="ms-auto block size-2 rounded-full bg-[#abcbca]" aria-hidden="true"></span>
+        </button>
 
         <!-- Divider -->
         <hr class="border-zinc-200 dark:border-zinc-700 md:hidden" />

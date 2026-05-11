@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useQRLibBanner } from '@/utils/useQRLibBanner'
 
 const { t } = useI18n()
-
-// Bump this when announcing a new round of QR-lib changes — older
-// dismissals won't suppress the new banner.
-const BANNER_KEY = 'miniqr.banner.qr-lib-v1.dismissed'
+const { isDismissed, dismiss } = useQRLibBanner()
 
 // Pre-filled body for the report link. Keep it short and structured so
 // users (and triage) can scan it; the URL gets percent-encoded below.
@@ -24,28 +22,6 @@ const REPORT_BODY = `Found an issue after the QR rendering engine update? Please
 **Browser + OS:**
 `
 
-const isDismissed = ref(true)
-
-onMounted(() => {
-  try {
-    isDismissed.value = localStorage.getItem(BANNER_KEY) === '1'
-  } catch {
-    // localStorage unavailable (private mode etc.) — show the banner.
-    isDismissed.value = false
-  }
-})
-
-const isVisible = computed(() => !isDismissed.value)
-
-function dismiss() {
-  isDismissed.value = true
-  try {
-    localStorage.setItem(BANNER_KEY, '1')
-  } catch {
-    /* ignore — banner stays dismissed for this session via state */
-  }
-}
-
 const reportIssueHref = computed(() => {
   const params = new URLSearchParams({
     title: REPORT_TITLE,
@@ -58,16 +34,16 @@ const reportIssueHref = computed(() => {
 
 <template>
   <div
-    v-if="isVisible"
+    v-if="!isDismissed"
     role="status"
-    class="mx-auto mb-4 flex w-5/6 flex-col items-start gap-3 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 shadow-sm dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100 sm:flex-row sm:items-center sm:justify-between"
+    class="mb-4 flex flex-col items-start gap-3 rounded-lg border border-zinc-300 bg-zinc-100 px-4 py-3 text-sm text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 sm:flex-row sm:items-center sm:justify-between"
   >
     <div class="flex items-start gap-3">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="mt-0.5 shrink-0"
-        width="18"
-        height="18"
+        class="mt-0.5 shrink-0 text-[#abcbca]"
+        width="20"
+        height="20"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -93,7 +69,7 @@ const reportIssueHref = computed(() => {
         :href="reportIssueHref"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white outline-none hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-400 sm:text-sm"
+        class="inline-flex items-center gap-1 rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 outline-none transition-colors hover:bg-zinc-50 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-600 dark:focus-visible:ring-zinc-200 sm:text-sm"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -117,7 +93,7 @@ const reportIssueHref = computed(() => {
         type="button"
         @click="dismiss"
         :aria-label="t('Dismiss banner')"
-        class="rounded-md p-1.5 text-emerald-900 outline-none hover:bg-emerald-100 focus-visible:ring-2 focus-visible:ring-emerald-700 dark:text-emerald-100 dark:hover:bg-emerald-900/50"
+        class="rounded-md p-1.5 text-zinc-600 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

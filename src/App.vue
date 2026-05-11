@@ -6,12 +6,14 @@ import QRCodeCreate from '@/components/QRCodeCreate.vue'
 import AppFooter from '@/components/AppFooter.vue'
 import QRLibUpdateBanner from '@/components/QRLibUpdateBanner.vue'
 import useDarkModePreference from '@/utils/useDarkModePreference'
+import { useQRLibBanner } from '@/utils/useQRLibBanner'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const { isDarkMode, isDarkModePreferenceSetBySystem, toggleDarkModePreference } =
   useDarkModePreference()
+const { isDismissed: bannerDismissed, reopen: reopenBanner } = useQRLibBanner()
 
 const capturedData = ref<string>('')
 const qrCodeScanRef = ref<InstanceType<typeof QRCodeScan> | null>(null)
@@ -128,6 +130,36 @@ const isModeToggleDisabled = computed(() => {
             <span>{{ t('Scan') }}</span>
           </button>
         </div>
+
+        <!-- Reopen the QR lib update banner. The dot indicates there's a
+             notice that's currently dismissed. -->
+        <button
+          v-if="bannerDismissed"
+          @click="reopenBanner"
+          :aria-label="t('Show update notice')"
+          class="relative ms-2 flex size-9 items-center justify-center rounded-md border border-zinc-300 bg-zinc-100 text-zinc-800 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span
+            class="absolute right-1.5 top-1.5 block size-2 rounded-full bg-[#abcbca] ring-2 ring-zinc-100 dark:ring-zinc-800"
+            aria-hidden="true"
+          ></span>
+        </button>
       </div>
 
       <div class="flex items-center justify-end gap-2">
@@ -266,7 +298,9 @@ const isModeToggleDisabled = computed(() => {
           <MobileMenu
             :isDarkMode="isDarkMode"
             :isDarkModePreferenceSetBySystem="isDarkModePreferenceSetBySystem"
+            :hasUpdateNotice="bannerDismissed"
             @toggle-dark-mode="toggleDarkModePreference"
+            @show-update-notice="reopenBanner"
           />
         </div>
       </div>
