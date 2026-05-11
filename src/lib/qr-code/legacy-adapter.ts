@@ -14,8 +14,13 @@ const DOT_SHAPES = new Set<DotShape>([
   'dots'
 ])
 
-const CORNER_SQUARE_SHAPES = new Set<CornerSquareShape>(['square', 'extra-rounded', 'dot'])
-const CORNER_DOT_SHAPES = new Set<CornerDotShape>(['square', 'dot'])
+const CORNER_SQUARE_SHAPES = new Set<CornerSquareShape>([
+  'square',
+  'rounded',
+  'extra-rounded',
+  'dot'
+])
+const CORNER_DOT_SHAPES = new Set<CornerDotShape>(['square', 'rounded', 'dot'])
 
 function clampDotShape(value: DotType | undefined): DotShape {
   if (!value) return DOT_SHAPE_FALLBACK

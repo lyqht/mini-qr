@@ -194,8 +194,8 @@ function randomizeStyleSettings() {
     'square',
     'extra-rounded'
   ]
-  const cornerSquareTypes: CornerSquareType[] = ['dot', 'square', 'extra-rounded']
-  const cornerDotTypes: CornerDotType[] = ['dot', 'square']
+  const cornerSquareTypes: CornerSquareType[] = ['dot', 'square', 'rounded', 'extra-rounded']
+  const cornerDotTypes: CornerDotType[] = ['dot', 'square', 'rounded']
 
   dotsOptionsType.value = getRandomItemInArray(dotTypes)
   dotsOptionsColor.value = createRandomColor()
@@ -1978,7 +1978,11 @@ const updateDataFromModal = (newData: string) => {
                 </fieldset>
                 <fieldset class="flex-1">
                   <legend>{{ t('Corners Square type') }}</legend>
-                  <div class="radio" v-for="type in ['dot', 'square', 'extra-rounded']" :key="type">
+                  <div
+                    class="radio"
+                    v-for="type in ['dot', 'square', 'rounded', 'extra-rounded']"
+                    :key="type"
+                  >
                     <input
                       :id="'cornersSquareOptionsType-' + type"
                       type="radio"
@@ -1990,7 +1994,7 @@ const updateDataFromModal = (newData: string) => {
                 </fieldset>
                 <fieldset class="flex-1">
                   <legend>{{ t('Corners Dot type') }}</legend>
-                  <div class="radio" v-for="type in ['dot', 'square']" :key="type">
+                  <div class="radio" v-for="type in ['dot', 'square', 'rounded']" :key="type">
                     <input
                       :id="'cornersDotOptionsType-' + type"
                       type="radio"

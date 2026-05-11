@@ -28,9 +28,19 @@ describe('fromLegacyOptions', () => {
   it('clamps cornersDot types outside the supported set to square', () => {
     const out = fromLegacyOptions({
       data: 'x',
-      cornersDotOptions: { type: 'rounded' }
+      cornersDotOptions: { type: 'classy' }
     })
     expect(out.cornerDots?.shape).toBe('square')
+  })
+
+  it('passes through rounded cornersSquare and cornersDot types', () => {
+    const out = fromLegacyOptions({
+      data: 'x',
+      cornersSquareOptions: { type: 'rounded' },
+      cornersDotOptions: { type: 'rounded' }
+    })
+    expect(out.cornerSquares?.shape).toBe('rounded')
+    expect(out.cornerDots?.shape).toBe('rounded')
   })
 
   it('uses min(width,height) for size and warns on non-square', () => {

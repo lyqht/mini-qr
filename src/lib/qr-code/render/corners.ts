@@ -33,6 +33,10 @@ export function buildCornerSquaresPath(args: {
         parts.push(rectPath(x, y, outerSize))
         parts.push(reverseRectPath(innerX, innerY, innerSize))
         break
+      case 'rounded':
+        parts.push(roundedRectPath(x, y, outerSize, outerSize * 0.125))
+        parts.push(reverseRoundedRectPath(innerX, innerY, innerSize, innerSize * 0.125))
+        break
       case 'extra-rounded':
         parts.push(roundedRectPath(x, y, outerSize, outerSize * 0.25))
         parts.push(reverseRoundedRectPath(innerX, innerY, innerSize, innerSize * 0.25))
@@ -64,6 +68,8 @@ export function buildCornerDotsPath(args: {
     const innerSize = 3 * moduleSize
     if (shape === 'dot') {
       parts.push(circlePath(innerX + innerSize / 2, innerY + innerSize / 2, innerSize / 2))
+    } else if (shape === 'rounded') {
+      parts.push(roundedRectPath(innerX, innerY, innerSize, innerSize * 0.25))
     } else {
       parts.push(rectPath(innerX, innerY, innerSize))
     }

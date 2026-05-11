@@ -1,6 +1,6 @@
 export type DotShape = 'square' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded' | 'dots'
-export type CornerSquareShape = 'square' | 'extra-rounded' | 'dot'
-export type CornerDotShape = 'square' | 'dot'
+export type CornerSquareShape = 'square' | 'rounded' | 'extra-rounded' | 'dot'
+export type CornerDotShape = 'square' | 'rounded' | 'dot'
 export type ECLevel = 'L' | 'M' | 'Q' | 'H'
 export type TextPosition = 'top' | 'bottom' | 'left' | 'right'
 
