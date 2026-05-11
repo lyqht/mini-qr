@@ -101,11 +101,10 @@ const enJson = JSON.parse(readFileSync(EN_JSON_PATH, 'utf8'))
 const existingKeys = new Set(Object.keys(enJson))
 
 const missingKeys = [...foundKeys].filter((k) => !existingKeys.has(k))
+const hasNewKeys = missingKeys.length > 0
 
-if (missingKeys.length === 0) {
+if (!hasNewKeys) {
   log(GREEN, '✓ No new translation strings found — en.json is up to date')
-  log(GREEN, '✅ Nothing to sync with Crowdin.')
-  process.exit(0)
 } else {
   log(YELLOW, `📝 Adding ${missingKeys.length} new string(s) to en.json:`)
   for (const key of missingKeys) {
@@ -137,22 +136,23 @@ try {
 }
 
 // ---------------------------------------------------------------------------
-// 6. Upload source file to Crowdin
+// 6. Upload source file to Crowdin (skip when nothing new)
 // ---------------------------------------------------------------------------
-log(YELLOW, '📤 Uploading source strings to Crowdin...')
-try {
-  execSync('crowdin upload sources --no-progress', { stdio: 'inherit', cwd: ROOT })
-  log(GREEN, '✓ Source strings uploaded')
-} catch {
-  log(RED, '✗ Failed to upload source strings')
-  process.exit(1)
-}
+if (hasNewKeys) {
+  log(YELLOW, '📤 Uploading source strings to Crowdin...')
+  try {
+    execSync('crowdin upload sources --no-progress', { stdio: 'inherit', cwd: ROOT })
+    log(GREEN, '✓ Source strings uploaded')
+  } catch {
+    log(RED, '✗ Failed to upload source strings')
+    process.exit(1)
+  }
 
-// ---------------------------------------------------------------------------
-// 7. Remind user to trigger pre-translation manually
-// ---------------------------------------------------------------------------
-log(YELLOW, '💡 Remember to manually trigger pre-translation in Crowdin:')
-log(YELLOW, '   Project → Machine Translation → Pre-translate (use DeepL, fall back to Crowdin Translate)')
+  log(YELLOW, '💡 Remember to manually trigger pre-translation in Crowdin:')
+  log(YELLOW, '   Project → Machine Translation → Pre-translate (use DeepL, fall back to Crowdin Translate)')
+} else {
+  log(YELLOW, '⏭  Skipping upload — no new strings. Pulling latest translations only.')
+}
 
 // ---------------------------------------------------------------------------
 // 8. Download all translations
