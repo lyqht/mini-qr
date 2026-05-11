@@ -68,6 +68,7 @@ onMounted(() => {
         class="text-zinc-900 hover:text-zinc-700 dark:text-zinc-100 dark:hover:text-zinc-300"
         >Estee Tey 🐧🌻</a
       >
+      <span>|</span>
       <a
         href="https://github.com/lyqht/mini-qr"
         target="_blank"
