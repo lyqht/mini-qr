@@ -250,11 +250,10 @@ onUnmounted(() => {
           <LanguageSelector />
         </div>
 
-        <!-- Report a QR-lib bug. Opens GitHub with the qr-lib-bug.yml
-             issue form pre-filled. -->
+        <!-- General feedback / questions / ideas → GitHub Discussions. -->
         <a
           class="flex items-center gap-2 rounded-md px-2 py-1.5 text-zinc-800 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700"
-          href="https://github.com/lyqht/mini-qr/issues/new?template=qr-lib-feedback.yml"
+          href="https://github.com/lyqht/mini-qr/discussions"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -270,11 +269,35 @@ onUnmounted(() => {
             stroke-linejoin="round"
             aria-hidden="true"
           >
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
           <span>{{ t('Feedback') }}</span>
+        </a>
+
+        <!-- Concrete bugs → structured issue form. -->
+        <a
+          class="flex items-center gap-2 rounded-md px-2 py-1.5 text-zinc-800 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700"
+          href="https://github.com/lyqht/mini-qr/issues/new?template=qr-lib-bug.yml"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ t('Report an issue') }}</span>
         </a>
 
         <!-- Divider -->
