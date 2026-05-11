@@ -41,24 +41,9 @@ An app to create beautiful QR codes and scan various QR code types.
 
 MiniQR previously wrapped the [`qr-code-styling`](https://github.com/kozakdenys/qr-code-styling) npm package. That dependency had two long-standing upstream bugs ([#119](https://github.com/lyqht/mini-qr/issues/119)) we could not fix: UTF-8 / accent encoding silently corrupted multibyte input, and SVG exports embedded a raster `<image>` of the QR matrix instead of vector paths.
 
-The current version ships its own renderer at [`src/lib/qr-code/`](src/lib/qr-code/) that fixes both. The library is consumed internally by the app via a small adapter in `StyledQRCode.vue`; preset shapes and saved-config storage format are unchanged.
+As of v0.29 the QR matrix and rendering live in this repo under [`src/lib/qr-code/`](src/lib/qr-code/) and both upstream bugs are fixed. The library produces real vector SVG (one aggregated `<path>` per element class), rasterises PNG / JPG itself through `<canvas>`, and round-trips UTF-8 / Vietnamese / CJK / Arabic / emoji input through the scanner. PNG, JPG, and SVG exports all flow through the library — `dom-to-image` and `dom-to-svg` are no longer dependencies.
 
-**Done:**
-
-- Vector SVG renderer (one aggregated `<path>` per element class — dots, corner squares, corner dots) ✅
-- UTF-8 byte encoding via `TextEncoder` override on `qrcode-generator`'s `stringToBytes` ✅
-- Built-in PNG / JPG rasterization through canvas ✅
-- Frame primitive ready for external consumers (the existing `QRCodeFrame.vue` is unchanged in this phase)
-- Storybook coverage for every dot shape, corner shape, frame position, error-correction level, plus UTF-8 / large-payload stress stories: `pnpm storybook` ✅
-- Vitest unit tests for the matrix, renderer, frame, canvas raster, and the legacy options adapter ✅
-- Playwright parity tests: UTF-8 PNG round-trip + scan, ASCII round-trip, SVG vector assertion, logo cross-origin canvas ✅
-- `qr-code-styling` removed from `package.json` ✅
-
-**Pending (future phases):**
-
-- Publish the library as a standalone npm package ([#242](https://github.com/lyqht/mini-qr/issues/242)) — needs Vite lib-mode build, `package.json#exports`, and a separate `README` for npm consumers
-- Migrate `QRCodeFrame.vue`'s rendering internals to the library's frame primitive (currently the Vue component keeps its existing flexbox layout)
-- Optional: rasterize PNG/JPG through the library directly inside `convertToImage.ts`, retiring `dom-to-image` and `dom-to-svg`
+See [CONTRIBUTING.md → Internal QR library](CONTRIBUTING.md#internal-qr-library-architecture) for the architecture and what's ours vs. vendored, and [ROADMAP.md](ROADMAP.md) for upcoming work on the library (npm publish, custom QR shapes, frame component migration).
 
 ## Demo
 
