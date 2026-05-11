@@ -485,15 +485,9 @@ const copyModalIsLoading = ref(false)
 const copyModalImageSrc = ref<string | null>(null)
 
 async function openCopyModal() {
-  const el = document.getElementById('element-to-export')
-  if (!el) return
   copyModalIsLoading.value = true
   try {
-    copyModalImageSrc.value = await getPngElement(
-      el,
-      getExportDimensions(),
-      exportBorderRadius.value
-    )
+    copyModalImageSrc.value = await getPngElement(buildImageExportInput())
     showSafariCopyImageModal.value = true
   } catch (error) {
     console.error('Error preparing image for copy modal:', error)
@@ -509,12 +503,8 @@ function closeCopyModal() {
 // #endregion
 
 function copyQRToClipboard() {
-  const el = document.getElementById('element-to-export')
-  if (!el) {
-    return
-  }
   if (IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED) {
-    copyImageToClipboard(el, getExportDimensions(), exportBorderRadius.value)
+    copyImageToClipboard(buildImageExportInput())
   } else if (!isLikelyMobileDevice.value) {
     // for now we only open the copy image modal on safari desktop because
     // this modal will be hidden behind the export image modal on mobile viewport.
@@ -533,29 +523,10 @@ function downloadQRImage(format: 'png' | 'svg' | 'jpg') {
 
     if (format === 'svg') {
       downloadSvgElement(buildSvgExportInput(), `${sanitizedFilename}.svg`)
-      return
-    }
-
-    const el = document.getElementById('element-to-export')
-    if (!el) {
-      return
-    }
-
-    if (format === 'png') {
-      downloadPngElement(
-        el,
-        `${sanitizedFilename}.png`,
-        getExportDimensions(),
-        exportBorderRadius.value
-      )
+    } else if (format === 'png') {
+      downloadPngElement(buildImageExportInput(), `${sanitizedFilename}.png`)
     } else {
-      const bgcolor = styleBackground.value === 'transparent' ? '#ffffff' : styleBackground.value
-      downloadJpgElement(
-        el,
-        `${sanitizedFilename}.jpg`,
-        { ...getExportDimensions(), bgcolor },
-        exportBorderRadius.value
-      )
+      downloadJpgElement(buildImageExportInput(), `${sanitizedFilename}.jpg`)
     }
   } else {
     generateBatchQRCodes(format)
@@ -574,7 +545,20 @@ function buildSvgExportInput() {
       : null,
     outerBackground: styleBackground.value,
     borderRadius: exportBorderRadius.value,
-    size: getExportDimensions()
+    // SVG natural size: the QR's intrinsic dimensions. Frame chrome is added
+    // by the lib's renderFramed primitive on top of this.
+    size: { width: width.value, height: height.value }
+  }
+}
+
+function buildImageExportInput() {
+  const jpgBackground = styleBackground.value === 'transparent' ? '#ffffff' : styleBackground.value
+  return {
+    ...buildSvgExportInput(),
+    // PNG/JPG final raster output dimensions — include any frame chrome
+    // expansion that the in-app preview shows.
+    targetSize: getExportDimensions(),
+    jpgBackground
   }
 }
 //#endregion
@@ -878,10 +862,6 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
   isExportingBatchQRs.value = true
   const zip = new JSZip()
   let numQrCodesCreated = 0
-  const el = document.getElementById('element-to-export')
-  if (!el) {
-    return
-  }
 
   try {
     for (let index = 0; index < dataStringsFromCsv.value.length; index++) {
@@ -897,15 +877,9 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
       await sleep(1000)
       let dataUrl: string = ''
       if (format === 'png') {
-        dataUrl = await getPngElement(el, getExportDimensions(), exportBorderRadius.value)
+        dataUrl = await getPngElement(buildImageExportInput())
       } else if (format === 'jpg') {
-        const jpgBgcolor =
-          styleBackground.value === 'transparent' ? '#ffffff' : styleBackground.value
-        dataUrl = await getJpgElement(
-          el,
-          { ...getExportDimensions(), bgcolor: jpgBgcolor },
-          exportBorderRadius.value
-        )
+        dataUrl = await getJpgElement(buildImageExportInput())
       } else {
         dataUrl = getSvgString(buildSvgExportInput())
       }
