@@ -4,6 +4,8 @@ export { renderFramed } from './frame'
 export { buildMatrix } from './matrix'
 export { rasterizeSvg } from './render/canvas'
 export { fromLegacyOptions } from './legacy-adapter'
+export { buildSvgExportString } from './svg-export'
+export type { SvgExportInput, LegacyFrameInput, LegacyFrameStyle } from './svg-export'
 
 export type {
   BackgroundConfig,

@@ -1,6 +1,6 @@
 import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
+import { buildSvgExportString, type SvgExportInput } from '@/lib/qr-code'
 import domtoimage, { type Options } from 'dom-to-image'
-import { elementToSVG, inlineResources } from 'dom-to-svg'
 
 const defaultOptions: Options = {
   width: 400,
@@ -80,36 +80,6 @@ const applyRoundedCornersToCanvas = async (
     image.onerror = () => reject(new Error('Failed to load image'))
     image.src = URL.createObjectURL(blob)
   })
-}
-
-// SVG clipPath for rounded corners
-const applySvgRoundedCorners = (svgDocument: Document, options: Options, borderRadius?: string) => {
-  const svgElement = svgDocument.documentElement
-  const radius = borderRadius ? parseInt(borderRadius.replace('px', '')) : 48
-
-  if (options.width) svgElement.setAttribute('width', options.width.toString())
-  if (options.height) svgElement.setAttribute('height', options.height.toString())
-
-  const svgNS = 'http://www.w3.org/2000/svg'
-  const defs = svgDocument.createElementNS(svgNS, 'defs')
-  const clipPath = svgDocument.createElementNS(svgNS, 'clipPath')
-  clipPath.setAttribute('id', 'rounded-clip')
-
-  const rect = svgDocument.createElementNS(svgNS, 'rect')
-  rect.setAttribute('width', (options.width || 400).toString())
-  rect.setAttribute('height', (options.height || 400).toString())
-  rect.setAttribute('rx', radius.toString())
-
-  clipPath.appendChild(rect)
-  defs.appendChild(clipPath)
-  svgElement.insertBefore(defs, svgElement.firstChild)
-
-  const wrapper = svgDocument.createElementNS(svgNS, 'g')
-  wrapper.setAttribute('clip-path', 'url(#rounded-clip)')
-  while (svgElement.children.length > 1) {
-    wrapper.appendChild(svgElement.children[1])
-  }
-  svgElement.appendChild(wrapper)
 }
 
 export async function copyImageToClipboard(
@@ -216,43 +186,30 @@ export function downloadJpgElement(
     .catch((error) => console.error('Error converting element to JPG:', error))
 }
 
-export async function getSvgString(
-  element: HTMLElement,
-  options: Options,
-  borderRadius?: string
-): Promise<string> {
-  const svgDocument = elementToSVG(element)
-  await inlineResources(svgDocument.documentElement)
-  applySvgRoundedCorners(svgDocument, options, borderRadius)
-  return new XMLSerializer().serializeToString(svgDocument)
+/**
+ * SVG export is now generated directly by the internal QR library — no DOM
+ * snapshot, no dom-to-svg. Callers pass structured state (legacy QR options,
+ * frame, outer background, borderRadius) instead of a DOM element.
+ */
+export function getSvgString(input: SvgExportInput): string {
+  return buildSvgExportString(input)
 }
 
-export async function getSvgElement(
-  element: HTMLElement,
-  options: Options,
-  borderRadius?: string
-): Promise<string> {
-  const svgString = await getSvgString(element, options, borderRadius)
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`
+export function getSvgElement(input: SvgExportInput): string {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(getSvgString(input))}`
 }
 
-export function downloadSvgElement(
-  element: HTMLElement,
-  filename: string,
-  options: Options,
-  borderRadius?: string
-) {
-  getSvgString(element, options, borderRadius)
-    .then((svgString) => {
-      // Create blob directly from SVG string for more reliable downloads
-      const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = filename
-      link.click()
-      // Clean up the object URL
-      setTimeout(() => URL.revokeObjectURL(url), 100)
-    })
-    .catch((error) => console.error('Error converting element to SVG:', error))
+export function downloadSvgElement(input: SvgExportInput, filename: string) {
+  try {
+    const svgString = getSvgString(input)
+    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    link.click()
+    setTimeout(() => URL.revokeObjectURL(url), 100)
+  } catch (error) {
+    console.error('Error generating SVG export:', error)
+  }
 }

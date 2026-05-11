@@ -531,31 +531,50 @@ function downloadQRImage(format: 'png' | 'svg' | 'jpg') {
     // Sanitize filename to remove invalid characters
     const sanitizedFilename = (exportFilename.value || 'qr-code').replace(/[^a-zA-Z0-9_-]/g, '_')
 
-    const formatConfig = {
-      png: { fn: downloadPngElement, filename: `${sanitizedFilename}.png` },
-      svg: { fn: downloadSvgElement, filename: `${sanitizedFilename}.svg` },
-      jpg: {
-        fn: downloadJpgElement,
-        filename: `${sanitizedFilename}.jpg`,
-        extraOptions: {
-          bgcolor: styleBackground.value === 'transparent' ? '#ffffff' : styleBackground.value
-        }
-      }
-    }[format]
+    if (format === 'svg') {
+      downloadSvgElement(buildSvgExportInput(), `${sanitizedFilename}.svg`)
+      return
+    }
 
     const el = document.getElementById('element-to-export')
     if (!el) {
       return
     }
 
-    formatConfig.fn(
-      el,
-      formatConfig.filename,
-      { ...getExportDimensions(), ...formatConfig.extraOptions },
-      exportBorderRadius.value
-    )
+    if (format === 'png') {
+      downloadPngElement(
+        el,
+        `${sanitizedFilename}.png`,
+        getExportDimensions(),
+        exportBorderRadius.value
+      )
+    } else {
+      const bgcolor = styleBackground.value === 'transparent' ? '#ffffff' : styleBackground.value
+      downloadJpgElement(
+        el,
+        `${sanitizedFilename}.jpg`,
+        { ...getExportDimensions(), bgcolor },
+        exportBorderRadius.value
+      )
+    }
   } else {
     generateBatchQRCodes(format)
+  }
+}
+
+function buildSvgExportInput() {
+  return {
+    options: qrCodeProps.value,
+    frame: showFrame.value
+      ? {
+          text: frameText.value,
+          position: frameTextPosition.value,
+          style: frameStyle.value
+        }
+      : null,
+    outerBackground: styleBackground.value,
+    borderRadius: exportBorderRadius.value,
+    size: getExportDimensions()
   }
 }
 //#endregion
@@ -888,7 +907,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
           exportBorderRadius.value
         )
       } else {
-        dataUrl = await getSvgString(el, getExportDimensions(), exportBorderRadius.value)
+        dataUrl = getSvgString(buildSvgExportInput())
       }
       createZipFile(zip, dataUrl, index, format)
       numQrCodesCreated++
