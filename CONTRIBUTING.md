@@ -41,17 +41,6 @@ Before you start, please take a moment to read through these guidelines.
   - Include mockups if the change is UI-based.
   - For self-hosting related feature requests, please note that I, the main project maintainer (@lyqht) will likely not work on those. This is because I do not have docker expertise and I don't really have an interest to learn it. The current docker images are setup by kind public contributors. Thanks for your understanding!
 
-### Reporting Bugs
-
-![Screenshot of how MiniQR is a very big wrapper around qr-code-styling library](public/miniqr_extract.png)
-
-> Historical note: MiniQR used to wrap the `qr-code-styling` npm package. As of v0.29, the QR matrix and rendering live in this repo under [`src/lib/qr-code/`](src/lib/qr-code/). Two long-standing upstream bugs are now fixed:
->
-> - UTF-8 / accented characters encode correctly (Vietnamese, CJK, Arabic, emoji)
-> - SVG export contains real vector `<path>`/`<rect>` elements and opens correctly in vector editors (Photoshop, Illustrator, Inkscape)
->
-> Image margin inconsistency may still surface in some edge cases. For all bugs, provide clear steps for reproduction.
-
 ## Development environment
 
 ### Getting started with local development
@@ -182,9 +171,9 @@ Re-implementing the bullet list above is roughly 2 000 LOC of QR-spec code: GF(2
 
 We would only re-implement if we needed features the library doesn't expose — for example, structured-append (splitting one payload across multiple QR codes), micro-QR, or custom data-encoding modes. None of those are currently on the roadmap.
 
-### What we *do* own
+### What we _do_ own
 
-Everything *after* the matrix:
+Everything _after_ the matrix:
 
 - [`render/svg.ts`](src/lib/qr-code/render/svg.ts), [`render/dots.ts`](src/lib/qr-code/render/dots.ts), [`render/corners.ts`](src/lib/qr-code/render/corners.ts), [`render/neighbors.ts`](src/lib/qr-code/render/neighbors.ts), [`render/image.ts`](src/lib/qr-code/render/image.ts) — emit one aggregated `<path>` per element class. This is what makes the SVG export real vector instead of a base64 raster.
 - [`render/canvas.ts`](src/lib/qr-code/render/canvas.ts) — rasterises the generated SVG to PNG / JPG via `<canvas>`.

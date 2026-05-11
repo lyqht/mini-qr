@@ -21,8 +21,7 @@ An app to create beautiful QR codes and scan various QR code types.
 
 - ✅ Accessible: minimally WCAG A compliant
 - 🎨 Customizable colors and styles
-- 🖼️ Export to PNG, JPG & SVG (true vector — SVGs contain real `<path>`/`<rect>` elements, not embedded raster)
-- 🌍 Full UTF-8 input support: Vietnamese, CJK, Arabic, emoji, and other multibyte text round-trip correctly
+- 🖼️ Export to PNG, JPG & SVG
 - 📋 Copy to clipboard
 - 🌓 Light/dark/system-preference mode toggle
 - 🎲 Randomize style button
@@ -36,14 +35,9 @@ An app to create beautiful QR codes and scan various QR code types.
 - 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once. Template CSV files can be found in [`public/batch_export_templates/`](public/batch_export_templates/).
 - 📲 PWA Support: Install MiniQR as a desktop or mobile app
 - 📝 Data templates: Support for various data types including text, URLs, emails, phone numbers, SMS, WiFi credentials, vCards, locations, and calendar events
+- 🌍 UTF-8 input support: Vietnamese, CJK, Arabic, emoji, and other multibyte text
 
-## Internal QR code library
-
-MiniQR previously wrapped the [`qr-code-styling`](https://github.com/kozakdenys/qr-code-styling) npm package. That dependency had two long-standing upstream bugs ([#119](https://github.com/lyqht/mini-qr/issues/119)) we could not fix: UTF-8 / accent encoding silently corrupted multibyte input, and SVG exports embedded a raster `<image>` of the QR matrix instead of vector paths.
-
-As of v0.29 the QR matrix and rendering live in this repo under [`src/lib/qr-code/`](src/lib/qr-code/) and both upstream bugs are fixed. The library produces real vector SVG (one aggregated `<path>` per element class), rasterises PNG / JPG itself through `<canvas>`, and round-trips UTF-8 / Vietnamese / CJK / Arabic / emoji input through the scanner. PNG, JPG, and SVG exports all flow through the library — `dom-to-image` and `dom-to-svg` are no longer dependencies.
-
-See [CONTRIBUTING.md → Internal QR library](CONTRIBUTING.md#internal-qr-library-architecture) for the architecture and what's ours vs. vendored, and [ROADMAP.md](ROADMAP.md) for upcoming work on the library (npm publish, custom QR shapes, frame component migration).
+See [ROADMAP.md](./ROADMAP.md) for future planned features.
 
 ## Demo
 
