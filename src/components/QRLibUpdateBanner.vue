@@ -36,14 +36,14 @@ const reportIssueHref = computed(() => {
   <div
     v-if="!isDismissed"
     role="status"
-    class="mb-4 flex flex-col items-start gap-3 rounded-lg border border-zinc-300 bg-zinc-100 px-4 py-3 text-sm text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 sm:flex-row sm:items-center sm:justify-between"
+    class="mb-4 flex flex-col items-start gap-2 rounded-lg border border-zinc-300 bg-zinc-100 px-3 py-2 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 sm:flex-row sm:items-center sm:justify-between"
   >
-    <div class="flex items-start gap-3">
+    <div class="flex items-center gap-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="mt-0.5 shrink-0 text-[#abcbca]"
-        width="20"
-        height="20"
+        class="shrink-0 text-[#abcbca]"
+        width="16"
+        height="16"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -56,20 +56,16 @@ const reportIssueHref = computed(() => {
         <line x1="12" y1="16" x2="12" y2="12"></line>
         <line x1="12" y1="8" x2="12.01" y2="8"></line>
       </svg>
-      <p class="m-0 leading-relaxed">
-        {{ t("MiniQR's QR rendering engine has been updated.") }}
-        {{ t('Vector SVG export and full UTF-8 input are now supported.') }}
-        <span class="block sm:inline">
-          {{ t('Spot a regression?') }}
-        </span>
+      <p class="m-0">
+        {{ t("MiniQR's QR rendering engine has been updated") }}
       </p>
     </div>
-    <div class="flex w-full shrink-0 items-center gap-2 sm:w-auto">
+    <div class="flex w-full shrink-0 items-center gap-1.5 sm:w-auto">
       <a
         :href="reportIssueHref"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center gap-1 rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 outline-none transition-colors hover:bg-zinc-50 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-600 dark:focus-visible:ring-zinc-200 sm:text-sm"
+        class="inline-flex items-center gap-1 rounded-md border border-zinc-300 bg-white px-2 py-1 text-xs font-medium text-zinc-800 outline-none transition-colors hover:bg-zinc-50 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-600 dark:focus-visible:ring-zinc-200"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -93,12 +89,12 @@ const reportIssueHref = computed(() => {
         type="button"
         @click="dismiss"
         :aria-label="t('Dismiss banner')"
-        class="rounded-md p-1.5 text-zinc-600 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
+        class="rounded-md p-1 text-zinc-600 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
+          width="14"
+          height="14"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
