@@ -123,7 +123,7 @@ onMounted(() => {
       </Dialog>
       <span>|</span>
       <a
-        href="https://blog.esteetey.dev/sponsor"
+        href="https://github.com/sponsors/lyqht?frequency=one-time&sponsor=lyqht"
         target="_blank"
         class="secondary-button"
         :aria-label="t('Sponsor')"
