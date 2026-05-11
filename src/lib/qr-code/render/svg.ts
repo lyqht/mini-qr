@@ -45,7 +45,8 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
         count,
         moduleSize,
         offset,
-        totalSize: config.size
+        totalSize: config.size,
+        errorCorrectionLevel: config.errorCorrectionLevel
       })
     : undefined
 

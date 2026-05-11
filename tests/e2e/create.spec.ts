@@ -261,6 +261,128 @@ test.describe('QR Code Creation and Management', () => {
     })
   })
 
+  test.describe('Internal QR lib parity', () => {
+    async function switchToScanMode(page: Page) {
+      const desktopScanButton = page.locator(
+        'div.md\\:flex >> button[aria-label*="Switch to Scan Mode"]'
+      )
+      const genericScanButton = page.getByLabel(/Switch to Scan Mode/i).first()
+      if ((await desktopScanButton.count()) > 0 && (await desktopScanButton.isVisible())) {
+        await desktopScanButton.click()
+      } else if ((await genericScanButton.count()) > 0 && (await genericScanButton.isVisible())) {
+        await genericScanButton.click()
+      } else {
+        throw new Error('Scan mode button not found')
+      }
+    }
+
+    async function exportPngWithData(page: Page, data: string, tempDir: string, fileName: string) {
+      await page.locator('#data').fill(data)
+      await openFrameSettings(page)
+      const showFrameCheckbox = page.locator('#show-frame')
+      await expect(showFrameCheckbox).toBeVisible()
+      await showFrameCheckbox.uncheck()
+      await page.waitForTimeout(800)
+
+      const downloadPromise = page.waitForEvent('download')
+      await page.locator('#download-qr-image-button-png').click()
+      const download = await downloadPromise
+      const filePath = path.join(tempDir, fileName)
+      await download.saveAs(filePath)
+      expect(fs.existsSync(filePath)).toBeTruthy()
+      return filePath
+    }
+
+    const tempDir = path.join(__dirname, 'temp-parity')
+
+    test.beforeAll(() => {
+      if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true })
+    })
+    test.afterAll(() => {
+      if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true, force: true })
+    })
+
+    test('UTF-8 data round-trips through PNG export and scan (closes #119 accent bug)', async ({
+      page
+    }) => {
+      const utf8 = 'Xin chào — 你好 — مرحبا — 👋'
+      const filePath = await exportPngWithData(page, utf8, tempDir, 'utf8.png')
+
+      await switchToScanMode(page)
+      const fileInput = page.locator('input[type="file"]')
+      await expect(fileInput).toHaveCount(1, { timeout: 10000 })
+      await fileInput.setInputFiles(filePath)
+      await expect(page.getByText(utf8)).toBeVisible({ timeout: 10000 })
+    })
+
+    test('ASCII data round-trips through PNG export and scan (regression guard)', async ({
+      page
+    }) => {
+      const data = 'mini-qr lib parity ASCII'
+      const filePath = await exportPngWithData(page, data, tempDir, 'ascii.png')
+
+      await switchToScanMode(page)
+      const fileInput = page.locator('input[type="file"]')
+      await expect(fileInput).toHaveCount(1, { timeout: 10000 })
+      await fileInput.setInputFiles(filePath)
+      await expect(page.getByText(data)).toBeVisible({ timeout: 10000 })
+    })
+
+    test('SVG export emits vector <rect>/<path> and no raster <image> of the matrix', async ({
+      page
+    }) => {
+      await page.locator('#data').fill('vector svg parity')
+      await openFrameSettings(page)
+      await page.locator('#show-frame').uncheck()
+      await page.waitForTimeout(800)
+
+      const downloadPromise = page.waitForEvent('download')
+      await page.locator('#download-qr-image-button-svg').click()
+      const download = await downloadPromise
+      const filePath = path.join(tempDir, 'vector.svg')
+      await download.saveAs(filePath)
+      expect(fs.existsSync(filePath)).toBeTruthy()
+
+      const svgText = fs.readFileSync(filePath, 'utf8')
+
+      // Total length of all <path d="..."> data attributes. A real vector QR
+      // has thousands of characters of path data (aggregated dot paths). The
+      // OLD qr-code-styling output emitted basically no path data and instead
+      // embedded a raster <image> of the matrix — that anti-pattern would
+      // leave the path-data budget near zero.
+      const pathDataLengths = Array.from(svgText.matchAll(/<path[^>]+\bd="([^"]*)"/g)).map(
+        (m) => m[1].length
+      )
+      const totalPathData = pathDataLengths.reduce((a, b) => a + b, 0)
+      expect(
+        totalPathData,
+        `expected substantial vector path data; got ${totalPathData} chars of <path d> total`
+      ).toBeGreaterThan(500)
+    })
+
+    test('logo with cross-origin source does not taint the canvas on PNG export', async ({
+      page
+    }) => {
+      // The default preset (lyqht) uses a local placeholder; switch to a preset
+      // that references a public CDN logo (Vue.js preset uses iconify).
+      await page.locator('#data').fill('crossorigin parity')
+      await page.locator('#image-url').fill('https://api.iconify.design/logos:vue.svg')
+      await openFrameSettings(page)
+      await page.locator('#show-frame').uncheck()
+      await page.waitForTimeout(1200) // give the image time to load
+
+      const errors: string[] = []
+      page.on('pageerror', (err) => errors.push(err.message))
+
+      const downloadPromise = page.waitForEvent('download')
+      await page.locator('#download-qr-image-button-png').click()
+      const download = await downloadPromise
+      expect(download.suggestedFilename()).toMatch(/qr-code\.png$/i)
+      const taintErrors = errors.filter((m) => /tainted|SecurityError/i.test(m))
+      expect(taintErrors, taintErrors.join('\n')).toHaveLength(0)
+    })
+  })
+
   test.describe('Batch Export QR Codes', () => {
     const simpleCsvPath = 'batch_export_templates/6_strings_batch.csv'
 
