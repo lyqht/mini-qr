@@ -1371,14 +1371,7 @@ const updateDataFromModal = (newData: string) => {
         <AccordionItem value="frame-settings">
           <AccordionTrigger
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
-            ><span class="flex flex-row items-center gap-2"
-              ><span id="frame-settings-title">{{ t('Frame settings') }}</span>
-              <span
-                class="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-200"
-              >
-                {{ t('New!') }}
-              </span></span
-            ></AccordionTrigger
+            ><span id="frame-settings-title">{{ t('Frame settings') }}</span></AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
             <section class="w-full space-y-4" aria-labelledby="frame-settings-title">
