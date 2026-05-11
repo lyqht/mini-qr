@@ -41,6 +41,7 @@
     "marked": "^15.0.11",
     "qr-code-styling": "^1.9.2",
     "qr-scanner": "^1.4.2",
+    "qrcode-generator": "^2.0.4",
     "radix-vue": "^1.9.17",
     "reka-ui": "^2.6.0",
     "tailwind-merge": "^2.6.0",
@@ -74,6 +75,7 @@
     "typescript-eslint": "^8.46.2",
     "vite-plugin-pwa": "^0.21.1",
     "vitest": "^3.1.1",
-    "vue-eslint-parser": "^10.2.0"
+    "vue-eslint-parser": "^10.2.0",
+    "vue-tsc": "^3.2.8"
   }
 }

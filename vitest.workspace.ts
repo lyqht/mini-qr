@@ -15,7 +15,11 @@ export default defineWorkspace([
       include: [
         'src/utils/csv.test.ts',
         'src/utils/csvBatchProcessing.test.ts',
-        'src/utils/dataEncoding.test.ts'
+        'src/utils/dataEncoding.test.ts',
+        'src/lib/qr-code/matrix.test.ts',
+        'src/lib/qr-code/render/svg.test.ts',
+        'src/lib/qr-code/render/dots.test.ts',
+        'src/lib/qr-code/frame.test.ts'
       ]
     },
     resolve: { alias }
@@ -29,7 +33,9 @@ export default defineWorkspace([
         'src/utils/useQRCodeStorage.test.ts',
         'src/utils/css.test.ts',
         'src/utils/framePresets.test.ts',
-        'src/utils/qrCodePresets.test.ts'
+        'src/utils/qrCodePresets.test.ts',
+        'src/lib/qr-code/legacy-adapter.test.ts',
+        'src/lib/qr-code/render/canvas.test.ts'
       ],
       browser: {
         enabled: true,
