@@ -4,6 +4,7 @@ import MobileMenu from '@/components/MobileMenu.vue'
 import QRCodeScan from '@/components/QRCodeScan.vue'
 import QRCodeCreate from '@/components/QRCodeCreate.vue'
 import AppFooter from '@/components/AppFooter.vue'
+import QRLibUpdateBanner from '@/components/QRLibUpdateBanner.vue'
 import useDarkModePreference from '@/utils/useDarkModePreference'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -276,6 +277,7 @@ const isModeToggleDisabled = computed(() => {
     >
       <!-- Main content area with conditional rendering based on app mode -->
       <div class="w-full lg:w-5/6">
+        <QRLibUpdateBanner />
         <div v-if="appMode === AppMode.Create">
           <QRCodeCreate :initial-data="capturedData" />
         </div>
@@ -290,20 +292,20 @@ const isModeToggleDisabled = computed(() => {
 
 <style lang="postcss" scoped>
 .vertical-border {
-  @apply h-8 bg-slate-300 dark:bg-slate-700 w-1;
+  @apply h-8 w-1 bg-slate-300 dark:bg-slate-700;
 }
 
 .icon-button {
   @apply p-1;
-  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200 hover:shadow rounded-sm;
-  @apply text-zinc-900 dark:text-zinc-100 dark:bg-zinc-800;
+  @apply rounded-sm outline-none hover:shadow focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
+  @apply text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100;
 }
 
 .button {
-  @apply bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-200;
-  @apply shadow-sm hover:shadow p-2 focus-visible:shadow-md rounded-lg;
+  @apply bg-zinc-100 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-200;
+  @apply rounded-lg p-2 shadow-sm hover:shadow focus-visible:shadow-md;
   @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:focus-visible:ring-zinc-200;
-  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 /* Scroll-aware header styles */
