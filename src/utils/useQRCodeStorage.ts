@@ -1,4 +1,4 @@
-import type { Options as StyledQRCodeProps } from 'qr-code-styling'
+import type { Options as StyledQRCodeProps } from '@/lib/qr-code'
 import type { FrameStyle } from './framePresets'
 import { isValidQRCodeConfig } from './qrCodePresets'
 

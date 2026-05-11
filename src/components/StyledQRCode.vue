@@ -5,14 +5,16 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  CornerDotType,
-  CornerSquareType,
-  DrawType,
-  Options as StyledQRCodeProps
-} from 'qr-code-styling'
-import QRCodeStyling from 'qr-code-styling'
-import { onMounted, ref, watch } from 'vue'
+import {
+  createQRCode,
+  fromLegacyOptions,
+  type CornerDotType,
+  type CornerSquareType,
+  type DrawType,
+  type Options as StyledQRCodeProps,
+  type QRCodeInstance
+} from '@/lib/qr-code'
+import { onBeforeUnmount, onMounted, ref, toRaw, watch } from 'vue'
 
 const props = withDefaults(defineProps<StyledQRCodeProps>(), {
   data: undefined,
@@ -47,24 +49,31 @@ const props = withDefaults(defineProps<StyledQRCodeProps>(), {
   })
 })
 
-const QRCodeCanvasContainer = new QRCodeStyling({
-  ...props,
-  image: props.image === null ? undefined : props.image
-})
 const qrCodeContainer = ref<HTMLElement>()
+let instance: QRCodeInstance | undefined
 
-onMounted(async () => {
-  QRCodeCanvasContainer.append(qrCodeContainer.value)
+function adaptedConfig() {
+  const legacy = { ...toRaw(props), image: props.image === null ? undefined : props.image }
+  return fromLegacyOptions(legacy as StyledQRCodeProps)
+}
+
+onMounted(() => {
+  if (!qrCodeContainer.value) return
+  instance = createQRCode(adaptedConfig())
+  instance.attachTo(qrCodeContainer.value)
 })
 
 watch(
   () => props,
   () => {
-    QRCodeCanvasContainer.update({
-      ...props,
-      image: props.image === null ? undefined : props.image
-    })
+    if (!instance) return
+    instance.update(adaptedConfig())
   },
-  { deep: true, immediate: true }
+  { deep: true }
 )
+
+onBeforeUnmount(() => {
+  instance?.dispose()
+  instance = undefined
+})
 </script>

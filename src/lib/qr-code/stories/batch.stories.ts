@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
-import { h } from 'vue'
+import { defineComponent, h } from 'vue'
 import QRPreview from './QRPreview.vue'
 import type { QRCodeConfig } from '..'
 
@@ -21,7 +21,8 @@ function makeConfig(data: string): QRCodeConfig {
   }
 }
 
-const BatchGrid = {
+const BatchGrid = defineComponent({
+  name: 'BatchGrid',
   setup() {
     return () =>
       h(
@@ -29,7 +30,7 @@ const BatchGrid = {
         {
           style: {
             display: 'grid',
-            'grid-template-columns': 'repeat(3, auto)',
+            gridTemplateColumns: 'repeat(3, auto)',
             gap: '24px',
             padding: '24px',
             background: '#f4f4f5'
@@ -38,13 +39,13 @@ const BatchGrid = {
         SAMPLES.map((url) => h(QRPreview, { config: makeConfig(url) }))
       )
   }
-}
+})
 
-const meta: Meta = {
+const meta: Meta<typeof BatchGrid> = {
   title: 'QR Lib / Batch grid',
   component: BatchGrid
 }
 export default meta
 type Story = StoryObj<typeof BatchGrid>
 
-export const Default: Story = { args: {} }
+export const Default: Story = {}

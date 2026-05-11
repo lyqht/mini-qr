@@ -62,7 +62,7 @@ import {
   type DotType,
   type ErrorCorrectionLevel,
   type Options as StyledQRCodeProps
-} from 'qr-code-styling'
+} from '@/lib/qr-code'
 import { computed, onMounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
@@ -932,9 +932,7 @@ const updateDataFromModal = (newData: string) => {
 </script>
 
 <template>
-  <div
-    class="flex items-start justify-center gap-4 md:flex-row md:gap-6 lg:gap-12 lg:pb-0"
-  >
+  <div class="flex items-start justify-center gap-4 md:flex-row md:gap-6 lg:gap-12 lg:pb-0">
     <!-- Sticky sidebar on large screens -->
     <div
       v-if="isLarge"
