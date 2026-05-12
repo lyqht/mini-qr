@@ -58,7 +58,7 @@ import {
 } from '@/utils/useQRCodeStorage'
 import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
-import AsciiExportModal from '@/components/AsciiExportModal.vue'
+import TextExportModal from '@/components/TextExportModal.vue'
 import {
   buildMatrix,
   type CornerDotType,
@@ -731,7 +731,7 @@ enum ExportMode {
 }
 
 const exportFilename = ref('qr-code')
-const isAsciiExportModalOpen = ref(false)
+const isTextExportModalOpen = ref(false)
 const isMobileExportDrawerOpen = ref(false)
 const asciiMatrix = computed<boolean[][]>(() => {
   if (!data.value) return []
@@ -750,9 +750,9 @@ const asciiBatchRows = computed(() =>
   }))
 )
 
-function openAsciiExportModal() {
+function openTextExportModal() {
   isMobileExportDrawerOpen.value = false
-  isAsciiExportModalOpen.value = true
+  isTextExportModalOpen.value = true
 }
 const exportMode = ref(ExportMode.Single)
 const dataStringsFromCsv = ref<string[]>([])
@@ -1369,7 +1369,7 @@ const updateDataFromModal = (newData: string) => {
                 <button
                   id="download-qr-text-button"
                   class="button"
-                  @click="openAsciiExportModal"
+                  @click="openTextExportModal"
                   :disabled="isExportButtonDisabled"
                   :title="
                     isExportButtonDisabled
@@ -2176,14 +2176,14 @@ const updateDataFromModal = (newData: string) => {
     :image-src="copyModalImageSrc"
     @close="closeCopyModal"
   />
-  <AsciiExportModal
-    :open="isAsciiExportModalOpen"
+  <TextExportModal
+    :open="isTextExportModalOpen"
     :matrix="asciiMatrix"
     :has-frame="showFrame"
     :filename="exportFilename"
     :is-batch="exportMode === ExportMode.Batch"
     :batch-rows="asciiBatchRows"
     :ec-level="errorCorrectionLevel"
-    @close="isAsciiExportModalOpen = false"
+    @close="isTextExportModalOpen = false"
   />
 </template>

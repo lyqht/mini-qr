@@ -7,9 +7,9 @@ const matrix = [
 ]
 
 describe('convertToText — getAsciiText', () => {
-  it('returns the raw qrMatrixToText output', () => {
+  it('returns the raw qrMatrixToText output (ASCII uses inverted polarity)', () => {
     const out = getAsciiText({ matrix, format: 'ascii', quietZone: 0 })
-    expect(out).toBe(['##  ', '  ##'].join('\n'))
+    expect(out).toBe(['  ##', '##  '].join('\n'))
   })
 })
 
@@ -18,7 +18,7 @@ describe('convertToText — getMarkdownText', () => {
     const out = getMarkdownText({ matrix, format: 'ascii', quietZone: 0 })
     expect(out.startsWith('```\n')).toBe(true)
     expect(out.endsWith('\n```\n')).toBe(true)
-    expect(out).toContain('##  \n  ##')
+    expect(out).toContain('  ##\n##  ')
   })
 
   it('does not include a language tag after the opening fence', () => {
