@@ -1405,7 +1405,7 @@ const updateDataFromModal = (newData: string) => {
             </div>
           </section>
 
-          <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <div class="mt-4 hidden flex-wrap items-center justify-center gap-2 md:flex">
             <a
               href="https://github.com/lyqht/mini-qr/discussions"
               target="_blank"
