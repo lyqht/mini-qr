@@ -1,13 +1,13 @@
 export type AsciiFormat = 'ascii' | 'unicode-half' | 'unicode-full'
 
 export interface AsciiExportOptions {
-  /** Modules of quiet zone around the QR. Defaults to 2. */
+  /** Modules of quiet zone around the QR. Defaults to 4 (QR spec minimum). */
   quietZone?: number
   /** Override the dark/light glyphs (applies to 'ascii' and 'unicode-full'). */
   glyphs?: { dark: string; light: string }
 }
 
-const DEFAULT_QUIET_ZONE = 2
+const DEFAULT_QUIET_ZONE = 4
 const DEFAULT_GLYPHS: Record<'ascii' | 'unicode-full', { dark: string; light: string }> = {
   ascii: { dark: '##', light: '  ' },
   'unicode-full': { dark: '██', light: '  ' }

@@ -208,7 +208,8 @@ watch(
             {{ t('Preview of first row') }}
           </p>
           <pre
-            class="max-h-64 overflow-auto whitespace-pre rounded bg-zinc-50 p-2 font-mono text-xs leading-tight dark:bg-zinc-800"
+            class="max-h-64 overflow-auto whitespace-pre rounded bg-white p-2 font-mono text-[10px] dark:bg-zinc-100 dark:text-zinc-900"
+            style="line-height: 1"
             >{{ batchPreview(card.id) }}</pre
           >
           <div class="mt-2 flex flex-wrap gap-2">

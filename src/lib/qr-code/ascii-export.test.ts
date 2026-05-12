@@ -26,13 +26,13 @@ describe('qrMatrixToText — ascii format', () => {
     expect(out).toBe(['##  ', '  ##'].join('\n'))
   })
 
-  it('produces count + 2*quietZone lines (default quiet zone = 2)', () => {
+  it('produces count + 2*quietZone lines (default quiet zone = 4)', () => {
     const matrix = [
       [true, false],
       [false, true]
     ]
     const out = qrMatrixToText(matrix, 'ascii')
-    expect(out.split('\n')).toHaveLength(2 + 2 * 2)
+    expect(out.split('\n')).toHaveLength(2 + 2 * 4)
   })
 
   it('surrounds the QR with light quiet zone', () => {
@@ -52,13 +52,13 @@ describe('qrMatrixToText — unicode-full format', () => {
     expect(out).toBe(['██  ', '  ██'].join('\n'))
   })
 
-  it('produces count + 2*quietZone lines (default quiet zone = 2)', () => {
+  it('produces count + 2*quietZone lines (default quiet zone = 4)', () => {
     const matrix = [
       [true, false],
       [false, true]
     ]
     const out = qrMatrixToText(matrix, 'unicode-full')
-    expect(out.split('\n')).toHaveLength(2 + 2 * 2)
+    expect(out.split('\n')).toHaveLength(2 + 2 * 4)
   })
 })
 
