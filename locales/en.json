@@ -315,5 +315,11 @@
   "Your network name": "Your network name",
   "YYYY-MM-DDTHH:MM": "YYYY-MM-DDTHH:MM",
   "Zip Code": "Zip Code",
-  "Zipcode": "Zipcode"
+  "Zipcode": "Zipcode",
+  "Export QR Code as ASCII or Unicode text": "Export QR Code as ASCII or Unicode text",
+  "Frame label is excluded from text export — the ASCII output contains the QR modules only.": "Frame label is excluded from text export — the ASCII output contains the QR modules only.",
+  "Preview of first row": "Preview of first row",
+  "Download all as .md": "Download all as .md",
+  "Download all as .txt": "Download all as .txt",
+  "Generating": "Generating"
 }
