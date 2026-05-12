@@ -22,7 +22,7 @@ An app to create beautiful QR codes and scan various QR code types.
 - ✅ Accessible: minimally WCAG A compliant
 - 🎨 Customizable colors and styles
 - 🖼️ Export to PNG, JPG & SVG
-- 🔤 Export to ASCII / Unicode text: download as `.md` or `.txt`, or copy to clipboard. Available in single and batch modes.
+- 🔤 Export to ASCII / Unicode text
 - 📋 Copy to clipboard
 - 🌓 Light/dark/system-preference mode toggle
 - 🎲 Randomize style button
