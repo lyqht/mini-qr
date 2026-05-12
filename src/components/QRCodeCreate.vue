@@ -58,7 +58,9 @@ import {
 } from '@/utils/useQRCodeStorage'
 import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
+import AsciiExportModal from '@/components/AsciiExportModal.vue'
 import {
+  buildMatrix,
   type CornerDotType,
   type CornerSquareType,
   type DotType,
@@ -729,6 +731,19 @@ enum ExportMode {
 }
 
 const exportFilename = ref('qr-code')
+const isAsciiExportModalOpen = ref(false)
+const asciiMatrix = computed<boolean[][]>(() => {
+  if (!data.value) return []
+  try {
+    return buildMatrix(data.value, errorCorrectionLevel.value).matrix
+  } catch (err) {
+    console.error('Failed to build matrix for ASCII export:', err)
+    return []
+  }
+})
+function openAsciiExportModal() {
+  isAsciiExportModalOpen.value = true
+}
 const exportMode = ref(ExportMode.Single)
 const dataStringsFromCsv = ref<string[]>([])
 const frameTextsFromCsv = ref<string[]>([])
@@ -1337,6 +1352,41 @@ const updateDataFromModal = (newData: string) => {
                         font-weight="600"
                       >
                         SVG
+                      </text>
+                    </g>
+                  </svg>
+                </button>
+                <button
+                  id="download-qr-text-button"
+                  class="button"
+                  @click="openAsciiExportModal"
+                  :disabled="isExportButtonDisabled"
+                  :title="
+                    isExportButtonDisabled
+                      ? t('Please enter data to encode first')
+                      : t('Export QR Code as ASCII or Unicode text')
+                  "
+                  :aria-label="t('Export QR Code as ASCII or Unicode text')"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <g fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                      <path d="M5 12V5a2 2 0 0 1 2-2h7l5 5v4" />
+                      <text
+                        x="1"
+                        y="22"
+                        fill="currentColor"
+                        stroke="none"
+                        font-size="11px"
+                        font-family="monospace"
+                        font-weight="600"
+                      >
+                        TXT
                       </text>
                     </g>
                   </svg>
@@ -2115,5 +2165,13 @@ const updateDataFromModal = (newData: string) => {
     :is-loading="copyModalIsLoading"
     :image-src="copyModalImageSrc"
     @close="closeCopyModal"
+  />
+  <AsciiExportModal
+    :open="isAsciiExportModalOpen"
+    :matrix="asciiMatrix"
+    :has-frame="showFrame"
+    :filename="exportFilename"
+    :ec-level="errorCorrectionLevel"
+    @close="isAsciiExportModalOpen = false"
   />
 </template>
