@@ -61,3 +61,30 @@ describe('qrMatrixToText — unicode-full format', () => {
     expect(out.split('\n')).toHaveLength(2 + 2 * 2)
   })
 })
+
+describe('qrMatrixToText — unicode-half format', () => {
+  it('packs two rows into one line with the four glyphs', () => {
+    // (top, bottom): TT→█, TF→▀, FT→▄, FF→' '
+    const matrix = [
+      [true, true, false, false],
+      [true, false, true, false],
+      [false, false, false, false],
+      [false, false, false, false]
+    ]
+    const out = qrMatrixToText(matrix, 'unicode-half', { quietZone: 0 })
+    expect(out).toBe('█▀▄ \n    ')
+  })
+
+  it('pads an odd-row matrix with a light row at the bottom', () => {
+    const matrix = [[true]]
+    const out = qrMatrixToText(matrix, 'unicode-half', { quietZone: 0 })
+    expect(out).toBe('▀')
+  })
+
+  it('line count is ceil((count + 2*quietZone) / 2)', () => {
+    const matrix = [[true]]
+    const out = qrMatrixToText(matrix, 'unicode-half', { quietZone: 2 })
+    // (1 + 2*2) = 5, ceil(5/2) = 3
+    expect(out.split('\n')).toHaveLength(3)
+  })
+})

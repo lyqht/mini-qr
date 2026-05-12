@@ -45,6 +45,26 @@ function renderPaired(padded: boolean[][], dark: string, light: string): string 
   return padded.map((row) => row.map((cell) => (cell ? dark : light)).join('')).join('\n')
 }
 
+function renderHalfBlocks(padded: boolean[][]): string {
+  const lines: string[] = []
+  const width = padded[0].length
+  for (let r = 0; r < padded.length; r += 2) {
+    const top = padded[r]
+    const bottom = padded[r + 1] ?? new Array(width).fill(false)
+    let line = ''
+    for (let c = 0; c < width; c++) {
+      const t = top[c]
+      const b = bottom[c]
+      if (t && b) line += '█'
+      else if (t && !b) line += '▀'
+      else if (!t && b) line += '▄'
+      else line += ' '
+    }
+    lines.push(line)
+  }
+  return lines.join('\n')
+}
+
 export function qrMatrixToText(
   matrix: boolean[][],
   format: AsciiFormat,
@@ -64,6 +84,10 @@ export function qrMatrixToText(
     return renderPaired(padded, g.dark, g.light)
   }
 
-  // unicode-half implemented in later tasks
-  return ''
+  if (format === 'unicode-half') {
+    return renderHalfBlocks(padded)
+  }
+
+  const exhaustive: never = format
+  throw new Error(`Unknown ASCII format: ${exhaustive}`)
 }
