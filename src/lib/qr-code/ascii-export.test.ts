@@ -88,3 +88,41 @@ describe('qrMatrixToText — unicode-half format', () => {
     expect(out.split('\n')).toHaveLength(3)
   })
 })
+
+describe('qrMatrixToText — glyph overrides', () => {
+  it('uses custom glyphs for ascii', () => {
+    const matrix = [
+      [true, false],
+      [false, true]
+    ]
+    const out = qrMatrixToText(matrix, 'ascii', {
+      quietZone: 0,
+      glyphs: { dark: '*', light: '.' }
+    })
+    expect(out).toBe(['*.', '.*'].join('\n'))
+  })
+
+  it('uses custom glyphs for unicode-full', () => {
+    const matrix = [
+      [true, false],
+      [false, true]
+    ]
+    const out = qrMatrixToText(matrix, 'unicode-full', {
+      quietZone: 0,
+      glyphs: { dark: 'X', light: 'o' }
+    })
+    expect(out).toBe(['Xo', 'oX'].join('\n'))
+  })
+
+  it('ignores glyph overrides for unicode-half', () => {
+    const matrix = [
+      [true, false],
+      [false, true]
+    ]
+    const out = qrMatrixToText(matrix, 'unicode-half', {
+      quietZone: 0,
+      glyphs: { dark: 'X', light: 'o' }
+    })
+    expect(out).toBe('▀▄')
+  })
+})
