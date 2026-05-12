@@ -204,6 +204,7 @@
   "Message": "Pesan",
   "Mini QR Code Generator": "Generator Kode QR Mini",
   "MiniQR's QR rendering engine has been updated": "Mesin rendering QR MiniQR telah diperbarui",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "Harus berada di antara 0 dan 1",
   "Network Name (SSID)": "Nama Jaringan (SSID)",
   "Network password (case-sensitive)": "Kata sandi jaringan (peka huruf besar/kecil)",

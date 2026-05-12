@@ -204,6 +204,7 @@
   "Message": "Meddelande",
   "Mini QR Code Generator": "Mini QR-kodgenerator",
   "MiniQR's QR rendering engine has been updated": "MiniQRs QR-renderingmotor har uppdaterats",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "Måste ligga mellan 0 och 1",
   "Network Name (SSID)": "Nätverksnamn (SSID)",
   "Network password (case-sensitive)": "Nätverkslösenord (skiftlägeskänsligt)",

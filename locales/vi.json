@@ -204,6 +204,7 @@
   "Message": "Thông điệp",
   "Mini QR Code Generator": "Trình tạo mã QR mini",
   "MiniQR's QR rendering engine has been updated": "Công cụ hiển thị mã QR của MiniQR đã được cập nhật",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "Phải nằm trong khoảng từ 0 đến 1",
   "Network Name (SSID)": "Tên mạng (SSID)",
   "Network password (case-sensitive)": "Mật khẩu mạng (nhạy cảm với chữ hoa/thường)",

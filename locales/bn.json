@@ -204,6 +204,7 @@
   "Message": "বার্তা",
   "Mini QR Code Generator": "মিনি কিউআর কোড জেনারেটর",
   "MiniQR's QR rendering engine has been updated": "MiniQR-এর QR রেন্ডারিং ইঞ্জিন আপডেট করা হয়েছে।",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "0 থেকে 1 এর মধ্যে হতে হবে",
   "Network Name (SSID)": "নেটওয়ার্কের নাম (SSID)",
   "Network password (case-sensitive)": "নেটওয়ার্ক পাসওয়ার্ড (কেস-সেনসিটিভ)",

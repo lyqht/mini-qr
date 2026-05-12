@@ -204,6 +204,7 @@
   "Message": "Missatge",
   "Mini QR Code Generator": "Generador de codis QR miniatura",
   "MiniQR's QR rendering engine has been updated": "El motor de renderització de QR de MiniQR s'ha actualitzat.",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "Ha de ser entre 0 i 1",
   "Network Name (SSID)": "Nom de la xarxa (SSID)",
   "Network password (case-sensitive)": "Contrasenya de la xarxa (amb distinció de majúscules i minúscules)",

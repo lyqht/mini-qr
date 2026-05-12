@@ -204,6 +204,7 @@
   "Message": "訊息",
   "Mini QR Code Generator": "迷你 QR 代碼產生器",
   "MiniQR's QR rendering engine has been updated": "MiniQR 的 QR 碼渲染引擎已更新",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "必須介於 0 和 1 之間",
   "Network Name (SSID)": "網路名稱 (SSID)",
   "Network password (case-sensitive)": "網路密碼 (區分大小寫)",

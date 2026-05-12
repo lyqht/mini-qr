@@ -204,6 +204,7 @@
   "Message": "Сообщение",
   "Mini QR Code Generator": "Генератор мини-QR-кодов",
   "MiniQR's QR rendering engine has been updated": "Обновлен движок рендеринга QR-кодов MiniQR",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "Должно быть в диапазоне от 0 до 1",
   "Network Name (SSID)": "Имя сети (SSID)",
   "Network password (case-sensitive)": "Сетевой пароль (с учетом регистра)",

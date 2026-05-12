@@ -38,16 +38,10 @@ interface FormatCard {
   id: AsciiFormat
   label: string
   description: string
+  warning?: string
 }
 
 const cards = computed<FormatCard[]>(() => [
-  {
-    id: 'ascii',
-    label: t('ASCII'),
-    description: t(
-      '7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.'
-    )
-  },
   {
     id: 'unicode-half',
     label: t('Unicode (half-blocks)'),
@@ -57,6 +51,16 @@ const cards = computed<FormatCard[]>(() => [
     id: 'unicode-full',
     label: t('Unicode (full-blocks)'),
     description: t('Solid block characters (██) — best fidelity in modern fonts.')
+  },
+  {
+    id: 'ascii',
+    label: t('ASCII'),
+    description: t(
+      '7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.'
+    ),
+    warning: t(
+      'Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.'
+    )
   }
 ])
 
@@ -202,6 +206,13 @@ watch(
             <strong>{{ card.label }}</strong>
             <span class="text-xs text-zinc-500">{{ card.description }}</span>
           </div>
+          <p
+            v-if="card.warning"
+            role="note"
+            class="mb-2 rounded-md border border-amber-300 bg-amber-50 px-2 py-1.5 text-xs text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
+          >
+            {{ card.warning }}
+          </p>
           <p v-if="isBatch" class="mb-1 text-xs text-zinc-500">
             {{ t('Preview of first row') }}
           </p>

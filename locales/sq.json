@@ -204,6 +204,7 @@
   "Message": "Mesazh",
   "Mini QR Code Generator": "Gjenerator i vogël i kodeve QR",
   "MiniQR's QR rendering engine has been updated": "Motori i renderimit të QR-ve të MiniQR-it është përditësuar.",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "Duhet të jetë midis 0 dhe 1",
   "Network Name (SSID)": "Emri i rrjetit (SSID)",
   "Network password (case-sensitive)": "Fjalëkalimi i rrjetit (i ndjeshëm ndaj shkronjave të mëdha dhe të vogla)",

@@ -204,6 +204,7 @@
   "Message": "Mesaj",
   "Mini QR Code Generator": "Mini QR Kod Oluşturucu",
   "MiniQR's QR rendering engine has been updated": "MiniQR'ın QR görüntüleme motoru güncellendi",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "0 ile 1 arasında olmalıdır",
   "Network Name (SSID)": "Ağ Adı (SSID)",
   "Network password (case-sensitive)": "Ağ parolası (büyük/küçük harfe duyarlı)",

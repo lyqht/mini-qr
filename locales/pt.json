@@ -204,6 +204,7 @@
   "Message": "Mensagem",
   "Mini QR Code Generator": "Mini Gerador de QR Code",
   "MiniQR's QR rendering engine has been updated": "O mecanismo de renderização de QR codes do MiniQR foi atualizado",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "Deve estar entre 0 e 1",
   "Network Name (SSID)": "Nome da rede (SSID)",
   "Network password (case-sensitive)": "Senha da rede (sensível a maiúsculas e minúsculas)",

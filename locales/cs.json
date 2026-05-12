@@ -204,6 +204,7 @@
   "Message": "Zpráva",
   "Mini QR Code Generator": "Mini generátor QR kódů",
   "MiniQR's QR rendering engine has been updated": "Byl aktualizován engine pro vykreslování QR kódů v aplikaci MiniQR",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "Musí být v rozmezí od 0 do 1",
   "Network Name (SSID)": "Název sítě (SSID)",
   "Network password (case-sensitive)": "Síťové heslo (rozlišuje velká a malá písmena)",

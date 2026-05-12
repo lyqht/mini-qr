@@ -204,6 +204,7 @@
   "Message": "Порука",
   "Mini QR Code Generator": "Мини генератор QR кодова",
   "MiniQR's QR rendering engine has been updated": "Мотор за приказивање QR кодова компаније MiniQR је ажуриран.",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "Мора бити између 0 и 1",
   "Network Name (SSID)": "Име мреже (SSID)",
   "Network password (case-sensitive)": "Лозинка за мрежу (осетљива на велика и мала слова)",

@@ -204,6 +204,7 @@
   "Message": "Žinutė",
   "Mini QR Code Generator": "Mini QR kodų generatorius",
   "MiniQR's QR rendering engine has been updated": "Atnaujintas „MiniQR“ QR kodų atvaizdavimo variklis",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "Turi būti nuo 0 iki 1",
   "Network Name (SSID)": "Tinklo pavadinimas (SSID)",
   "Network password (case-sensitive)": "Tinklo slaptažodis (priklauso nuo mažųjų raidžių)",

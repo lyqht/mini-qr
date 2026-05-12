@@ -204,6 +204,7 @@
   "Message": "စာလွှာ",
   "Mini QR Code Generator": "မီနီကျူအာ ထုတ်လုပ်သူ",
   "MiniQR's QR rendering engine has been updated": "MiniQR ၏ QR ဖော်ပြမှု အင်ဂျင်ကို အပ်ဒိတ်လုပ်ထားသည်။",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "0 နှင့် 1 ကြား ဖြစ်ရမည်။",
   "Network Name (SSID)": "ကွန်ရက်အမည် (SSID)",
   "Network password (case-sensitive)": "ကွန်ရက် စကားဝှက် (စာလုံးအကြီးအသေးအတိုင်း)",

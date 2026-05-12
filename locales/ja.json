@@ -204,6 +204,7 @@
   "Message": "メッセージ",
   "Mini QR Code Generator": "ミニQRコードジェネレーター",
   "MiniQR's QR rendering engine has been updated": "MiniQRのQRコード描画エンジンが更新されました",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "0から1の間でなければなりません",
   "Network Name (SSID)": "ネットワーク名（SSID）",
   "Network password (case-sensitive)": "ネットワークパスワード（大文字と小文字を区別）",

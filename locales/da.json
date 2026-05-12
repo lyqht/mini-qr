@@ -204,6 +204,7 @@
   "Message": "Besked",
   "Mini QR Code Generator": "Mini QR-kodegenerator",
   "MiniQR's QR rendering engine has been updated": "MiniQRs QR-renderingmotor er blevet opdateret",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "Skal være mellem 0 og 1",
   "Network Name (SSID)": "Netværksnavn (SSID)",
   "Network password (case-sensitive)": "Netværksadgangskode (skelner mellem store og små bogstaver)",

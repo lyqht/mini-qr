@@ -204,6 +204,7 @@
   "Message": "ข้อความ",
   "Mini QR Code Generator": "มินิ QR โค้ด เจเนอเรเตอร์",
   "MiniQR's QR rendering engine has been updated": "ระบบแสดงผล QR ของ MiniQR ได้รับการอัปเดตแล้ว",
+  "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.": "Most QR scanners will not read this format because the # glyphs leave gaps between rows. Use Unicode (half/full blocks) for a scannable export.",
   "Must be between 0 and 1": "ต้องอยู่ระหว่าง 0 ถึง 1",
   "Network Name (SSID)": "ชื่อเครือข่าย (SSID)",
   "Network password (case-sensitive)": "รหัสผ่านเครือข่าย (พิมพ์เล็กพิมพ์ใหญ่มีผล)",
