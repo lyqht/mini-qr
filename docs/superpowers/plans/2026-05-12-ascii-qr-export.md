@@ -35,6 +35,13 @@
 **Files:**
 - Create: `src/lib/qr-code/ascii-export.ts`
 - Create: `src/lib/qr-code/ascii-export.test.ts`
+- Modify: `vitest.workspace.ts` — append the new test path to the `node` workspace `include` array.
+
+> **Gotcha:** `vitest.workspace.ts` enumerates each test file by name. A new `*.test.ts` file will not be picked up by `pnpm vitest` until its path is added to the appropriate workspace's `include` array. For both new test files (Task 1 and Task 8), add the path to the `node` workspace `include`.
+
+- [ ] **Step 0: Add test path to vitest workspace**
+
+In `vitest.workspace.ts`, append `'src/lib/qr-code/ascii-export.test.ts'` to the `include` array of the `node` workspace (the first object).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -549,6 +556,11 @@ git commit -m "feat(qr-lib): re-export qrMatrixToText from public api (#208)"
 **Files:**
 - Create: `src/utils/convertToText.ts`
 - Create: `src/utils/convertToText.test.ts`
+- Modify: `vitest.workspace.ts` — append `'src/utils/convertToText.test.ts'` to the `node` workspace `include` array.
+
+- [ ] **Step 0: Add test path to vitest workspace**
+
+In `vitest.workspace.ts`, append `'src/utils/convertToText.test.ts'` to the `include` array of the `node` workspace.
 
 - [ ] **Step 1: Write the failing tests**
 
