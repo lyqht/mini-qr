@@ -289,6 +289,7 @@
   "Text": "Text",
   "Text color": "Barva textu",
   "Text is required": "Text je vyžadován",
+  "Text output excludes the frame and image": "Text output excludes the frame and image",
   "Text position": "Pozice textu",
   "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.": "Je příliš mnoho QR kódů ke zkopírování do schránky najednou. Stáhněte je prosím jako SVG nebo PNG.",
   "Tip: For best results, use a clear image with good lighting.": "Tip: Pro nejlepší výsledky použijte čistý obrázek s dobrým osvětlením.",

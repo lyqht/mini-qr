@@ -289,6 +289,7 @@
   "Text": "텍스트",
   "Text color": "텍스트 색상",
   "Text is required": "텍스트 입력 필수",
+  "Text output excludes the frame and image": "Text output excludes the frame and image",
   "Text position": "텍스트 위치",
   "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.": "QR 코드가 너무 많아 클립보드에 한 번에 복사할 수 없습니다. 대신 SVG 또는 PNG로 다운로드하세요.",
   "Tip: For best results, use a clear image with good lighting.": "팁: 팁: 최상의 결과를 얻으려면 조명이 밝고 선명한 이미지를 사용하세요.",

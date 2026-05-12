@@ -289,6 +289,7 @@
   "Text": "ข้อความ",
   "Text color": "สีข้อความ",
   "Text is required": "ต้องระบุข้อความ",
+  "Text output excludes the frame and image": "Text output excludes the frame and image",
   "Text position": "ตำแหน่งข้อความ",
   "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.": "มี QR Code จำนวนมากเกินไปที่จะคัดลอกไปยังคลิปบอร์ดพร้อมกัน โปรดดาวน์โหลดเป็น SVG หรือ PNG แทน",
   "Tip: For best results, use a clear image with good lighting.": "คำแนะนำ: เพื่อผลลัพธ์ที่ดีที่สุด ควรใช้ภาพที่คมชัดและมีแสงสว่างเพียงพอ",

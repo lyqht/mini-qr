@@ -289,6 +289,7 @@
   "Text": "Tekstas",
   "Text color": "Teksto spalva",
   "Text is required": "Būtina pateikti tekstą",
+  "Text output excludes the frame and image": "Text output excludes the frame and image",
   "Text position": "Teksto padėtis",
   "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.": "Vienu metu į iškarpinę galima nukopijuoti per daug QR kodų. Vietoj to atsisiųskite juos kaip SVG arba PNG.",
   "Tip: For best results, use a clear image with good lighting.": "Patarimas: Norėdami gauti geriausius rezultatus, naudokite aiškų vaizdą su geru apšvietimu.",

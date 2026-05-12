@@ -289,6 +289,7 @@
   "Text": "Текст",
   "Text color": "Колір тексту",
   "Text is required": "Текст обов'язковий",
+  "Text output excludes the frame and image": "Text output excludes the frame and image",
   "Text position": "Положення тексту",
   "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.": "Необхідно скопіювати забагато QR-кодів в буфер обміну одноразово. Будь ласка, завантажте їх через SVG або PNG.",
   "Tip: For best results, use a clear image with good lighting.": "Підказка: щоб отримати найкращі результати, використовуйте чисте зображення з хорошим освітленням.",

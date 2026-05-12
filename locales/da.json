@@ -289,6 +289,7 @@
   "Text": "Tekst",
   "Text color": "Tekst farve",
   "Text is required": "Tekst er påkrævet",
+  "Text output excludes the frame and image": "Text output excludes the frame and image",
   "Text position": "Tekst position",
   "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.": "Der er for mange QR-koder til at blive kopieret til udklipsholderen på én gang. Download dem som SVG eller PNG i stedet.",
   "Tip: For best results, use a clear image with good lighting.": "Tip: For de bedste resultater, brug et klart billede med god belysning.",

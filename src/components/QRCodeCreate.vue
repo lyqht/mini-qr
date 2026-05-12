@@ -1375,9 +1375,7 @@ const updateDataFromModal = (newData: string) => {
                     isExportButtonDisabled
                       ? t('Please enter data to encode first')
                       : showFrame
-                        ? t(
-                            'Frame label is excluded from text export — the ASCII output contains the QR modules only.'
-                          )
+                        ? t('Text output excludes the frame and image')
                         : t('Export QR Code as ASCII or Unicode text')
                   "
                   :aria-label="t('Export QR Code as ASCII or Unicode text')"

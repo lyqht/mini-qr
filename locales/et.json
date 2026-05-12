@@ -289,6 +289,7 @@
   "Text": "Tekst",
   "Text color": "Teksti värvus",
   "Text is required": "Tekst on nõutav",
+  "Text output excludes the frame and image": "Text output excludes the frame and image",
   "Text position": "Teksti asukoht",
   "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.": "QR-koode on liiga palju, et neid korraga lõikelauale kopeerida. Palun laadige need hoopis SVG või PNG kujul alla.",
   "Tip: For best results, use a clear image with good lighting.": "Vihje: Parima tulemuse saamiseks kasutage selge ja hea valgustusega pilti.",

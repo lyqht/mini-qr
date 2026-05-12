@@ -289,6 +289,7 @@
   "Text": "Metin",
   "Text color": "Metin rengi",
   "Text is required": "Metin gereklidir",
+  "Text output excludes the frame and image": "Text output excludes the frame and image",
   "Text position": "Metin konumu",
   "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.": "Panoya bir kerede kopyalanamayacak kadar çok QR kodu var. Lütfen bunun yerine SVG veya PNG olarak indirin.",
   "Tip: For best results, use a clear image with good lighting.": "İpucu: En iyi sonuçları elde etmek için iyi aydınlatılmış net bir görüntü kullanın.",

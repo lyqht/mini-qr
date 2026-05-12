@@ -289,6 +289,7 @@
   "Text": "正文",
   "Text color": "文字顏色",
   "Text is required": "必須使用文字",
+  "Text output excludes the frame and image": "Text output excludes the frame and image",
   "Text position": "文字位置",
   "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.": "QR 代碼太多，無法一次複製到剪貼簿。請下載為 SVG 或 PNG。",
   "Tip: For best results, use a clear image with good lighting.": "提示：為達到最佳效果，請使用光線良好的清晰影像。",

@@ -289,6 +289,7 @@
   "Text": "Текст",
   "Text color": "Цвят на текста",
   "Text is required": "Изисква се текст",
+  "Text output excludes the frame and image": "Text output excludes the frame and image",
   "Text position": "Позиция на текста",
   "There are too many QR codes to be copied to the clipboard at once. Please download them as SVG or PNG instead.": "Има твърде много QR кодове, които могат да бъдат копирани едновременно в клипборда. Вместо това ги изтеглете като SVG или PNG.",
   "Tip: For best results, use a clear image with good lighting.": "Съвет: За най-добри резултати използвайте ясно изображение с добро осветление.",
