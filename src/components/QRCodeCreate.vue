@@ -732,6 +732,7 @@ enum ExportMode {
 
 const exportFilename = ref('qr-code')
 const isAsciiExportModalOpen = ref(false)
+const isMobileExportDrawerOpen = ref(false)
 const asciiMatrix = computed<boolean[][]>(() => {
   if (!data.value) return []
   try {
@@ -750,6 +751,7 @@ const asciiBatchRows = computed(() =>
 )
 
 function openAsciiExportModal() {
+  isMobileExportDrawerOpen.value = false
   isAsciiExportModalOpen.value = true
 }
 const exportMode = ref(ExportMode.Single)
@@ -994,7 +996,7 @@ const updateDataFromModal = (newData: string) => {
       class="sticky top-0 flex w-full shrink-0 flex-col items-center justify-center p-4 md:w-fit"
     ></div>
     <!-- Bottom sheet on small screens -->
-    <Drawer v-else>
+    <Drawer v-else v-model:open="isMobileExportDrawerOpen">
       <DrawerTrigger
         id="drawer-preview-container"
         class="fixed inset-x-0 bottom-0 z-10 rounded-t-lg border-t border-solid border-slate-300 bg-white shadow-2xl outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 dark:bg-black dark:focus-visible:ring-zinc-200"
@@ -1366,13 +1368,17 @@ const updateDataFromModal = (newData: string) => {
                 </button>
                 <button
                   id="download-qr-text-button"
-                  class="button"
+                  class="button relative"
                   @click="openAsciiExportModal"
                   :disabled="isExportButtonDisabled"
                   :title="
                     isExportButtonDisabled
                       ? t('Please enter data to encode first')
-                      : t('Export QR Code as ASCII or Unicode text')
+                      : showFrame
+                        ? t(
+                            'Frame label is excluded from text export — the ASCII output contains the QR modules only.'
+                          )
+                        : t('Export QR Code as ASCII or Unicode text')
                   "
                   :aria-label="t('Export QR Code as ASCII or Unicode text')"
                 >
@@ -1398,6 +1404,11 @@ const updateDataFromModal = (newData: string) => {
                       </text>
                     </g>
                   </svg>
+                  <span
+                    v-if="showFrame"
+                    aria-hidden="true"
+                    class="absolute right-1 top-1 block size-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-zinc-900"
+                  ></span>
                 </button>
               </div>
             </div>
