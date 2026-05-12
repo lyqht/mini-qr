@@ -17,13 +17,13 @@ describe('qrMatrixToText — validation', () => {
 })
 
 describe('qrMatrixToText — ascii format', () => {
-  it('renders dark cells as "##" and light cells as "  "', () => {
+  it('uses inverted polarity: dark cells as "  " and light cells as "##"', () => {
     const matrix = [
       [true, false],
       [false, true]
     ]
     const out = qrMatrixToText(matrix, 'ascii', { quietZone: 0 })
-    expect(out).toBe(['##  ', '  ##'].join('\n'))
+    expect(out).toBe(['  ##', '##  '].join('\n'))
   })
 
   it('produces count + 2*quietZone lines (default quiet zone = 4)', () => {
@@ -35,10 +35,10 @@ describe('qrMatrixToText — ascii format', () => {
     expect(out.split('\n')).toHaveLength(2 + 2 * 4)
   })
 
-  it('surrounds the QR with light quiet zone', () => {
+  it('surrounds the QR with light quiet zone (rendered as "##" under inverted polarity)', () => {
     const matrix = [[true]]
     const out = qrMatrixToText(matrix, 'ascii', { quietZone: 1 })
-    expect(out.split('\n')).toEqual(['      ', '  ##  ', '      '])
+    expect(out.split('\n')).toEqual(['######', '##  ##', '######'])
   })
 })
 
@@ -139,7 +139,8 @@ describe('qrMatrixToText — round-trip (ascii)', () => {
     const recovered = text.split('\n').map((line) => {
       const cells: boolean[] = []
       for (let i = 0; i < line.length; i += 2) {
-        cells.push(line.slice(i, i + 2) === '##')
+        // ASCII uses inverted polarity: '  ' = dark module, '##' = light module
+        cells.push(line.slice(i, i + 2) === '  ')
       }
       return cells
     })

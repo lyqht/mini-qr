@@ -44,7 +44,9 @@ const cards = computed<FormatCard[]>(() => [
   {
     id: 'ascii',
     label: t('ASCII'),
-    description: t('7-bit characters — works in plain text, email, and terminals.')
+    description: t(
+      '7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.'
+    )
   },
   {
     id: 'unicode-half',

@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} টি ডাটা শনাক্ত হয়েছে",
   "{index} / {count} QR codes have been created.": "{index} / {count} টি কিউআর কোড তৈরি হয়েছে।",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "ফ্রেম যোগ করুন",
   "Address": "ঠিকানা",
   "ASCII": "ASCII",

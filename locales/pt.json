@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} dados detetados",
   "{index} / {count} QR codes have been created.": "{index} / {count} Foram criados códigos QR.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "Adicionar moldura",
   "Address": "Endereço",
   "ASCII": "ASCII",

@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} pezzo(i) di dati rilevati",
   "{index} / {count} QR codes have been created.": "{index} / {count} codici QR sono stati creati.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "Aggiungi cornice",
   "Address": "Indirizzo",
   "ASCII": "ASCII",

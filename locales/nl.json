@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} stuk(en) van data gedetecteerd",
   "{index} / {count} QR codes have been created.": "{index} / {count} QR codes zijn aangemaakt.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "Frame toevoegen",
   "Address": "Adres",
   "ASCII": "ASCII",

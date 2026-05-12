@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "Wykryto {count} fragment(y) danych",
   "{index} / {count} QR codes have been created.": "{index} / {count} kody QR zostały utworzone.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "Dodaj ramkę",
   "Address": "Adres",
   "ASCII": "ASCII",

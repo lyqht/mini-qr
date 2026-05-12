@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} डेटा के हिस्से का पता चला",
   "{index} / {count} QR codes have been created.": "{index} / {count} QR कोड बनाए गए हैं।",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "फ़्रेम जोड़ें",
   "Address": "पता",
   "ASCII": "ASCII",

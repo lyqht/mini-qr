@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} 偵測到的資料",
   "{index} / {count} QR codes have been created.": "{index} / {count} 已建立 QR 代碼。",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "新增外框",
   "Address": "地址",
   "ASCII": "ASCII",

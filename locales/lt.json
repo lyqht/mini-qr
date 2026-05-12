@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} aptikta (-os) duomenų dalis (-ys)",
   "{index} / {count} QR codes have been created.": "{index} / {count} Sukurti QR kodai.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "Pridėti rėmelį",
   "Address": "Adresas",
   "ASCII": "ASCII",

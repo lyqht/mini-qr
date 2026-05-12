@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} Potongan data dikesan",
   "{index} / {count} QR codes have been created.": "{index} / {count} Kod QR telah dihasilkan.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "Tambah bingkai",
   "Address": "Alamat",
   "ASCII": "ASCII",

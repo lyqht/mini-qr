@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} Copë(a) të dhënash të zbuluar",
   "{index} / {count} QR codes have been created.": "{index} / {count} Janë krijuar kode QR.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "Shto kornizë",
   "Address": "Adresa",
   "ASCII": "ASCII",

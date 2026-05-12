@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "Zjištěno {count} kusů údajů",
   "{index} / {count} QR codes have been created.": "Byly vytvořeny QR kódy {index} / {count}.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "Přidat rám",
   "Address": "Adresa",
   "ASCII": "ASCII",

@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} styk detekteret data",
   "{index} / {count} QR codes have been created.": "{index} / {count} QR-koder er blevet oprettet.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "Tilføj ramme",
   "Address": "Adresse",
   "ASCII": "ASCII",

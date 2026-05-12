@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} делови података откривени",
   "{index} / {count} QR codes have been created.": "{index} / {count} Кодни QR кодови су креирани.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "Додај оквир",
   "Address": "Адреса",
   "ASCII": "ASCII",

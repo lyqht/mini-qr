@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "ဒေတာ အပိုင်းအစ {count} ခုအား တွေ့ရှိသည်",
   "{index} / {count} QR codes have been created.": "{index} / {count} ကျူအာကုဒ်များကို ဖန်တီးပြီးပါပြီ။",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "ဖရိန် ထည့်ရန်",
   "Address": "လိပ်စာ",
   "ASCII": "ASCII",

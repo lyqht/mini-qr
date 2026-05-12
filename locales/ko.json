@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} 감지된 데이터 조각",
   "{index} / {count} QR codes have been created.": "{index} / {count} QR 코드가 생성되었습니다.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "프레임 추가",
   "Address": "주소",
   "ASCII": "ASCII",

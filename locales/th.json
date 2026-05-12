@@ -52,6 +52,7 @@
   "{count} piece(s) of data detected": "{count} ชิ้นของข้อมูลที่ถูกพบ",
   "{index} / {count} QR codes have been created.": "สร้าง QR Code แล้ว {index} / {count} ",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
+  "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "Add frame": "เพิ่มกรอบรูป",
   "Address": "ที่อยู่",
   "ASCII": "ASCII",

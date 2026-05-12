@@ -8,8 +8,13 @@ export interface AsciiExportOptions {
 }
 
 const DEFAULT_QUIET_ZONE = 4
+// ASCII uses INVERTED polarity: '#' chars fill the QR's light/background
+// modules so they form a solid mass in monospace, while spaces leave the
+// dark/data modules visually empty. Scanners accept inverted QRs, and the
+// result is more reliably scannable than dark='##' because '#' glyphs have
+// internal whitespace that breaks up "dark" bars when rendered.
 const DEFAULT_GLYPHS: Record<'ascii' | 'unicode-full', { dark: string; light: string }> = {
-  ascii: { dark: '##', light: '  ' },
+  ascii: { dark: '  ', light: '##' },
   'unicode-full': { dark: '██', light: '  ' }
 }
 
