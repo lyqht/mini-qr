@@ -121,6 +121,17 @@ watch(
         </svg>
       </button>
       <h3 class="mb-4 text-lg font-medium">{{ t('Export as text') }}</h3>
+      <div
+        v-if="hasFrame"
+        role="note"
+        class="mb-4 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
+      >
+        {{
+          t(
+            'Frame label is excluded from text export — the ASCII output contains the QR modules only.'
+          )
+        }}
+      </div>
 
       <div class="flex max-h-[70vh] flex-col gap-4 overflow-y-auto pr-1">
         <div
