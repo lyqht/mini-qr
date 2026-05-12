@@ -126,3 +126,23 @@ describe('qrMatrixToText — glyph overrides', () => {
     expect(out).toBe('▀▄')
   })
 })
+
+describe('qrMatrixToText — round-trip (ascii)', () => {
+  it('text → matrix recovers the original', () => {
+    const original: boolean[][] = [
+      [true, false, true, false],
+      [false, true, false, true],
+      [true, true, false, false],
+      [false, false, true, true]
+    ]
+    const text = qrMatrixToText(original, 'ascii', { quietZone: 0 })
+    const recovered = text.split('\n').map((line) => {
+      const cells: boolean[] = []
+      for (let i = 0; i < line.length; i += 2) {
+        cells.push(line.slice(i, i + 2) === '##')
+      }
+      return cells
+    })
+    expect(recovered).toEqual(original)
+  })
+})
