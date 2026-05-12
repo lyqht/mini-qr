@@ -741,6 +741,14 @@ const asciiMatrix = computed<boolean[][]>(() => {
     return []
   }
 })
+
+const asciiBatchRows = computed(() =>
+  dataStringsFromCsv.value.map((data, i) => ({
+    data,
+    fileName: fileNamesFromCsv.value[i] ?? `qr-${i}`
+  }))
+)
+
 function openAsciiExportModal() {
   isAsciiExportModalOpen.value = true
 }
@@ -2171,6 +2179,8 @@ const updateDataFromModal = (newData: string) => {
     :matrix="asciiMatrix"
     :has-frame="showFrame"
     :filename="exportFilename"
+    :is-batch="exportMode === ExportMode.Batch"
+    :batch-rows="asciiBatchRows"
     :ec-level="errorCorrectionLevel"
     @close="isAsciiExportModalOpen = false"
   />
