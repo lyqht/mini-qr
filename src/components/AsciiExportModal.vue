@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import JSZip from 'jszip'
+import { buildMatrix } from '@/lib/qr-code'
 import {
   copyAsciiTextToClipboard,
   downloadAsciiText,
   getAsciiText,
+  getMarkdownText,
   type TextExportInput
 } from '@/utils/convertToText'
 import type { AsciiFormat } from '@/lib/qr-code'
@@ -60,7 +63,65 @@ function preview(format: AsciiFormat): string {
   return getAsciiText({ matrix: props.matrix, format })
 }
 
+function batchPreview(format: AsciiFormat): string {
+  if (props.isBatch && props.batchRows && props.batchRows.length > 0) {
+    try {
+      const m = buildMatrix(props.batchRows[0].data, props.ecLevel).matrix
+      return getAsciiText({ matrix: m, format })
+    } catch {
+      return ''
+    }
+  }
+  return preview(format)
+}
+
 const copiedFormat = ref<AsciiFormat | null>(null)
+const isBatchDownloading = ref(false)
+const batchProgress = ref({ current: 0, total: 0 })
+
+async function downloadBatchZip(format: AsciiFormat, wrap: 'md' | 'txt') {
+  if (!props.isBatch || !props.batchRows || props.batchRows.length === 0) return
+  isBatchDownloading.value = true
+  batchProgress.value = { current: 0, total: props.batchRows.length }
+  try {
+    const zip = new JSZip()
+    const used = new Set<string>()
+    for (let i = 0; i < props.batchRows.length; i++) {
+      batchProgress.value.current = i + 1
+      const row = props.batchRows[i]
+      let matrix: boolean[][]
+      try {
+        matrix = buildMatrix(row.data, props.ecLevel).matrix
+      } catch (err) {
+        console.error(`Skipping row ${i}: failed to build matrix`, err)
+        continue
+      }
+      const body =
+        wrap === 'md' ? getMarkdownText({ matrix, format }) : getAsciiText({ matrix, format })
+      let name = (row.fileName || `qr-${i}`).replace(/[^a-zA-Z0-9_-]/g, '_')
+      let candidate = `${name}.${wrap}`
+      let suffix = 1
+      while (used.has(candidate)) {
+        candidate = `${name}_${suffix}.${wrap}`
+        suffix++
+      }
+      used.add(candidate)
+      zip.file(candidate, body)
+    }
+    const blob = await zip.generateAsync({ type: 'blob' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `qr-codes-ascii-${format}.zip`
+    link.click()
+    setTimeout(() => URL.revokeObjectURL(url), 200)
+  } catch (err) {
+    console.error('Batch ASCII export failed:', err)
+  } finally {
+    isBatchDownloading.value = false
+    batchProgress.value = { current: 0, total: 0 }
+  }
+}
 
 function safeFilename(): string {
   return (props.filename || 'qr-code').replace(/[^a-zA-Z0-9_-]/g, '_')
@@ -143,23 +204,47 @@ watch(
             <strong>{{ card.label }}</strong>
             <span class="text-xs text-zinc-500">{{ card.description }}</span>
           </div>
+          <p v-if="isBatch" class="mb-1 text-xs text-zinc-500">
+            {{ t('Preview of first row') }}
+          </p>
           <pre
             class="max-h-64 overflow-auto whitespace-pre rounded bg-zinc-50 p-2 font-mono text-xs leading-tight dark:bg-zinc-800"
-            >{{ preview(card.id) }}</pre
+            >{{ batchPreview(card.id) }}</pre
           >
           <div class="mt-2 flex flex-wrap gap-2">
-            <button class="button text-sm" @click="onDownload(card.id, 'md')">
-              {{ t('Download .md') }}
-            </button>
-            <button class="button text-sm" @click="onDownload(card.id, 'txt')">
-              {{ t('Download .txt') }}
-            </button>
-            <button class="button text-sm" @click="onCopy(card.id)">
-              {{ copiedFormat === card.id ? t('Copied') : t('Copy to clipboard') }}
-            </button>
+            <template v-if="!isBatch">
+              <button class="button text-sm" @click="onDownload(card.id, 'md')">
+                {{ t('Download .md') }}
+              </button>
+              <button class="button text-sm" @click="onDownload(card.id, 'txt')">
+                {{ t('Download .txt') }}
+              </button>
+              <button class="button text-sm" @click="onCopy(card.id)">
+                {{ copiedFormat === card.id ? t('Copied') : t('Copy to clipboard') }}
+              </button>
+            </template>
+            <template v-else>
+              <button
+                class="button text-sm"
+                :disabled="isBatchDownloading || !batchRows?.length"
+                @click="downloadBatchZip(card.id, 'md')"
+              >
+                {{ t('Download all as .md') }}
+              </button>
+              <button
+                class="button text-sm"
+                :disabled="isBatchDownloading || !batchRows?.length"
+                @click="downloadBatchZip(card.id, 'txt')"
+              >
+                {{ t('Download all as .txt') }}
+              </button>
+            </template>
           </div>
         </div>
       </div>
+      <p v-if="isBatchDownloading" class="mt-3 text-sm text-zinc-500">
+        {{ t('Generating') }} {{ batchProgress.current }} / {{ batchProgress.total }}…
+      </p>
     </div>
   </div>
 </template>
