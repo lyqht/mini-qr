@@ -41,3 +41,23 @@ describe('qrMatrixToText — ascii format', () => {
     expect(out.split('\n')).toEqual(['      ', '  ##  ', '      '])
   })
 })
+
+describe('qrMatrixToText — unicode-full format', () => {
+  it('renders dark cells as "██" and light cells as "  "', () => {
+    const matrix = [
+      [true, false],
+      [false, true]
+    ]
+    const out = qrMatrixToText(matrix, 'unicode-full', { quietZone: 0 })
+    expect(out).toBe(['██  ', '  ██'].join('\n'))
+  })
+
+  it('produces count + 2*quietZone lines (default quiet zone = 2)', () => {
+    const matrix = [
+      [true, false],
+      [false, true]
+    ]
+    const out = qrMatrixToText(matrix, 'unicode-full')
+    expect(out.split('\n')).toHaveLength(2 + 2 * 2)
+  })
+})

@@ -59,6 +59,11 @@ export function qrMatrixToText(
     return renderPaired(padded, g.dark, g.light)
   }
 
-  // unicode-full and unicode-half implemented in later tasks
+  if (format === 'unicode-full') {
+    const g = options.glyphs ?? DEFAULT_GLYPHS['unicode-full']
+    return renderPaired(padded, g.dark, g.light)
+  }
+
+  // unicode-half implemented in later tasks
   return ''
 }
