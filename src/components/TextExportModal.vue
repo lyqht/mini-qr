@@ -160,6 +160,7 @@ watch(
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
     role="dialog"
     aria-modal="true"
+    @click.self="$emit('close')"
   >
     <div class="relative w-full max-w-2xl rounded-lg bg-white p-6 shadow-lg dark:bg-zinc-900">
       <button
