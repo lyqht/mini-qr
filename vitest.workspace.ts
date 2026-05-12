@@ -21,7 +21,8 @@ export default defineWorkspace([
         'src/lib/qr-code/render/svg.test.ts',
         'src/lib/qr-code/render/dots.test.ts',
         'src/lib/qr-code/frame.test.ts',
-        'src/lib/qr-code/ascii-export.test.ts'
+        'src/lib/qr-code/ascii-export.test.ts',
+        'src/utils/convertToText.test.ts'
       ]
     },
     resolve: { alias }
