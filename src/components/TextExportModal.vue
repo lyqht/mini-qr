@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import JSZip from 'jszip'
 import { buildMatrix } from '@/lib/qr-code'
+import { downloadBlob } from '@/utils/download'
 import {
   copyAsciiTextToClipboard,
   downloadAsciiText,
@@ -115,12 +116,7 @@ async function downloadBatchZip(format: AsciiFormat, wrap: 'md' | 'txt') {
       zip.file(candidate, body)
     }
     const blob = await zip.generateAsync({ type: 'blob' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `qr-codes-ascii-${format}.zip`
-    link.click()
-    setTimeout(() => URL.revokeObjectURL(url), 200)
+    downloadBlob(blob, `qr-codes-ascii-${format}.zip`)
   } catch (err) {
     console.error('Batch ASCII export failed:', err)
   } finally {

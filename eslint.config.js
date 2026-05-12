@@ -64,6 +64,7 @@ export default [
         XMLSerializer: 'readonly',
         DOMParser: 'readonly',
         FontFaceSet: 'readonly',
+        HTMLAnchorElement: 'readonly',
         HTMLImageElement: 'readonly',
         HTMLCanvasElement: 'readonly',
         SVGSVGElement: 'readonly',

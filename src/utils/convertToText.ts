@@ -1,4 +1,5 @@
 import { qrMatrixToText, type AsciiFormat } from '@/lib/qr-code'
+import { downloadBlob } from '@/utils/download'
 
 export interface TextExportInput {
   matrix: boolean[][]
@@ -15,18 +16,6 @@ export function getMarkdownText(input: TextExportInput): string {
   return '```\n' + body + '\n```\n'
 }
 
-function triggerDownload(blob: Blob, filename: string): void {
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  link.style.display = 'none'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  setTimeout(() => URL.revokeObjectURL(url), 200)
-}
-
 export function downloadAsciiText(
   input: TextExportInput,
   filename: string,
@@ -36,7 +25,7 @@ export function downloadAsciiText(
     const body = wrap === 'md' ? getMarkdownText(input) : getAsciiText(input)
     const mime = wrap === 'md' ? 'text/markdown;charset=utf-8' : 'text/plain;charset=utf-8'
     const blob = new Blob([body], { type: mime })
-    triggerDownload(blob, filename)
+    downloadBlob(blob, filename)
   } catch (error) {
     console.error('Error generating text export:', error)
   }

@@ -30,6 +30,7 @@ import {
   getJpgElement,
   getPngElement
 } from '@/utils/convertToImage'
+import { downloadBlob } from '@/utils/download'
 import { parseCSV, validateCSVData, type CSVParsingResult } from '@/utils/csv'
 import { generateBatchExportFilename, processCsvDataForBatch } from '@/utils/csvBatchProcessing'
 import { getNumericCSSValue } from '@/utils/formatting'
@@ -614,12 +615,8 @@ function buildCurrentQRConfig(): QRCodeConfig {
 function downloadQRConfig() {
   console.debug('Downloading QR code config')
   const config = buildCurrentQRConfig()
-  const configBlob = new Blob([JSON.stringify(config)], { type: 'application/json' })
-  const configUrl = URL.createObjectURL(configBlob)
-  const downloadLink = document.createElement('a')
-  downloadLink.href = configUrl
-  downloadLink.download = 'qr-code-config.json'
-  downloadLink.click()
+  const blob = new Blob([JSON.stringify(config)], { type: 'application/json' })
+  downloadBlob(blob, 'qr-code-config.json')
 }
 
 function applyQRConfig(config: QRCodeConfig, key?: string) {
@@ -954,10 +951,7 @@ async function generateBatchQRCodes(format: 'png' | 'svg' | 'jpg') {
     }
 
     zip.generateAsync({ type: 'blob' }).then((content) => {
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(content)
-      link.download = `qr-codes.zip`
-      link.click()
+      downloadBlob(content, 'qr-codes.zip')
       isBatchExportSuccess.value = true
     })
   } catch (error) {

@@ -1,4 +1,5 @@
 import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
+import { downloadBlob } from '@/utils/download'
 import { buildSvgExportString, rasterizeSvg, type SvgExportInput } from '@/lib/qr-code'
 
 export interface ImageExportInput extends SvgExportInput {
@@ -61,18 +62,6 @@ function blobToDataUrl(blob: Blob): Promise<string> {
   })
 }
 
-function triggerDownload(blob: Blob, filename: string): void {
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  link.style.display = 'none'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  setTimeout(() => URL.revokeObjectURL(url), 200)
-}
-
 /* ---------- PNG ---------- */
 
 export async function getPngBlob(input: ImageExportInput): Promise<Blob> {
@@ -87,7 +76,7 @@ export async function getPngElement(input: ImageExportInput): Promise<string> {
 export async function downloadPngElement(input: ImageExportInput, filename: string): Promise<void> {
   try {
     const blob = await getPngBlob(input)
-    triggerDownload(blob, filename)
+    downloadBlob(blob, filename)
   } catch (error) {
     console.error('Error generating PNG export:', error)
   }
@@ -107,7 +96,7 @@ export async function getJpgElement(input: ImageExportInput): Promise<string> {
 export async function downloadJpgElement(input: ImageExportInput, filename: string): Promise<void> {
   try {
     const blob = await getJpgBlob(input)
-    triggerDownload(blob, filename)
+    downloadBlob(blob, filename)
   } catch (error) {
     console.error('Error generating JPG export:', error)
   }
@@ -149,14 +138,11 @@ export function getSvgElement(input: SvgExportInput): string {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(getSvgString(input))}`
 }
 
-export async function downloadSvgElement(
-  input: SvgExportInput,
-  filename: string
-): Promise<void> {
+export async function downloadSvgElement(input: SvgExportInput, filename: string): Promise<void> {
   try {
     const svgString = await getInlinedSvgString(input)
     const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
-    triggerDownload(blob, filename)
+    downloadBlob(blob, filename)
   } catch (error) {
     console.error('Error generating SVG export:', error)
   }
