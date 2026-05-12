@@ -15,3 +15,29 @@ describe('qrMatrixToText — validation', () => {
     expect(() => qrMatrixToText(ragged, 'ascii')).toThrow(/square/)
   })
 })
+
+describe('qrMatrixToText — ascii format', () => {
+  it('renders dark cells as "##" and light cells as "  "', () => {
+    const matrix = [
+      [true, false],
+      [false, true]
+    ]
+    const out = qrMatrixToText(matrix, 'ascii', { quietZone: 0 })
+    expect(out).toBe(['##  ', '  ##'].join('\n'))
+  })
+
+  it('produces count + 2*quietZone lines (default quiet zone = 2)', () => {
+    const matrix = [
+      [true, false],
+      [false, true]
+    ]
+    const out = qrMatrixToText(matrix, 'ascii')
+    expect(out.split('\n')).toHaveLength(2 + 2 * 2)
+  })
+
+  it('surrounds the QR with light quiet zone', () => {
+    const matrix = [[true]]
+    const out = qrMatrixToText(matrix, 'ascii', { quietZone: 1 })
+    expect(out.split('\n')).toEqual(['      ', '  ##  ', '      '])
+  })
+})
