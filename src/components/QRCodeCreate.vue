@@ -1368,15 +1368,13 @@ const updateDataFromModal = (newData: string) => {
                 </button>
                 <button
                   id="download-qr-text-button"
-                  class="button relative"
+                  class="button"
                   @click="openAsciiExportModal"
                   :disabled="isExportButtonDisabled"
                   :title="
                     isExportButtonDisabled
                       ? t('Please enter data to encode first')
-                      : showFrame
-                        ? t('Text output excludes the frame and image')
-                        : t('Export QR Code as ASCII or Unicode text')
+                      : t('Export QR Code as ASCII or Unicode text')
                   "
                   :aria-label="t('Export QR Code as ASCII or Unicode text')"
                 >
@@ -1402,11 +1400,6 @@ const updateDataFromModal = (newData: string) => {
                       </text>
                     </g>
                   </svg>
-                  <span
-                    v-if="showFrame"
-                    aria-hidden="true"
-                    class="absolute right-1 top-1 block size-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-zinc-900"
-                  ></span>
                 </button>
               </div>
             </div>
