@@ -108,7 +108,10 @@ export function createQRCode(config: QRCodeConfig): QRCodeInstance {
   }
 }
 
-function mergeConfig(current: ResolvedQRCodeConfig, partial: Partial<QRCodeConfig>): QRCodeConfig {
+export function mergeConfig(
+  current: ResolvedQRCodeConfig,
+  partial: Partial<QRCodeConfig>
+): QRCodeConfig {
   return {
     data: partial.data ?? current.data,
     size: partial.size ?? current.size,
@@ -124,7 +127,7 @@ function mergeConfig(current: ResolvedQRCodeConfig, partial: Partial<QRCodeConfi
     background: partial.background
       ? { ...current.background, ...partial.background }
       : current.background,
-    image: partial.image === null ? undefined : (partial.image ?? current.image),
-    frame: partial.frame === null ? undefined : (partial.frame ?? current.frame)
+    image: 'image' in partial ? (partial.image ?? undefined) : current.image,
+    frame: 'frame' in partial ? (partial.frame ?? undefined) : current.frame
   }
 }
