@@ -9,164 +9,164 @@ importers:
   .:
     dependencies:
       '@floating-ui/vue':
-        specifier: ^1.1.6
+        specifier: 1.1.11
         version: 1.1.11(vue@3.5.34(typescript@5.9.3))
       '@vercel/analytics':
-        specifier: ^2.0.1
+        specifier: 2.0.1
         version: 2.0.1(react@19.2.6)(vue@3.5.34(typescript@5.9.3))
       '@vitejs/plugin-vue':
-        specifier: ^5.2.1
+        specifier: 5.2.4
         version: 5.2.4(vite@5.4.21(@types/node@20.19.40)(terser@5.47.1))(vue@3.5.34(typescript@5.9.3))
       '@vitejs/plugin-vue-jsx':
-        specifier: ^3.1.0
+        specifier: 3.1.0
         version: 3.1.0(vite@5.4.21(@types/node@20.19.40)(terser@5.47.1))(vue@3.5.34(typescript@5.9.3))
       '@vue/tsconfig':
-        specifier: ^0.5.1
+        specifier: 0.5.1
         version: 0.5.1
       '@vueuse/core':
-        specifier: ^13.0.0
+        specifier: 13.9.0
         version: 13.9.0(vue@3.5.34(typescript@5.9.3))
       autoprefixer:
-        specifier: ^10.4.20
+        specifier: 10.5.0
         version: 10.5.0(postcss@8.5.14)
       class-variance-authority:
-        specifier: ^0.7.1
+        specifier: 0.7.1
         version: 0.7.1
       clsx:
-        specifier: ^2.1.1
+        specifier: 2.1.1
         version: 2.1.1
       file-saver:
-        specifier: ^2.0.5
+        specifier: 2.0.5
         version: 2.0.5
       html5-qrcode:
-        specifier: ^2.3.8
+        specifier: 2.3.8
         version: 2.3.8
       jszip:
-        specifier: ^3.10.1
+        specifier: 3.10.1
         version: 3.10.1
       lucide-vue-next:
-        specifier: ^0.321.0
+        specifier: 0.321.0
         version: 0.321.0(vue@3.5.34(typescript@5.9.3))
       marked:
-        specifier: ^15.0.11
+        specifier: 15.0.12
         version: 15.0.12
       qr-scanner:
-        specifier: ^1.4.2
+        specifier: 1.4.2
         version: 1.4.2
       qrcode-generator:
-        specifier: ^2.0.4
+        specifier: 2.0.4
         version: 2.0.4
       radix-vue:
-        specifier: ^1.9.17
+        specifier: 1.9.17
         version: 1.9.17(vue@3.5.34(typescript@5.9.3))
       reka-ui:
-        specifier: ^2.6.0
+        specifier: 2.9.7
         version: 2.9.7(vue@3.5.34(typescript@5.9.3))
       tailwind-merge:
-        specifier: ^2.6.0
+        specifier: 2.6.1
         version: 2.6.1
       tailwindcss:
-        specifier: ^3.4.17
+        specifier: 3.4.19
         version: 3.4.19(yaml@2.8.4)
       tailwindcss-animate:
-        specifier: ^1.0.7
+        specifier: 1.0.7
         version: 1.0.7(tailwindcss@3.4.19(yaml@2.8.4))
       vaul-vue:
-        specifier: ^0.4.0
+        specifier: 0.4.1
         version: 0.4.1(reka-ui@2.9.7(vue@3.5.34(typescript@5.9.3)))(vue@3.5.34(typescript@5.9.3))
       vite:
-        specifier: ^5.4.14
+        specifier: 5.4.21
         version: 5.4.21(@types/node@20.19.40)(terser@5.47.1)
       vue:
-        specifier: ^3.5.13
+        specifier: 3.5.34
         version: 3.5.34(typescript@5.9.3)
       vue-i18n:
-        specifier: ^9.14.2
+        specifier: 9.14.5
         version: 9.14.5(vue@3.5.34(typescript@5.9.3))
     devDependencies:
       '@eslint/js':
-        specifier: ^9
+        specifier: 9.39.4
         version: 9.39.4
       '@playwright/test':
-        specifier: ^1.58.2
+        specifier: 1.59.1
         version: 1.59.1
       '@storybook/addon-essentials':
-        specifier: ^8.6.0
+        specifier: 8.6.14
         version: 8.6.14(@types/react@19.2.14)(storybook@8.6.18(prettier@3.8.3))
       '@storybook/test':
-        specifier: ^8.6.0
+        specifier: 8.6.15
         version: 8.6.15(storybook@8.6.18(prettier@3.8.3))
       '@storybook/vue3':
-        specifier: ^8.6.0
+        specifier: 8.6.18
         version: 8.6.18(storybook@8.6.18(prettier@3.8.3))(vue@3.5.34(typescript@5.9.3))
       '@storybook/vue3-vite':
-        specifier: ^8.6.0
+        specifier: 8.6.18
         version: 8.6.18(storybook@8.6.18(prettier@3.8.3))(vite@5.4.21(@types/node@20.19.40)(terser@5.47.1))(vue@3.5.34(typescript@5.9.3))
       '@tailwindcss/typography':
-        specifier: ^0.5.16
+        specifier: 0.5.19
         version: 0.5.19(tailwindcss@3.4.19(yaml@2.8.4))
       '@types/node':
-        specifier: ^20.17.23
+        specifier: 20.19.40
         version: 20.19.40
       '@typescript-eslint/parser':
-        specifier: ^8.46.2
+        specifier: 8.59.2
         version: 8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
       '@vitest/browser':
-        specifier: ^3.1.2
+        specifier: 3.2.4
         version: 3.2.4(playwright@1.59.1)(vite@5.4.21(@types/node@20.19.40)(terser@5.47.1))(vitest@3.2.4)
       '@vue/eslint-config-typescript':
-        specifier: ^14.6.0
+        specifier: 14.7.0
         version: 14.7.0(eslint-plugin-vue@10.9.1(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7))(vue-eslint-parser@10.4.0(eslint@9.39.4(jiti@1.21.7))))(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
       eslint:
-        specifier: ^9
+        specifier: 9.39.4
         version: 9.39.4(jiti@1.21.7)
       eslint-plugin-tailwindcss:
-        specifier: ^3.18.2
+        specifier: 3.18.3
         version: 3.18.3(tailwindcss@3.4.19(yaml@2.8.4))
       eslint-plugin-vue:
-        specifier: ^10.5.1
+        specifier: 10.9.1
         version: 10.9.1(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7))(vue-eslint-parser@10.4.0(eslint@9.39.4(jiti@1.21.7)))
       husky:
-        specifier: ^8.0.3
+        specifier: 8.0.3
         version: 8.0.3
       lint-staged:
-        specifier: ^15.4.3
+        specifier: 15.5.2
         version: 15.5.2
       playwright:
-        specifier: ^1.58.2
+        specifier: 1.59.1
         version: 1.59.1
       postcss:
-        specifier: ^8.5.3
+        specifier: 8.5.14
         version: 8.5.14
       prettier:
-        specifier: ^3.5.3
+        specifier: 3.8.3
         version: 3.8.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.8.0
+        specifier: 0.8.0
         version: 0.8.0(prettier@3.8.3)
       sharp:
-        specifier: ^0.33.5
+        specifier: 0.33.5
         version: 0.33.5
       storybook:
-        specifier: ^8.6.0
+        specifier: 8.6.18
         version: 8.6.18(prettier@3.8.3)
       typescript:
-        specifier: ^5.8.2
+        specifier: 5.9.3
         version: 5.9.3
       typescript-eslint:
-        specifier: ^8.46.2
+        specifier: 8.59.2
         version: 8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
       vite-plugin-pwa:
-        specifier: ^0.21.1
+        specifier: 0.21.2
         version: 0.21.2(vite@5.4.21(@types/node@20.19.40)(terser@5.47.1))(workbox-build@7.4.1)(workbox-window@7.4.1)
       vitest:
-        specifier: ^3.1.1
+        specifier: 3.2.4
         version: 3.2.4(@types/node@20.19.40)(@vitest/browser@3.2.4)(terser@5.47.1)
       vue-eslint-parser:
-        specifier: ^10.2.0
+        specifier: 10.4.0
         version: 10.4.0(eslint@9.39.4(jiti@1.21.7))
       vue-tsc:
-        specifier: ^3.2.8
+        specifier: 3.2.8
         version: 3.2.8(typescript@5.9.3)
 
 packages:
@@ -3066,6 +3066,7 @@ packages:
 
   lucide-vue-next@0.321.0:
     resolution: {integrity: sha512-r4IXuXuFneX2tAJF9TxXY/X5J0zIblI/pBPMR5vcAtDFVAKwWHoGSvCMk3dkH2dmD/uUZfNZiLI5fa07g4pbMA==}
+    deprecated: Package deprecated. Please use @lucide/vue instead.
     peerDependencies:
       vue: '>=3.0.1'
 
@@ -4121,8 +4122,8 @@ packages:
   vue-component-type-helpers@2.2.12:
     resolution: {integrity: sha512-YbGqHZ5/eW4SnkPNR44mKVc6ZKQoRs/Rux1sxC6rdwXb4qpbOSYfDr9DsTHolOTGmIKgM9j141mZbBeg05R1pw==}
 
-  vue-component-type-helpers@3.2.8:
-    resolution: {integrity: sha512-9689efAXhN/EV86plgkL/XFiJSXhGtWPG6JDboZ+QnjlUWUUQrQ0ILKQtw4iQsuwIwu5k6Aw+JnehDe7161e7A==}
+  vue-component-type-helpers@3.3.0:
+    resolution: {integrity: sha512-vwR8DDsBysI9NWXa0okPFpCcW+BUC3sPTuLBNo1faMzw4QWMFd+3/lFYFu29ZN0q+8UReXWJHEYesC9dcXYCLg==}
 
   vue-demi@0.14.10:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
@@ -5689,7 +5690,7 @@ snapshots:
       ts-dedent: 2.2.0
       type-fest: 2.19.0
       vue: 3.5.34(typescript@5.9.3)
-      vue-component-type-helpers: 3.2.8
+      vue-component-type-helpers: 3.3.0
 
   '@swc/helpers@0.5.21':
     dependencies:
@@ -8494,7 +8495,7 @@ snapshots:
 
   vue-component-type-helpers@2.2.12: {}
 
-  vue-component-type-helpers@3.2.8: {}
+  vue-component-type-helpers@3.3.0: {}
 
   vue-demi@0.14.10(vue@3.5.34(typescript@5.9.3)):
     dependencies:
