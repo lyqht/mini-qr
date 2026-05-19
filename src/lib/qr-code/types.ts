@@ -4,23 +4,41 @@ export type CornerDotShape = 'square' | 'rounded' | 'dot'
 export type ECLevel = 'L' | 'M' | 'Q' | 'H'
 export type TextPosition = 'top' | 'bottom' | 'left' | 'right'
 
+export type GradientType = 'linear' | 'radial'
+
+export interface GradientColorStop {
+  offset: number
+  color: string
+}
+
+export interface GradientConfig {
+  type: GradientType
+  /** Rotation in radians, applied to linear gradients only. */
+  rotation?: number
+  colorStops: GradientColorStop[]
+}
+
 export interface DotsConfig {
   shape?: DotShape
   color?: string
+  gradient?: GradientConfig
 }
 
 export interface CornerSquaresConfig {
   shape?: CornerSquareShape
   color?: string
+  gradient?: GradientConfig
 }
 
 export interface CornerDotsConfig {
   shape?: CornerDotShape
   color?: string
+  gradient?: GradientConfig
 }
 
 export interface BackgroundConfig {
   color?: string
+  gradient?: GradientConfig
 }
 
 export interface ImageConfig {
@@ -79,10 +97,12 @@ export interface ResolvedQRCodeConfig {
   size: number
   margin: number
   errorCorrectionLevel: ECLevel
-  dots: Required<DotsConfig>
-  cornerSquares: Required<CornerSquaresConfig>
-  cornerDots: Required<CornerDotsConfig>
-  background: Required<BackgroundConfig>
+  dots: Required<Pick<DotsConfig, 'shape' | 'color'>> & { gradient?: GradientConfig }
+  cornerSquares: Required<Pick<CornerSquaresConfig, 'shape' | 'color'>> & {
+    gradient?: GradientConfig
+  }
+  cornerDots: Required<Pick<CornerDotsConfig, 'shape' | 'color'>> & { gradient?: GradientConfig }
+  background: Required<Pick<BackgroundConfig, 'color'>> & { gradient?: GradientConfig }
   image?: ImageConfig
   frame?: FrameConfig
 }
