@@ -19,17 +19,23 @@ function resolveConfig(config: QRCodeConfig): ResolvedQRCodeConfig {
     errorCorrectionLevel: config.errorCorrectionLevel ?? DEFAULT_CONFIG.errorCorrectionLevel,
     dots: {
       shape: config.dots?.shape ?? DEFAULT_CONFIG.dots.shape,
-      color: config.dots?.color ?? DEFAULT_CONFIG.dots.color
+      color: config.dots?.color ?? DEFAULT_CONFIG.dots.color,
+      gradient: config.dots?.gradient
     },
     cornerSquares: {
       shape: config.cornerSquares?.shape ?? DEFAULT_CONFIG.cornerSquares.shape,
-      color: config.cornerSquares?.color ?? DEFAULT_CONFIG.cornerSquares.color
+      color: config.cornerSquares?.color ?? DEFAULT_CONFIG.cornerSquares.color,
+      gradient: config.cornerSquares?.gradient
     },
     cornerDots: {
       shape: config.cornerDots?.shape ?? DEFAULT_CONFIG.cornerDots.shape,
-      color: config.cornerDots?.color ?? DEFAULT_CONFIG.cornerDots.color
+      color: config.cornerDots?.color ?? DEFAULT_CONFIG.cornerDots.color,
+      gradient: config.cornerDots?.gradient
     },
-    background: { color: config.background?.color ?? DEFAULT_CONFIG.background.color },
+    background: {
+      color: config.background?.color ?? DEFAULT_CONFIG.background.color,
+      gradient: config.background?.gradient
+    },
     image: config.image,
     frame: config.frame
   }
