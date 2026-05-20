@@ -1,5 +1,12 @@
-import type { CornerDotType, CornerSquareType, DotType, Options } from './legacy-types'
-import type { CornerDotShape, CornerSquareShape, DotShape, ECLevel, QRCodeConfig } from './types'
+import type { CornerDotType, CornerSquareType, DotType, Gradient, Options } from './legacy-types'
+import type {
+  CornerDotShape,
+  CornerSquareShape,
+  DotShape,
+  ECLevel,
+  GradientConfig,
+  QRCodeConfig
+} from './types'
 
 const DOT_SHAPE_FALLBACK: DotShape = 'square'
 const CORNER_SQUARE_FALLBACK: CornerSquareShape = 'extra-rounded'
@@ -75,22 +82,30 @@ export function fromLegacyOptions(legacy: Options): QRCodeConfig {
     dots: legacy.dotsOptions
       ? {
           shape: clampDotShape(legacy.dotsOptions.type),
-          color: legacy.dotsOptions.color
+          color: legacy.dotsOptions.color,
+          gradient: adaptGradient(legacy.dotsOptions.gradient)
         }
       : undefined,
     cornerSquares: legacy.cornersSquareOptions
       ? {
           shape: clampCornerSquareShape(legacy.cornersSquareOptions.type),
-          color: legacy.cornersSquareOptions.color
+          color: legacy.cornersSquareOptions.color,
+          gradient: adaptGradient(legacy.cornersSquareOptions.gradient)
         }
       : undefined,
     cornerDots: legacy.cornersDotOptions
       ? {
           shape: clampCornerDotShape(legacy.cornersDotOptions.type),
-          color: legacy.cornersDotOptions.color
+          color: legacy.cornersDotOptions.color,
+          gradient: adaptGradient(legacy.cornersDotOptions.gradient)
         }
       : undefined,
-    background: legacy.backgroundOptions ? { color: legacy.backgroundOptions.color } : undefined,
+    background: legacy.backgroundOptions
+      ? {
+          color: legacy.backgroundOptions.color,
+          gradient: adaptGradient(legacy.backgroundOptions.gradient)
+        }
+      : undefined,
     image: legacy.image
       ? {
           href: legacy.image,
@@ -106,4 +121,13 @@ export function fromLegacyOptions(legacy: Options): QRCodeConfig {
 function normalizeCrossOrigin(v: string | undefined): 'anonymous' | 'use-credentials' | undefined {
   if (v === 'anonymous' || v === 'use-credentials') return v
   return undefined
+}
+
+function adaptGradient(g: Gradient | undefined): GradientConfig | undefined {
+  if (!g || !Array.isArray(g.colorStops) || g.colorStops.length === 0) return undefined
+  return {
+    type: g.type === 'radial' ? 'radial' : 'linear',
+    rotation: g.rotation,
+    colorStops: g.colorStops.map((s) => ({ offset: s.offset, color: s.color }))
+  }
 }
