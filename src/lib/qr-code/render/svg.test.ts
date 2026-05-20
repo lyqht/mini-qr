@@ -65,4 +65,85 @@ describe('renderQrFragment + wrapAsSvg', () => {
     expect(fragment).not.toContain('<script>')
     expect(fragment).toContain('&quot;')
   })
+
+  describe('gradients', () => {
+    it('emits a <linearGradient> def when dots.gradient is linear', () => {
+      const { fragment } = renderQrFragment(
+        baseConfig({
+          dots: {
+            shape: 'square',
+            color: '#000000',
+            gradient: {
+              type: 'linear',
+              rotation: 0,
+              colorStops: [
+                { offset: 0, color: '#ff0000' },
+                { offset: 1, color: '#0000ff' }
+              ]
+            }
+          }
+        })
+      )
+      expect(fragment).toContain('<defs>')
+      expect(fragment).toContain('<linearGradient ')
+      expect(fragment).toContain('stop-color="#ff0000"')
+      expect(fragment).toContain('stop-color="#0000ff"')
+      // dots path must reference the gradient by URL
+      expect(fragment).toMatch(/class="qr-dots"[^>]*fill="url\(#qr-dots-grad-\d+\)"/)
+    })
+
+    it('emits a <radialGradient> def when background.gradient is radial', () => {
+      const { fragment } = renderQrFragment(
+        baseConfig({
+          background: {
+            color: '#ffffff',
+            gradient: {
+              type: 'radial',
+              colorStops: [
+                { offset: 0, color: '#ffffff' },
+                { offset: 1, color: '#444444' }
+              ]
+            }
+          }
+        })
+      )
+      expect(fragment).toContain('<radialGradient ')
+      expect(fragment).toMatch(/class="qr-bg"[^>]*fill="url\(#qr-bg-grad-\d+\)"/)
+    })
+
+    it('gives each gradient a unique id across multiple renders', () => {
+      const gradient = {
+        type: 'linear' as const,
+        colorStops: [
+          { offset: 0, color: '#000000' },
+          { offset: 1, color: '#ffffff' }
+        ]
+      }
+      const a = renderQrFragment(
+        baseConfig({ dots: { shape: 'square', color: '#000000', gradient } })
+      ).fragment
+      const b = renderQrFragment(
+        baseConfig({ dots: { shape: 'square', color: '#000000', gradient } })
+      ).fragment
+      const idA = a.match(/qr-dots-grad-(\d+)/)?.[1]
+      const idB = b.match(/qr-dots-grad-(\d+)/)?.[1]
+      expect(idA).toBeDefined()
+      expect(idB).toBeDefined()
+      expect(idA).not.toBe(idB)
+    })
+
+    it('falls back to solid color when gradient.colorStops is empty', () => {
+      const { fragment } = renderQrFragment(
+        baseConfig({
+          dots: {
+            shape: 'square',
+            color: '#abcdef',
+            gradient: { type: 'linear', colorStops: [] }
+          }
+        })
+      )
+      expect(fragment).not.toContain('<defs>')
+      expect(fragment).toContain('fill="#abcdef"')
+    })
+  })
 })

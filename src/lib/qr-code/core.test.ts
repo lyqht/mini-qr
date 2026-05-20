@@ -49,4 +49,23 @@ describe('mergeConfig', () => {
     expect(merged.image?.href).toBe('https://new.example.com/logo.png')
     expect(merged.image?.sizeRatio).toBe(0.5)
   })
+
+  it('carries gradient through when dots are partially updated', () => {
+    const current = makeCurrent({
+      dots: {
+        shape: 'square',
+        color: '#000000',
+        gradient: {
+          type: 'linear',
+          colorStops: [
+            { offset: 0, color: '#ff0000' },
+            { offset: 1, color: '#0000ff' }
+          ]
+        }
+      }
+    })
+    const merged = mergeConfig(current, { dots: { color: '#111111' } })
+    expect(merged.dots?.gradient).toBeDefined()
+    expect(merged.dots?.color).toBe('#111111')
+  })
 })

@@ -77,6 +77,55 @@ describe('fromLegacyOptions', () => {
     expect(out.image?.hideBackgroundDots).toBe(true)
   })
 
+  describe('gradient pass-through', () => {
+    it('forwards a linear dots gradient', () => {
+      const out = fromLegacyOptions({
+        data: 'x',
+        dotsOptions: {
+          color: '#000',
+          gradient: {
+            type: 'linear',
+            rotation: 0,
+            colorStops: [
+              { offset: 0, color: '#ff0000' },
+              { offset: 1, color: '#0000ff' }
+            ]
+          }
+        }
+      })
+      expect(out.dots?.gradient?.type).toBe('linear')
+      expect(out.dots?.gradient?.colorStops).toHaveLength(2)
+    })
+
+    it('forwards a radial background gradient', () => {
+      const out = fromLegacyOptions({
+        data: 'x',
+        backgroundOptions: {
+          color: '#fff',
+          gradient: {
+            type: 'radial',
+            colorStops: [
+              { offset: 0, color: '#ffffff' },
+              { offset: 1, color: '#000000' }
+            ]
+          }
+        }
+      })
+      expect(out.background?.gradient?.type).toBe('radial')
+    })
+
+    it('ignores gradients with no colorStops', () => {
+      const out = fromLegacyOptions({
+        data: 'x',
+        dotsOptions: {
+          color: '#000',
+          gradient: { type: 'linear', colorStops: [] }
+        }
+      })
+      expect(out.dots?.gradient).toBeUndefined()
+    })
+  })
+
   describe('preset round-trip', () => {
     for (const preset of allQrCodePresets) {
       it(`maps preset ${preset.name} to a config with data`, () => {
