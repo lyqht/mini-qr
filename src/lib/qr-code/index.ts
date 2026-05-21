@@ -11,10 +11,12 @@ export type { AsciiFormat, AsciiExportOptions } from './ascii-export'
 
 export type {
   BackgroundConfig,
+  BuiltInShapeMask,
   CornerDotShape,
   CornerDotsConfig,
   CornerSquareShape,
   CornerSquaresConfig,
+  CustomShapeMask,
   DotShape,
   DotsConfig,
   ECLevel,
@@ -27,6 +29,7 @@ export type {
   QRCodeInstance,
   RasterOptions,
   ResolvedQRCodeConfig,
+  ShapeMask,
   TextPosition
 } from './types'
 
@@ -42,6 +45,7 @@ export type {
   Gradient,
   Mode,
   Options,
+  ShapeMaskOption,
   ShapeType,
   TypeNumber
 } from './legacy-types'

@@ -18,6 +18,13 @@ export interface GradientConfig {
   colorStops: GradientColorStop[]
 }
 
+export type BuiltInShapeMask = 'circle' | 'rounded-square' | 'heart' | 'triangle' | 'star'
+export interface CustomShapeMask {
+  /** SVG path drawn in a 1×1 unit box (0..1 on both axes). Used as a hit-test. */
+  svgPath: string
+}
+export type ShapeMask = BuiltInShapeMask | CustomShapeMask
+
 export interface DotsConfig {
   shape?: DotShape
   color?: string
@@ -73,6 +80,7 @@ export interface QRCodeConfig {
   background?: BackgroundConfig
   image?: ImageConfig
   frame?: FrameConfig
+  shapeMask?: ShapeMask
 }
 
 export interface RasterOptions {
@@ -105,6 +113,7 @@ export interface ResolvedQRCodeConfig {
   background: Required<Pick<BackgroundConfig, 'color'>> & { gradient?: GradientConfig }
   image?: ImageConfig
   frame?: FrameConfig
+  shapeMask?: ShapeMask
 }
 
 export const DEFAULT_CONFIG: Omit<ResolvedQRCodeConfig, 'data'> = {

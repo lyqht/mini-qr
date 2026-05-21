@@ -67,9 +67,23 @@ export type TypeNumber =
 export type ErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H'
 export type Mode = 'Numeric' | 'Alphanumeric' | 'Byte' | 'Kanji'
 
+/**
+ * Visual mask that clips the QR to a non-square outline. Built-in shapes are
+ * referenced by string; arbitrary shapes by an SVG path in unit-square coords.
+ * Wired through to the new lib's ShapeMask.
+ */
+export type ShapeMaskOption =
+  | 'circle'
+  | 'rounded-square'
+  | 'heart'
+  | 'triangle'
+  | 'star'
+  | { svgPath: string }
+
 export type Options = {
   type?: DrawType
   shape?: ShapeType
+  shapeMask?: ShapeMaskOption
   width?: number
   height?: number
   margin?: number
