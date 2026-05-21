@@ -66,8 +66,10 @@ import {
   type CornerSquareType,
   type DotType,
   type ErrorCorrectionLevel,
+  type Gradient,
   type Options as StyledQRCodeProps
 } from '@/lib/qr-code'
+import GradientPicker from '@/components/GradientPicker.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
@@ -122,10 +124,12 @@ watch(
 
 const dotsOptionsColor = ref()
 const dotsOptionsType = ref()
+const dotsOptionsGradient = ref<Gradient | undefined>()
 const cornersSquareOptionsColor = ref()
 const cornersSquareOptionsType = ref()
 const cornersDotOptionsColor = ref()
 const cornersDotOptionsType = ref()
+const backgroundGradient = ref<Gradient | undefined>()
 const styleBorderRadius = ref()
 const styledBorderRadiusFormatted = computed(() => `${styleBorderRadius.value}px`)
 const exportBorderRadius = computed(() =>
@@ -151,8 +155,17 @@ watch(
 
 const dotsOptions = computed(() => ({
   color: dotsOptionsColor.value,
-  type: dotsOptionsType.value
+  type: dotsOptionsType.value,
+  gradient: dotsOptionsGradient.value
 }))
+// Only emit a backgroundOptions block when a gradient is configured. Without
+// a gradient, the outer (CSS-driven) background still wins so existing solid
+// fills and exports look unchanged.
+const backgroundOptions = computed(() =>
+  backgroundGradient.value
+    ? { color: styleBackground.value, gradient: backgroundGradient.value }
+    : undefined
+)
 const cornersSquareOptions = computed(() => ({
   color: cornersSquareOptionsColor.value,
   type: cornersSquareOptionsType.value
@@ -186,6 +199,7 @@ const qrCodeProps = computed<StyledQRCodeProps>(() => ({
   dotsOptions: dotsOptions.value,
   cornersSquareOptions: cornersSquareOptions.value,
   cornersDotOptions: cornersDotOptions.value,
+  backgroundOptions: backgroundOptions.value,
   imageOptions: imageOptions.value,
   qrOptions: qrOptions.value
 }))
@@ -259,12 +273,14 @@ watch(selectedPreset, () => {
   imageSize.value = selectedPreset.value.imageOptions.imageSize
   dotsOptionsColor.value = selectedPreset.value.dotsOptions.color
   dotsOptionsType.value = selectedPreset.value.dotsOptions.type
+  dotsOptionsGradient.value = selectedPreset.value.dotsOptions.gradient
   cornersSquareOptionsColor.value = selectedPreset.value.cornersSquareOptions.color
   cornersSquareOptionsType.value = selectedPreset.value.cornersSquareOptions.type
   cornersDotOptionsColor.value = selectedPreset.value.cornersDotOptions.color
   cornersDotOptionsType.value = selectedPreset.value.cornersDotOptions.type
   styleBorderRadius.value = getNumericCSSValue(selectedPreset.value.style.borderRadius as string)
   styleBackground.value = selectedPreset.value.style.background
+  backgroundGradient.value = selectedPreset.value.backgroundOptions?.gradient
   includeBackground.value = selectedPreset.value.style.background !== 'transparent'
   errorCorrectionLevel.value =
     selectedPreset.value.qrOptions && selectedPreset.value.qrOptions.errorCorrectionLevel
@@ -1958,6 +1974,18 @@ const updateDataFromModal = (newData: string) => {
                     v-model="cornersDotOptionsColor"
                   />
                 </div>
+              </div>
+              <div id="gradient-settings" class="flex w-full flex-col gap-3">
+                <GradientPicker
+                  id="dots-gradient"
+                  :label="t('Dots gradient')"
+                  v-model="dotsOptionsGradient"
+                />
+                <GradientPicker
+                  id="background-gradient"
+                  :label="t('Background gradient')"
+                  v-model="backgroundGradient"
+                />
               </div>
               <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
                 <div class="w-full sm:w-1/3">
