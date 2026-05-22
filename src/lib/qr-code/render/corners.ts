@@ -8,6 +8,20 @@ export interface CornersRenderArgs {
   shape: CornerSquareShape | CornerDotShape
 }
 
+export interface CornerSkipFlags {
+  tl: boolean
+  tr: boolean
+  bl: boolean
+}
+
+function isSkipped(origin: { row: number; col: number }, count: number, skip?: CornerSkipFlags): boolean {
+  if (!skip) return false
+  if (origin.row === 0 && origin.col === 0) return skip.tl
+  if (origin.row === 0 && origin.col === count - 7) return skip.tr
+  if (origin.row === count - 7 && origin.col === 0) return skip.bl
+  return false
+}
+
 /**
  * Three 7×1-module-thick finder square outlines (top-left, top-right,
  * bottom-left) emitted as one aggregated SVG path with `fill-rule="evenodd"`
@@ -18,10 +32,12 @@ export function buildCornerSquaresPath(args: {
   moduleSize: number
   offset: number
   shape: CornerSquareShape
+  skip?: CornerSkipFlags
 }): string {
-  const { count, moduleSize, offset, shape } = args
+  const { count, moduleSize, offset, shape, skip } = args
   const parts: string[] = []
   for (const o of finderOrigins(count)) {
+    if (isSkipped(o, count, skip)) continue
     const x = offset + o.col * moduleSize
     const y = offset + o.row * moduleSize
     const outerSize = 7 * moduleSize
@@ -59,10 +75,12 @@ export function buildCornerDotsPath(args: {
   moduleSize: number
   offset: number
   shape: CornerDotShape
+  skip?: CornerSkipFlags
 }): string {
-  const { count, moduleSize, offset, shape } = args
+  const { count, moduleSize, offset, shape, skip } = args
   const parts: string[] = []
   for (const o of finderOrigins(count)) {
+    if (isSkipped(o, count, skip)) continue
     const innerX = offset + (o.col + 2) * moduleSize
     const innerY = offset + (o.row + 2) * moduleSize
     const innerSize = 3 * moduleSize

@@ -1,12 +1,22 @@
 import { renderFramed } from './frame'
 import { rasterizeSvg } from './render/canvas'
+import { recommendedECForShape } from './render/shapes'
 import {
   DEFAULT_CONFIG,
+  type ECLevel,
   type QRCodeConfig,
   type QRCodeInstance,
   type RasterOptions,
   type ResolvedQRCodeConfig
 } from './types'
+
+const EC_STRENGTH: Record<ECLevel, number> = { L: 0, M: 1, Q: 2, H: 3 }
+
+function pickEC(requested: ECLevel | undefined, recommended: ECLevel | undefined): ECLevel {
+  const base = requested ?? DEFAULT_CONFIG.errorCorrectionLevel
+  if (!recommended) return base
+  return EC_STRENGTH[recommended] > EC_STRENGTH[base] ? recommended : base
+}
 
 function resolveConfig(config: QRCodeConfig): ResolvedQRCodeConfig {
   if (!config || typeof config.data !== 'string') {
@@ -16,7 +26,10 @@ function resolveConfig(config: QRCodeConfig): ResolvedQRCodeConfig {
     data: config.data,
     size: config.size ?? DEFAULT_CONFIG.size,
     margin: config.margin ?? DEFAULT_CONFIG.margin,
-    errorCorrectionLevel: config.errorCorrectionLevel ?? DEFAULT_CONFIG.errorCorrectionLevel,
+    errorCorrectionLevel: pickEC(
+      config.errorCorrectionLevel,
+      recommendedECForShape(config.shapeMask)
+    ),
     dots: {
       shape: config.dots?.shape ?? DEFAULT_CONFIG.dots.shape,
       color: config.dots?.color ?? DEFAULT_CONFIG.dots.color,
@@ -37,7 +50,8 @@ function resolveConfig(config: QRCodeConfig): ResolvedQRCodeConfig {
       gradient: config.background?.gradient
     },
     image: config.image,
-    frame: config.frame
+    frame: config.frame,
+    shapeMask: config.shapeMask
   }
 }
 
@@ -134,6 +148,7 @@ export function mergeConfig(
       ? { ...current.background, ...partial.background }
       : current.background,
     image: 'image' in partial ? (partial.image ?? undefined) : current.image,
-    frame: 'frame' in partial ? (partial.frame ?? undefined) : current.frame
+    frame: 'frame' in partial ? (partial.frame ?? undefined) : current.frame,
+    shapeMask: 'shapeMask' in partial ? (partial.shapeMask ?? undefined) : current.shapeMask
   }
 }

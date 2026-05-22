@@ -3,6 +3,7 @@ import { buildMatrix } from '../matrix'
 import { buildDotsPath } from './dots'
 import { buildCornerDotsPath, buildCornerSquaresPath } from './corners'
 import { computeImagePlacement } from './image'
+import { buildShapeMaskPredicate, recommendedECForShape } from './shapes'
 
 export interface RenderedQR {
   svg: string
@@ -38,6 +39,10 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
   const parts: string[] = []
   const defs: string[] = []
 
+  const shapeHide = config.shapeMask
+    ? buildShapeMaskPredicate(config.shapeMask, count)
+    : undefined
+
   const bgFill = resolveFill(config.background.color, config.background.gradient, 'qr-bg-grad', defs)
   if (bgFill.shouldEmit) {
     parts.push(
@@ -56,13 +61,15 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
       })
     : undefined
 
+  const combinedHide = combineHide(placement?.hidesCell, shapeHide)
+
   const dotsPath = buildDotsPath({
     matrix,
     count,
     moduleSize,
     offset,
     shape: config.dots.shape,
-    hideCell: placement?.hidesCell
+    hideCell: combinedHide
   })
   if (dotsPath) {
     const fill = resolveFill(config.dots.color, config.dots.gradient, 'qr-dots-grad', defs)
@@ -71,11 +78,14 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
     )
   }
 
+  const skipFinder = config.shapeMask ? shouldSkipFinder(shapeHide, count) : { tl: false, tr: false, bl: false }
+
   const cornerSquaresPath = buildCornerSquaresPath({
     count,
     moduleSize,
     offset,
-    shape: config.cornerSquares.shape
+    shape: config.cornerSquares.shape,
+    skip: skipFinder
   })
   if (cornerSquaresPath) {
     const fill = resolveFill(
@@ -93,7 +103,8 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
     count,
     moduleSize,
     offset,
-    shape: config.cornerDots.shape
+    shape: config.cornerDots.shape,
+    skip: skipFinder
   })
   if (cornerDotsPath) {
     const fill = resolveFill(
@@ -175,7 +186,10 @@ function buildGradientDef(id: string, gradient: GradientConfig): string {
   const stops = gradient.colorStops
     .slice()
     .sort((a, b) => a.offset - b.offset)
-    .map((s) => `<stop offset="${clamp01(s.offset)}" stop-color="${escapeAttr(s.color)}"/>`)
+    .map(
+      (s) =>
+        `<stop offset="${clamp01(s.offset)}" stop-color="${escapeAttr(s.color)}"/>`
+    )
     .join('')
 
   if (gradient.type === 'radial') {
@@ -212,3 +226,33 @@ function clamp01(v: number): number {
   if (v > 1) return 1
   return v
 }
+
+function combineHide(
+  a: ((r: number, c: number) => boolean) | undefined,
+  b: ((r: number, c: number) => boolean) | undefined
+): ((r: number, c: number) => boolean) | undefined {
+  if (!a && !b) return undefined
+  if (!a) return b
+  if (!b) return a
+  return (r, c) => a(r, c) || b(r, c)
+}
+
+/**
+ * Finder patterns sit at (0,0), (0,count-7), (count-7,0). If a shape mask hides
+ * the cell that finder occupies, suppress the corner square + dot at that spot
+ * so we don't draw decoration outside the visible mask.
+ */
+function shouldSkipFinder(
+  hide: ((r: number, c: number) => boolean) | undefined,
+  count: number
+): { tl: boolean; tr: boolean; bl: boolean } {
+  if (!hide) return { tl: false, tr: false, bl: false }
+  return {
+    tl: hide(3, 3),
+    tr: hide(3, count - 4),
+    bl: hide(count - 4, 3)
+  }
+}
+
+// Re-export for tests.
+export { recommendedECForShape }
