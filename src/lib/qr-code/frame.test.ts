@@ -60,4 +60,43 @@ describe('renderFramed', () => {
     expect(svg).not.toContain('<not-a-tag>')
     expect(svg).toContain('&lt;not-a-tag&gt;')
   })
+
+  it.each(['top', 'bottom', 'left', 'right'] as const)(
+    'reserves border width on every side for textPosition=%s',
+    (position) => {
+      const { svg, width, height } = renderFramed({
+        ...baseConfig(position),
+        frame: {
+          text: 'SCAN ME',
+          textPosition: position,
+          borderWidth: 20,
+          padding: 0
+        }
+      })
+      // QR translate offset must be at least borderWidth on the QR-side axes.
+      const m = /<g transform="translate\(([0-9.]+), ([0-9.]+)\)">/.exec(svg)
+      expect(m).not.toBeNull()
+      const tx = Number(m![1])
+      const ty = Number(m![2])
+      if (position === 'top') {
+        // QR is below caption; top inset is caption + bw, left inset is bw
+        expect(tx).toBeGreaterThanOrEqual(20)
+      } else if (position === 'bottom') {
+        expect(tx).toBeGreaterThanOrEqual(20)
+        expect(ty).toBeGreaterThanOrEqual(20)
+      } else if (position === 'left') {
+        expect(ty).toBeGreaterThanOrEqual(20)
+      } else {
+        // right: QR sits on the left, caption on the right
+        expect(tx).toBeGreaterThanOrEqual(20)
+        expect(ty).toBeGreaterThanOrEqual(20)
+      }
+      // Outer canvas grew to accommodate borders on both perpendicular sides.
+      if (position === 'top' || position === 'bottom') {
+        expect(width).toBeGreaterThanOrEqual(200 + 40)
+      } else {
+        expect(height).toBeGreaterThanOrEqual(200 + 40)
+      }
+    }
+  )
 })

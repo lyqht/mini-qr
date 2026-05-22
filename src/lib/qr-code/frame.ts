@@ -1,5 +1,5 @@
-import type { FrameConfig, ResolvedQRCodeConfig } from './types'
 import { escapeAttr, escapeText, renderQrFragment, wrapAsSvg } from './render/svg'
+import type { FrameConfig, ResolvedQRCodeConfig } from './types'
 
 const DEFAULT_FRAME: Required<Omit<FrameConfig, 'text' | 'textPosition'>> = {
   textColor: '#000000',
@@ -38,6 +38,15 @@ export function renderFramed(config: ResolvedQRCodeConfig): FramedSvg {
   const textBlockWidth = Math.max(widestLine, f.fontSize)
 
   const padding = f.padding
+  /**
+   * Border sits OUTSIDE the QR + padding box — matches the CSS preview
+   * (QRCodeFrame.vue) where the border element wraps a content box that
+   * already includes the QR and padding. Without including borderWidth in
+   * the outer dimensions and offsetting the QR by borderWidth, a thick
+   * border with padding=0 would be painted in the same pixels the QR
+   * occupies, leaving only the side opposite the caption visible.
+   */
+  const bw = f.borderWidth
   let outerW: number
   let outerH: number
   let qrX: number
@@ -48,38 +57,38 @@ export function renderFramed(config: ResolvedQRCodeConfig): FramedSvg {
 
   switch (f.textPosition) {
     case 'top':
-      outerW = size + 2 * padding
-      outerH = size + textBlockHeight + 3 * padding
-      qrX = padding
-      qrY = textBlockHeight + 2 * padding
+      outerW = size + 2 * padding + 2 * bw
+      outerH = size + textBlockHeight + 3 * padding + 2 * bw
+      qrX = padding + bw
+      qrY = textBlockHeight + 2 * padding + bw
       textX = outerW / 2
-      textY = padding + f.fontSize
+      textY = padding + bw + f.fontSize
       textAnchor = 'middle'
       break
     case 'bottom':
-      outerW = size + 2 * padding
-      outerH = size + textBlockHeight + 3 * padding
-      qrX = padding
-      qrY = padding
+      outerW = size + 2 * padding + 2 * bw
+      outerH = size + textBlockHeight + 3 * padding + 2 * bw
+      qrX = padding + bw
+      qrY = padding + bw
       textX = outerW / 2
-      textY = size + 2 * padding + f.fontSize
+      textY = size + 2 * padding + bw + f.fontSize
       textAnchor = 'middle'
       break
     case 'left':
-      outerW = size + textBlockWidth + 3 * padding
-      outerH = size + 2 * padding
-      qrX = textBlockWidth + 2 * padding
-      qrY = padding
-      textX = padding + textBlockWidth / 2
+      outerW = size + textBlockWidth + 3 * padding + 2 * bw
+      outerH = size + 2 * padding + 2 * bw
+      qrX = textBlockWidth + 2 * padding + bw
+      qrY = padding + bw
+      textX = padding + bw + textBlockWidth / 2
       textY = (outerH - textBlockHeight) / 2 + f.fontSize
       textAnchor = 'middle'
       break
     case 'right':
-      outerW = size + textBlockWidth + 3 * padding
-      outerH = size + 2 * padding
-      qrX = padding
-      qrY = padding
-      textX = size + 2 * padding + textBlockWidth / 2
+      outerW = size + textBlockWidth + 3 * padding + 2 * bw
+      outerH = size + 2 * padding + 2 * bw
+      qrX = padding + bw
+      qrY = padding + bw
+      textX = size + 2 * padding + bw + textBlockWidth / 2
       textY = (outerH - textBlockHeight) / 2 + f.fontSize
       textAnchor = 'middle'
       break
@@ -125,11 +134,7 @@ export function renderFramed(config: ResolvedQRCodeConfig): FramedSvg {
   return { svg, width: outerW, height: outerH, matrixCount }
 }
 
-function liftImage(
-  fragment: string,
-  dx: number,
-  dy: number
-): { fragment: string; image: string } {
+function liftImage(fragment: string, dx: number, dy: number): { fragment: string; image: string } {
   const match = fragment.match(/<image\b[^>]*\/>/)
   if (!match) return { fragment, image: '' }
   const adjusted = match[0]
