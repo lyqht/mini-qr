@@ -50,6 +50,18 @@ describe('mergeConfig', () => {
     expect(merged.image?.sizeRatio).toBe(0.5)
   })
 
+  it('clears shapeMask when partial explicitly sets it to undefined', () => {
+    const current = makeCurrent({ shapeMask: 'circle' })
+    const merged = mergeConfig(current, { shapeMask: undefined })
+    expect(merged.shapeMask).toBeUndefined()
+  })
+
+  it('keeps current shapeMask when partial omits the key', () => {
+    const current = makeCurrent({ shapeMask: 'heart' })
+    const merged = mergeConfig(current, { data: 'new' })
+    expect(merged.shapeMask).toBe('heart')
+  })
+
   it('carries gradient through when dots are partially updated', () => {
     const current = makeCurrent({
       dots: {

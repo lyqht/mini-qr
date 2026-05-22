@@ -146,4 +146,24 @@ describe('renderQrFragment + wrapAsSvg', () => {
       expect(fragment).toContain('fill="#abcdef"')
     })
   })
+
+  describe('shapeMask', () => {
+    it('produces a smaller dots path under a circle mask than under no mask', () => {
+      const unmasked = renderQrFragment(baseConfig()).fragment
+      const masked = renderQrFragment(baseConfig({ shapeMask: 'circle' })).fragment
+      const unmaskedDots = unmasked.match(/class="qr-dots"[^>]*d="([^"]+)"/)?.[1] ?? ''
+      const maskedDots = masked.match(/class="qr-dots"[^>]*d="([^"]+)"/)?.[1] ?? ''
+      expect(maskedDots.length).toBeGreaterThan(0)
+      expect(maskedDots.length).toBeLessThan(unmaskedDots.length)
+    })
+
+    it('accepts custom svgPath masks without throwing', () => {
+      const { fragment } = renderQrFragment(
+        baseConfig({
+          shapeMask: { svgPath: 'M0.1 0.5 L0.5 0.1 L0.9 0.5 L0.5 0.9 Z' }
+        })
+      )
+      expect(fragment).toContain('class="qr-dots"')
+    })
+  })
 })
