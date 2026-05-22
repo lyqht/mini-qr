@@ -1,11 +1,19 @@
-import type { CornerDotType, CornerSquareType, DotType, Gradient, Options } from './legacy-types'
+import type {
+  CornerDotType,
+  CornerSquareType,
+  DotType,
+  Gradient,
+  Options,
+  ShapeMaskOption
+} from './legacy-types'
 import type {
   CornerDotShape,
   CornerSquareShape,
   DotShape,
   ECLevel,
   GradientConfig,
-  QRCodeConfig
+  QRCodeConfig,
+  ShapeMask
 } from './types'
 
 const DOT_SHAPE_FALLBACK: DotShape = 'square'
@@ -106,6 +114,7 @@ export function fromLegacyOptions(legacy: Options): QRCodeConfig {
           gradient: adaptGradient(legacy.backgroundOptions.gradient)
         }
       : undefined,
+    shapeMask: adaptShapeMask(legacy.shapeMask),
     image: legacy.image
       ? {
           href: legacy.image,
@@ -130,4 +139,11 @@ function adaptGradient(g: Gradient | undefined): GradientConfig | undefined {
     rotation: g.rotation,
     colorStops: g.colorStops.map((s) => ({ offset: s.offset, color: s.color }))
   }
+}
+
+function adaptShapeMask(m: ShapeMaskOption | undefined): ShapeMask | undefined {
+  if (!m) return undefined
+  if (typeof m === 'string') return m
+  if (typeof m === 'object' && typeof m.svgPath === 'string') return { svgPath: m.svgPath }
+  return undefined
 }
