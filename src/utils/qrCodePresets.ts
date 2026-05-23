@@ -19,9 +19,9 @@ export type PresetAttributes = {
 
 export type Preset = Omit<
   Required<StyledQRCodeProps>,
-  'shape' | 'qrOptions' | 'nodeCanvas' | 'jsdom'
+  'shape' | 'shapeMask' | 'qrOptions' | 'nodeCanvas' | 'jsdom'
 > &
-  PresetAttributes
+  PresetAttributes & { shapeMask?: StyledQRCodeProps['shapeMask'] }
 
 const defaultPresetOptions = {
   backgroundOptions: {
