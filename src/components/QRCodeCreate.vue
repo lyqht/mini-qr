@@ -67,7 +67,8 @@ import {
   type DotType,
   type ErrorCorrectionLevel,
   type Gradient,
-  type Options as StyledQRCodeProps
+  type Options as StyledQRCodeProps,
+  type ShapeMaskOption
 } from '@/lib/qr-code'
 import GradientPicker from '@/components/GradientPicker.vue'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -130,6 +131,7 @@ const cornersSquareOptionsType = ref()
 const cornersDotOptionsColor = ref()
 const cornersDotOptionsType = ref()
 const backgroundGradient = ref<Gradient | undefined>()
+const shapeMask = ref<ShapeMaskOption | undefined>()
 const styleBorderRadius = ref()
 const styledBorderRadiusFormatted = computed(() => `${styleBorderRadius.value}px`)
 const exportBorderRadius = computed(() =>
@@ -201,7 +203,8 @@ const qrCodeProps = computed<StyledQRCodeProps>(() => ({
   cornersDotOptions: cornersDotOptions.value,
   backgroundOptions: backgroundOptions.value,
   imageOptions: imageOptions.value,
-  qrOptions: qrOptions.value
+  qrOptions: qrOptions.value,
+  shapeMask: shapeMask.value
 }))
 
 function randomizeStyleSettings() {
@@ -281,6 +284,7 @@ watch(selectedPreset, () => {
   styleBorderRadius.value = getNumericCSSValue(selectedPreset.value.style.borderRadius as string)
   styleBackground.value = selectedPreset.value.style.background
   backgroundGradient.value = selectedPreset.value.backgroundOptions?.gradient
+  shapeMask.value = (selectedPreset.value as { shapeMask?: ShapeMaskOption }).shapeMask
   includeBackground.value = selectedPreset.value.style.background !== 'transparent'
   errorCorrectionLevel.value =
     selectedPreset.value.qrOptions && selectedPreset.value.qrOptions.errorCorrectionLevel
@@ -1975,7 +1979,7 @@ const updateDataFromModal = (newData: string) => {
                   />
                 </div>
               </div>
-              <div id="gradient-settings" class="flex w-full flex-col gap-3">
+              <div id="gradient-and-shape-settings" class="flex w-full flex-col gap-3">
                 <GradientPicker
                   id="dots-gradient"
                   :label="t('Dots gradient')"
@@ -1986,6 +1990,35 @@ const updateDataFromModal = (newData: string) => {
                   :label="t('Background gradient')"
                   v-model="backgroundGradient"
                 />
+                <div
+                  class="flex flex-wrap items-center gap-3 rounded-md border border-zinc-200 p-3 dark:border-zinc-700"
+                >
+                  <label for="shape-mask" class="text-sm font-medium">
+                    {{ t('Shape mask') }}
+                  </label>
+                  <select
+                    id="shape-mask"
+                    class="w-auto text-input"
+                    :value="shapeMask ?? ''"
+                    @change="
+                      shapeMask =
+                        (($event.target as HTMLSelectElement).value as ShapeMaskOption) || undefined
+                    "
+                  >
+                    <option value="">{{ t('None') }}</option>
+                    <option value="circle">{{ t('Circle') }}</option>
+                    <option value="rounded-square">{{ t('Rounded square') }}</option>
+                    <option value="triangle">{{ t('Triangle') }}</option>
+                    <option value="heart">{{ t('Heart') }}</option>
+                    <option value="star">{{ t('Star') }}</option>
+                  </select>
+                  <span
+                    v-if="shapeMask && errorCorrectionLevel !== 'H'"
+                    class="text-xs text-amber-700 dark:text-amber-400"
+                  >
+                    {{ t('Shape masks render best at EC level H — auto-applied at export.') }}
+                  </span>
+                </div>
               </div>
               <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
                 <div class="w-full sm:w-1/3">
