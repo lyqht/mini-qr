@@ -28,8 +28,25 @@ function naturalSizeFromSvg(svgString: string): RenderedSize | null {
 }
 
 function pickTargetSize(input: ImageExportInput, svgString: string): RenderedSize {
-  if (input.targetSize) return input.targetSize
   const natural = naturalSizeFromSvg(svgString)
+  if (input.targetSize) {
+    // The SVG that gets rasterised is the source of truth for layout — its
+    // viewBox already encodes the correct proportions (square QR + frame
+    // chrome). `targetSize` is measured off the live DOM preview, whose aspect
+    // ratio can diverge from the SVG (e.g. side-text frames, where the SVG uses
+    // an approximate text-width heuristic). Honouring it verbatim would stretch
+    // the raster non-uniformly and squash the QR (issue #290). So we keep the
+    // SVG's aspect ratio and use `targetSize` only to pick a uniform scale —
+    // large enough to cover the requested box so the QR is never downscaled.
+    if (natural && natural.width > 0 && natural.height > 0) {
+      const scale = Math.max(
+        input.targetSize.width / natural.width,
+        input.targetSize.height / natural.height
+      )
+      return { width: natural.width * scale, height: natural.height * scale }
+    }
+    return input.targetSize
+  }
   if (natural) return natural
   // Fallback to size hint or a reasonable default.
   const hint = input.size

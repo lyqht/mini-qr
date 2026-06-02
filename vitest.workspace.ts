@@ -13,6 +13,7 @@ const BROWSER_TESTS = [
   'src/utils/framePresets.test.ts',
   'src/utils/qrCodePresets.test.ts',
   'src/utils/download.test.ts',
+  'src/utils/convertToImage.test.ts',
   'src/lib/qr-code/legacy-adapter.test.ts',
   'src/lib/qr-code/render/canvas.test.ts'
 ]
