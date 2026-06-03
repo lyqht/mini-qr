@@ -9,18 +9,18 @@ export interface FitBox {
 }
 
 /**
- * Watches `content` and, when its natural width exceeds `maxWidth()`, returns
- * the scale and scaled footprint needed to fit. Returns null while no scaling
- * is needed. Used to shrink wide framed QR previews (e.g. side captions at a
- * large caption width) without growing the preview column: the caller renders
- * an explicitly sized wrapper (width/height from FitBox) around a
- * transform-scaled inner element, so the layout footprint is capped while the
- * content itself keeps its natural size — offsetWidth-based export sizing
- * (getExportDimensions) is unaffected.
+ * Watches `content` and, when its natural size exceeds `maxSize()` (width,
+ * optionally height), returns the uniform scale and scaled footprint needed
+ * to fit. Returns null while no scaling is needed. Used to shrink framed QR
+ * previews (e.g. wide side captions) without growing the preview column or
+ * overflowing the viewport: the caller renders an explicitly sized wrapper
+ * (width/height from FitBox) around a transform-scaled inner element, so the
+ * layout footprint is capped while the content itself keeps its natural
+ * size — offsetWidth-based export sizing (getExportDimensions) is unaffected.
  */
 export function useFitScale(
   content: Ref<HTMLElement | null>,
-  maxWidth: () => number
+  maxSize: () => { width: number; height?: number }
 ): Ref<FitBox | null> {
   const box = ref<FitBox | null>(null)
   let observer: ResizeObserver | null = null
@@ -33,12 +33,20 @@ export function useFitScale(
     }
     const naturalWidth = el.offsetWidth
     const naturalHeight = el.offsetHeight
-    const max = maxWidth()
-    if (naturalWidth <= 0 || max <= 0 || naturalWidth <= max) {
+    const max = maxSize()
+    if (naturalWidth <= 0 || naturalHeight <= 0 || max.width <= 0) {
       box.value = null
       return
     }
-    const scale = max / naturalWidth
+    const scale = Math.min(
+      1,
+      max.width / naturalWidth,
+      max.height && max.height > 0 ? max.height / naturalHeight : 1
+    )
+    if (scale >= 1) {
+      box.value = null
+      return
+    }
     box.value = { scale, width: naturalWidth * scale, height: naturalHeight * scale }
   }
 

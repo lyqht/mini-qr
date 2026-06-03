@@ -1076,9 +1076,21 @@ const updateDataFromModal = (newData: string) => {
         <div class="flex flex-col items-center">
           <!-- Handle indicator for bottom sheet -->
           <div class="mt-2 h-1 w-16 rounded-full bg-gray-300 dark:bg-gray-700"></div>
-          <div :class="['w-full', '-my-8']">
-            <div class="flex origin-center scale-[0.7] items-center justify-center md:scale-100">
-              <FitScaleBox v-if="showFrame" :viewport-margin="32">
+          <!--
+            Framed previews are sized exactly by FitScaleBox (capped width AND
+            height), so they skip the negative-margin/static-scale hack that
+            reclaims the dead layout space a transform-scaled plain QR leaves —
+            with an exact box those negative margins would pull the Export hint
+            up underneath the preview.
+          -->
+          <div :class="['w-full', showFrame ? 'py-1' : '-my-8']">
+            <div
+              :class="[
+                'flex items-center justify-center',
+                !showFrame && 'origin-center scale-[0.7] md:scale-100'
+              ]"
+            >
+              <FitScaleBox v-if="showFrame" :viewport-margin="32" :max-height="150">
                 <QRCodeFrame
                   :frame-text="frameText"
                   :text-position="frameTextPosition"
