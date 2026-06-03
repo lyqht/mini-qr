@@ -355,8 +355,31 @@ function toFrameStyle(style: Partial<FrameStyle>): FrameStyle {
     borderWidth: style.borderWidth ?? '1px',
     borderRadius: style.borderRadius ?? '8px',
     padding: style.padding ?? '16px',
-    ...(style.fontFamily ? { fontFamily: style.fontFamily } : {})
+    ...(style.fontFamily ? { fontFamily: style.fontFamily } : {}),
+    ...(style.backgroundImage ? { backgroundImage: style.backgroundImage } : {})
   }
+}
+
+function uploadFrameBackgroundImage() {
+  const imageInput = document.createElement('input')
+  imageInput.type = 'file'
+  imageInput.accept = 'image/*'
+  imageInput.onchange = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    const file = target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      frameStyle.value = { ...frameStyle.value, backgroundImage: reader.result as string }
+    }
+    reader.readAsDataURL(file)
+  }
+  imageInput.click()
+}
+
+function removeFrameBackgroundImage() {
+  const { backgroundImage: _omitted, ...rest } = frameStyle.value
+  frameStyle.value = rest
 }
 
 function loadFrameFont(fontFamily?: string) {
@@ -1695,6 +1718,65 @@ const updateDataFromModal = (newData: string) => {
                         class="color-input"
                         v-model="frameStyle.backgroundColor"
                       />
+                    </div>
+                    <div>
+                      <label id="frame-background-image-label" class="mb-1 block text-sm">{{
+                        t('Background image')
+                      }}</label>
+                      <div class="flex flex-row items-center gap-2">
+                        <button
+                          id="frame-background-image-upload"
+                          class="icon-button flex flex-row items-center"
+                          aria-labelledby="frame-background-image-label"
+                          @click="uploadFrameBackgroundImage"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                          >
+                            <g
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                            >
+                              <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                              <path
+                                d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-10v6"
+                              />
+                              <path d="M9.5 13.5L12 11l2.5 2.5" />
+                            </g>
+                          </svg>
+                          <span>{{ t('Upload image') }}</span>
+                        </button>
+                        <button
+                          v-if="frameStyle.backgroundImage"
+                          id="frame-background-image-remove"
+                          class="icon-button flex flex-row items-center"
+                          @click="removeFrameBackgroundImage"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                          >
+                            <g
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                            >
+                              <path d="M18 6L6 18M6 6l12 12" />
+                            </g>
+                          </svg>
+                          <span>{{ t('Remove') }}</span>
+                        </button>
+                      </div>
                     </div>
                     <div>
                       <label for="frame-border-color" class="mb-1 block text-sm">{{

@@ -52,6 +52,62 @@ describe('renderFramed', () => {
     expect(height).toBeGreaterThan(200) // caption pushes height
   })
 
+  describe('frame background image', () => {
+    const BG_HREF = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUg=='
+
+    function framedWithBgImage() {
+      return renderFramed({
+        ...baseConfig('bottom'),
+        frame: { text: 'Scan me', textPosition: 'bottom', backgroundImage: BG_HREF }
+      })
+    }
+
+    it('emits no background <image> when backgroundImage is absent', () => {
+      const { svg } = renderFramed(baseConfig('bottom'))
+      expect(svg).not.toContain('<image')
+    })
+
+    it('draws the background image covering the full frame', () => {
+      const { svg, width, height } = framedWithBgImage()
+      const imageTag = svg.match(/<image\b[^>]*\/>/)?.[0]
+      expect(imageTag).toBeDefined()
+      expect(imageTag).toContain(`href="${BG_HREF}"`)
+      expect(imageTag).toContain(`width="${width}"`)
+      expect(imageTag).toContain(`height="${height}"`)
+      // cover (not stretch), like the preview's background-size: cover
+      expect(imageTag).toContain('preserveAspectRatio="xMidYMid slice"')
+    })
+
+    it('clips the background image to the rounded border rect', () => {
+      const { svg } = framedWithBgImage()
+      expect(svg).toMatch(/<clipPath id="([^"]+)">.*rx="8".*<\/clipPath>/)
+      const clipId = svg.match(/<clipPath id="([^"]+)">/)?.[1]
+      expect(svg).toContain(`clip-path="url(#${clipId})"`)
+    })
+
+    it('layers the background image above the fill rect and below the QR group', () => {
+      const { svg } = framedWithBgImage()
+      const rectIdx = svg.indexOf('<rect')
+      const imageIdx = svg.indexOf('<image')
+      const qrGroupIdx = svg.indexOf('<g transform=')
+      expect(rectIdx).toBeGreaterThanOrEqual(0)
+      expect(imageIdx).toBeGreaterThan(rectIdx)
+      expect(qrGroupIdx).toBeGreaterThan(imageIdx)
+    })
+
+    it('escapes the href attribute', () => {
+      const { svg } = renderFramed({
+        ...baseConfig('bottom'),
+        frame: {
+          text: 'Scan me',
+          textPosition: 'bottom',
+          backgroundImage: 'https://example.com/bg.png?a=1&b="2"'
+        }
+      })
+      expect(svg).toContain('a=1&amp;b=&quot;2&quot;')
+    })
+  })
+
   it('escapes special characters in caption text', () => {
     const { svg } = renderFramed({
       ...baseConfig('bottom'),

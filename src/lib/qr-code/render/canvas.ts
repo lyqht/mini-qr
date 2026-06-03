@@ -138,27 +138,29 @@ function canvasToBlob(
 function extractImageOverlay(svg: string): { svg: string; overlay: ImageOverlay | null } {
   // Frame.ts lifts the <image> out of the QR group with absolute viewBox
   // coordinates, so we can rely on simple regex extraction here — no parent
-  // transforms to compose.
-  const match = svg.match(/<image\b[^>]*\/>/)
-  if (!match) return { svg, overlay: null }
-  const attrs = match[0]
-  const href = readAttr(attrs, 'href') ?? readAttr(attrs, 'xlink:href')
-  if (!href) return { svg, overlay: null }
+  // transforms to compose. The SVG may carry several <image> elements (frame
+  // background + centre logo) — scan them all for the external one.
+  for (const match of svg.matchAll(/<image\b[^>]*\/>/g)) {
+    const attrs = match[0]
+    const href = readAttr(attrs, 'href') ?? readAttr(attrs, 'xlink:href')
+    if (!href) continue
 
-  // Data URIs render reliably via the SVG path (no sandbox issue — the bytes
-  // are inline). Leave them in the SVG; only intercept external URLs which
-  // the SVG-loaded-via-img-tag would silently fail to fetch.
-  if (href.startsWith('data:')) return { svg, overlay: null }
+    // Data URIs render reliably via the SVG path (no sandbox issue — the bytes
+    // are inline). Leave them in the SVG; only intercept external URLs which
+    // the SVG-loaded-via-img-tag would silently fail to fetch.
+    if (href.startsWith('data:')) continue
 
-  const x = parseNumberAttr(attrs, 'x', 0)
-  const y = parseNumberAttr(attrs, 'y', 0)
-  const width = parseNumberAttr(attrs, 'width', 0)
-  const height = parseNumberAttr(attrs, 'height', 0)
-  if (width <= 0 || height <= 0) return { svg, overlay: null }
-  return {
-    svg: svg.replace(match[0], ''),
-    overlay: { href, x, y, width, height }
+    const x = parseNumberAttr(attrs, 'x', 0)
+    const y = parseNumberAttr(attrs, 'y', 0)
+    const width = parseNumberAttr(attrs, 'width', 0)
+    const height = parseNumberAttr(attrs, 'height', 0)
+    if (width <= 0 || height <= 0) continue
+    return {
+      svg: svg.replace(attrs, ''),
+      overlay: { href, x, y, width, height }
+    }
   }
+  return { svg, overlay: null }
 }
 
 function readAttr(source: string, name: string): string | null {
@@ -185,7 +187,12 @@ function readViewBox(
   const parts = match[1].trim().split(/\s+/).map(Number)
   // viewBox is "min-x min-y width height" — min-x/min-y can legitimately be 0,
   // only width/height must be positive for our scale math to mean anything.
-  if (parts.length !== 4 || parts.some((n) => !Number.isFinite(n)) || parts[2] <= 0 || parts[3] <= 0) {
+  if (
+    parts.length !== 4 ||
+    parts.some((n) => !Number.isFinite(n)) ||
+    parts[2] <= 0 ||
+    parts[3] <= 0
+  ) {
     return { viewBoxWidth: fallbackWidth, viewBoxHeight: fallbackHeight }
   }
   return { viewBoxWidth: parts[2], viewBoxHeight: parts[3] }

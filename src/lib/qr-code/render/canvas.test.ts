@@ -113,6 +113,46 @@ describe('rasterizeSvg', () => {
     expect(b).toBeLessThan(40)
   })
 
+  it('still draws an external centre logo when a data: frame background <image> precedes it', async () => {
+    // Frame background images are inlined data: URIs and render fine inside
+    // the sandboxed SVG; the centre logo may still be an external URL that the
+    // sandbox refuses to fetch. The overlay extraction must skip past the
+    // data: image and lift the external one. A blob: URL stands in for an
+    // external URL here — like http(s), it is blocked inside an SVG loaded
+    // via <img> but loads fine as a direct Image.
+    const redBg = makeSolidPngDataUri('#ff0000')
+    const greenLogoBlob = await (await fetch(makeSolidPngDataUri('#00ff00'))).blob()
+    const greenLogoUrl = URL.createObjectURL(greenLogoBlob)
+    try {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 50 50" width="50" height="50">
+        <rect x="0" y="0" width="50" height="50" fill="#ffffff"/>
+        <image href="${redBg}" x="0" y="0" width="50" height="50"/>
+        <image href="${greenLogoUrl}" x="20" y="20" width="10" height="10"/>
+      </svg>`
+      const blob = await rasterizeSvg({
+        svgString: svg,
+        width: 100,
+        height: 100,
+        mimeType: 'image/png'
+      })
+      const bitmap = await createImageBitmap(blob)
+      const canvas = document.createElement('canvas')
+      canvas.width = bitmap.width
+      canvas.height = bitmap.height
+      const ctx = canvas.getContext('2d')!
+      ctx.drawImage(bitmap, 0, 0)
+      // Logo covers canvas (40,40)..(60,60); centre must be the logo's green,
+      // not the background image's red.
+      const { data } = ctx.getImageData(50, 50, 1, 1)
+      const [r, g, b] = data
+      expect(g).toBeGreaterThan(200)
+      expect(r).toBeLessThan(40)
+      expect(b).toBeLessThan(40)
+    } finally {
+      URL.revokeObjectURL(greenLogoUrl)
+    }
+  })
+
   it('still produces a blob when the centre logo URL fails to load', async () => {
     const blob = await rasterizeSvg({
       svgString: SVG_WITH_BROKEN_LOGO,
