@@ -59,6 +59,7 @@ export default [
         Image: 'readonly',
         createImageBitmap: 'readonly',
         ImageBitmap: 'readonly',
+        ResizeObserver: 'readonly',
         Document: 'readonly',
         Node: 'readonly',
         XMLSerializer: 'readonly',

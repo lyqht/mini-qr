@@ -34,6 +34,7 @@ import { downloadBlob } from '@/utils/download'
 import { parseCSV, validateCSVData, type CSVParsingResult } from '@/utils/csv'
 import { generateBatchExportFilename, processCsvDataForBatch } from '@/utils/csvBatchProcessing'
 import { getNumericCSSValue } from '@/utils/formatting'
+import { useFitScale } from '@/utils/useFitScale'
 import {
   allFramePresets,
   defaultFramePreset,
@@ -304,7 +305,16 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
 const defaultFrameText = computed(() => t('Scan for more info'))
 const frameText = ref<string>('')
 const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
+// Side captions only: caption column width as % of the QR size (100 = QR width).
+const frameCaptionWidthPercent = ref(100)
+const frameCaptionWidthRatio = computed(() => frameCaptionWidthPercent.value / 100)
 const showFrame = ref(false)
+
+// Shrink the framed preview to fit the preview area (wide side captions can
+// exceed it); transform-based, so export measurements are unaffected.
+const qrPreviewContainer = ref<HTMLElement | null>(null)
+const framePreviewEl = ref<HTMLElement | null>(null)
+const previewFitScale = useFitScale(qrPreviewContainer, framePreviewEl)
 
 const frameStyle = ref<FrameStyle>({
   textColor: '#000000',
@@ -430,7 +440,8 @@ watch(selectedFramePresetKey, (newKey, prevKey) => {
 const frameSettings = computed(() => ({
   text: frameText.value,
   position: frameTextPosition.value,
-  style: frameStyle.value
+  style: frameStyle.value,
+  captionWidthRatio: frameCaptionWidthRatio.value
 }))
 
 const FONT_CATEGORY_LABELS: Record<FontCategory, string> = {
@@ -620,7 +631,8 @@ function buildSvgExportInput() {
       ? {
           text: frameText.value,
           position: frameTextPosition.value,
-          style: frameStyle.value
+          style: frameStyle.value,
+          captionWidthRatio: frameCaptionWidthRatio.value
         }
       : null,
     outerBackground: styleBackground.value,
@@ -677,6 +689,7 @@ function applyQRConfig(config: QRCodeConfig, key?: string) {
     showFrame.value = true
     frameText.value = config.frame.text || defaultFrameText.value
     frameTextPosition.value = config.frame.position || 'bottom'
+    frameCaptionWidthPercent.value = Math.round((config.frame.captionWidthRatio ?? 1) * 100)
     frameStyle.value = { ...frameStyle.value, ...config.frame.style }
 
     const restoredFontFamily = config.frame.style.fontFamily
@@ -1065,6 +1078,7 @@ const updateDataFromModal = (newData: string) => {
                 :frame-text="frameText"
                 :text-position="frameTextPosition"
                 :frame-style="frameStyle"
+                :caption-width-ratio="frameCaptionWidthRatio"
               >
                 <template #qr-code>
                   <div id="qr-code-container" class="grid place-items-center">
@@ -1157,16 +1171,16 @@ const updateDataFromModal = (newData: string) => {
       <div id="main-content">
         <div
           id="qr-code-container"
-          :class="[
-            'grid origin-center place-items-center',
-            showFrame && ['left', 'right'].includes(frameTextPosition) && 'scale-[0.7] md:scale-100'
-          ]"
+          ref="qrPreviewContainer"
+          class="grid origin-center place-items-center"
+          :style="previewFitScale < 1 ? { transform: `scale(${previewFitScale})` } : undefined"
         >
-          <div v-if="showFrame" id="element-to-export">
+          <div v-if="showFrame" id="element-to-export" ref="framePreviewEl">
             <QRCodeFrame
               :frame-text="frameText"
               :text-position="frameTextPosition"
               :frame-style="frameStyle"
+              :caption-width-ratio="frameCaptionWidthRatio"
             >
               <template #qr-code>
                 <div id="qr-code-container" class="grid place-items-center">
@@ -1559,6 +1573,22 @@ const updateDataFromModal = (newData: string) => {
                       <label :for="'frameTextPosition-' + position">{{ t(position) }}</label>
                     </div>
                   </fieldset>
+                </div>
+                <div
+                  v-if="frameTextPosition === 'left' || frameTextPosition === 'right'"
+                  class="flex flex-col"
+                >
+                  <label for="frame-caption-width" class="mb-2 block">
+                    {{ t('Caption width') }}: {{ frameCaptionWidthPercent }}%
+                  </label>
+                  <input
+                    id="frame-caption-width"
+                    type="range"
+                    min="50"
+                    max="300"
+                    step="10"
+                    v-model.number="frameCaptionWidthPercent"
+                  />
                 </div>
                 <div>
                   <div class="mb-2 flex flex-row items-center gap-2">
