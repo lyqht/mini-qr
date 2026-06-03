@@ -310,11 +310,16 @@ const frameCaptionWidthPercent = ref(100)
 const frameCaptionWidthRatio = computed(() => frameCaptionWidthPercent.value / 100)
 const showFrame = ref(false)
 
-// Shrink the framed preview to fit the preview area (wide side captions can
-// exceed it); transform-based, so export measurements are unaffected.
-const qrPreviewContainer = ref<HTMLElement | null>(null)
+// Cap the framed preview's layout footprint so wide side captions can't grow
+// the (content-sized) preview column and push the settings aside. When the
+// frame exceeds the cap it is rendered scaled-down inside an explicitly sized
+// wrapper; #element-to-export keeps its natural size, so export measurements
+// (getExportDimensions) are unaffected.
+const FRAME_PREVIEW_MAX_WIDTH = 450
 const framePreviewEl = ref<HTMLElement | null>(null)
-const previewFitScale = useFitScale(qrPreviewContainer, framePreviewEl)
+const framePreviewFit = useFitScale(framePreviewEl, () =>
+  Math.min(FRAME_PREVIEW_MAX_WIDTH, window.innerWidth - 48)
+)
 
 const frameStyle = ref<FrameStyle>({
   textColor: '#000000',
@@ -378,8 +383,9 @@ function applySelectedPresetToState() {
   styleBorderRadius.value = getNumericCSSValue(preset.style.borderRadius as string)
   styleBackground.value = preset.style.background
   includeBackground.value = preset.style.background !== 'transparent'
-  errorCorrectionLevel.value =
-    preset.qrOptions?.errorCorrectionLevel ? preset.qrOptions.errorCorrectionLevel : 'Q'
+  errorCorrectionLevel.value = preset.qrOptions?.errorCorrectionLevel
+    ? preset.qrOptions.errorCorrectionLevel
+    : 'Q'
   const frame = (preset as Preset & { frame?: QRCodeFrameConfig }).frame
   if (frame) {
     applyFrameFromPreset(frame)
@@ -1169,44 +1175,68 @@ const updateDataFromModal = (newData: string) => {
     <!-- Main content -->
     <Teleport to="#main-content-container" v-if="mainContentContainer != null">
       <div id="main-content">
-        <div
-          id="qr-code-container"
-          ref="qrPreviewContainer"
-          class="grid origin-center place-items-center"
-          :style="previewFitScale < 1 ? { transform: `scale(${previewFitScale})` } : undefined"
-        >
-          <div v-if="showFrame" id="element-to-export" ref="framePreviewEl">
-            <QRCodeFrame
-              :frame-text="frameText"
-              :text-position="frameTextPosition"
-              :frame-style="frameStyle"
-              :caption-width-ratio="frameCaptionWidthRatio"
+        <div id="qr-code-container" class="grid origin-center place-items-center">
+          <!--
+            When the framed preview is wider than the cap, render it scaled
+            inside a wrapper sized to the scaled footprint — the layout box
+            never exceeds the cap, so the settings column stays put.
+          -->
+          <div
+            v-if="showFrame"
+            :style="
+              framePreviewFit
+                ? {
+                    width: `${framePreviewFit.width}px`,
+                    height: `${framePreviewFit.height}px`,
+                    overflow: 'hidden'
+                  }
+                : undefined
+            "
+          >
+            <div
+              :style="
+                framePreviewFit
+                  ? {
+                      transform: `scale(${framePreviewFit.scale})`,
+                      transformOrigin: 'top left'
+                    }
+                  : undefined
+              "
             >
-              <template #qr-code>
-                <div id="qr-code-container" class="grid place-items-center">
-                  <div
-                    class="grid place-items-center overflow-hidden"
-                    :style="[
-                      style,
-                      {
-                        width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
-                        height: `${PREVIEW_QRCODE_DIM_UNIT}px`
-                      }
-                    ]"
-                  >
-                    <StyledQRCode
-                      v-bind="{
-                        ...qrCodeProps,
-                        width: PREVIEW_QRCODE_DIM_UNIT,
-                        height: PREVIEW_QRCODE_DIM_UNIT
-                      }"
-                      role="img"
-                      aria-label="QR code"
-                    />
-                  </div>
-                </div>
-              </template>
-            </QRCodeFrame>
+              <div id="element-to-export" ref="framePreviewEl" class="w-fit">
+                <QRCodeFrame
+                  :frame-text="frameText"
+                  :text-position="frameTextPosition"
+                  :frame-style="frameStyle"
+                  :caption-width-ratio="frameCaptionWidthRatio"
+                >
+                  <template #qr-code>
+                    <div id="qr-code-container" class="grid place-items-center">
+                      <div
+                        class="grid place-items-center overflow-hidden"
+                        :style="[
+                          style,
+                          {
+                            width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
+                            height: `${PREVIEW_QRCODE_DIM_UNIT}px`
+                          }
+                        ]"
+                      >
+                        <StyledQRCode
+                          v-bind="{
+                            ...qrCodeProps,
+                            width: PREVIEW_QRCODE_DIM_UNIT,
+                            height: PREVIEW_QRCODE_DIM_UNIT
+                          }"
+                          role="img"
+                          aria-label="QR code"
+                        />
+                      </div>
+                    </div>
+                  </template>
+                </QRCodeFrame>
+              </div>
+            </div>
           </div>
           <div
             v-else
