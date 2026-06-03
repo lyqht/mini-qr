@@ -690,7 +690,7 @@ function downloadQRConfig() {
   downloadBlob(blob, 'qr-code-config.json')
 }
 
-function applyQRConfig(config: QRCodeConfig, key?: string) {
+function applyQRConfig(config: QRCodeConfig, key?: string, options?: { restoreData?: boolean }) {
   const preset = {
     ...config.props,
     style: config.style
@@ -703,6 +703,12 @@ function applyQRConfig(config: QRCodeConfig, key?: string) {
   }
 
   selectedPreset.value = preset
+
+  // Style presets deliberately never touch the user's data, but an explicitly
+  // loaded config file is the user's own saved setup — restore its data too.
+  if (options?.restoreData && typeof config.props.data === 'string' && config.props.data !== '') {
+    data.value = config.props.data
+  }
 
   if (config.frame) {
     showFrame.value = true
@@ -742,10 +748,14 @@ function applyQRConfig(config: QRCodeConfig, key?: string) {
   }
 }
 
-function applyQRConfigFromJsonString(jsonString: string, key?: string) {
+function applyQRConfigFromJsonString(
+  jsonString: string,
+  key?: string,
+  options?: { restoreData?: boolean }
+) {
   try {
     const config = JSON.parse(jsonString) as QRCodeConfig
-    applyQRConfig(config, key)
+    applyQRConfig(config, key, options)
   } catch {
     console.error('Failed to parse QR code config JSON')
   }
@@ -763,7 +773,10 @@ function loadQrConfigFromFile() {
       reader.onload = (e: ProgressEvent<FileReader>) => {
         applyQRConfigFromJsonString(
           (e.target as FileReader).result as string,
-          LOADED_FROM_FILE_PRESET_KEY
+          LOADED_FROM_FILE_PRESET_KEY,
+          {
+            restoreData: true
+          }
         )
       }
       reader.readAsText(target.files[0])
