@@ -34,7 +34,7 @@ import { downloadBlob } from '@/utils/download'
 import { parseCSV, validateCSVData, type CSVParsingResult } from '@/utils/csv'
 import { generateBatchExportFilename, processCsvDataForBatch } from '@/utils/csvBatchProcessing'
 import { getNumericCSSValue } from '@/utils/formatting'
-import { useFitScale } from '@/utils/useFitScale'
+import FitScaleBox from '@/components/FitScaleBox.vue'
 import {
   allFramePresets,
   defaultFramePreset,
@@ -305,21 +305,17 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
 const defaultFrameText = computed(() => t('Scan for more info'))
 const frameText = ref<string>('')
 const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
-// Side captions only: caption column width as % of the QR size (100 = QR width).
-const frameCaptionWidthPercent = ref(100)
-const frameCaptionWidthRatio = computed(() => frameCaptionWidthPercent.value / 100)
+// Side captions only: caption column width in px (default = preview QR size).
+const FRAME_CAPTION_WIDTH_MIN = 50
+const FRAME_CAPTION_WIDTH_MAX = 600
+const frameCaptionWidth = ref(200)
 const showFrame = ref(false)
 
-// Cap the framed preview's layout footprint so wide side captions can't grow
-// the (content-sized) preview column and push the settings aside. When the
-// frame exceeds the cap it is rendered scaled-down inside an explicitly sized
-// wrapper; #element-to-export keeps its natural size, so export measurements
-// (getExportDimensions) are unaffected.
+// Cap the framed preview's layout footprint (via FitScaleBox) so wide side
+// captions can't grow the (content-sized) preview column, push the settings
+// aside, or overflow the viewport on mobile. #element-to-export keeps its
+// natural size, so export measurements (getExportDimensions) are unaffected.
 const FRAME_PREVIEW_MAX_WIDTH = 450
-const framePreviewEl = ref<HTMLElement | null>(null)
-const framePreviewFit = useFitScale(framePreviewEl, () =>
-  Math.min(FRAME_PREVIEW_MAX_WIDTH, window.innerWidth - 48)
-)
 
 const frameStyle = ref<FrameStyle>({
   textColor: '#000000',
@@ -447,7 +443,7 @@ const frameSettings = computed(() => ({
   text: frameText.value,
   position: frameTextPosition.value,
   style: frameStyle.value,
-  captionWidthRatio: frameCaptionWidthRatio.value
+  captionWidth: frameCaptionWidth.value
 }))
 
 const FONT_CATEGORY_LABELS: Record<FontCategory, string> = {
@@ -638,7 +634,7 @@ function buildSvgExportInput() {
           text: frameText.value,
           position: frameTextPosition.value,
           style: frameStyle.value,
-          captionWidthRatio: frameCaptionWidthRatio.value
+          captionWidth: frameCaptionWidth.value
         }
       : null,
     outerBackground: styleBackground.value,
@@ -695,7 +691,10 @@ function applyQRConfig(config: QRCodeConfig, key?: string) {
     showFrame.value = true
     frameText.value = config.frame.text || defaultFrameText.value
     frameTextPosition.value = config.frame.position || 'bottom'
-    frameCaptionWidthPercent.value = Math.round((config.frame.captionWidthRatio ?? 1) * 100)
+    frameCaptionWidth.value = Math.min(
+      FRAME_CAPTION_WIDTH_MAX,
+      Math.max(FRAME_CAPTION_WIDTH_MIN, Math.round(config.frame.captionWidth ?? 200))
+    )
     frameStyle.value = { ...frameStyle.value, ...config.frame.style }
 
     const restoredFontFamily = config.frame.style.fontFamily
@@ -1079,38 +1078,39 @@ const updateDataFromModal = (newData: string) => {
           <div class="mt-2 h-1 w-16 rounded-full bg-gray-300 dark:bg-gray-700"></div>
           <div :class="['w-full', '-my-8']">
             <div class="flex origin-center scale-[0.7] items-center justify-center md:scale-100">
-              <QRCodeFrame
-                v-if="showFrame"
-                :frame-text="frameText"
-                :text-position="frameTextPosition"
-                :frame-style="frameStyle"
-                :caption-width-ratio="frameCaptionWidthRatio"
-              >
-                <template #qr-code>
-                  <div id="qr-code-container" class="grid place-items-center">
-                    <div
-                      class="grid place-items-center overflow-hidden"
-                      :style="[
-                        style,
-                        {
-                          width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
-                          height: `${PREVIEW_QRCODE_DIM_UNIT}px`
-                        }
-                      ]"
-                    >
-                      <StyledQRCode
-                        v-bind="{
-                          ...qrCodeProps,
-                          width: PREVIEW_QRCODE_DIM_UNIT,
-                          height: PREVIEW_QRCODE_DIM_UNIT
-                        }"
-                        role="img"
-                        aria-label="QR code"
-                      />
+              <FitScaleBox v-if="showFrame" :viewport-margin="32">
+                <QRCodeFrame
+                  :frame-text="frameText"
+                  :text-position="frameTextPosition"
+                  :frame-style="frameStyle"
+                  :caption-width="frameCaptionWidth"
+                >
+                  <template #qr-code>
+                    <div id="qr-code-container" class="grid place-items-center">
+                      <div
+                        class="grid place-items-center overflow-hidden"
+                        :style="[
+                          style,
+                          {
+                            width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
+                            height: `${PREVIEW_QRCODE_DIM_UNIT}px`
+                          }
+                        ]"
+                      >
+                        <StyledQRCode
+                          v-bind="{
+                            ...qrCodeProps,
+                            width: PREVIEW_QRCODE_DIM_UNIT,
+                            height: PREVIEW_QRCODE_DIM_UNIT
+                          }"
+                          role="img"
+                          aria-label="QR code"
+                        />
+                      </div>
                     </div>
-                  </div>
-                </template>
-              </QRCodeFrame>
+                  </template>
+                </QRCodeFrame>
+              </FitScaleBox>
               <template v-else>
                 <div class="grid place-items-center">
                   <div
@@ -1177,67 +1177,46 @@ const updateDataFromModal = (newData: string) => {
       <div id="main-content">
         <div id="qr-code-container" class="grid origin-center place-items-center">
           <!--
-            When the framed preview is wider than the cap, render it scaled
-            inside a wrapper sized to the scaled footprint — the layout box
-            never exceeds the cap, so the settings column stays put.
+            When the framed preview is wider than the cap, FitScaleBox renders
+            it scaled inside a wrapper sized to the scaled footprint — the
+            layout box never exceeds the cap, so the settings column stays put
+            and nothing overflows the viewport.
           -->
-          <div
-            v-if="showFrame"
-            :style="
-              framePreviewFit
-                ? {
-                    width: `${framePreviewFit.width}px`,
-                    height: `${framePreviewFit.height}px`,
-                    overflow: 'hidden'
-                  }
-                : undefined
-            "
-          >
-            <div
-              :style="
-                framePreviewFit
-                  ? {
-                      transform: `scale(${framePreviewFit.scale})`,
-                      transformOrigin: 'top left'
-                    }
-                  : undefined
-              "
-            >
-              <div id="element-to-export" ref="framePreviewEl" class="w-fit">
-                <QRCodeFrame
-                  :frame-text="frameText"
-                  :text-position="frameTextPosition"
-                  :frame-style="frameStyle"
-                  :caption-width-ratio="frameCaptionWidthRatio"
-                >
-                  <template #qr-code>
-                    <div id="qr-code-container" class="grid place-items-center">
-                      <div
-                        class="grid place-items-center overflow-hidden"
-                        :style="[
-                          style,
-                          {
-                            width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
-                            height: `${PREVIEW_QRCODE_DIM_UNIT}px`
-                          }
-                        ]"
-                      >
-                        <StyledQRCode
-                          v-bind="{
-                            ...qrCodeProps,
-                            width: PREVIEW_QRCODE_DIM_UNIT,
-                            height: PREVIEW_QRCODE_DIM_UNIT
-                          }"
-                          role="img"
-                          aria-label="QR code"
-                        />
-                      </div>
+          <FitScaleBox v-if="showFrame" :max-width="FRAME_PREVIEW_MAX_WIDTH">
+            <div id="element-to-export" class="w-fit">
+              <QRCodeFrame
+                :frame-text="frameText"
+                :text-position="frameTextPosition"
+                :frame-style="frameStyle"
+                :caption-width="frameCaptionWidth"
+              >
+                <template #qr-code>
+                  <div id="qr-code-container" class="grid place-items-center">
+                    <div
+                      class="grid place-items-center overflow-hidden"
+                      :style="[
+                        style,
+                        {
+                          width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
+                          height: `${PREVIEW_QRCODE_DIM_UNIT}px`
+                        }
+                      ]"
+                    >
+                      <StyledQRCode
+                        v-bind="{
+                          ...qrCodeProps,
+                          width: PREVIEW_QRCODE_DIM_UNIT,
+                          height: PREVIEW_QRCODE_DIM_UNIT
+                        }"
+                        role="img"
+                        aria-label="QR code"
+                      />
                     </div>
-                  </template>
-                </QRCodeFrame>
-              </div>
+                  </div>
+                </template>
+              </QRCodeFrame>
             </div>
-          </div>
+          </FitScaleBox>
           <div
             v-else
             id="element-to-export"
@@ -1586,9 +1565,21 @@ const updateDataFromModal = (newData: string) => {
                     />
                   </div>
                 </div>
-                <div class="flex flex-col">
-                  <label class="mb-2 block">{{ t('Text position') }}</label>
-                  <fieldset class="flex-1">
+                <fieldset class="flex flex-col gap-4">
+                  <legend class="mb-2 block">{{ t('Caption') }}</legend>
+                  <div>
+                    <label for="frame-text" class="mb-2 block text-sm">{{ t('Text') }}</label>
+                    <textarea
+                      name="frame-text"
+                      class="text-input"
+                      id="frame-text"
+                      rows="2"
+                      :placeholder="defaultFrameText"
+                      v-model="frameText"
+                    />
+                  </div>
+                  <fieldset>
+                    <legend class="mb-2 block text-sm">{{ t('Position') }}</legend>
                     <div
                       class="radio"
                       v-for="position in ['top', 'bottom', 'right', 'left']"
@@ -1603,36 +1594,23 @@ const updateDataFromModal = (newData: string) => {
                       <label :for="'frameTextPosition-' + position">{{ t(position) }}</label>
                     </div>
                   </fieldset>
-                </div>
-                <div
-                  v-if="frameTextPosition === 'left' || frameTextPosition === 'right'"
-                  class="flex flex-col"
-                >
-                  <label for="frame-caption-width" class="mb-2 block">
-                    {{ t('Caption width') }}: {{ frameCaptionWidthPercent }}%
-                  </label>
-                  <input
-                    id="frame-caption-width"
-                    type="range"
-                    min="50"
-                    max="300"
-                    step="10"
-                    v-model.number="frameCaptionWidthPercent"
-                  />
-                </div>
-                <div>
-                  <div class="mb-2 flex flex-row items-center gap-2">
-                    <label for="frame-text">{{ t('Frame text') }}</label>
+                  <div
+                    v-if="frameTextPosition === 'left' || frameTextPosition === 'right'"
+                    class="flex flex-col"
+                  >
+                    <label for="frame-caption-width" class="mb-2 block text-sm">
+                      {{ t('Width') }}: {{ frameCaptionWidth }}px
+                    </label>
+                    <input
+                      id="frame-caption-width"
+                      type="range"
+                      :min="FRAME_CAPTION_WIDTH_MIN"
+                      :max="FRAME_CAPTION_WIDTH_MAX"
+                      step="10"
+                      v-model.number="frameCaptionWidth"
+                    />
                   </div>
-                  <textarea
-                    name="frame-text"
-                    class="text-input"
-                    id="frame-text"
-                    rows="2"
-                    :placeholder="defaultFrameText"
-                    v-model="frameText"
-                  />
-                </div>
+                </fieldset>
                 <div>
                   <label class="mb-2 block">{{ t('Frame style') }}</label>
                   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">

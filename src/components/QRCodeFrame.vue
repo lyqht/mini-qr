@@ -13,14 +13,14 @@ interface Props {
   frameText: string
   textPosition: 'top' | 'bottom' | 'left' | 'right'
   frameStyle?: FrameStyle
-  /** Side captions only: caption column width as a fraction of the QR size. */
-  captionWidthRatio?: number
+  /** Side captions only: caption column width in px. */
+  captionWidth?: number
 }
 
 withDefaults(defineProps<Props>(), {
   textPosition: 'bottom',
   frameStyle: () => ({}),
-  captionWidthRatio: 1
+  captionWidth: 200
 })
 
 const PREVIEW_QRCODE_DIM_UNIT = 200
@@ -58,7 +58,7 @@ const PREVIEW_QRCODE_DIM_UNIT = 200
         textAlign: 'center',
         [textPosition === 'left' || textPosition === 'right' ? 'width' : 'maxWidth']:
           textPosition === 'left' || textPosition === 'right'
-            ? `${PREVIEW_QRCODE_DIM_UNIT * captionWidthRatio}px`
+            ? `${captionWidth}px`
             : `${PREVIEW_QRCODE_DIM_UNIT}px`,
         whiteSpace: 'pre-line'
       }"

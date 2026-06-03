@@ -43,11 +43,11 @@ export interface FrameConfig {
   fontFamily?: string
   fontSize?: number
   /**
-   * Side captions (left/right) only: caption column width as a fraction of
-   * the QR size. Mirrors the preview, where the caption column equals the QR
-   * width by default. Defaults to 1.
+   * Side captions (left/right) only: caption column width in px, same units
+   * as padding/fontSize. 0 or absent = auto (the QR size), mirroring the
+   * preview's default caption column.
    */
-  captionWidthRatio?: number
+  captionWidth?: number
 }
 
 export interface QRCodeConfig {

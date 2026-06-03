@@ -22,14 +22,14 @@ describe('buildSvgExportString frame plumbing', () => {
     expect(viewBoxOf(svg).width).toBe(440)
   })
 
-  it('passes captionWidthRatio through to the frame renderer', () => {
+  it('passes captionWidth through to the frame renderer', () => {
     const svg = buildSvgExportString({
       ...base,
       frame: {
         text: 'Scan me',
         position: 'right',
         style: { padding: '12px' },
-        captionWidthRatio: 1.5
+        captionWidth: 300
       }
     })
     // outerW = size + column(300) + 3 × padding + 2 × borderWidth(default 2)

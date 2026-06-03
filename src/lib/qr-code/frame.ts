@@ -10,7 +10,7 @@ const DEFAULT_FRAME: Required<Omit<FrameConfig, 'text' | 'textPosition'>> = {
   padding: 12,
   fontFamily: 'sans-serif',
   fontSize: 18,
-  captionWidthRatio: 1
+  captionWidth: 0 // 0 = auto: side caption column defaults to the QR size
 }
 
 export interface FramedSvg {
@@ -33,12 +33,13 @@ export function renderFramed(config: ResolvedQRCodeConfig): FramedSvg {
 
   const f: Required<FrameConfig> = { ...DEFAULT_FRAME, ...config.frame }
   const isSide = f.textPosition === 'left' || f.textPosition === 'right'
-  const captionRatio = f.captionWidthRatio > 0 ? f.captionWidthRatio : 1
+  const captionWidth = f.captionWidth > 0 ? f.captionWidth : size
   // Wrap the caption the same way the preview (QRCodeFrame.vue) does: side
-  // captions render in a fixed-width column (captionWidthRatio × QR size),
-  // top/bottom captions wrap within the QR width. Without wrapping, a long
-  // caption line inflates the frame far beyond the preview's proportions.
-  const wrapWidth = isSide ? size * captionRatio : size
+  // captions render in a fixed-width column (captionWidth px, defaulting to
+  // the QR size), top/bottom captions wrap within the QR width. Without
+  // wrapping, a long caption line inflates the frame far beyond the
+  // preview's proportions.
+  const wrapWidth = isSide ? captionWidth : size
   const lines = wrapLines(f.text, f.fontSize, wrapWidth)
   const lineHeight = f.fontSize * 1.2
   const textBlockHeight = lineHeight * lines.length

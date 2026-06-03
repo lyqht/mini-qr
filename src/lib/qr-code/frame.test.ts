@@ -103,15 +103,15 @@ describe('renderFramed', () => {
 
 describe('caption wrapping', () => {
   // Mirrors the preview (QRCodeFrame.vue): side captions render in a fixed
-  // column (captionWidthRatio × QR size, default 1×), top/bottom captions wrap
-  // within the QR width. Default frame padding is 12, border width 2 (the
+  // column (captionWidth px, defaulting to the QR size), top/bottom captions
+  // wrap within the QR width. Default frame padding is 12, border width 2 (the
   // border is reserved on every side, hence the +4 in exact-width asserts).
   const LONG = 'The quick brown fox jumps over the lazy dog and keeps on running far away'
 
-  function framed(position: TextPosition, text: string, captionWidthRatio?: number) {
+  function framed(position: TextPosition, text: string, captionWidth?: number) {
     return renderFramed({
       ...baseConfig(position),
-      frame: { text, textPosition: position, captionWidthRatio }
+      frame: { text, textPosition: position, captionWidth }
     })
   }
 
@@ -121,20 +121,20 @@ describe('caption wrapping', () => {
 
   it('wraps a long side caption into the column instead of growing the frame width', () => {
     const { svg, width } = framed('right', LONG)
-    // outerW = size + column(size × 1) + 3 × padding + 2 × bw = 200 + 200 + 36 + 4
+    // default column = QR size: outerW = size + 200 + 3 × padding + 2 × bw
     expect(width).toBe(440)
     expect(tspanCount(svg)).toBeGreaterThan(1)
   })
 
-  it('sizes the side caption column by captionWidthRatio', () => {
-    const { width } = framed('right', LONG, 1.5)
+  it('sizes the side caption column by captionWidth (px)', () => {
+    const { width } = framed('right', LONG, 300)
     // outerW = 200 + 300 + 36 + 4
     expect(width).toBe(540)
   })
 
   it('grows the frame height when a wrapped side caption is taller than the QR', () => {
     const tall = 'word '.repeat(60).trim()
-    const { height } = framed('right', tall, 0.5)
+    const { height } = framed('right', tall, 100)
     expect(height).toBeGreaterThan(200 + 24 + 4)
   })
 
