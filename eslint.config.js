@@ -60,6 +60,7 @@ export default [
         createImageBitmap: 'readonly',
         ImageBitmap: 'readonly',
         ResizeObserver: 'readonly',
+        requestAnimationFrame: 'readonly',
         Document: 'readonly',
         Node: 'readonly',
         XMLSerializer: 'readonly',
