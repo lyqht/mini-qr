@@ -3,8 +3,9 @@ name: Tests
 on:
   push:
     branches: [main]
+  # No base-branch filter: stacked PRs (e.g. Graphite) target other feature
+  # branches and would otherwise get no CI at all.
   pull_request:
-    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
