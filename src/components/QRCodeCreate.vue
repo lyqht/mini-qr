@@ -382,6 +382,22 @@ function removeFrameBackgroundImage() {
   frameStyle.value = rest
 }
 
+// One "Background" setting switching between a color and an image. Picking
+// Color clears any uploaded image; the image mode persists implicitly via
+// frameStyle.backgroundImage, so restored configs and presets drive the
+// radio through the second watcher.
+const frameBackgroundType = ref<'color' | 'image'>('color')
+watch(frameBackgroundType, (type) => {
+  if (type === 'color') removeFrameBackgroundImage()
+})
+watch(
+  () => frameStyle.value.backgroundImage,
+  (backgroundImage) => {
+    frameBackgroundType.value = backgroundImage ? 'image' : 'color'
+  },
+  { immediate: true }
+)
+
 function loadFrameFont(fontFamily?: string) {
   if (!fontFamily) return
   const font = FONT_OPTIONS.find((f) => f.value === fontFamily)
@@ -1708,26 +1724,40 @@ const updateDataFromModal = (newData: string) => {
                         v-model="frameStyle.textColor"
                       />
                     </div>
-                    <div>
-                      <label for="frame-bg-color" class="mb-1 block text-sm">{{
-                        t('Background color')
-                      }}</label>
+                    <fieldset>
+                      <legend class="mb-1 block text-sm">{{ t('Background') }}</legend>
+                      <div class="flex flex-row items-center gap-4">
+                        <div class="radio">
+                          <input
+                            id="frame-background-type-color"
+                            type="radio"
+                            value="color"
+                            v-model="frameBackgroundType"
+                          />
+                          <label for="frame-background-type-color">{{ t('Color') }}</label>
+                        </div>
+                        <div class="radio">
+                          <input
+                            id="frame-background-type-image"
+                            type="radio"
+                            value="image"
+                            v-model="frameBackgroundType"
+                          />
+                          <label for="frame-background-type-image">{{ t('Image') }}</label>
+                        </div>
+                      </div>
                       <input
+                        v-if="frameBackgroundType === 'color'"
                         id="frame-bg-color"
                         type="color"
-                        class="color-input"
+                        class="color-input mt-2"
+                        :aria-label="t('Background color')"
                         v-model="frameStyle.backgroundColor"
                       />
-                    </div>
-                    <div>
-                      <label id="frame-background-image-label" class="mb-1 block text-sm">{{
-                        t('Background image')
-                      }}</label>
-                      <div class="flex flex-row items-center gap-2">
+                      <div v-else class="mt-2 flex flex-row items-center gap-2">
                         <button
                           id="frame-background-image-upload"
                           class="icon-button flex flex-row items-center"
-                          aria-labelledby="frame-background-image-label"
                           @click="uploadFrameBackgroundImage"
                         >
                           <svg
@@ -1752,32 +1782,14 @@ const updateDataFromModal = (newData: string) => {
                           </svg>
                           <span>{{ t('Upload image') }}</span>
                         </button>
-                        <button
+                        <img
                           v-if="frameStyle.backgroundImage"
-                          id="frame-background-image-remove"
-                          class="icon-button flex flex-row items-center"
-                          @click="removeFrameBackgroundImage"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                          >
-                            <g
-                              fill="none"
-                              stroke="currentColor"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                            >
-                              <path d="M18 6L6 18M6 6l12 12" />
-                            </g>
-                          </svg>
-                          <span>{{ t('Remove') }}</span>
-                        </button>
+                          :src="frameStyle.backgroundImage"
+                          :alt="t('Background image')"
+                          class="size-8 rounded border border-gray-300 object-cover dark:border-gray-600"
+                        />
                       </div>
-                    </div>
+                    </fieldset>
                     <div>
                       <label for="frame-border-color" class="mb-1 block text-sm">{{
                         t('Border color')

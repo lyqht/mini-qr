@@ -20,6 +20,7 @@ async function enableFrame(page: Page) {
 }
 
 async function uploadFrameBackground(page: Page) {
+  await page.locator('#frame-background-type-image').check()
   const fileChooserPromise = page.waitForEvent('filechooser')
   await page.locator('#frame-background-image-upload').click()
   const fileChooser = await fileChooserPromise
@@ -72,6 +73,22 @@ test.describe('Frame background image', () => {
     await page.goto('/')
   })
 
+  test('offers one Background setting that switches between color and image controls', async ({
+    page
+  }) => {
+    await enableFrame(page)
+
+    // Color is the default: color input shown, upload control hidden.
+    await expect(page.locator('#frame-background-type-color')).toBeChecked()
+    await expect(page.locator('#frame-bg-color')).toBeVisible()
+    await expect(page.locator('#frame-background-image-upload')).toHaveCount(0)
+
+    // Switching to Image swaps the controls.
+    await page.locator('#frame-background-type-image').check()
+    await expect(page.locator('#frame-background-image-upload')).toBeVisible()
+    await expect(page.locator('#frame-bg-color')).toHaveCount(0)
+  })
+
   test('shows the uploaded image as the frame background in the preview', async ({ page }) => {
     await enableFrame(page)
     await uploadFrameBackground(page)
@@ -79,12 +96,12 @@ test.describe('Frame background image', () => {
     await expect.poll(() => previewBackgroundImage(page)).toContain('data:image/png')
   })
 
-  test('clears the frame background image with the remove button', async ({ page }) => {
+  test('switching the Background back to Color clears the image', async ({ page }) => {
     await enableFrame(page)
     await uploadFrameBackground(page)
     await expect.poll(() => previewBackgroundImage(page)).toContain('data:image/png')
 
-    await page.locator('#frame-background-image-remove').click()
+    await page.locator('#frame-background-type-color').check()
     await expect.poll(() => previewBackgroundImage(page)).toBe('none')
   })
 
@@ -101,6 +118,9 @@ test.describe('Frame background image', () => {
     await page.reload()
 
     await expect.poll(() => previewBackgroundImage(page)).toContain('data:image/png')
+    // The Background setting reflects the restored image mode.
+    await openFrameSettings(page)
+    await expect(page.locator('#frame-background-type-image')).toBeChecked()
   })
 
   test('exports the persisted background image to PNG after a page reload', async ({ page }) => {
