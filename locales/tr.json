@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "Kamera erişimi reddedildi. Bu özelliği kullanmak için lütfen kamera erişimine izin verin.",
   "Camera is already in use by another application": "Kamera zaten başka bir uygulama tarafından kullanılıyor",
   "Cancel": "İptal",
+  "Caption width": "Caption width",
   "CC": "CC",
   "Changelog": "Değişiklik Günlüğü",
   "Choose a CSV file containing data to encode": "Kodlanacak verileri içeren bir CSV dosyası seçin",

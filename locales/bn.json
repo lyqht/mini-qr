@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "ক্যামেরা অ্যাক্সেস অস্বীকৃত। এই ফিচার ব্যবহার করতে ক্যামেরা অনুমতি দিন।",
   "Camera is already in use by another application": "ক্যামেরা ইতিমধ্যে অন্য অ্যাপ ব্যবহার করছে",
   "Cancel": "বাতিল",
+  "Caption width": "Caption width",
   "CC": "সিসি",
   "Changelog": "চেঞ্জলগ",
   "Choose a CSV file containing data to encode": "এনকোড করার ডাটা আছে এমন একটি CSV ফাইল নির্বাচন করুন",

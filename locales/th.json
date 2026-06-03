@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "การเข้าถึงกล้องถูกปฏิเสธ โปรดอนุญาตการเข้าถึงกล้องเพื่อใช้คุณสมบัตินี้",
   "Camera is already in use by another application": "กล้องกำลังถูกใช้งานโดยแอปพลิเคชันอื่นอยู่",
   "Cancel": "ยกเลิก",
+  "Caption width": "Caption width",
   "CC": "ถึง CC",
   "Changelog": "ประวัติการเปลี่ยนแปลง",
   "Choose a CSV file containing data to encode": "เลือกไฟล์ CSV ที่มีข้อมูลที่จะเข้ารหัส",

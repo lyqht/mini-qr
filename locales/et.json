@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "Kaamera juurdepääs keelatud. Palun lubage selle funktsiooni kasutamiseks kaamerale juurdepääs.",
   "Camera is already in use by another application": "Kaamera on juba mõne teise rakenduse kasutuses",
   "Cancel": "Tühista",
+  "Caption width": "Caption width",
   "CC": "CC",
   "Changelog": "Muudatuste loend",
   "Choose a CSV file containing data to encode": "Valige kodeeritavaid andmeid sisaldav CSV-faili",

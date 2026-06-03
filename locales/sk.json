@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "Prístup ku kamere zamietnutý. Ak chcete používať túto funkciu, povoľte prístup ku kamere.",
   "Camera is already in use by another application": "Fotoaparát sa už používa v inej aplikácii",
   "Cancel": "Zrušiť",
+  "Caption width": "Caption width",
   "CC": "CC",
   "Changelog": "Zoznam zmien",
   "Choose a CSV file containing data to encode": "Vyberte súbor CSV obsahujúci údaje na kódovanie",

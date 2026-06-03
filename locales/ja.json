@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "カメラへのアクセスが拒否されました。カメラへのアクセスを許可してください。",
   "Camera is already in use by another application": "カメラはすでに別のアプリケーションで使用されています",
   "Cancel": "キャンセル",
+  "Caption width": "Caption width",
   "CC": "CC",
   "Changelog": "変更履歴",
   "Choose a CSV file containing data to encode": "エンコードするデータを含むCSVファイルを選択する。",

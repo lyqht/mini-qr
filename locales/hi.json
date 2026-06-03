@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "कैमरे की पहुँच अस्वीकार कर दी गई है। कृपया इस सुविधा का उपयोग करने के लिए कैमरे की पहुँच की अनुमति दें।",
   "Camera is already in use by another application": "कैमरा पहले से ही किसी अन्य एप्लिकेशन द्वारा उपयोग में है।",
   "Cancel": "रद्द करें",
+  "Caption width": "Caption width",
   "CC": "सीसी",
   "Changelog": "परिवर्तन-लेख",
   "Choose a CSV file containing data to encode": "एन्कोड करने के लिए डेटा वाली CSV फ़ाइल चुनें।",

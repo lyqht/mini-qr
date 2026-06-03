@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "카메라 액세스가 거부되었습니다. 이 기능을 사용하려면 카메라 액세스를 허용하세요.",
   "Camera is already in use by another application": "다른 애플리케이션에서 이미 카메라를 사용 중입니다.",
   "Cancel": "취소",
+  "Caption width": "Caption width",
   "CC": "CC",
   "Changelog": "변경 로그",
   "Choose a CSV file containing data to encode": "인코딩할 데이터가 포함된 CSV 파일을 선택합니다.",

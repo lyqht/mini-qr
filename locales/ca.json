@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "Accés a la càmera denegat. Si us plau, permeti l'accés a la càmera per utilitzar aquesta funció.",
   "Camera is already in use by another application": "La càmera ja està en ús per una altra aplicació.",
   "Cancel": "Cancel·la",
+  "Caption width": "Caption width",
   "CC": "CC",
   "Changelog": "Diari de canvis",
   "Choose a CSV file containing data to encode": "Tria un fitxer CSV que contingui dades per codificar",

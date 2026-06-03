@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "Kamera-adgang nægtet. Tillad venligst kameraadgang at bruge denne funktion.",
   "Camera is already in use by another application": "Kameraet er allerede i brug af et andet program",
   "Cancel": "Annuller",
+  "Caption width": "Caption width",
   "CC": "CC",
   "Changelog": "Ændringslog",
   "Choose a CSV file containing data to encode": "Vælg en CSV-fil, der indeholder data, der skal kodes",

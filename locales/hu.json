@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "Kamera hozzáférés megtagadva. Kérjük, engedélyezze a kamerához való hozzáférést a funkció használatához.",
   "Camera is already in use by another application": "A kamerát már egy másik alkalmazás használja",
   "Cancel": "Törölje",
+  "Caption width": "Caption width",
   "CC": "CC",
   "Changelog": "Változások",
   "Choose a CSV file containing data to encode": "Válasszon ki egy kódolandó adatokat tartalmazó CSV-fájlt",

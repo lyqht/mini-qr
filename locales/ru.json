@@ -71,6 +71,7 @@
   "Camera access denied. Please allow camera access to use this feature.": "Доступ к камере запрещен. Пожалуйста, разрешите камере использовать эту функцию.",
   "Camera is already in use by another application": "Камера уже используется другим приложением",
   "Cancel": "Отмена",
+  "Caption width": "Caption width",
   "CC": "CC",
   "Changelog": "Список изменений",
   "Choose a CSV file containing data to encode": "Выберите CSV-файл, содержащий данные для кодирования",
