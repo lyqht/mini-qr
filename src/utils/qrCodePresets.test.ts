@@ -72,4 +72,45 @@ describe('isValidQRCodeConfig', () => {
     }
     expect(isValidQRCodeConfig(withBadFrame)).toBe(false)
   })
+
+  describe('props.image (logo) validation', () => {
+    function withImage(image: unknown) {
+      return { ...validConfig, props: { ...validConfig.props, image } }
+    }
+
+    it('returns true when image is absent', () => {
+      expect(isValidQRCodeConfig(validConfig)).toBe(true)
+    })
+
+    it('returns true when image is an empty string', () => {
+      expect(isValidQRCodeConfig(withImage(''))).toBe(true)
+    })
+
+    it('returns true when image is an http(s) URL', () => {
+      expect(isValidQRCodeConfig(withImage('https://api.iconify.design/logos:vue.svg'))).toBe(true)
+      expect(isValidQRCodeConfig(withImage('http://example.com/logo.png'))).toBe(true)
+    })
+
+    it('returns true when image is a data:image URI (uploaded logo)', () => {
+      expect(isValidQRCodeConfig(withImage('data:image/png;base64,iVBORw0KGgo='))).toBe(true)
+    })
+
+    it('returns true when image is a same-origin asset path (preset placeholder)', () => {
+      // Vite asset imports resolve to paths like this at runtime.
+      expect(isValidQRCodeConfig(withImage('/assets/placeholder_image-DZ2mUx9p.png'))).toBe(true)
+      expect(isValidQRCodeConfig(withImage('./assets/placeholder_image.png'))).toBe(true)
+    })
+
+    it('returns false when image has a non-http(s), non-image scheme', () => {
+      expect(isValidQRCodeConfig(withImage('javascript:alert(1)'))).toBe(false)
+      expect(isValidQRCodeConfig(withImage('data:text/html,<script>alert(1)</script>'))).toBe(false)
+      expect(isValidQRCodeConfig(withImage('file:///etc/passwd'))).toBe(false)
+      expect(isValidQRCodeConfig(withImage('vbscript:msgbox(1)'))).toBe(false)
+    })
+
+    it('returns false when image is not a string', () => {
+      expect(isValidQRCodeConfig(withImage(42))).toBe(false)
+      expect(isValidQRCodeConfig(withImage({ href: 'https://example.com/x.png' }))).toBe(false)
+    })
+  })
 })

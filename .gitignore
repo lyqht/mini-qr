@@ -45,3 +45,6 @@ package-lock.json
 # AI-assisted planning artifacts (specs, plans, scratch notes) — local only.
 docs/superpowers/
 .planning/
+
+# Vitest browser-mode failure screenshots
+__screenshots__/

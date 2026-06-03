@@ -45,7 +45,12 @@ import {
   type FramePreset,
   type FrameStyle
 } from '@/utils/framePresets'
-import { allQrCodePresets, defaultPreset, type Preset } from '@/utils/qrCodePresets'
+import {
+  allQrCodePresets,
+  defaultPreset,
+  isValidQRCodeConfig,
+  type Preset
+} from '@/utils/qrCodePresets'
 import {
   CUSTOM_LOADED_PRESET_KEYS,
   hasStoredQRConfig,
@@ -793,8 +798,15 @@ function applyQRConfigFromJsonString(
   options?: { restoreData?: boolean }
 ) {
   try {
-    const config = JSON.parse(jsonString) as QRCodeConfig
-    applyQRConfig(config, key, options)
+    const config: unknown = JSON.parse(jsonString)
+    // Same gate as the localStorage restore path (loadQRConfig) — config
+    // files are user-provided input and must not smuggle e.g. a javascript:
+    // logo URL into the image sinks.
+    if (!isValidQRCodeConfig(config)) {
+      console.error('Invalid QR code config, ignoring it')
+      return
+    }
+    applyQRConfig(config as QRCodeConfig, key, options)
   } catch {
     console.error('Failed to parse QR code config JSON')
   }

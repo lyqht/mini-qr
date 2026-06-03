@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import fs from 'fs'
+import os from 'os'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
@@ -71,6 +72,62 @@ test.describe('QR Code Creation and Management', () => {
       // Re-open frame settings to check the checkbox state after load
       await openFrameSettings(page)
       await expect(page.locator('#show-frame')).not.toBeChecked()
+    })
+
+    test('rejects a config file whose logo image URL has an unsafe scheme', async ({ page }) => {
+      const pageErrors: string[] = []
+      page.on('pageerror', (err) => pageErrors.push(err.message))
+      const unsafeUrlRequests: string[] = []
+      page.on('console', (msg) => {
+        if (msg.type() === 'error' && msg.text().includes('ERR_UNKNOWN_URL_SCHEME')) {
+          unsafeUrlRequests.push(msg.text())
+        }
+      })
+
+      const originalData = 'data-before-malicious-load'
+      await page.locator('#data').fill(originalData)
+      await page.waitForTimeout(600)
+
+      // Fully valid config (same shape as a saved file, applies cleanly if
+      // accepted) except for the javascript: logo URL — the whole file must
+      // be rejected, leaving current state untouched.
+      // Own temp dir: the shared tempDir is removed by afterAll, which can
+      // race this test when describe blocks run in parallel workers.
+      const ownTempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mini-qr-config-'))
+      const maliciousConfigPath = path.join(ownTempDir, 'malicious-image-config.json')
+      fs.writeFileSync(
+        maliciousConfigPath,
+        JSON.stringify({
+          props: {
+            data: 'https://evil.example',
+            image: 'javascript:alert(1)',
+            width: 200,
+            height: 200,
+            margin: 0,
+            imageOptions: { margin: 0, imageSize: 0.4 },
+            dotsOptions: { color: '#abcdef', type: 'square' },
+            cornersSquareOptions: { color: '#abcdef', type: 'square' },
+            cornersDotOptions: { color: '#abcdef', type: 'square' }
+          },
+          style: { borderRadius: '8px', background: '#ffffff' },
+          frame: null
+        })
+      )
+
+      const fileChooserPromise = page.waitForEvent('filechooser')
+      await page.locator('#load-qr-code-config-button').click()
+      const fileChooser = await fileChooserPromise
+      await fileChooser.setFiles(maliciousConfigPath)
+      await page.waitForTimeout(1000) // Allow time for file processing and reactivity
+
+      await expect(page.locator('#data')).toHaveValue(originalData)
+      await expect(page.locator('#image-url')).not.toHaveValue('javascript:alert(1)')
+      // The unsafe URL must never reach an image sink (no load attempt), and
+      // the rejection must be a clean no-op, not a crash mid-apply.
+      expect(unsafeUrlRequests).toEqual([])
+      expect(pageErrors).toEqual([])
+
+      fs.rmSync(ownTempDir, { recursive: true, force: true })
     })
 
     test('should save and load QR config with a frame via file', async ({ page }) => {
