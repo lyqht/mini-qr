@@ -305,10 +305,27 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
 const defaultFrameText = computed(() => t('Scan for more info'))
 const frameText = ref<string>('')
 const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
-// Side captions only: caption column width in px (default = preview QR size).
-const FRAME_CAPTION_WIDTH_MIN = 50
-const FRAME_CAPTION_WIDTH_MAX = 600
+// Side captions only: the user sets the overall "Frame width"; the caption
+// column derives from it via the simplified relation
+//   caption width = frame width − QR width (200 preview px).
+// Invalid input (out of range / empty) shows an error and leaves the last
+// valid caption width applied.
+const FRAME_WIDTH_MIN = 250
+const FRAME_WIDTH_MAX = 800
+const frameWidth = ref(400)
+const isFrameWidthValid = computed(
+  () =>
+    typeof frameWidth.value === 'number' &&
+    Number.isFinite(frameWidth.value) &&
+    frameWidth.value >= FRAME_WIDTH_MIN &&
+    frameWidth.value <= FRAME_WIDTH_MAX
+)
 const frameCaptionWidth = ref(200)
+watch(frameWidth, () => {
+  if (isFrameWidthValid.value) {
+    frameCaptionWidth.value = frameWidth.value - PREVIEW_QRCODE_DIM_UNIT
+  }
+})
 const showFrame = ref(false)
 
 // Cap the framed preview's layout footprint (via FitScaleBox) so wide side
@@ -691,10 +708,16 @@ function applyQRConfig(config: QRCodeConfig, key?: string) {
     showFrame.value = true
     frameText.value = config.frame.text || defaultFrameText.value
     frameTextPosition.value = config.frame.position || 'bottom'
-    frameCaptionWidth.value = Math.min(
-      FRAME_CAPTION_WIDTH_MAX,
-      Math.max(FRAME_CAPTION_WIDTH_MIN, Math.round(config.frame.captionWidth ?? 200))
+    // Stored configs keep the derived caption width; restore the user-facing
+    // frame width from it (clamped to the valid range).
+    frameWidth.value = Math.min(
+      FRAME_WIDTH_MAX,
+      Math.max(
+        FRAME_WIDTH_MIN,
+        Math.round((config.frame.captionWidth ?? 200) + PREVIEW_QRCODE_DIM_UNIT)
+      )
     )
+    frameCaptionWidth.value = frameWidth.value - PREVIEW_QRCODE_DIM_UNIT
     frameStyle.value = { ...frameStyle.value, ...config.frame.style }
 
     const restoredFontFamily = config.frame.style.fontFamily
@@ -1606,26 +1629,38 @@ const updateDataFromModal = (newData: string) => {
                       <label :for="'frameTextPosition-' + position">{{ t(position) }}</label>
                     </div>
                   </fieldset>
-                  <div
-                    v-if="frameTextPosition === 'left' || frameTextPosition === 'right'"
-                    class="flex flex-col"
-                  >
-                    <label for="frame-caption-width" class="mb-2 block text-sm">
-                      {{ t('Width') }}: {{ frameCaptionWidth }}px
-                    </label>
-                    <input
-                      id="frame-caption-width"
-                      type="range"
-                      :min="FRAME_CAPTION_WIDTH_MIN"
-                      :max="FRAME_CAPTION_WIDTH_MAX"
-                      step="10"
-                      v-model.number="frameCaptionWidth"
-                    />
-                  </div>
                 </fieldset>
                 <div>
                   <label class="mb-2 block">{{ t('Frame style') }}</label>
                   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div v-if="frameTextPosition === 'left' || frameTextPosition === 'right'">
+                      <label for="frame-width" class="mb-1 block text-sm">{{
+                        t('Frame width')
+                      }}</label>
+                      <input
+                        id="frame-width"
+                        type="number"
+                        class="text-input"
+                        :min="FRAME_WIDTH_MIN"
+                        :max="FRAME_WIDTH_MAX"
+                        step="10"
+                        v-model.number="frameWidth"
+                        :aria-invalid="!isFrameWidthValid"
+                        aria-describedby="frame-width-error"
+                      />
+                      <p
+                        v-if="!isFrameWidthValid"
+                        id="frame-width-error"
+                        class="mt-1 text-sm font-normal text-red-600 dark:text-red-400"
+                      >
+                        {{
+                          t('Must be between {min} and {max} px', {
+                            min: FRAME_WIDTH_MIN,
+                            max: FRAME_WIDTH_MAX
+                          })
+                        }}
+                      </p>
+                    </div>
                     <div>
                       <label for="frame-text-color" class="mb-1 block text-sm">{{
                         t('Text color')

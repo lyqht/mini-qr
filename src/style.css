@@ -159,24 +159,6 @@ input[type='radio']:focus-visible {
   @apply font-sans text-sm font-normal text-zinc-700 dark:text-zinc-200;
 }
 
-input[type='range'] {
-  -webkit-appearance: none;
-  appearance: none;
-  /* The input box doubles as the track. */
-  @apply h-2 w-full cursor-pointer rounded-full bg-zinc-200 shadow-inner dark:bg-zinc-700;
-  @apply outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 focus-visible:ring-offset-2 dark:focus-visible:ring-zinc-200 dark:focus-visible:ring-offset-zinc-900;
-}
-
-input[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  @apply h-5 w-5 rounded-full bg-zinc-800 shadow transition-shadow hover:shadow-md dark:bg-zinc-200;
-}
-
-input[type='range']::-moz-range-thumb {
-  @apply h-5 w-5 rounded-full border-0 bg-zinc-800 shadow transition-shadow hover:shadow-md dark:bg-zinc-200;
-}
-
 input[type='number'] {
   @apply appearance-none;
 }
