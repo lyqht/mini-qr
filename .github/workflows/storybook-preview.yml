@@ -1,0 +1,114 @@
+name: Storybook Preview
+
+# Builds Storybook and deploys it to a DEDICATED Vercel project (separate from
+# the main app, which keeps its own zero-config Vercel project untouched — no
+# root vercel.json is added). PRs get an isolated preview URL commented on the
+# PR; pushes to main publish the production Storybook.
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   VERCEL_TOKEN       — account token (Vercel → Settings → Tokens)
+#   VERCEL_ORG_ID      — from `.vercel/project.json` after `vercel link`
+#   VERCEL_PROJECT_ID  — id of the dedicated Storybook project
+# See docs/storybook-vercel-previews.md for one-time setup.
+
+on:
+  push:
+    branches: [main]
+  # No base-branch filter: stacked PRs (e.g. Graphite) target other feature
+  # branches, mirroring test.yml so they still get a preview.
+  pull_request:
+    paths:
+      - 'src/**'
+      - '.storybook/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/storybook-preview.yml'
+
+concurrency:
+  group: storybook-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy:
+    name: Deploy Storybook to Vercel
+    runs-on: ubuntu-latest
+    # Skip on PRs from forks: secrets aren't exposed there, so the deploy would
+    # fail. Pushes to main (and same-repo branch PRs) always run.
+    if: >-
+      github.event_name == 'push' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Resolve deploy environment
+        id: env
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "vercel=production" >> "$GITHUB_OUTPUT"
+          else
+            echo "vercel=preview" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Pull Vercel project settings
+        run: vercel pull --yes --environment=${{ steps.env.outputs.vercel }} --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Storybook
+        run: pnpm build-storybook
+
+      # Wrap the static Storybook build as Vercel "prebuilt" output (Build
+      # Output API v3) so the deploy is a pure static upload — no framework
+      # detection, no build command needed on the Vercel project, and nothing
+      # that could clash with the main app's project.
+      - name: Assemble Vercel prebuilt output
+        run: |
+          rm -rf .vercel/output
+          mkdir -p .vercel/output/static
+          cp -R storybook-static/. .vercel/output/static/
+          printf '{"version":3}' > .vercel/output/config.json
+
+      - name: Deploy to Vercel
+        id: deploy
+        run: |
+          if [ "${{ steps.env.outputs.vercel }}" = "production" ]; then
+            url=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          else
+            url=$(vercel deploy --prebuilt --token="$VERCEL_TOKEN")
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Comment preview URL on PR
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@d762a8be0846dab86981b80cab10076f3b85d36c # v2.9.4
+        with:
+          header: storybook-preview
+          message: |
+            📚 **Storybook preview** for this PR: ${{ steps.deploy.outputs.url }}
+
+            _Updated on every push to this branch._

@@ -99,6 +99,8 @@ For full self-hosting instructions including Docker setup, environment variables
 Translations & bug fixes are welcome!
 For all other matters, before opening an issue or contacting the project maintainer, please read up on to [CONTRIBUTING.md](CONTRIBUTING.md).
 
+Component stories live in Storybook (`pnpm storybook`). Pull requests that touch the UI get an auto-deployed Storybook preview on Vercel — see [docs/storybook-vercel-previews.md](docs/storybook-vercel-previews.md) for the one-time setup (Vercel project + repo secrets) still pending on this repo.
+
 ---
 
 Thank you for everyone here for taking their time out to improve MiniQR 🧡

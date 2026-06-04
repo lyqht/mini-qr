@@ -39,6 +39,9 @@ playwright-report/
 storybook-static/
 package-lock.json
 
+# Vercel CLI (project link + pulled env) — local only, never commit
+.vercel
+
 # AI-assisted planning artifacts (specs, plans, scratch notes) — local only.
 docs/superpowers/
 .planning/
