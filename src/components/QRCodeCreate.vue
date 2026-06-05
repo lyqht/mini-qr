@@ -34,6 +34,7 @@ import { downloadBlob } from '@/utils/download'
 import { parseCSV, validateCSVData, type CSVParsingResult } from '@/utils/csv'
 import { generateBatchExportFilename, processCsvDataForBatch } from '@/utils/csvBatchProcessing'
 import { getNumericCSSValue } from '@/utils/formatting'
+import FitScaleBox from '@/components/FitScaleBox.vue'
 import {
   allFramePresets,
   defaultFramePreset,
@@ -304,7 +305,34 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
 const defaultFrameText = computed(() => t('Scan for more info'))
 const frameText = ref<string>('')
 const frameTextPosition = ref<'top' | 'bottom' | 'left' | 'right'>('bottom')
+// Side captions only: the user sets the overall "Frame width"; the caption
+// column derives from it via the simplified relation
+//   caption width = frame width − QR width (200 preview px).
+// Invalid input (out of range / empty) shows an error and leaves the last
+// valid caption width applied.
+const FRAME_WIDTH_MIN = 250
+const FRAME_WIDTH_MAX = 800
+const frameWidth = ref(400)
+const isFrameWidthValid = computed(
+  () =>
+    typeof frameWidth.value === 'number' &&
+    Number.isFinite(frameWidth.value) &&
+    frameWidth.value >= FRAME_WIDTH_MIN &&
+    frameWidth.value <= FRAME_WIDTH_MAX
+)
+const frameCaptionWidth = ref(200)
+watch(frameWidth, () => {
+  if (isFrameWidthValid.value) {
+    frameCaptionWidth.value = frameWidth.value - PREVIEW_QRCODE_DIM_UNIT
+  }
+})
 const showFrame = ref(false)
+
+// Cap the framed preview's layout footprint (via FitScaleBox) so wide side
+// captions can't grow the (content-sized) preview column, push the settings
+// aside, or overflow the viewport on mobile. #element-to-export keeps its
+// natural size, so export measurements (getExportDimensions) are unaffected.
+const FRAME_PREVIEW_MAX_WIDTH = 450
 
 const frameStyle = ref<FrameStyle>({
   textColor: '#000000',
@@ -368,8 +396,9 @@ function applySelectedPresetToState() {
   styleBorderRadius.value = getNumericCSSValue(preset.style.borderRadius as string)
   styleBackground.value = preset.style.background
   includeBackground.value = preset.style.background !== 'transparent'
-  errorCorrectionLevel.value =
-    preset.qrOptions?.errorCorrectionLevel ? preset.qrOptions.errorCorrectionLevel : 'Q'
+  errorCorrectionLevel.value = preset.qrOptions?.errorCorrectionLevel
+    ? preset.qrOptions.errorCorrectionLevel
+    : 'Q'
   const frame = (preset as Preset & { frame?: QRCodeFrameConfig }).frame
   if (frame) {
     applyFrameFromPreset(frame)
@@ -430,7 +459,8 @@ watch(selectedFramePresetKey, (newKey, prevKey) => {
 const frameSettings = computed(() => ({
   text: frameText.value,
   position: frameTextPosition.value,
-  style: frameStyle.value
+  style: frameStyle.value,
+  captionWidth: frameCaptionWidth.value
 }))
 
 const FONT_CATEGORY_LABELS: Record<FontCategory, string> = {
@@ -620,7 +650,8 @@ function buildSvgExportInput() {
       ? {
           text: frameText.value,
           position: frameTextPosition.value,
-          style: frameStyle.value
+          style: frameStyle.value,
+          captionWidth: frameCaptionWidth.value
         }
       : null,
     outerBackground: styleBackground.value,
@@ -677,6 +708,16 @@ function applyQRConfig(config: QRCodeConfig, key?: string) {
     showFrame.value = true
     frameText.value = config.frame.text || defaultFrameText.value
     frameTextPosition.value = config.frame.position || 'bottom'
+    // Stored configs keep the derived caption width; restore the user-facing
+    // frame width from it (clamped to the valid range).
+    frameWidth.value = Math.min(
+      FRAME_WIDTH_MAX,
+      Math.max(
+        FRAME_WIDTH_MIN,
+        Math.round((config.frame.captionWidth ?? 200) + PREVIEW_QRCODE_DIM_UNIT)
+      )
+    )
+    frameCaptionWidth.value = frameWidth.value - PREVIEW_QRCODE_DIM_UNIT
     frameStyle.value = { ...frameStyle.value, ...config.frame.style }
 
     const restoredFontFamily = config.frame.style.fontFamily
@@ -1058,39 +1099,53 @@ const updateDataFromModal = (newData: string) => {
         <div class="flex flex-col items-center">
           <!-- Handle indicator for bottom sheet -->
           <div class="mt-2 h-1 w-16 rounded-full bg-gray-300 dark:bg-gray-700"></div>
-          <div :class="['w-full', '-my-8']">
-            <div class="flex origin-center scale-[0.7] items-center justify-center md:scale-100">
-              <QRCodeFrame
-                v-if="showFrame"
-                :frame-text="frameText"
-                :text-position="frameTextPosition"
-                :frame-style="frameStyle"
-              >
-                <template #qr-code>
-                  <div id="qr-code-container" class="grid place-items-center">
-                    <div
-                      class="grid place-items-center overflow-hidden"
-                      :style="[
-                        style,
-                        {
-                          width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
-                          height: `${PREVIEW_QRCODE_DIM_UNIT}px`
-                        }
-                      ]"
-                    >
-                      <StyledQRCode
-                        v-bind="{
-                          ...qrCodeProps,
-                          width: PREVIEW_QRCODE_DIM_UNIT,
-                          height: PREVIEW_QRCODE_DIM_UNIT
-                        }"
-                        role="img"
-                        aria-label="QR code"
-                      />
+          <!--
+            Framed previews are sized exactly by FitScaleBox (capped width AND
+            height), so they skip the negative-margin/static-scale hack that
+            reclaims the dead layout space a transform-scaled plain QR leaves —
+            with an exact box those negative margins would pull the Export hint
+            up underneath the preview.
+          -->
+          <div :class="['w-full', showFrame ? 'py-1' : '-my-8']">
+            <div
+              :class="[
+                'flex items-center justify-center',
+                !showFrame && 'origin-center scale-[0.7] md:scale-100'
+              ]"
+            >
+              <FitScaleBox v-if="showFrame" :viewport-margin="32" :max-height="150">
+                <QRCodeFrame
+                  :frame-text="frameText"
+                  :text-position="frameTextPosition"
+                  :frame-style="frameStyle"
+                  :caption-width="frameCaptionWidth"
+                >
+                  <template #qr-code>
+                    <div id="qr-code-container" class="grid place-items-center">
+                      <div
+                        class="grid place-items-center overflow-hidden"
+                        :style="[
+                          style,
+                          {
+                            width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
+                            height: `${PREVIEW_QRCODE_DIM_UNIT}px`
+                          }
+                        ]"
+                      >
+                        <StyledQRCode
+                          v-bind="{
+                            ...qrCodeProps,
+                            width: PREVIEW_QRCODE_DIM_UNIT,
+                            height: PREVIEW_QRCODE_DIM_UNIT
+                          }"
+                          role="img"
+                          aria-label="QR code"
+                        />
+                      </div>
                     </div>
-                  </div>
-                </template>
-              </QRCodeFrame>
+                  </template>
+                </QRCodeFrame>
+              </FitScaleBox>
               <template v-else>
                 <div class="grid place-items-center">
                   <div
@@ -1155,45 +1210,48 @@ const updateDataFromModal = (newData: string) => {
     <!-- Main content -->
     <Teleport to="#main-content-container" v-if="mainContentContainer != null">
       <div id="main-content">
-        <div
-          id="qr-code-container"
-          :class="[
-            'grid origin-center place-items-center',
-            showFrame && ['left', 'right'].includes(frameTextPosition) && 'scale-[0.7] md:scale-100'
-          ]"
-        >
-          <div v-if="showFrame" id="element-to-export">
-            <QRCodeFrame
-              :frame-text="frameText"
-              :text-position="frameTextPosition"
-              :frame-style="frameStyle"
-            >
-              <template #qr-code>
-                <div id="qr-code-container" class="grid place-items-center">
-                  <div
-                    class="grid place-items-center overflow-hidden"
-                    :style="[
-                      style,
-                      {
-                        width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
-                        height: `${PREVIEW_QRCODE_DIM_UNIT}px`
-                      }
-                    ]"
-                  >
-                    <StyledQRCode
-                      v-bind="{
-                        ...qrCodeProps,
-                        width: PREVIEW_QRCODE_DIM_UNIT,
-                        height: PREVIEW_QRCODE_DIM_UNIT
-                      }"
-                      role="img"
-                      aria-label="QR code"
-                    />
+        <div id="qr-code-container" class="grid origin-center place-items-center">
+          <!--
+            When the framed preview is wider than the cap, FitScaleBox renders
+            it scaled inside a wrapper sized to the scaled footprint — the
+            layout box never exceeds the cap, so the settings column stays put
+            and nothing overflows the viewport.
+          -->
+          <FitScaleBox v-if="showFrame" :max-width="FRAME_PREVIEW_MAX_WIDTH">
+            <div id="element-to-export" class="w-fit">
+              <QRCodeFrame
+                :frame-text="frameText"
+                :text-position="frameTextPosition"
+                :frame-style="frameStyle"
+                :caption-width="frameCaptionWidth"
+              >
+                <template #qr-code>
+                  <div id="qr-code-container" class="grid place-items-center">
+                    <div
+                      class="grid place-items-center overflow-hidden"
+                      :style="[
+                        style,
+                        {
+                          width: `${PREVIEW_QRCODE_DIM_UNIT}px`,
+                          height: `${PREVIEW_QRCODE_DIM_UNIT}px`
+                        }
+                      ]"
+                    >
+                      <StyledQRCode
+                        v-bind="{
+                          ...qrCodeProps,
+                          width: PREVIEW_QRCODE_DIM_UNIT,
+                          height: PREVIEW_QRCODE_DIM_UNIT
+                        }"
+                        role="img"
+                        aria-label="QR code"
+                      />
+                    </div>
                   </div>
-                </div>
-              </template>
-            </QRCodeFrame>
-          </div>
+                </template>
+              </QRCodeFrame>
+            </div>
+          </FitScaleBox>
           <div
             v-else
             id="element-to-export"
@@ -1542,9 +1600,21 @@ const updateDataFromModal = (newData: string) => {
                     />
                   </div>
                 </div>
-                <div class="flex flex-col">
-                  <label class="mb-2 block">{{ t('Text position') }}</label>
-                  <fieldset class="flex-1">
+                <fieldset class="flex flex-col gap-4">
+                  <legend class="mb-2 block">{{ t('Caption') }}</legend>
+                  <div>
+                    <label for="frame-text" class="mb-2 block text-sm">{{ t('Text') }}</label>
+                    <textarea
+                      name="frame-text"
+                      class="text-input"
+                      id="frame-text"
+                      rows="2"
+                      :placeholder="defaultFrameText"
+                      v-model="frameText"
+                    />
+                  </div>
+                  <fieldset>
+                    <legend class="mb-2 block text-sm">{{ t('Position') }}</legend>
                     <div
                       class="radio"
                       v-for="position in ['top', 'bottom', 'right', 'left']"
@@ -1559,23 +1629,38 @@ const updateDataFromModal = (newData: string) => {
                       <label :for="'frameTextPosition-' + position">{{ t(position) }}</label>
                     </div>
                   </fieldset>
-                </div>
-                <div>
-                  <div class="mb-2 flex flex-row items-center gap-2">
-                    <label for="frame-text">{{ t('Frame text') }}</label>
-                  </div>
-                  <textarea
-                    name="frame-text"
-                    class="text-input"
-                    id="frame-text"
-                    rows="2"
-                    :placeholder="defaultFrameText"
-                    v-model="frameText"
-                  />
-                </div>
+                </fieldset>
                 <div>
                   <label class="mb-2 block">{{ t('Frame style') }}</label>
                   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div v-if="frameTextPosition === 'left' || frameTextPosition === 'right'">
+                      <label for="frame-width" class="mb-1 block text-sm">{{
+                        t('Frame width')
+                      }}</label>
+                      <input
+                        id="frame-width"
+                        type="number"
+                        class="text-input"
+                        :min="FRAME_WIDTH_MIN"
+                        :max="FRAME_WIDTH_MAX"
+                        step="10"
+                        v-model.number="frameWidth"
+                        :aria-invalid="!isFrameWidthValid"
+                        aria-describedby="frame-width-error"
+                      />
+                      <p
+                        v-if="!isFrameWidthValid"
+                        id="frame-width-error"
+                        class="mt-1 text-sm font-normal text-red-600 dark:text-red-400"
+                      >
+                        {{
+                          t('Must be between {min} and {max} px', {
+                            min: FRAME_WIDTH_MIN,
+                            max: FRAME_WIDTH_MAX
+                          })
+                        }}
+                      </p>
+                    </div>
                     <div>
                       <label for="frame-text-color" class="mb-1 block text-sm">{{
                         t('Text color')

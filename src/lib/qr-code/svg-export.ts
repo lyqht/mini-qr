@@ -34,6 +34,8 @@ export interface LegacyFrameInput {
   text: string
   position: TextPosition
   style: LegacyFrameStyle
+  /** Side captions only: caption column width in px (0/absent = QR size). */
+  captionWidth?: number
 }
 
 export interface SvgExportInput {
@@ -142,6 +144,9 @@ function toFrameConfig(input: LegacyFrameInput): FrameConfig {
   if (s.borderRadius) out.borderRadius = parsePxLength(s.borderRadius)
   if (s.padding) out.padding = parsePxLength(s.padding)
   if (s.fontFamily) out.fontFamily = s.fontFamily
+  if (input.captionWidth && input.captionWidth > 0) {
+    out.captionWidth = input.captionWidth
+  }
   return out
 }
 

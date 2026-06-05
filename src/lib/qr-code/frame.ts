@@ -9,7 +9,8 @@ const DEFAULT_FRAME: Required<Omit<FrameConfig, 'text' | 'textPosition'>> = {
   borderRadius: 8,
   padding: 12,
   fontFamily: 'sans-serif',
-  fontSize: 18
+  fontSize: 18,
+  captionWidth: 0 // 0 = auto: side caption column defaults to the QR size
 }
 
 export interface FramedSvg {
@@ -31,11 +32,19 @@ export function renderFramed(config: ResolvedQRCodeConfig): FramedSvg {
   }
 
   const f: Required<FrameConfig> = { ...DEFAULT_FRAME, ...config.frame }
-  const lines = f.text.split('\n')
+  const isSide = f.textPosition === 'left' || f.textPosition === 'right'
+  const captionWidth = f.captionWidth > 0 ? f.captionWidth : size
+  // Wrap the caption the same way the preview (QRCodeFrame.vue) does: side
+  // captions render in a fixed-width column (captionWidth px, defaulting to
+  // the QR size), top/bottom captions wrap within the QR width. Without
+  // wrapping, a long caption line inflates the frame far beyond the
+  // preview's proportions.
+  const wrapWidth = isSide ? captionWidth : size
+  const lines = wrapLines(f.text, f.fontSize, wrapWidth)
   const lineHeight = f.fontSize * 1.2
   const textBlockHeight = lineHeight * lines.length
   const widestLine = approxTextWidth(lines, f.fontSize)
-  const textBlockWidth = Math.max(widestLine, f.fontSize)
+  const textBlockWidth = isSide ? wrapWidth : Math.max(widestLine, f.fontSize)
 
   const padding = f.padding
   /**
@@ -54,6 +63,12 @@ export function renderFramed(config: ResolvedQRCodeConfig): FramedSvg {
   let textX: number
   let textY: number
   let textAnchor: 'start' | 'middle' | 'end'
+
+  // Side captions taller than the QR grow the frame (the preview's flexbox
+  // does the same); the QR stays vertically centred. When the caption is
+  // shorter than the QR this reduces to padding + bw, matching top/bottom.
+  const sideOuterH = Math.max(size, textBlockHeight) + 2 * padding + 2 * bw
+  const sideQrY = (sideOuterH - size) / 2
 
   switch (f.textPosition) {
     case 'top':
@@ -76,18 +91,18 @@ export function renderFramed(config: ResolvedQRCodeConfig): FramedSvg {
       break
     case 'left':
       outerW = size + textBlockWidth + 3 * padding + 2 * bw
-      outerH = size + 2 * padding + 2 * bw
+      outerH = sideOuterH
       qrX = textBlockWidth + 2 * padding + bw
-      qrY = padding + bw
+      qrY = sideQrY
       textX = padding + bw + textBlockWidth / 2
       textY = (outerH - textBlockHeight) / 2 + f.fontSize
       textAnchor = 'middle'
       break
     case 'right':
       outerW = size + textBlockWidth + 3 * padding + 2 * bw
-      outerH = size + 2 * padding + 2 * bw
+      outerH = sideOuterH
       qrX = padding + bw
-      qrY = padding + bw
+      qrY = sideQrY
       textX = size + 2 * padding + bw + textBlockWidth / 2
       textY = (outerH - textBlockHeight) / 2 + f.fontSize
       textAnchor = 'middle'
@@ -144,6 +159,36 @@ function liftImage(fragment: string, dx: number, dy: number): { fragment: string
     fragment: fragment.replace(match[0], ''),
     image: adjusted
   }
+}
+
+/**
+ * Greedy word-wrap using the same char-width heuristic as approxTextWidth.
+ * Explicit newlines are preserved (including blank lines); a single word
+ * wider than the column gets its own line rather than being broken mid-word —
+ * matching how the preview's CSS column treats unbreakable words.
+ */
+function wrapLines(text: string, fontSize: number, maxWidth: number): string[] {
+  const charWidth = fontSize * 0.6
+  const out: string[] = []
+  for (const paragraph of text.split('\n')) {
+    const words = paragraph.split(' ').filter((w) => w.length > 0)
+    if (words.length === 0) {
+      out.push('')
+      continue
+    }
+    let line = ''
+    for (const word of words) {
+      const candidate = line ? `${line} ${word}` : word
+      if (line && candidate.length * charWidth > maxWidth) {
+        out.push(line)
+        line = word
+      } else {
+        line = candidate
+      }
+    }
+    out.push(line)
+  }
+  return out
 }
 
 function approxTextWidth(lines: string[], fontSize: number): number {

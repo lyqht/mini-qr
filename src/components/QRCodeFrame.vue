@@ -13,12 +13,17 @@ interface Props {
   frameText: string
   textPosition: 'top' | 'bottom' | 'left' | 'right'
   frameStyle?: FrameStyle
+  /** Side captions only: caption column width in px. */
+  captionWidth?: number
 }
 
 withDefaults(defineProps<Props>(), {
   textPosition: 'bottom',
-  frameStyle: () => ({})
+  frameStyle: () => ({}),
+  captionWidth: 200
 })
+
+const PREVIEW_QRCODE_DIM_UNIT = 200
 </script>
 
 <template>
@@ -51,7 +56,10 @@ withDefaults(defineProps<Props>(), {
         fontFamily: frameStyle.fontFamily || undefined,
         margin: 0,
         textAlign: 'center',
-        [textPosition === 'left' || textPosition === 'right' ? 'width' : 'maxWidth']: '200px',
+        [textPosition === 'left' || textPosition === 'right' ? 'width' : 'maxWidth']:
+          textPosition === 'left' || textPosition === 'right'
+            ? `${captionWidth}px`
+            : `${PREVIEW_QRCODE_DIM_UNIT}px`,
         whiteSpace: 'pre-line'
       }"
     >
