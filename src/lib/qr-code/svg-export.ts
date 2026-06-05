@@ -28,6 +28,7 @@ export interface LegacyFrameStyle {
   borderRadius?: string
   padding?: string
   fontFamily?: string
+  backgroundImage?: string
 }
 
 export interface LegacyFrameInput {
@@ -144,6 +145,7 @@ function toFrameConfig(input: LegacyFrameInput): FrameConfig {
   if (s.borderRadius) out.borderRadius = parsePxLength(s.borderRadius)
   if (s.padding) out.padding = parsePxLength(s.padding)
   if (s.fontFamily) out.fontFamily = s.fontFamily
+  if (s.backgroundImage) out.backgroundImage = s.backgroundImage
   if (input.captionWidth && input.captionWidth > 0) {
     out.captionWidth = input.captionWidth
   }

@@ -355,9 +355,48 @@ function toFrameStyle(style: Partial<FrameStyle>): FrameStyle {
     borderWidth: style.borderWidth ?? '1px',
     borderRadius: style.borderRadius ?? '8px',
     padding: style.padding ?? '16px',
-    ...(style.fontFamily ? { fontFamily: style.fontFamily } : {})
+    ...(style.fontFamily ? { fontFamily: style.fontFamily } : {}),
+    ...(style.backgroundImage ? { backgroundImage: style.backgroundImage } : {})
   }
 }
+
+function uploadFrameBackgroundImage() {
+  const imageInput = document.createElement('input')
+  imageInput.type = 'file'
+  imageInput.accept = 'image/*'
+  imageInput.onchange = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    const file = target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      frameStyle.value = { ...frameStyle.value, backgroundImage: reader.result as string }
+    }
+    reader.readAsDataURL(file)
+  }
+  imageInput.click()
+}
+
+function removeFrameBackgroundImage() {
+  const { backgroundImage: _omitted, ...rest } = frameStyle.value
+  frameStyle.value = rest
+}
+
+// One "Background" setting switching between a color and an image. Picking
+// Color clears any uploaded image; the image mode persists implicitly via
+// frameStyle.backgroundImage, so restored configs and presets drive the
+// radio through the second watcher.
+const frameBackgroundType = ref<'color' | 'image'>('color')
+watch(frameBackgroundType, (type) => {
+  if (type === 'color') removeFrameBackgroundImage()
+})
+watch(
+  () => frameStyle.value.backgroundImage,
+  (backgroundImage) => {
+    frameBackgroundType.value = backgroundImage ? 'image' : 'color'
+  },
+  { immediate: true }
+)
 
 function loadFrameFont(fontFamily?: string) {
   if (!fontFamily) return
@@ -1685,17 +1724,72 @@ const updateDataFromModal = (newData: string) => {
                         v-model="frameStyle.textColor"
                       />
                     </div>
-                    <div>
-                      <label for="frame-bg-color" class="mb-1 block text-sm">{{
-                        t('Background color')
-                      }}</label>
+                    <fieldset>
+                      <legend class="mb-1 block text-sm">{{ t('Background') }}</legend>
+                      <div class="flex flex-row items-center gap-4">
+                        <div class="radio">
+                          <input
+                            id="frame-background-type-color"
+                            type="radio"
+                            value="color"
+                            v-model="frameBackgroundType"
+                          />
+                          <label for="frame-background-type-color">{{ t('Color') }}</label>
+                        </div>
+                        <div class="radio">
+                          <input
+                            id="frame-background-type-image"
+                            type="radio"
+                            value="image"
+                            v-model="frameBackgroundType"
+                          />
+                          <label for="frame-background-type-image">{{ t('Image') }}</label>
+                        </div>
+                      </div>
                       <input
+                        v-if="frameBackgroundType === 'color'"
                         id="frame-bg-color"
                         type="color"
-                        class="color-input"
+                        class="color-input mt-2"
+                        :aria-label="t('Background color')"
                         v-model="frameStyle.backgroundColor"
                       />
-                    </div>
+                      <div v-else class="mt-2 flex flex-row items-center gap-2">
+                        <button
+                          id="frame-background-image-upload"
+                          class="icon-button flex flex-row items-center"
+                          @click="uploadFrameBackgroundImage"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                          >
+                            <g
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                            >
+                              <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                              <path
+                                d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2zm-5-10v6"
+                              />
+                              <path d="M9.5 13.5L12 11l2.5 2.5" />
+                            </g>
+                          </svg>
+                          <span>{{ t('Upload image') }}</span>
+                        </button>
+                        <img
+                          v-if="frameStyle.backgroundImage"
+                          :src="frameStyle.backgroundImage"
+                          :alt="t('Background image')"
+                          class="size-8 rounded border border-gray-300 object-cover dark:border-gray-600"
+                        />
+                      </div>
+                    </fieldset>
                     <div>
                       <label for="frame-border-color" class="mb-1 block text-sm">{{
                         t('Border color')

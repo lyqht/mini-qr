@@ -30,7 +30,7 @@ An app to create beautiful QR codes and scan various QR code types.
 - 💾 Save & Load QR Code config
 - 🖼️ Upload custom image for logo with adjustable size and margin
 - 🎭 Presets: Pre-crafted QR code styles
-- 🖌️ Frame customization: Add text labels and style the frame around your QR code. Captions wrap to match the preview in exports, and side captions have an adjustable width
+- 🖌️ Frame customization: Add a frame containing text and a background around your QR code.
 - 🛡️ Error correction level: affects the size of the QR code and logo within. Use lower correction levels for bigger pieces of data to ensure that it can be read.
 - 📱 QR Code Scanner: Scan QR codes using your camera or by uploading images, with intelligent detection for URLs, emails, phone numbers, WiFi credentials, and more
 - 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once. Template CSV files can be found in [`public/batch_export_templates/`](public/batch_export_templates/).

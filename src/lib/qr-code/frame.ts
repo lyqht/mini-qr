@@ -10,7 +10,8 @@ const DEFAULT_FRAME: Required<Omit<FrameConfig, 'text' | 'textPosition'>> = {
   padding: 12,
   fontFamily: 'sans-serif',
   fontSize: 18,
-  captionWidth: 0 // 0 = auto: side caption column defaults to the QR size
+  captionWidth: 0, // 0 = auto: side caption column defaults to the QR size
+  backgroundImage: '' // '' = none
 }
 
 export interface FramedSvg {
@@ -116,6 +117,24 @@ export function renderFramed(config: ResolvedQRCodeConfig): FramedSvg {
     `fill="${escapeAttr(f.backgroundColor)}" stroke="${escapeAttr(f.borderColor)}" ` +
     `stroke-width="${f.borderWidth}"/>`
 
+  // Background image: cover the whole frame (CSS background-size: cover
+  // equivalent), clipped to the border radius like the preview's overflow.
+  // The border stroke is re-painted on top so a full-bleed image can't cover
+  // its inner half.
+  let backgroundImageNodes = ''
+  if (f.backgroundImage) {
+    const clipId = 'frame-bg-clip'
+    backgroundImageNodes =
+      `<defs><clipPath id="${clipId}">` +
+      `<rect x="0" y="0" width="${outerW}" height="${outerH}" rx="${f.borderRadius}" ry="${f.borderRadius}"/>` +
+      `</clipPath></defs>` +
+      `<image href="${escapeAttr(f.backgroundImage)}" x="0" y="0" width="${outerW}" ` +
+      `height="${outerH}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})"/>` +
+      `<rect x="${halfBorder}" y="${halfBorder}" width="${outerW - f.borderWidth}" ` +
+      `height="${outerH - f.borderWidth}" rx="${f.borderRadius}" ry="${f.borderRadius}" ` +
+      `fill="none" stroke="${escapeAttr(f.borderColor)}" stroke-width="${f.borderWidth}"/>`
+  }
+
   const textNode =
     `<text x="${textX}" y="${textY}" font-family="${escapeAttr(f.fontFamily)}" ` +
     `font-size="${f.fontSize}" fill="${escapeAttr(f.textColor)}" text-anchor="${textAnchor}">` +
@@ -141,6 +160,7 @@ export function renderFramed(config: ResolvedQRCodeConfig): FramedSvg {
     `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ` +
     `viewBox="0 0 ${outerW} ${outerH}" width="${outerW}" height="${outerH}">` +
     borderRect +
+    backgroundImageNodes +
     qrGroup +
     liftedImage +
     textNode +

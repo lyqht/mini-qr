@@ -6,6 +6,8 @@ export interface FrameStyle {
   borderRadius: string
   padding: string
   fontFamily?: string
+  /** Frame background image (data:image URI from upload, or http(s) URL). Drawn over backgroundColor. */
+  backgroundImage?: string
 }
 
 export type FontCategory = 'sans' | 'serif' | 'monospace' | 'display'
@@ -208,6 +210,15 @@ export const VALID_FRAME_POSITIONS = ['top', 'bottom', 'left', 'right'] as const
 
 import { isValidCSSColor, isValidCSSLength } from './css'
 
+/**
+ * Frame background images come from a file upload (data:image URI) or a
+ * preset/config URL. Restricting to these schemes keeps e.g. `javascript:`
+ * out of stored configs and exported SVG `<image href>` attributes.
+ */
+export function isValidFrameBackgroundImage(value: string): boolean {
+  return /^data:image\//.test(value) || /^https?:\/\//i.test(value)
+}
+
 export function isValidFrameStyle(value: unknown): value is FrameStyle {
   if (!value || typeof value !== 'object') return false
   const s = value as Record<string, unknown>
@@ -224,7 +235,9 @@ export function isValidFrameStyle(value: unknown): value is FrameStyle {
     isValidCSSLength(s.borderRadius) &&
     typeof s.padding === 'string' &&
     isValidCSSLength(s.padding) &&
-    (s.fontFamily === undefined || typeof s.fontFamily === 'string')
+    (s.fontFamily === undefined || typeof s.fontFamily === 'string') &&
+    (s.backgroundImage === undefined ||
+      (typeof s.backgroundImage === 'string' && isValidFrameBackgroundImage(s.backgroundImage)))
   )
 }
 

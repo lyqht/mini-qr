@@ -35,4 +35,25 @@ describe('buildSvgExportString frame plumbing', () => {
     // outerW = size + column(300) + 3 × padding + 2 × borderWidth(default 2)
     expect(viewBoxOf(svg).width).toBe(540)
   })
+
+  it('passes the frame backgroundImage through to the frame renderer', () => {
+    const href = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUg=='
+    const svg = buildSvgExportString({
+      ...base,
+      frame: {
+        text: 'Scan me',
+        position: 'bottom',
+        style: { padding: '12px', backgroundImage: href }
+      }
+    })
+    expect(svg).toContain(`<image href="${href}"`)
+  })
+
+  it('emits no frame background <image> when the style has none', () => {
+    const svg = buildSvgExportString({
+      ...base,
+      frame: { text: 'Scan me', position: 'bottom', style: { padding: '12px' } }
+    })
+    expect(svg).not.toContain('<image')
+  })
 })

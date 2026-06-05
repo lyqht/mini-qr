@@ -7,6 +7,8 @@ interface FrameStyle {
   borderRadius?: string
   padding?: string
   fontFamily?: string
+  /** Frame background image (data:image URI or http(s) URL). Drawn over backgroundColor. */
+  backgroundImage?: string
 }
 
 interface Props {
@@ -38,6 +40,11 @@ const PREVIEW_QRCODE_DIM_UNIT = 200
     ]"
     :style="{
       backgroundColor: frameStyle.backgroundColor,
+      backgroundImage: frameStyle.backgroundImage
+        ? `url(${frameStyle.backgroundImage})`
+        : undefined,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
       borderColor: frameStyle.borderColor,
       borderWidth: frameStyle.borderWidth,
       borderRadius: frameStyle.borderRadius,

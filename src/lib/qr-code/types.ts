@@ -48,6 +48,11 @@ export interface FrameConfig {
    * preview's default caption column.
    */
   captionWidth?: number
+  /**
+   * Frame background image href (data:image URI or http(s) URL). Drawn over
+   * backgroundColor, covering the whole frame, clipped to the border radius.
+   */
+  backgroundImage?: string
 }
 
 export interface QRCodeConfig {

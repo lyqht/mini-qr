@@ -47,6 +47,36 @@ describe('isValidFrameStyle', () => {
   it('returns false when fontFamily is not a string', () => {
     expect(isValidFrameStyle({ ...validStyle, fontFamily: 42 })).toBe(false)
   })
+
+  it('returns true when backgroundImage is absent', () => {
+    expect(isValidFrameStyle(validStyle)).toBe(true)
+  })
+
+  it('returns true when backgroundImage is a data:image URI', () => {
+    expect(
+      isValidFrameStyle({
+        ...validStyle,
+        backgroundImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUg=='
+      })
+    ).toBe(true)
+  })
+
+  it('returns true when backgroundImage is an http(s) URL', () => {
+    expect(
+      isValidFrameStyle({ ...validStyle, backgroundImage: 'https://example.com/bg.png' })
+    ).toBe(true)
+  })
+
+  it('returns false when backgroundImage is not a string', () => {
+    expect(isValidFrameStyle({ ...validStyle, backgroundImage: 42 })).toBe(false)
+  })
+
+  it('returns false when backgroundImage is not an image data URI or http(s) URL', () => {
+    expect(isValidFrameStyle({ ...validStyle, backgroundImage: 'javascript:alert(1)' })).toBe(false)
+    expect(isValidFrameStyle({ ...validStyle, backgroundImage: 'data:text/html,<b>x</b>' })).toBe(
+      false
+    )
+  })
 })
 
 describe('isValidFrameConfig', () => {
