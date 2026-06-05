@@ -44,6 +44,8 @@ See [ROADMAP.md](./ROADMAP.md) for future planned features.
 
 Try it out [here](https://mini-qr-code-generator.vercel.app/) ✨
 
+Browse the component library (the internal QR-code rendering lib) in Storybook at [mini-qr-storybook.vercel.app](https://mini-qr-storybook.vercel.app) 📚
+
 <details>
 
 <summary>Frame text included in batch export (added in v0.17.0)</summary>
@@ -99,7 +101,7 @@ For full self-hosting instructions including Docker setup, environment variables
 Translations & bug fixes are welcome!
 For all other matters, before opening an issue or contacting the project maintainer, please read up on to [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Component stories live in Storybook (`pnpm storybook`). Pull requests that touch the UI get an auto-deployed Storybook preview on Vercel — see [docs/storybook-vercel-previews.md](docs/storybook-vercel-previews.md) for the one-time setup (Vercel project + repo secrets) still pending on this repo.
+Component stories live in Storybook (`pnpm storybook` locally, or the production build at [mini-qr-storybook.vercel.app](https://mini-qr-storybook.vercel.app)). Pull requests that touch the UI get an auto-deployed Storybook preview on Vercel — see [docs/storybook-vercel-previews.md](docs/storybook-vercel-previews.md) for how it's wired up.
 
 ---
 
