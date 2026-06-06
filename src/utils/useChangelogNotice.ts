@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
 import { fetchWithBasePath } from './basePath'
+import { extractChangelogVersion } from './changelogVersion'
 
 // Versioned key — `v1` lets us re-trigger the dot for everyone in the
 // future by bumping the suffix if needed (e.g. when the changelog format
@@ -28,8 +29,7 @@ async function fetchLatest() {
       const res = await fetchWithBasePath('/CHANGELOG.md')
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const md = await res.text()
-      const match = md.match(/^##\s+(v\d+\.\d+\.\d+)/m)
-      latestVersion.value = match ? match[1] : null
+      latestVersion.value = extractChangelogVersion(md)
     } catch (err) {
       console.error('Failed to read latest changelog version:', err)
       latestVersion.value = null

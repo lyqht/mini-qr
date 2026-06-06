@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getDisplayVersion } from './changelogVersion'
+import { extractChangelogVersion, getDisplayVersion } from './changelogVersion'
 
 describe('getDisplayVersion', () => {
   it('returns the provided app version when it is valid', () => {
@@ -31,5 +31,30 @@ describe('getDisplayVersion', () => {
 
   it('parses a plain (unlinked) release-please header without a v prefix', () => {
     expect(getDisplayVersion('## 0.31.0 (2026-06-10)', undefined)).toBe('v0.31.0')
+  })
+})
+
+describe('extractChangelogVersion', () => {
+  it('returns the first version from a release-please linked header', () => {
+    const md = [
+      '# Changelog',
+      '',
+      '## [0.32.0](https://github.com/lyqht/mini-qr/compare/v0.31.0...v0.32.0) (2026-07-01)',
+      '',
+      '## [0.31.0](https://github.com/lyqht/mini-qr/compare/v0.30.2...v0.31.0) (2026-06-10)'
+    ].join('\n')
+    expect(extractChangelogVersion(md)).toBe('v0.32.0')
+  })
+
+  it('parses a plain release-please header without a v prefix', () => {
+    expect(extractChangelogVersion('## 0.31.0 (2026-06-10)')).toBe('v0.31.0')
+  })
+
+  it('parses a legacy v-prefixed header', () => {
+    expect(extractChangelogVersion('## v0.30.2 (2026-05-25)')).toBe('v0.30.2')
+  })
+
+  it('returns null when no version header is present', () => {
+    expect(extractChangelogVersion('# Changelog\n\nNo releases yet.')).toBeNull()
   })
 })
