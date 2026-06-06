@@ -1,5 +1,7 @@
 const VERSION_PATTERN = /^v\d+\.\d+\.\d+$/
-const CHANGELOG_VERSION_PATTERN = /^##\s+(v\d+\.\d+\.\d+)/m
+// Matches both legacy "## v0.30.0 (date)" and release-please
+// "## [0.31.0](compare-url) (date)" / "## 0.31.0 (date)" headers.
+const CHANGELOG_VERSION_PATTERN = /^##\s+\[?v?(\d+\.\d+\.\d+)/m
 
 export function getDisplayVersion(markdown: string, appVersion?: string): string {
   const normalizedAppVersion = appVersion?.trim()
@@ -16,7 +18,7 @@ export function getDisplayVersion(markdown: string, appVersion?: string): string
 
   const versionMatch = markdown.match(CHANGELOG_VERSION_PATTERN)
   if (versionMatch && versionMatch[1]) {
-    return versionMatch[1]
+    return `v${versionMatch[1]}`
   }
 
   return 'N/A'
