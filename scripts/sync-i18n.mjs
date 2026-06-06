@@ -2,16 +2,14 @@
 /**
  * sync-i18n.mjs
  *
- * Scans the codebase for all translation strings used via t() / $t(),
- * adds any missing strings to locales/en.json, then syncs with Crowdin:
- *   1. Upload source (en.json)
- *   2. Pre-translate all languages
- *   3. Download all locale files
+ * Scans the codebase for all translation strings used via t() / $t() and
+ * adds any missing strings to locales/en.json.
+ * Translation syncing (upload/pre-translate/download) is handled server-side
+ * by the Crowdin GitHub integration.
  */
 
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs'
 import { join, relative, extname } from 'path'
-import { execSync } from 'child_process'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 
@@ -125,45 +123,12 @@ if (!hasNewKeys) {
 }
 
 // ---------------------------------------------------------------------------
-// 5. Check Crowdin CLI
-// ---------------------------------------------------------------------------
-try {
-  execSync('crowdin --version', { stdio: 'ignore' })
-} catch {
-  log(RED, '✗ Crowdin CLI is not installed.')
-  log(YELLOW, '  Install it with: npm install -g @crowdin/cli')
-  process.exit(1)
-}
-
-// ---------------------------------------------------------------------------
-// 6. Upload source file to Crowdin (skip when nothing new)
+// 5. Done — translations are synced by the Crowdin GitHub integration
 // ---------------------------------------------------------------------------
 if (hasNewKeys) {
-  log(YELLOW, '📤 Uploading source strings to Crowdin...')
-  try {
-    execSync('crowdin upload sources --no-progress', { stdio: 'inherit', cwd: ROOT })
-    log(GREEN, '✓ Source strings uploaded')
-  } catch {
-    log(RED, '✗ Failed to upload source strings')
-    process.exit(1)
-  }
-
-  log(YELLOW, '💡 Remember to manually trigger pre-translation in Crowdin:')
-  log(YELLOW, '   Project → Machine Translation → Pre-translate (use DeepL, fall back to Crowdin Translate)')
+  log(GREEN, `✅ Added ${missingKeys.length} new string(s) to locales/en.json.`)
+  log(YELLOW, '   Commit & push to main — the Crowdin GitHub integration will')
+  log(YELLOW, '   upload the new source strings and open a translations PR.')
 } else {
-  log(YELLOW, '⏭  Skipping upload — no new strings. Pulling latest translations only.')
+  log(GREEN, '✅ en.json is already up to date — nothing to do.')
 }
-
-// ---------------------------------------------------------------------------
-// 8. Download all translations
-// ---------------------------------------------------------------------------
-log(YELLOW, '📥 Downloading translated locale files...')
-try {
-  execSync('crowdin download --no-progress', { stdio: 'inherit', cwd: ROOT })
-  log(GREEN, '✓ Translations downloaded')
-} catch {
-  log(RED, '✗ Failed to download translations')
-  process.exit(1)
-}
-
-log(GREEN, '✅ i18n sync complete!')
