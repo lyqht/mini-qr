@@ -17,7 +17,8 @@
     "format": "prettier --write",
     "postinstall": "husky install",
     "generate-splash": "node scripts/generate-splash-screens.js",
-    "sync-i18n": "node scripts/sync-i18n.mjs"
+    "sync-i18n": "node scripts/sync-i18n.mjs",
+    "translate:deepl": "node scripts/translate-deepl.mjs"
   },
   "lint-staged": {
     "*.{vue,js,jsx,ts,tsx,json}": [
