@@ -16,7 +16,6 @@
     "lint": "eslint . --fix",
     "format": "prettier --write",
     "postinstall": "husky install",
-    "generate-changelog": "bash scripts/generate-version.sh",
     "generate-splash": "node scripts/generate-splash-screens.js",
     "sync-i18n": "node scripts/sync-i18n.mjs"
   },
