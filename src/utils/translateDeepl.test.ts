@@ -40,6 +40,10 @@ describe('placeholdersPreserved', () => {
   it('passes for strings with no placeholders', () => {
     expect(placeholdersPreserved('Save', 'Speichern')).toBe(true)
   })
+
+  it('returns false when translated is missing', () => {
+    expect(placeholdersPreserved('{count} items', undefined as unknown as string)).toBe(false)
+  })
 })
 
 describe('locale map', () => {

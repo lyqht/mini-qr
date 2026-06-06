@@ -11,9 +11,8 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { dirname } from 'node:path'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -98,6 +97,7 @@ export function findGapKeys(enJson, localeJson) {
  * Used to reject translations that mangled interpolation tokens.
  */
 export function placeholdersPreserved(source, translated) {
+  if (typeof translated !== 'string') return false
   const inSource = source.match(PLACEHOLDER_RE) || []
   return inSource.every((token) => translated.includes(token))
 }
@@ -118,22 +118,43 @@ function deeplHost(apiKey) {
  * Translates an array of texts to the given DeepL target language.
  * Returns translated texts in the same order as input.
  * Throws on non-OK HTTP response.
+ * @param {string} apiKey
+ * @param {string[]} texts
+ * @param {string} targetLang
+ * @param {number} [attempt=0] — internal retry counter; at most one retry on 429
  */
-async function translateBatch(apiKey, texts, targetLang) {
+async function translateBatch(apiKey, texts, targetLang, attempt = 0) {
   const url = `${deeplHost(apiKey)}/v2/translate`
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `DeepL-Auth-Key ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      text: texts,
-      target_lang: targetLang,
-      source_lang: 'EN',
-      preserve_formatting: true,
-    }),
-  })
+
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 30_000)
+
+  let response
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `DeepL-Auth-Key ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: texts,
+        target_lang: targetLang,
+        source_lang: 'EN',
+        preserve_formatting: true,
+      }),
+      signal: controller.signal,
+    })
+  } finally {
+    clearTimeout(timer)
+  }
+
+  if (response.status === 429 && attempt === 0) {
+    const retryAfter = Number(response.headers.get('Retry-After')) || 5
+    log(YELLOW, `  ⚠ DeepL rate-limited (429); retrying after ${retryAfter}s…`)
+    await new Promise((r) => setTimeout(r, retryAfter * 1000))
+    return translateBatch(apiKey, texts, targetLang, 1)
+  }
 
   if (!response.ok) {
     const bodyText = await response.text()
@@ -141,8 +162,15 @@ async function translateBatch(apiKey, texts, targetLang) {
   }
 
   const data = await response.json()
+  if (!Array.isArray(data?.translations) || data.translations.length !== texts.length) {
+    throw new Error(
+      `DeepL returned unexpected response: expected ${texts.length} translations, got ${data?.translations?.length}`,
+    )
+  }
   return data.translations.map((t) => t.text)
 }
+
+const BATCH_SIZE = 50
 
 /**
  * Main entry point — reads locale files, finds gaps, translates, writes back.
@@ -178,6 +206,7 @@ async function main() {
 
   let totalFilled = 0
   let totalSkippedPlaceholder = 0
+  const localeErrors = []
 
   for (const file of localeFiles) {
     const code = file.replace(/\.json$/, '')
@@ -199,83 +228,99 @@ async function main() {
       continue
     }
 
-    const localePath = join(LOCALES_DIR, file)
-    const locale = JSON.parse(readFileSync(localePath, 'utf8'))
+    try {
+      const localePath = join(LOCALES_DIR, file)
+      const locale = JSON.parse(readFileSync(localePath, 'utf8'))
+      // Snapshot before mutation so we can classify absent vs previously-present keys
+      const originalLocale = { ...locale }
 
-    const gaps = findGapKeys(en, locale)
-    if (gaps.length === 0) {
-      log(GREEN, `✓ ${code}: up to date`)
-      continue
-    }
-
-    const targetLang = LOCALE_TO_DEEPL[code]
-    log(YELLOW, `🌐 ${code} (${targetLang}): translating ${gaps.length} gap(s)…`)
-
-    const sourceTexts = gaps.map((k) => en[k])
-    const BATCH_SIZE = 50
-    const translatedTexts = []
-
-    for (let i = 0; i < sourceTexts.length; i += BATCH_SIZE) {
-      const batchTexts = sourceTexts.slice(i, i + BATCH_SIZE)
-      const batchTranslated = await translateBatch(apiKey, batchTexts, targetLang)
-      translatedTexts.push(...batchTranslated)
-    }
-
-    let filled = 0
-    let skippedPlaceholder = 0
-
-    for (let i = 0; i < gaps.length; i++) {
-      const key = gaps[i]
-      const source = sourceTexts[i]
-      const translated = translatedTexts[i]
-
-      if (!placeholdersPreserved(source, translated)) {
-        log(
-          RED,
-          `  ⚠ ${code}: placeholder mangle in "${key}" — source="${source}" translated="${translated}" — skipping`,
-        )
-        skippedPlaceholder++
+      const gaps = findGapKeys(en, locale)
+      if (gaps.length === 0) {
+        log(GREEN, `✓ ${code}: up to date`)
         continue
       }
 
-      locale[key] = translated
-      filled++
-    }
+      const targetLang = LOCALE_TO_DEEPL[code]
+      log(YELLOW, `🌐 ${code} (${targetLang}): translating ${gaps.length} gap(s)…`)
 
-    totalFilled += filled
-    totalSkippedPlaceholder += skippedPlaceholder
+      const sourceTexts = gaps.map((k) => en[k])
+      const translatedTexts = []
 
-    // Preserve key order: existing keys in their current order with updated values;
-    // append keys that were absent (in en key order) at the end.
-    const existingKeys = Object.keys(locale)
-    const absentKeys = gaps.filter((k) => !(k in JSON.parse(readFileSync(localePath, 'utf8'))))
-    const orderedKeys = [
-      ...existingKeys,
-      ...Object.keys(en).filter((k) => absentKeys.includes(k)),
-    ]
-
-    const merged = {}
-    for (const k of orderedKeys) {
-      if (k in locale) {
-        merged[k] = locale[k]
+      for (let i = 0; i < sourceTexts.length; i += BATCH_SIZE) {
+        const batchTexts = sourceTexts.slice(i, i + BATCH_SIZE)
+        const batchTranslated = await translateBatch(apiKey, batchTexts, targetLang)
+        translatedTexts.push(...batchTranslated)
       }
-    }
 
-    const placeholderNote = skippedPlaceholder > 0 ? `, skipped ${skippedPlaceholder} (placeholder)` : ''
-    const alreadyTranslated = Object.keys(en).length - gaps.length
-    log(
-      GREEN,
-      `✓ ${code}: filled ${filled}${placeholderNote}, ${alreadyTranslated} already translated`,
-    )
+      let filled = 0
+      let skippedPlaceholder = 0
 
-    if (!dryRun) {
-      writeFileSync(localePath, JSON.stringify(merged, null, 2) + '\n')
-    } else {
-      log(YELLOW, `  [dry-run] would write ${file}`)
+      for (let i = 0; i < gaps.length; i++) {
+        const key = gaps[i]
+        const source = sourceTexts[i]
+        const translated = translatedTexts[i]
+
+        if (!placeholdersPreserved(source, translated)) {
+          log(
+            RED,
+            `  ⚠ ${code}: placeholder mangle in "${key}" — source="${source}" translated="${translated}" — skipping`,
+          )
+          skippedPlaceholder++
+          continue
+        }
+
+        locale[key] = translated
+        filled++
+      }
+
+      totalFilled += filled
+      totalSkippedPlaceholder += skippedPlaceholder
+
+      const placeholderNote = skippedPlaceholder > 0 ? `, skipped ${skippedPlaceholder} (placeholder)` : ''
+      const alreadyTranslated = Object.keys(en).length - gaps.length
+      log(
+        GREEN,
+        `✓ ${code}: filled ${filled}${placeholderNote}, ${alreadyTranslated} already translated`,
+      )
+
+      if (filled === 0) {
+        log(YELLOW, `  nothing new to write for ${file}`)
+        continue
+      }
+
+      // Preserve key order: existing keys in their original order with updated values;
+      // append keys that were absent (in en key order) at the end.
+      // Use a Set for O(1) membership checks.
+      const absentKeySet = new Set(gaps.filter((k) => !(k in originalLocale)))
+      const orderedKeys = [
+        ...Object.keys(originalLocale),
+        ...Object.keys(en).filter((k) => absentKeySet.has(k)),
+      ]
+
+      const merged = {}
+      for (const k of orderedKeys) {
+        if (k in locale) {
+          merged[k] = locale[k]
+        }
+      }
+
+      if (!dryRun) {
+        writeFileSync(localePath, JSON.stringify(merged, null, 2) + '\n')
+      } else {
+        log(YELLOW, `  [dry-run] would write ${file}`)
+      }
+    } catch (err) {
+      log(RED, `✗ ${code}: failed — ${err.message}`)
+      localeErrors.push(code)
     }
   }
 
   log(GREEN, `\n✅ Done — total filled: ${totalFilled}, skipped (placeholder): ${totalSkippedPlaceholder}`)
+
+  if (localeErrors.length > 0) {
+    log(RED, `\n✗ ${localeErrors.length} locale(s) failed: ${localeErrors.join(', ')}`)
+    process.exit(1)
+  }
 }
 
 // ---------------------------------------------------------------------------
