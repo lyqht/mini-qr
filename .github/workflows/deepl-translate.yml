@@ -1,0 +1,59 @@
+name: deepl-translate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'locales/en.json'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    name: DeepL gap-fill translations
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Fill missing translations with DeepL
+        env:
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+        run: pnpm translate:deepl
+
+      - name: Open PR with new translations
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore(i18n): fill missing translations via DeepL"
+          title: "chore(i18n): DeepL translations"
+          body: |
+            Automated DeepL gap-fill for `locales/*.json`, triggered by a change to
+            `locales/en.json` on `main`.
+
+            Only missing / empty / untranslated keys were filled — existing translations
+            were left untouched. Languages DeepL does not support are skipped and left for
+            Crowdin contributors.
+          branch: chore/deepl-translations
+          delete-branch: true
+          labels: i18n
+          add-paths: |
+            locales/*.json
