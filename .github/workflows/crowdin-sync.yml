@@ -1,0 +1,53 @@
+name: crowdin-sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'locales/**'
+  schedule:
+    # Pull newly-contributed human translations from Crowdin daily (06:00 UTC).
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  synchronize:
+    name: Sync sources & translations with Crowdin
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Crowdin sync
+        uses: crowdin/github-action@v2
+        with:
+          # Push English sources and the translations currently in the repo
+          # (human translations + DeepL drafts) so contributors start from a draft.
+          upload_sources: true
+          upload_translations: true
+          # DeepL drafts go up as UNAPPROVED, so an approved/human translation is
+          # never demoted by a re-uploaded machine draft. Strings whose "translation"
+          # still equals the English source are not uploaded.
+          auto_approve_imported: false
+          import_eq_suggestions: false
+          # Pull translations back from Crowdin and open a PR with any changes.
+          download_translations: true
+          create_pull_request: true
+          localization_branch_name: l10n_crowdin
+          pull_request_title: 'chore(i18n): Crowdin translations'
+          pull_request_labels: i18n
+          # Reuses crowdin.yml: project_id 776450, file mapping, and
+          # api_token_env: CROWDIN_PERSONAL_TOKEN.
+          config: crowdin.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
