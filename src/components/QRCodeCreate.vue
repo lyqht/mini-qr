@@ -153,7 +153,20 @@ watch(isSimpleMode, (simple) => {
 })
 
 function setViewMode(mode: QRViewMode): void {
+  if (mode !== viewMode.value) triggerModeAnimation()
   viewMode.value = mode
+}
+
+// Briefly flag the settings container so visible `.field-reveal` blocks play
+// their slide-in animation when the user switches modes.
+const isModeAnimating = ref(false)
+let modeAnimationTimer: ReturnType<typeof setTimeout> | undefined
+function triggerModeAnimation(): void {
+  isModeAnimating.value = true
+  clearTimeout(modeAnimationTimer)
+  modeAnimationTimer = setTimeout(() => {
+    isModeAnimating.value = false
+  }, 300)
 }
 //#endregion
 
@@ -1717,7 +1730,11 @@ const updateDataFromModal = (newData: string) => {
       </div>
     </Teleport>
 
-    <section id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
+    <section
+      id="settings"
+      class="flex w-full grow flex-col items-start gap-8 text-start"
+      :class="{ 'mode-animating': isModeAnimating }"
+    >
       <h2 class="sr-only">{{ t('Settings to customize your QR code') }}</h2>
 
       <!-- View mode toggle: Simple shows only the data field plus pinned
@@ -1818,7 +1835,7 @@ const updateDataFromModal = (newData: string) => {
 
               <template v-if="showFrame">
                 <div
-                  class="flex flex-col sm:flex-row sm:items-center sm:gap-8"
+                  class="field-reveal flex flex-col sm:flex-row sm:items-center sm:gap-8"
                   v-show="isFieldVisible('framePreset')"
                 >
                   <div class="flex flex-col sm:w-1/2">
@@ -1831,7 +1848,7 @@ const updateDataFromModal = (newData: string) => {
                   </div>
                 </div>
                 <fieldset
-                  class="flex flex-col gap-4"
+                  class="field-reveal flex flex-col gap-4"
                   v-show="isGroupVisible(['frameText', 'framePosition'])"
                 >
                   <legend class="mb-2 block">{{ t('Caption') }}</legend>
@@ -1864,6 +1881,7 @@ const updateDataFromModal = (newData: string) => {
                   </fieldset>
                 </fieldset>
                 <div
+                  class="field-reveal"
                   v-show="
                     isGroupVisible([
                       'frameWidth',
@@ -2086,7 +2104,7 @@ const updateDataFromModal = (newData: string) => {
             :root-class="isSimpleMode ? '!overflow-visible' : ''"
           >
             <section class="w-full space-y-4" aria-labelledby="qr-code-settings-title">
-              <div v-show="isFieldVisible('preset')">
+              <div class="field-reveal" v-show="isFieldVisible('preset')">
                 <label>{{ t('Preset') }}</label>
                 <div class="flex flex-row items-center justify-start gap-2">
                   <Combobox
@@ -2328,7 +2346,7 @@ const updateDataFromModal = (newData: string) => {
                   </div>
                 </div>
               </div>
-              <div class="w-full" v-show="isFieldVisible('logoImage')">
+              <div class="field-reveal w-full" v-show="isFieldVisible('logoImage')">
                 <div class="mb-2 flex flex-row items-center gap-2">
                   <label for="image-url">
                     {{ t('Logo image URL') }}
@@ -2367,7 +2385,7 @@ const updateDataFromModal = (newData: string) => {
                 />
               </div>
               <div
-                class="flex flex-row items-center gap-2"
+                class="field-reveal flex flex-row items-center gap-2"
                 v-show="isFieldVisible('logoBackground')"
               >
                 <label for="with-background">
@@ -2377,6 +2395,7 @@ const updateDataFromModal = (newData: string) => {
               </div>
               <div
                 id="color-settings"
+                class="field-reveal"
                 :class="'flex w-full flex-row flex-wrap gap-4'"
                 v-show="
                   isGroupVisible([
@@ -2435,7 +2454,7 @@ const updateDataFromModal = (newData: string) => {
                 </div>
               </div>
               <div
-                class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8"
+                class="field-reveal flex w-full flex-col gap-4 sm:flex-row sm:gap-8"
                 v-show="isGroupVisible(['width', 'height', 'borderRadius'])"
               >
                 <div class="w-full sm:w-1/3" v-show="isFieldVisible('width')">
@@ -2476,7 +2495,7 @@ const updateDataFromModal = (newData: string) => {
                 </div>
               </div>
               <div
-                class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8"
+                class="field-reveal flex w-full flex-col gap-4 sm:flex-row sm:gap-8"
                 v-show="isGroupVisible(['margin', 'imageMargin', 'imageSize'])"
               >
                 <div class="w-full sm:w-1/3" v-show="isFieldVisible('margin')">
@@ -2530,7 +2549,7 @@ const updateDataFromModal = (newData: string) => {
               </div>
               <div
                 id="dots-squares-settings"
-                class="mb-4 flex w-full flex-col flex-wrap gap-6 md:flex-row"
+                class="field-reveal mb-4 flex w-full flex-col flex-wrap gap-6 md:flex-row"
                 v-show="
                   isGroupVisible([
                     'dotsType',
@@ -2679,3 +2698,30 @@ const updateDataFromModal = (newData: string) => {
     @update:frame-enabled="showFrame = $event"
   />
 </template>
+
+<style scoped>
+/* When switching between Simple and Full mode we briefly add `.mode-animating`
+   to the settings container; every setting block tagged `.field-reveal` that is
+   currently visible then slides + fades into place, so newly-revealed settings
+   animate in instead of popping. */
+@keyframes field-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.mode-animating .field-reveal {
+  animation: field-slide-in 0.28s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mode-animating .field-reveal {
+    animation: none;
+  }
+}
+</style>
