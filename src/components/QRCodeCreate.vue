@@ -1249,7 +1249,7 @@ const updateDataFromModal = (newData: string) => {
       v-if="isLarge"
       ref="mainContentContainer"
       id="main-content-container"
-      class="sticky top-0 flex w-full shrink-0 flex-col items-center justify-center p-4 md:w-fit"
+      class="sticky top-0 flex max-h-[calc(100vh-6.5rem)] w-full shrink-0 flex-col items-center justify-start overflow-y-auto p-4 md:w-fit"
     ></div>
     <!-- Bottom sheet on small screens -->
     <Drawer v-else v-model:open="isMobileExportDrawerOpen">
@@ -1437,8 +1437,8 @@ const updateDataFromModal = (newData: string) => {
             />
           </div>
         </div>
-        <div class="mt-4 flex flex-col items-center gap-8">
-          <div class="flex flex-col items-center justify-center gap-3">
+        <div class="mt-3 flex flex-col items-center gap-4">
+          <div class="flex flex-col items-center justify-center gap-2">
             <button
               v-if="exportMode !== ExportMode.Batch"
               id="copy-qr-image-button"
@@ -1676,7 +1676,7 @@ const updateDataFromModal = (newData: string) => {
             </div>
           </section>
 
-          <div class="mt-4 hidden flex-wrap items-center justify-center gap-2 md:flex">
+          <div class="mt-2 hidden flex-wrap items-center justify-center gap-2 md:flex">
             <a
               href="https://github.com/lyqht/mini-qr/discussions"
               target="_blank"

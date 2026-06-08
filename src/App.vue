@@ -78,9 +78,7 @@ const isModeToggleDisabled = computed(() => {
 <template>
   <main>
     <!-- Desktop header - only visible on desktop -->
-    <div
-      class="hidden md:mx-auto md:mb-4 md:mt-8 md:flex md:w-5/6 md:flex-row md:justify-between md:ps-4"
-    >
+    <div class="hidden md:mx-auto md:my-4 md:flex md:w-5/6 md:flex-row md:justify-between md:ps-4">
       <div class="flex items-center">
         <h1 class="text-3xl text-gray-700 dark:text-gray-100">MiniQR</h1>
 
@@ -259,7 +257,7 @@ const isModeToggleDisabled = computed(() => {
     </div>
 
     <div
-      class="relative grid min-h-screen place-items-center items-start bg-white p-8 pt-16 dark:bg-zinc-900 md:px-6 md:pt-8"
+      class="relative grid min-h-screen place-items-center items-start bg-white p-8 pt-16 dark:bg-zinc-900 md:px-6 md:pb-6 md:pt-4"
     >
       <!-- Main content area with conditional rendering based on app mode -->
       <div class="w-full lg:w-5/6">
