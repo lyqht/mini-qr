@@ -110,18 +110,10 @@ const isCustomizeFieldsOpen = ref(false)
 const isSimpleMode = computed(() => viewMode.value === 'simple')
 
 // Controls which accordion sections are expanded. Both modes show the section
-// headers; we start them open so pinned fields are visible without an extra
-// click. In simple mode the frame section only opens once it is shown.
+// headers. We keep hidden sections OUT of the open set: otherwise a section
+// that is display:none but "open" would reveal and play its collapse animation
+// at the same time when switching simple → full, causing a visible flash.
 const openAccordionItems = ref<string[]>(['qr-code-settings'])
-watch(
-  isSimpleMode,
-  (simple) => {
-    openAccordionItems.value = simple
-      ? ['frame-settings', 'qr-code-settings']
-      : ['qr-code-settings']
-  },
-  { immediate: true }
-)
 
 function isFieldVisible(key: SimpleFieldKey): boolean {
   return isFieldVisibleInMode(viewMode.value, simpleFields.value, key)
@@ -135,6 +127,30 @@ function isGroupVisible(keys: readonly SimpleFieldKey[]): boolean {
 // The frame accordion section appears in simple mode when at least one frame
 // field is pinned, or when the frame is enabled (so it stays manageable).
 const isFrameSectionVisible = computed(() => isGroupVisible(FRAME_FIELD_KEYS) || showFrame.value)
+
+// Auto-open the frame section in simple mode once it becomes visible, and drop
+// it from the open set whenever it is hidden. (Not immediate — showFrame is
+// declared later, and the initial full-mode default is already correct.)
+watch(isFrameSectionVisible, (visible) => {
+  if (!visible) {
+    openAccordionItems.value = openAccordionItems.value.filter((i) => i !== 'frame-settings')
+  } else if (isSimpleMode.value && !openAccordionItems.value.includes('frame-settings')) {
+    openAccordionItems.value = ['frame-settings', ...openAccordionItems.value]
+  }
+})
+
+watch(isSimpleMode, (simple) => {
+  if (simple) {
+    // Open only the sections that are actually visible.
+    openAccordionItems.value = isFrameSectionVisible.value
+      ? ['frame-settings', 'qr-code-settings']
+      : ['qr-code-settings']
+  } else if (!openAccordionItems.value.includes('qr-code-settings')) {
+    // Entering full mode keeps whatever was open (no collapse flash); just
+    // ensure the QR section stays available.
+    openAccordionItems.value = [...openAccordionItems.value, 'qr-code-settings']
+  }
+})
 
 function setViewMode(mode: QRViewMode): void {
   viewMode.value = mode
@@ -1864,7 +1880,7 @@ const updateDataFromModal = (newData: string) => {
                   <label class="mb-2 block">{{ t('Frame style') }}</label>
                   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div
-                      v-show="
+                      v-if="
                         isFieldVisible('frameWidth') &&
                         (frameTextPosition === 'left' || frameTextPosition === 'right')
                       "
