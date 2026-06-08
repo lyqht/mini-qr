@@ -27,7 +27,7 @@ test.describe('Simple Mode', () => {
     await expect(page.locator('#width')).toBeVisible()
   })
 
-  test('simple mode hides everything except the data field', async ({ page }) => {
+  test('simple mode hides styling fields but keeps the QR section header', async ({ page }) => {
     await simpleToggle(page).click()
 
     await expect(simpleToggle(page)).toHaveAttribute('aria-checked', 'true')
@@ -37,8 +37,22 @@ test.describe('Simple Mode', () => {
     // Styling controls are hidden.
     await expect(page.locator('#dots-color')).toBeHidden()
     await expect(page.locator('#width')).toBeHidden()
-    // Accordion section triggers are gone in simple mode.
-    await expect(page.getByRole('button', { name: /qr code settings/i })).toHaveCount(0)
+    // The QR code settings section (which always holds the data field) keeps
+    // its header; the frame section is hidden until a frame field is shown.
+    await expect(page.getByRole('button', { name: /qr code settings/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /frame settings/i })).toBeHidden()
+  })
+
+  test('shows both section headers when each group has a visible field', async ({ page }) => {
+    await simpleToggle(page).click()
+    await page.locator('#customize-fields-button').click()
+    await page.getByRole('checkbox', { name: 'Dots color' }).check()
+    await page.getByRole('checkbox', { name: 'Add frame' }).check()
+    await page.getByRole('checkbox', { name: 'Frame preset' }).check()
+    await page.getByRole('button', { name: 'Done' }).click()
+
+    await expect(page.getByRole('button', { name: /qr code settings/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /frame settings/i })).toBeVisible()
   })
 
   test('customize panel surfaces a chosen field and persists across reload', async ({ page }) => {
@@ -63,22 +77,24 @@ test.describe('Simple Mode', () => {
     await expect(page.locator('#width')).toBeHidden()
   })
 
-  test('pinning frame surfaces the full frame controls when enabled', async ({ page }) => {
+  test('frame group reveals its sub-fields only after Add frame is enabled', async ({ page }) => {
     await simpleToggle(page).click()
-
     await page.locator('#customize-fields-button').click()
+
+    // Frame sub-fields are hidden until "Add frame" is enabled in the panel.
+    await expect(page.getByRole('checkbox', { name: 'Frame preset' })).toBeHidden()
     await page.getByRole('checkbox', { name: 'Add frame' }).check()
+    await expect(page.getByRole('checkbox', { name: 'Frame preset' })).toBeVisible()
+
+    // Pin a single frame sub-field, then confirm only it shows in the column.
+    await page.getByRole('checkbox', { name: 'Caption', exact: true }).check()
     await page.getByRole('button', { name: 'Done' }).click()
 
-    // The frame section appears with its enable checkbox.
-    const showFrame = page.locator('#show-frame')
-    await expect(showFrame).toBeVisible()
-
-    // Enabling the frame reveals the rest of the frame controls (not just the
-    // checkbox) — guards against the accordion clipping its expanded content.
-    await showFrame.check()
+    // Enabling the frame in the panel also enabled it on the QR code.
+    await expect(page.locator('#show-frame')).toBeChecked()
     await expect(page.locator('#frame-text')).toBeVisible()
-    await expect(page.getByText('Frame style')).toBeVisible()
+    // A frame field that was not pinned stays hidden.
+    await expect(page.locator('#frame-text-color')).toBeHidden()
   })
 
   test('reset to data only clears pinned fields', async ({ page }) => {

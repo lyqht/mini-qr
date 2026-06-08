@@ -258,8 +258,8 @@ describe('simple fields persistence', () => {
   })
 
   it('round-trips pinned field keys', () => {
-    saveSimpleFields(['dotsColor', 'frame'])
-    expect(loadSimpleFields()).toEqual(['dotsColor', 'frame'])
+    saveSimpleFields(['dotsColor', 'framePreset'])
+    expect(loadSimpleFields()).toEqual(['dotsColor', 'framePreset'])
   })
 
   it('returns [] when nothing stored', () => {

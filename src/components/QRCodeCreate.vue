@@ -69,6 +69,7 @@ import {
   type QRCodeFrameConfig
 } from '@/utils/useQRCodeStorage'
 import {
+  FRAME_FIELD_KEYS,
   isFieldVisibleInMode,
   type QRViewMode,
   type SimpleFieldKey
@@ -108,10 +109,9 @@ const simpleFields = ref<SimpleFieldKey[]>([])
 const isCustomizeFieldsOpen = ref(false)
 const isSimpleMode = computed(() => viewMode.value === 'simple')
 
-// Controls which accordion sections are expanded. In simple mode we force
-// every section open and hide the triggers, so the column reads as a flat
-// list; in full mode the QR settings start open (the prior default) and the
-// user can collapse/expand freely.
+// Controls which accordion sections are expanded. Both modes show the section
+// headers; we start them open so pinned fields are visible without an extra
+// click. In simple mode the frame section only opens once it is shown.
 const openAccordionItems = ref<string[]>(['qr-code-settings'])
 watch(
   isSimpleMode,
@@ -128,9 +128,13 @@ function isFieldVisible(key: SimpleFieldKey): boolean {
 }
 
 /** Whether an accordion group should render at all in the current mode. */
-function isGroupVisible(keys: SimpleFieldKey[]): boolean {
+function isGroupVisible(keys: readonly SimpleFieldKey[]): boolean {
   return viewMode.value === 'full' || keys.some((k) => simpleFields.value.includes(k))
 }
+
+// The frame accordion section appears in simple mode when at least one frame
+// field is pinned, or when the frame is enabled (so it stays manageable).
+const isFrameSectionVisible = computed(() => isGroupVisible(FRAME_FIELD_KEYS) || showFrame.value)
 
 function setViewMode(mode: QRViewMode): void {
   viewMode.value = mode
@@ -1781,9 +1785,8 @@ const updateDataFromModal = (newData: string) => {
         collapsible
         class="flex w-full flex-col gap-4"
       >
-        <AccordionItem v-show="isGroupVisible(['frame'])" value="frame-settings">
+        <AccordionItem v-show="isFrameSectionVisible" value="frame-settings">
           <AccordionTrigger
-            v-if="!isSimpleMode"
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
             ><span id="frame-settings-title">{{ t('Frame settings') }}</span></AccordionTrigger
           >
@@ -1798,7 +1801,10 @@ const updateDataFromModal = (newData: string) => {
               </div>
 
               <template v-if="showFrame">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:gap-8">
+                <div
+                  class="flex flex-col sm:flex-row sm:items-center sm:gap-8"
+                  v-show="isFieldVisible('framePreset')"
+                >
                   <div class="flex flex-col sm:w-1/2">
                     <label>{{ t('Frame preset') }}</label>
                     <Combobox
@@ -1808,9 +1814,12 @@ const updateDataFromModal = (newData: string) => {
                     />
                   </div>
                 </div>
-                <fieldset class="flex flex-col gap-4">
+                <fieldset
+                  class="flex flex-col gap-4"
+                  v-show="isGroupVisible(['frameText', 'framePosition'])"
+                >
                   <legend class="mb-2 block">{{ t('Caption') }}</legend>
-                  <div>
+                  <div v-show="isFieldVisible('frameText')">
                     <label for="frame-text" class="mb-2 block text-sm">{{ t('Text') }}</label>
                     <textarea
                       name="frame-text"
@@ -1821,7 +1830,7 @@ const updateDataFromModal = (newData: string) => {
                       v-model="frameText"
                     />
                   </div>
-                  <fieldset>
+                  <fieldset v-show="isFieldVisible('framePosition')">
                     <legend class="mb-2 block text-sm">{{ t('Position') }}</legend>
                     <div
                       class="radio"
@@ -1838,10 +1847,28 @@ const updateDataFromModal = (newData: string) => {
                     </div>
                   </fieldset>
                 </fieldset>
-                <div>
+                <div
+                  v-show="
+                    isGroupVisible([
+                      'frameWidth',
+                      'frameTextColor',
+                      'frameBackground',
+                      'frameBorderColor',
+                      'frameBorderWidth',
+                      'frameBorderRadius',
+                      'framePadding',
+                      'frameFontFamily'
+                    ])
+                  "
+                >
                   <label class="mb-2 block">{{ t('Frame style') }}</label>
                   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div v-if="frameTextPosition === 'left' || frameTextPosition === 'right'">
+                    <div
+                      v-show="
+                        isFieldVisible('frameWidth') &&
+                        (frameTextPosition === 'left' || frameTextPosition === 'right')
+                      "
+                    >
                       <label for="frame-width" class="mb-1 block text-sm">{{
                         t('Frame width')
                       }}</label>
@@ -1869,7 +1896,7 @@ const updateDataFromModal = (newData: string) => {
                         }}
                       </p>
                     </div>
-                    <div>
+                    <div v-show="isFieldVisible('frameTextColor')">
                       <label for="frame-text-color" class="mb-1 block text-sm">{{
                         t('Text color')
                       }}</label>
@@ -1880,7 +1907,7 @@ const updateDataFromModal = (newData: string) => {
                         v-model="frameStyle.textColor"
                       />
                     </div>
-                    <fieldset>
+                    <fieldset v-show="isFieldVisible('frameBackground')">
                       <legend class="mb-1 block text-sm">{{ t('Background') }}</legend>
                       <div class="flex flex-row items-center gap-4">
                         <div class="radio">
@@ -1946,7 +1973,7 @@ const updateDataFromModal = (newData: string) => {
                         />
                       </div>
                     </fieldset>
-                    <div>
+                    <div v-show="isFieldVisible('frameBorderColor')">
                       <label for="frame-border-color" class="mb-1 block text-sm">{{
                         t('Border color')
                       }}</label>
@@ -1957,7 +1984,7 @@ const updateDataFromModal = (newData: string) => {
                         v-model="frameStyle.borderColor"
                       />
                     </div>
-                    <div>
+                    <div v-show="isFieldVisible('frameBorderWidth')">
                       <label for="frame-border-width" class="mb-1 block text-sm">{{
                         t('Border width')
                       }}</label>
@@ -1969,7 +1996,7 @@ const updateDataFromModal = (newData: string) => {
                         placeholder="1px"
                       />
                     </div>
-                    <div>
+                    <div v-show="isFieldVisible('frameBorderRadius')">
                       <label for="frame-border-radius" class="mb-1 block text-sm">{{
                         t('Border radius')
                       }}</label>
@@ -1981,7 +2008,7 @@ const updateDataFromModal = (newData: string) => {
                         placeholder="8px"
                       />
                     </div>
-                    <div>
+                    <div v-show="isFieldVisible('framePadding')">
                       <label for="frame-padding" class="mb-1 block text-sm">{{
                         t('Padding')
                       }}</label>
@@ -1993,7 +2020,7 @@ const updateDataFromModal = (newData: string) => {
                         placeholder="16px"
                       />
                     </div>
-                    <div class="sm:col-span-2">
+                    <div class="sm:col-span-2" v-show="isFieldVisible('frameFontFamily')">
                       <label for="frame-font-family" class="mb-1 block text-sm">{{
                         t('Font family')
                       }}</label>
@@ -2035,7 +2062,6 @@ const updateDataFromModal = (newData: string) => {
         </AccordionItem>
         <AccordionItem value="qr-code-settings">
           <AccordionTrigger
-            v-if="!isSimpleMode"
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
             ><span id="qr-code-settings-title">{{ t('QR code settings') }}</span></AccordionTrigger
           >
@@ -2631,7 +2657,9 @@ const updateDataFromModal = (newData: string) => {
   <QRSimpleFieldsCustomizer
     v-model="simpleFields"
     :open="isCustomizeFieldsOpen"
+    :frame-enabled="showFrame"
     :is-large="isLarge"
     @update:open="isCustomizeFieldsOpen = $event"
+    @update:frame-enabled="showFrame = $event"
   />
 </template>

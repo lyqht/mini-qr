@@ -10,6 +10,12 @@ export type QRViewMode = 'simple' | 'full'
 export interface SimpleFieldGroup {
   /** Group heading translation key. */
   labelKey: string
+  /**
+   * When set, the group is gated behind an enable toggle (the frame's
+   * "Add frame"). Its field checkboxes only appear in the customize panel once
+   * the toggle is on, mirroring the real frame settings UI.
+   */
+  enableToggleLabelKey?: string
   fields: { key: string; labelKey: string }[]
 }
 
@@ -44,9 +50,37 @@ export const SIMPLE_MODE_FIELD_GROUPS: SimpleFieldGroup[] = [
   },
   {
     labelKey: 'Frame settings',
-    fields: [{ key: 'frame', labelKey: 'Add frame' }]
+    enableToggleLabelKey: 'Add frame',
+    fields: [
+      { key: 'framePreset', labelKey: 'Frame preset' },
+      { key: 'frameText', labelKey: 'Caption' },
+      { key: 'framePosition', labelKey: 'Position' },
+      { key: 'frameWidth', labelKey: 'Frame width' },
+      { key: 'frameTextColor', labelKey: 'Text color' },
+      { key: 'frameBackground', labelKey: 'Background' },
+      { key: 'frameBorderColor', labelKey: 'Border color' },
+      { key: 'frameBorderWidth', labelKey: 'Border width' },
+      { key: 'frameBorderRadius', labelKey: 'Border radius' },
+      { key: 'framePadding', labelKey: 'Padding' },
+      { key: 'frameFontFamily', labelKey: 'Font family' }
+    ]
   }
 ]
+
+/** Field keys belonging to the frame settings group. */
+export const FRAME_FIELD_KEYS = [
+  'framePreset',
+  'frameText',
+  'framePosition',
+  'frameWidth',
+  'frameTextColor',
+  'frameBackground',
+  'frameBorderColor',
+  'frameBorderWidth',
+  'frameBorderRadius',
+  'framePadding',
+  'frameFontFamily'
+] as const
 
 /** Flat list of every valid field key. */
 export const SIMPLE_MODE_FIELD_KEYS = SIMPLE_MODE_FIELD_GROUPS.flatMap((g) =>

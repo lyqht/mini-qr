@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   SIMPLE_MODE_FIELD_KEYS,
   SIMPLE_MODE_FIELD_GROUPS,
+  FRAME_FIELD_KEYS,
   isValidSimpleFieldKey,
   sanitizeSimpleFields,
   isFieldVisibleInMode,
@@ -29,7 +30,17 @@ describe('simple mode field registry', () => {
         'cornersSquareType',
         'cornersDotType',
         'errorCorrectionLevel',
-        'frame'
+        'framePreset',
+        'frameText',
+        'framePosition',
+        'frameWidth',
+        'frameTextColor',
+        'frameBackground',
+        'frameBorderColor',
+        'frameBorderWidth',
+        'frameBorderRadius',
+        'framePadding',
+        'frameFontFamily'
       ].sort()
     )
   })
@@ -48,6 +59,17 @@ describe('simple mode field registry', () => {
       }
     }
   })
+
+  it('groups the frame fields behind an enable toggle', () => {
+    const frameGroup = SIMPLE_MODE_FIELD_GROUPS.find((g) => g.labelKey === 'Frame settings')
+    expect(frameGroup?.enableToggleLabelKey).toBe('Add frame')
+    expect(frameGroup?.fields.map((f) => f.key).sort()).toEqual([...FRAME_FIELD_KEYS].sort())
+  })
+
+  it('only the frame group is gated by an enable toggle', () => {
+    const gated = SIMPLE_MODE_FIELD_GROUPS.filter((g) => g.enableToggleLabelKey)
+    expect(gated).toHaveLength(1)
+  })
 })
 
 describe('isValidSimpleFieldKey', () => {
@@ -63,7 +85,10 @@ describe('isValidSimpleFieldKey', () => {
 
 describe('sanitizeSimpleFields', () => {
   it('keeps only known keys', () => {
-    expect(sanitizeSimpleFields(['dotsColor', 'bogus', 'frame'])).toEqual(['dotsColor', 'frame'])
+    expect(sanitizeSimpleFields(['dotsColor', 'bogus', 'framePreset'])).toEqual([
+      'dotsColor',
+      'framePreset'
+    ])
   })
 
   it('removes duplicates', () => {

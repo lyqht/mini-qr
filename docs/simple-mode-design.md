@@ -79,11 +79,15 @@ the layout users already know.
 | Group            | Fields (key → control)                                                                                                                                                                                                              |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | QR code settings | `preset`, `logoImage`, `logoBackground`, `backgroundColor`, `dotsColor`, `cornersSquareColor`, `cornersDotColor`, `width`, `height`, `borderRadius`, `margin`, `imageMargin`, `imageSize`, `dotsType`, `cornersSquareType`, `cornersDotType`, `errorCorrectionLevel` |
-| Frame settings   | `frame` (the entire frame block, surfaced as the "Add frame" toggle)                                                                                                                                                               |
+| Frame settings   | `framePreset`, `frameText`, `framePosition`, `frameWidth`, `frameTextColor`, `frameBackground`, `frameBorderColor`, `frameBorderWidth`, `frameBorderRadius`, `framePadding`, `frameFontFamily`                                       |
 
-> Frame is treated as a single field key (`frame`) — pinning it surfaces the
-> existing frame sub-controls, which already self-gate behind the `showFrame`
-> checkbox. This keeps the frame's internal conditional logic untouched.
+> The **Frame settings** group mirrors the real frame UI: it is gated by an
+> `enableToggleLabelKey` ("Add frame"). In the customize panel the frame
+> sub-field checkboxes only appear once "Add frame" is enabled, and that toggle
+> is bound to the real `showFrame` state (`v-model:frameEnabled`) — so enabling
+> it in the panel enables the frame on the QR code, exactly like the in-column
+> control. Each frame sub-field then gates its own control in the column, the
+> same way the QR fields do.
 >
 > Because Simple Mode force-expands the accordion sections, `AccordionContent`
 > gains a `rootClass` escape hatch and is given `!overflow-visible` in Simple
@@ -106,12 +110,16 @@ The data input block has no gate (always shown).
 
 ### Accordion behavior
 
-- **Full mode:** unchanged — the existing `Accordion` with its `Frame settings`
-  and `QR code settings` triggers.
-- **Simple mode:** section trigger chrome is hidden and sections are forced
-  open, so the column reads as a flat list. A computed
-  `groupHasVisibleFields(group)` hides any accordion section whose visible-field
-  count is 0. With no pins, only the data input remains.
+Both modes keep the section headers (`Frame settings`, `QR code settings`) so
+the two groups stay visually distinct.
+
+- **Full mode:** unchanged — both sections shown, QR settings open by default.
+- **Simple mode:** the **QR code settings** section is always shown (it holds
+  the always-visible data field); the **Frame settings** section is shown only
+  when at least one frame field is pinned or the frame is enabled. Sections
+  start expanded. Because they are force-expanded, `AccordionContent` is given
+  `!overflow-visible` so a section can never clip its (dynamically growing)
+  content.
 
 ### Toggle placement
 
