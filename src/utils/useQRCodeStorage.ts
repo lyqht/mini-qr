@@ -1,6 +1,7 @@
 import type { Options as StyledQRCodeProps } from '@/lib/qr-code'
 import type { FrameStyle } from './framePresets'
 import { isValidQRCodeConfig } from './qrCodePresets'
+import { sanitizeSimpleFields, type QRViewMode, type SimpleFieldKey } from './simpleModeFields'
 
 export interface QRCodeFrameConfig {
   text: string
@@ -56,5 +57,36 @@ export function loadQRConfig(): QRCodeConfig | null {
     return parsed
   } catch {
     return null
+  }
+}
+
+// --- Simple Mode view preferences -----------------------------------------
+// Persisted separately from the QR config so toggling the view never mutates
+// the stored design. Both reads tolerate missing/corrupt values by returning a
+// safe default, mirroring loadQRConfig.
+
+export const QR_VIEW_MODE_STORAGE_KEY = 'qrViewMode'
+export const QR_SIMPLE_FIELDS_STORAGE_KEY = 'qrSimpleFields'
+
+export function saveViewMode(mode: QRViewMode): void {
+  localStorage.setItem(QR_VIEW_MODE_STORAGE_KEY, mode)
+}
+
+export function loadViewMode(): QRViewMode | null {
+  const stored = localStorage.getItem(QR_VIEW_MODE_STORAGE_KEY)
+  return stored === 'simple' || stored === 'full' ? stored : null
+}
+
+export function saveSimpleFields(keys: SimpleFieldKey[]): void {
+  localStorage.setItem(QR_SIMPLE_FIELDS_STORAGE_KEY, JSON.stringify(keys))
+}
+
+export function loadSimpleFields(): SimpleFieldKey[] {
+  const stored = localStorage.getItem(QR_SIMPLE_FIELDS_STORAGE_KEY)
+  if (!stored) return []
+  try {
+    return sanitizeSimpleFields(JSON.parse(stored))
+  } catch {
+    return []
   }
 }

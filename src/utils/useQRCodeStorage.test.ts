@@ -9,6 +9,12 @@ import {
   LAST_LOADED_LOCALLY_PRESET_KEY,
   LOADED_FROM_FILE_PRESET_KEY,
   CUSTOM_LOADED_PRESET_KEYS,
+  QR_VIEW_MODE_STORAGE_KEY,
+  QR_SIMPLE_FIELDS_STORAGE_KEY,
+  saveViewMode,
+  loadViewMode,
+  saveSimpleFields,
+  loadSimpleFields,
   type QRCodeConfig
 } from './useQRCodeStorage'
 
@@ -216,5 +222,62 @@ describe('hasStoredQRConfig', () => {
   it('returns true after saving a config', () => {
     saveQRConfig(sampleConfig)
     expect(hasStoredQRConfig()).toBe(true)
+  })
+})
+
+describe('view mode persistence', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it('exports the expected storage keys', () => {
+    expect(QR_VIEW_MODE_STORAGE_KEY).toBe('qrViewMode')
+    expect(QR_SIMPLE_FIELDS_STORAGE_KEY).toBe('qrSimpleFields')
+  })
+
+  it('round-trips a view mode', () => {
+    saveViewMode('simple')
+    expect(loadViewMode()).toBe('simple')
+    saveViewMode('full')
+    expect(loadViewMode()).toBe('full')
+  })
+
+  it('returns null when no view mode stored', () => {
+    expect(loadViewMode()).toBeNull()
+  })
+
+  it('returns null for an invalid stored view mode', () => {
+    localStorage.setItem(QR_VIEW_MODE_STORAGE_KEY, 'fancy')
+    expect(loadViewMode()).toBeNull()
+  })
+})
+
+describe('simple fields persistence', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it('round-trips pinned field keys', () => {
+    saveSimpleFields(['dotsColor', 'frame'])
+    expect(loadSimpleFields()).toEqual(['dotsColor', 'frame'])
+  })
+
+  it('returns [] when nothing stored', () => {
+    expect(loadSimpleFields()).toEqual([])
+  })
+
+  it('filters out unknown field keys', () => {
+    localStorage.setItem(QR_SIMPLE_FIELDS_STORAGE_KEY, JSON.stringify(['dotsColor', 'bogus']))
+    expect(loadSimpleFields()).toEqual(['dotsColor'])
+  })
+
+  it('returns [] for malformed JSON', () => {
+    localStorage.setItem(QR_SIMPLE_FIELDS_STORAGE_KEY, 'not-json{')
+    expect(loadSimpleFields()).toEqual([])
+  })
+
+  it('returns [] when stored value is not an array', () => {
+    localStorage.setItem(QR_SIMPLE_FIELDS_STORAGE_KEY, JSON.stringify({ a: 1 }))
+    expect(loadSimpleFields()).toEqual([])
   })
 })

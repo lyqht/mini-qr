@@ -11,6 +11,7 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion'
 import { Combobox } from '@/components/ui/Combobox'
+import QRSimpleFieldsCustomizer from '@/components/QRSimpleFieldsCustomizer.vue'
 import {
   Drawer,
   DrawerContent,
@@ -58,11 +59,20 @@ import {
   LAST_LOADED_LOCALLY_PRESET_KEY,
   LOADED_FROM_FILE_PRESET_KEY,
   loadQRConfig,
+  loadSimpleFields,
+  loadViewMode,
   saveQRConfig,
+  saveSimpleFields,
+  saveViewMode,
   serializeQRConfig,
   type QRCodeConfig,
   type QRCodeFrameConfig
 } from '@/utils/useQRCodeStorage'
+import {
+  isFieldVisibleInMode,
+  type QRViewMode,
+  type SimpleFieldKey
+} from '@/utils/simpleModeFields'
 import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
 import TextExportModal from '@/components/TextExportModal.vue'
@@ -87,6 +97,45 @@ const isLarge = useMediaQuery('(min-width: 768px)')
 const isLikelyMobileDevice = computed(() => {
   return typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0
 })
+
+//#region /** Simple Mode */
+// Full mode shows every setting (current behavior). Simple mode shows only the
+// data field plus whichever fields the user pins via the customize panel. Both
+// the mode and the pinned-field list persist to localStorage so a refresh
+// returns the user to the same view (see onMounted + watchers below).
+const viewMode = ref<QRViewMode>('full')
+const simpleFields = ref<SimpleFieldKey[]>([])
+const isCustomizeFieldsOpen = ref(false)
+const isSimpleMode = computed(() => viewMode.value === 'simple')
+
+// Controls which accordion sections are expanded. In simple mode we force
+// every section open and hide the triggers, so the column reads as a flat
+// list; in full mode the QR settings start open (the prior default) and the
+// user can collapse/expand freely.
+const openAccordionItems = ref<string[]>(['qr-code-settings'])
+watch(
+  isSimpleMode,
+  (simple) => {
+    openAccordionItems.value = simple
+      ? ['frame-settings', 'qr-code-settings']
+      : ['qr-code-settings']
+  },
+  { immediate: true }
+)
+
+function isFieldVisible(key: SimpleFieldKey): boolean {
+  return isFieldVisibleInMode(viewMode.value, simpleFields.value, key)
+}
+
+/** Whether an accordion group should render at all in the current mode. */
+function isGroupVisible(keys: SimpleFieldKey[]): boolean {
+  return viewMode.value === 'full' || keys.some((k) => simpleFields.value.includes(k))
+}
+
+function setViewMode(mode: QRViewMode): void {
+  viewMode.value = mode
+}
+//#endregion
 
 //#region /** locale */
 const { t, locale } = useI18n()
@@ -846,6 +895,19 @@ watch(
   { deep: true }
 )
 
+// Persist Simple Mode preferences independently of the QR config so toggling
+// the view never rewrites the stored design.
+watch(viewMode, (mode) => {
+  if (isLocalStorageEnabled()) saveViewMode(mode)
+})
+watch(
+  simpleFields,
+  (fields) => {
+    if (isLocalStorageEnabled()) saveSimpleFields(fields)
+  },
+  { deep: true }
+)
+
 onMounted(() => {
   if (isLocalStorageEnabled()) {
     const storedConfig = loadQRConfig()
@@ -855,6 +917,8 @@ onMounted(() => {
       selectedPreset.value = { ...defaultPreset }
       selectedPresetKey.value = defaultPreset.name
     }
+    viewMode.value = loadViewMode() ?? 'full'
+    simpleFields.value = loadSimpleFields()
   }
 
   // Apply frame preset when QR preset does not define a frame
@@ -1635,14 +1699,91 @@ const updateDataFromModal = (newData: string) => {
 
     <section id="settings" class="flex w-full grow flex-col items-start gap-8 text-start">
       <h2 class="sr-only">{{ t('Settings to customize your QR code') }}</h2>
+
+      <!-- View mode toggle: Simple shows only the data field plus pinned
+           fields; Full shows every setting. Sits at the top of the settings
+           column so it is reachable on both desktop and (stacked) mobile. -->
+      <div class="flex w-full flex-col gap-3">
+        <div
+          class="flex flex-row flex-wrap items-center justify-between gap-2"
+          role="group"
+          :aria-label="t('Configuration view mode')"
+        >
+          <div
+            class="inline-flex rounded-lg border border-zinc-300 p-1 dark:border-zinc-700"
+            role="radiogroup"
+            :aria-label="t('Configuration view mode')"
+          >
+            <button
+              id="view-mode-simple"
+              type="button"
+              role="radio"
+              :aria-checked="isSimpleMode"
+              class="rounded-md px-3 py-1 text-sm font-medium transition-colors"
+              :class="
+                isSimpleMode
+                  ? 'bg-zinc-200 text-gray-900 dark:bg-zinc-700 dark:text-gray-100'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+              "
+              @click="setViewMode('simple')"
+            >
+              {{ t('Simple') }}
+            </button>
+            <button
+              id="view-mode-full"
+              type="button"
+              role="radio"
+              :aria-checked="!isSimpleMode"
+              class="rounded-md px-3 py-1 text-sm font-medium transition-colors"
+              :class="
+                !isSimpleMode
+                  ? 'bg-zinc-200 text-gray-900 dark:bg-zinc-700 dark:text-gray-100'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+              "
+              @click="setViewMode('full')"
+            >
+              {{ t('Full') }}
+            </button>
+          </div>
+          <button
+            v-if="isSimpleMode"
+            id="customize-fields-button"
+            type="button"
+            class="icon-button flex flex-row items-center gap-1 text-sm"
+            @click="isCustomizeFieldsOpen = true"
+          >
+            <!-- Icon from Tabler Icons by Paweł Kuna -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <g
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              >
+                <path d="M4 6h8M16 6h4M4 12h4M12 12h8M4 18h12M18 18h2" />
+                <circle cx="14" cy="6" r="2" />
+                <circle cx="10" cy="12" r="2" />
+                <circle cx="16" cy="18" r="2" />
+              </g>
+            </svg>
+            <span>{{ t('Customize fields') }}</span>
+          </button>
+        </div>
+        <p v-if="isSimpleMode" class="text-sm text-gray-500 dark:text-gray-400">
+          {{ t('Showing only the fields you use. Customize to show more.') }}
+        </p>
+      </div>
+
       <Accordion
+        v-model="openAccordionItems"
         type="multiple"
         collapsible
         class="flex w-full flex-col gap-4"
-        :default-value="['qr-code-settings']"
       >
-        <AccordionItem value="frame-settings">
+        <AccordionItem v-show="isGroupVisible(['frame'])" value="frame-settings">
           <AccordionTrigger
+            v-if="!isSimpleMode"
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
             ><span id="frame-settings-title">{{ t('Frame settings') }}</span></AccordionTrigger
           >
@@ -1891,12 +2032,13 @@ const updateDataFromModal = (newData: string) => {
         </AccordionItem>
         <AccordionItem value="qr-code-settings">
           <AccordionTrigger
+            v-if="!isSimpleMode"
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
             ><span id="qr-code-settings-title">{{ t('QR code settings') }}</span></AccordionTrigger
           >
           <AccordionContent class="px-2 pb-8 pt-4">
             <section class="w-full space-y-4" aria-labelledby="qr-code-settings-title">
-              <div>
+              <div v-show="isFieldVisible('preset')">
                 <label>{{ t('Preset') }}</label>
                 <div class="flex flex-row items-center justify-start gap-2">
                   <Combobox
@@ -2138,7 +2280,7 @@ const updateDataFromModal = (newData: string) => {
                   </div>
                 </div>
               </div>
-              <div class="w-full">
+              <div class="w-full" v-show="isFieldVisible('logoImage')">
                 <div class="mb-2 flex flex-row items-center gap-2">
                   <label for="image-url">
                     {{ t('Logo image URL') }}
@@ -2176,14 +2318,29 @@ const updateDataFromModal = (newData: string) => {
                   v-model="image"
                 />
               </div>
-              <div class="flex flex-row items-center gap-2">
+              <div
+                class="flex flex-row items-center gap-2"
+                v-show="isFieldVisible('logoBackground')"
+              >
                 <label for="with-background">
                   {{ t('With background') }}
                 </label>
                 <input id="with-background" type="checkbox" v-model="includeBackground" />
               </div>
-              <div id="color-settings" :class="'flex w-full flex-row flex-wrap gap-4'">
+              <div
+                id="color-settings"
+                :class="'flex w-full flex-row flex-wrap gap-4'"
+                v-show="
+                  isGroupVisible([
+                    'backgroundColor',
+                    'dotsColor',
+                    'cornersSquareColor',
+                    'cornersDotColor'
+                  ])
+                "
+              >
                 <div
+                  v-show="isFieldVisible('backgroundColor')"
                   :inert="!includeBackground"
                   :class="[!includeBackground && 'opacity-30', 'flex flex-row items-center gap-2']"
                 >
@@ -2195,7 +2352,7 @@ const updateDataFromModal = (newData: string) => {
                     v-model="styleBackground"
                   />
                 </div>
-                <div class="flex flex-row items-center gap-2">
+                <div class="flex flex-row items-center gap-2" v-show="isFieldVisible('dotsColor')">
                   <label for="dots-color">{{ t('Dots color') }}</label>
                   <input
                     id="dots-color"
@@ -2204,7 +2361,10 @@ const updateDataFromModal = (newData: string) => {
                     v-model="dotsOptionsColor"
                   />
                 </div>
-                <div class="flex flex-row items-center gap-2">
+                <div
+                  class="flex flex-row items-center gap-2"
+                  v-show="isFieldVisible('cornersSquareColor')"
+                >
                   <label for="corners-square-color">{{ t('Corners Square color') }}</label>
                   <input
                     id="corners-square-color"
@@ -2213,7 +2373,10 @@ const updateDataFromModal = (newData: string) => {
                     v-model="cornersSquareOptionsColor"
                   />
                 </div>
-                <div class="flex flex-row items-center gap-2">
+                <div
+                  class="flex flex-row items-center gap-2"
+                  v-show="isFieldVisible('cornersDotColor')"
+                >
                   <label for="corners-dot-color">{{ t('Corners Dot color') }}</label>
                   <input
                     id="corners-dot-color"
@@ -2223,8 +2386,11 @@ const updateDataFromModal = (newData: string) => {
                   />
                 </div>
               </div>
-              <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
-                <div class="w-full sm:w-1/3">
+              <div
+                class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8"
+                v-show="isGroupVisible(['width', 'height', 'borderRadius'])"
+              >
+                <div class="w-full sm:w-1/3" v-show="isFieldVisible('width')">
                   <label for="width">
                     {{ t('Width (px)') }}
                   </label>
@@ -2236,7 +2402,7 @@ const updateDataFromModal = (newData: string) => {
                     v-model="width"
                   />
                 </div>
-                <div class="w-full sm:w-1/3">
+                <div class="w-full sm:w-1/3" v-show="isFieldVisible('height')">
                   <label for="height">
                     {{ t('Height (px)') }}
                   </label>
@@ -2248,7 +2414,7 @@ const updateDataFromModal = (newData: string) => {
                     v-model="height"
                   />
                 </div>
-                <div class="w-full sm:w-1/3">
+                <div class="w-full sm:w-1/3" v-show="isFieldVisible('borderRadius')">
                   <label for="border-radius">
                     {{ t('Border radius (px)') }}
                   </label>
@@ -2261,8 +2427,11 @@ const updateDataFromModal = (newData: string) => {
                   />
                 </div>
               </div>
-              <div class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8">
-                <div class="w-full sm:w-1/3">
+              <div
+                class="flex w-full flex-col gap-4 sm:flex-row sm:gap-8"
+                v-show="isGroupVisible(['margin', 'imageMargin', 'imageSize'])"
+              >
+                <div class="w-full sm:w-1/3" v-show="isFieldVisible('margin')">
                   <label for="margin">
                     {{ t('Margin (px)') }}
                   </label>
@@ -2274,7 +2443,7 @@ const updateDataFromModal = (newData: string) => {
                     v-model="margin"
                   />
                 </div>
-                <div class="w-full sm:w-1/3">
+                <div class="w-full sm:w-1/3" v-show="isFieldVisible('imageMargin')">
                   <label for="image-margin">
                     {{ t('Image margin (px)') }}
                   </label>
@@ -2286,7 +2455,7 @@ const updateDataFromModal = (newData: string) => {
                     v-model="imageMargin"
                   />
                 </div>
-                <div class="w-full sm:w-1/3">
+                <div class="w-full sm:w-1/3" v-show="isFieldVisible('imageSize')">
                   <label for="image-size">
                     {{ t('Image size (ratio)') }}
                   </label>
@@ -2314,8 +2483,16 @@ const updateDataFromModal = (newData: string) => {
               <div
                 id="dots-squares-settings"
                 class="mb-4 flex w-full flex-col flex-wrap gap-6 md:flex-row"
+                v-show="
+                  isGroupVisible([
+                    'dotsType',
+                    'cornersSquareType',
+                    'cornersDotType',
+                    'errorCorrectionLevel'
+                  ])
+                "
               >
-                <fieldset class="flex-1">
+                <fieldset class="flex-1" v-show="isFieldVisible('dotsType')">
                   <legend>{{ t('Dots type') }}</legend>
                   <div
                     class="radio"
@@ -2338,7 +2515,7 @@ const updateDataFromModal = (newData: string) => {
                     <label :for="'dotsOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-                <fieldset class="flex-1">
+                <fieldset class="flex-1" v-show="isFieldVisible('cornersSquareType')">
                   <legend>{{ t('Corners Square type') }}</legend>
                   <div
                     class="radio"
@@ -2354,7 +2531,7 @@ const updateDataFromModal = (newData: string) => {
                     <label :for="'cornersSquareOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-                <fieldset class="flex-1">
+                <fieldset class="flex-1" v-show="isFieldVisible('cornersDotType')">
                   <legend>{{ t('Corners Dot type') }}</legend>
                   <div class="radio" v-for="type in ['dot', 'square', 'rounded']" :key="type">
                     <input
@@ -2366,7 +2543,7 @@ const updateDataFromModal = (newData: string) => {
                     <label :for="'cornersDotOptionsType-' + type">{{ t(type) }}</label>
                   </div>
                 </fieldset>
-                <fieldset class="flex-1">
+                <fieldset class="flex-1" v-show="isFieldVisible('errorCorrectionLevel')">
                   <div class="flex flex-row items-center gap-2">
                     <legend>{{ t('Error correction level') }}</legend>
                     <a
@@ -2443,5 +2620,12 @@ const updateDataFromModal = (newData: string) => {
     :batch-rows="asciiBatchRows"
     :ec-level="errorCorrectionLevel"
     @close="isTextExportModalOpen = false"
+  />
+
+  <QRSimpleFieldsCustomizer
+    v-model="simpleFields"
+    :open="isCustomizeFieldsOpen"
+    :is-large="isLarge"
+    @update:open="isCustomizeFieldsOpen = $event"
   />
 </template>
