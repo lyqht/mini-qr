@@ -16,7 +16,7 @@ import {
   DialogTrigger,
   DialogClose
 } from '@/components/ui/dialog'
-import { X } from 'lucide-vue-next'
+import { X } from '@lucide/vue'
 
 defineProps<{
   isDarkMode: boolean

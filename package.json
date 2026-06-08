@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@floating-ui/vue": "1.1.11",
+    "@lucide/vue": "1.17.0",
     "@vercel/analytics": "2.0.1",
     "@vitejs/plugin-vue": "5.2.4",
     "@vitejs/plugin-vue-jsx": "3.1.0",
@@ -39,7 +40,6 @@
     "file-saver": "2.0.5",
     "html5-qrcode": "2.3.8",
     "jszip": "3.10.1",
-    "lucide-vue-next": "0.321.0",
     "marked": "15.0.12",
     "qr-scanner": "1.4.2",
     "qrcode-generator": "2.0.4",
