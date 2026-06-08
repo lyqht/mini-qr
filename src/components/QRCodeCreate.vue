@@ -1787,7 +1787,10 @@ const updateDataFromModal = (newData: string) => {
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
             ><span id="frame-settings-title">{{ t('Frame settings') }}</span></AccordionTrigger
           >
-          <AccordionContent class="px-2 pb-8 pt-4">
+          <AccordionContent
+            class="px-2 pb-8 pt-4"
+            :root-class="isSimpleMode ? '!overflow-visible' : ''"
+          >
             <section class="w-full space-y-4" aria-labelledby="frame-settings-title">
               <div class="flex flex-row items-center gap-2">
                 <label for="show-frame">{{ t('Add frame') }}</label>
@@ -2036,7 +2039,10 @@ const updateDataFromModal = (newData: string) => {
             class="button !px-4 text-2xl text-gray-700 outline-none dark:text-gray-100 md:!px-6 lg:!px-8"
             ><span id="qr-code-settings-title">{{ t('QR code settings') }}</span></AccordionTrigger
           >
-          <AccordionContent class="px-2 pb-8 pt-4">
+          <AccordionContent
+            class="px-2 pb-8 pt-4"
+            :root-class="isSimpleMode ? '!overflow-visible' : ''"
+          >
             <section class="w-full space-y-4" aria-labelledby="qr-code-settings-title">
               <div v-show="isFieldVisible('preset')">
                 <label>{{ t('Preset') }}</label>

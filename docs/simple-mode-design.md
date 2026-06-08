@@ -72,21 +72,23 @@ the registry.
 interface SimpleField { key: string; labelKey: string; group: FieldGroup }
 ```
 
-Groups and their fields (derived from the current template):
+The checklist is grouped into the two sections that mirror the configuration
+accordion — **QR code settings** and **Frame settings** — so the panel matches
+the layout users already know.
 
-| Group              | Fields (key → control)                                                                 |
-| ------------------ | -------------------------------------------------------------------------------------- |
-| Preset & style     | `preset` (preset selector + randomize)                                                 |
-| Logo               | `logoImage` (URL + upload), `logoBackground` (With background)                         |
-| Colors             | `backgroundColor`, `dotsColor`, `cornersSquareColor`, `cornersDotColor`                |
-| Dimensions         | `width`, `height`, `borderRadius`, `margin`, `imageMargin`, `imageSize`                |
-| Shapes             | `dotsType`, `cornersSquareType`, `cornersDotType`                                      |
-| Error correction   | `errorCorrectionLevel`                                                                  |
-| Frame              | `frame` (the entire frame block, gated by its existing `Add frame` toggle)             |
+| Group            | Fields (key → control)                                                                                                                                                                                                              |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| QR code settings | `preset`, `logoImage`, `logoBackground`, `backgroundColor`, `dotsColor`, `cornersSquareColor`, `cornersDotColor`, `width`, `height`, `borderRadius`, `margin`, `imageMargin`, `imageSize`, `dotsType`, `cornersSquareType`, `cornersDotType`, `errorCorrectionLevel` |
+| Frame settings   | `frame` (the entire frame block, surfaced as the "Add frame" toggle)                                                                                                                                                               |
 
 > Frame is treated as a single field key (`frame`) — pinning it surfaces the
 > existing frame sub-controls, which already self-gate behind the `showFrame`
 > checkbox. This keeps the frame's internal conditional logic untouched.
+>
+> Because Simple Mode force-expands the accordion sections, `AccordionContent`
+> gains a `rootClass` escape hatch and is given `!overflow-visible` in Simple
+> Mode so a force-expanded section can never clip its (dynamically growing)
+> content — e.g. the frame controls revealed after enabling "Add frame".
 
 ### Visibility gate
 

@@ -14,56 +14,37 @@ export interface SimpleFieldGroup {
 }
 
 /**
- * Grouped registry driving the "Customize fields" checklist. Group order and
- * field order here is the order shown in the panel.
+ * Grouped registry driving the "Customize fields" checklist. The two groups
+ * mirror the two configuration accordion sections — "QR code settings" and
+ * "Frame settings" — so the panel matches the layout users already know.
+ * Group order and field order here is the order shown in the panel.
  */
 export const SIMPLE_MODE_FIELD_GROUPS: SimpleFieldGroup[] = [
   {
-    labelKey: 'Preset & style',
-    fields: [{ key: 'preset', labelKey: 'Preset' }]
-  },
-  {
-    labelKey: 'Logo',
+    labelKey: 'QR code settings',
     fields: [
+      { key: 'preset', labelKey: 'Preset' },
       { key: 'logoImage', labelKey: 'Logo image URL' },
-      { key: 'logoBackground', labelKey: 'With background' }
-    ]
-  },
-  {
-    labelKey: 'Colors',
-    fields: [
+      { key: 'logoBackground', labelKey: 'With background' },
       { key: 'backgroundColor', labelKey: 'Background color' },
       { key: 'dotsColor', labelKey: 'Dots color' },
       { key: 'cornersSquareColor', labelKey: 'Corners Square color' },
-      { key: 'cornersDotColor', labelKey: 'Corners Dot color' }
-    ]
-  },
-  {
-    labelKey: 'Dimensions',
-    fields: [
+      { key: 'cornersDotColor', labelKey: 'Corners Dot color' },
       { key: 'width', labelKey: 'Width (px)' },
       { key: 'height', labelKey: 'Height (px)' },
       { key: 'borderRadius', labelKey: 'Border radius (px)' },
       { key: 'margin', labelKey: 'Margin (px)' },
       { key: 'imageMargin', labelKey: 'Image margin (px)' },
-      { key: 'imageSize', labelKey: 'Image size (ratio)' }
-    ]
-  },
-  {
-    labelKey: 'Shapes',
-    fields: [
+      { key: 'imageSize', labelKey: 'Image size (ratio)' },
       { key: 'dotsType', labelKey: 'Dots type' },
       { key: 'cornersSquareType', labelKey: 'Corners Square type' },
-      { key: 'cornersDotType', labelKey: 'Corners Dot type' }
+      { key: 'cornersDotType', labelKey: 'Corners Dot type' },
+      { key: 'errorCorrectionLevel', labelKey: 'Error correction level' }
     ]
-  },
-  {
-    labelKey: 'Error correction level',
-    fields: [{ key: 'errorCorrectionLevel', labelKey: 'Error correction level' }]
   },
   {
     labelKey: 'Frame settings',
-    fields: [{ key: 'frame', labelKey: 'Frame settings' }]
+    fields: [{ key: 'frame', labelKey: 'Add frame' }]
   }
 ]
 

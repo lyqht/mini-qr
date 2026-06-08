@@ -63,6 +63,24 @@ test.describe('Simple Mode', () => {
     await expect(page.locator('#width')).toBeHidden()
   })
 
+  test('pinning frame surfaces the full frame controls when enabled', async ({ page }) => {
+    await simpleToggle(page).click()
+
+    await page.locator('#customize-fields-button').click()
+    await page.getByRole('checkbox', { name: 'Add frame' }).check()
+    await page.getByRole('button', { name: 'Done' }).click()
+
+    // The frame section appears with its enable checkbox.
+    const showFrame = page.locator('#show-frame')
+    await expect(showFrame).toBeVisible()
+
+    // Enabling the frame reveals the rest of the frame controls (not just the
+    // checkbox) — guards against the accordion clipping its expanded content.
+    await showFrame.check()
+    await expect(page.locator('#frame-text')).toBeVisible()
+    await expect(page.getByText('Frame style')).toBeVisible()
+  })
+
   test('reset to data only clears pinned fields', async ({ page }) => {
     await simpleToggle(page).click()
     await page.locator('#customize-fields-button').click()
