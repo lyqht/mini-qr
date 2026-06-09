@@ -160,31 +160,37 @@ function setViewMode(mode: QRViewMode): void {
 // On mobile the export/preview lives in a fixed bottom sheet that overlaps the
 // scrollable settings. Track its height so we can pad the bottom of the
 // settings column and let its last items scroll clear of the sheet.
-const exportSheetHeight = ref(0)
+// Default reflects a typical sheet height so the padding is correct on the very
+// first render (avoids needing a second scroll); the observer then refines it.
+const DEFAULT_EXPORT_SHEET_HEIGHT = 220
+const exportSheetHeight = ref(DEFAULT_EXPORT_SHEET_HEIGHT)
 let exportSheetObserver: ResizeObserver | undefined
-function observeExportSheet(): void {
+function observeExportSheet(attempt = 0): void {
+  if (typeof ResizeObserver === 'undefined') return
   exportSheetObserver?.disconnect()
   const el = document.getElementById('drawer-preview-container')
-  if (!el || typeof ResizeObserver === 'undefined') {
-    exportSheetHeight.value = 0
+  if (!el) {
+    // The bottom sheet (vaul drawer trigger) can mount a tick after us; retry
+    // briefly while we're on a mobile layout.
+    if (!isLarge.value && attempt < 8) setTimeout(() => observeExportSheet(attempt + 1), 100)
     return
   }
   exportSheetObserver = new ResizeObserver(() => {
-    exportSheetHeight.value = el.getBoundingClientRect().height
+    const h = el.getBoundingClientRect().height
+    if (h > 0) exportSheetHeight.value = h
   })
   exportSheetObserver.observe(el)
-  exportSheetHeight.value = el.getBoundingClientRect().height
+  const h = el.getBoundingClientRect().height
+  if (h > 0) exportSheetHeight.value = h
 }
 // The bottom sheet only exists on mobile; re-attach when the layout switches.
-watch(isLarge, () => nextTick(observeExportSheet))
-onMounted(() => nextTick(observeExportSheet))
+watch(isLarge, () => nextTick(() => observeExportSheet()))
+onMounted(() => nextTick(() => observeExportSheet()))
 onUnmounted(() => exportSheetObserver?.disconnect())
 
 // Extra bottom padding (mobile only) so settings can scroll above the sheet.
 const settingsBottomPadding = computed(() =>
-  !isLarge.value && exportSheetHeight.value > 0
-    ? `${Math.round(exportSheetHeight.value) + 24}px`
-    : undefined
+  isLarge.value ? undefined : `${Math.round(exportSheetHeight.value) + 24}px`
 )
 
 // Briefly flag the settings container so visible `.field-reveal` blocks play
