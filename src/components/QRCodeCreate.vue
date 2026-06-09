@@ -85,7 +85,7 @@ import {
   type ErrorCorrectionLevel,
   type Options as StyledQRCodeProps
 } from '@/lib/qr-code'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
 
@@ -156,6 +156,36 @@ function setViewMode(mode: QRViewMode): void {
   if (mode !== viewMode.value) triggerModeAnimation()
   viewMode.value = mode
 }
+
+// On mobile the export/preview lives in a fixed bottom sheet that overlaps the
+// scrollable settings. Track its height so we can pad the bottom of the
+// settings column and let its last items scroll clear of the sheet.
+const exportSheetHeight = ref(0)
+let exportSheetObserver: ResizeObserver | undefined
+function observeExportSheet(): void {
+  exportSheetObserver?.disconnect()
+  const el = document.getElementById('drawer-preview-container')
+  if (!el || typeof ResizeObserver === 'undefined') {
+    exportSheetHeight.value = 0
+    return
+  }
+  exportSheetObserver = new ResizeObserver(() => {
+    exportSheetHeight.value = el.getBoundingClientRect().height
+  })
+  exportSheetObserver.observe(el)
+  exportSheetHeight.value = el.getBoundingClientRect().height
+}
+// The bottom sheet only exists on mobile; re-attach when the layout switches.
+watch(isLarge, () => nextTick(observeExportSheet))
+onMounted(() => nextTick(observeExportSheet))
+onUnmounted(() => exportSheetObserver?.disconnect())
+
+// Extra bottom padding (mobile only) so settings can scroll above the sheet.
+const settingsBottomPadding = computed(() =>
+  !isLarge.value && exportSheetHeight.value > 0
+    ? `${Math.round(exportSheetHeight.value) + 24}px`
+    : undefined
+)
 
 // Briefly flag the settings container so visible `.field-reveal` blocks play
 // their slide-in animation when the user switches modes.
@@ -1732,6 +1762,7 @@ const updateDataFromModal = (newData: string) => {
       id="settings"
       class="flex w-full grow flex-col items-start gap-8 text-start"
       :class="{ 'mode-animating': isModeAnimating }"
+      :style="{ paddingBottom: settingsBottomPadding }"
     >
       <h2 class="sr-only">{{ t('Settings to customize your QR code') }}</h2>
 
