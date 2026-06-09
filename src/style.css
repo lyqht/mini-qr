@@ -77,6 +77,10 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  /* Dynamic viewport height matches the visible area on mobile (excludes the
+     browser URL bar), so the scroll container's bottom lines up with what the
+     user can actually see. Falls back to 100vh on older browsers. */
+  min-height: 100dvh;
 }
 
 #app {
@@ -84,6 +88,7 @@ body {
   text-align: center;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow-y: auto;
   overflow-x: hidden;
 }
