@@ -396,7 +396,7 @@ defineExpose({
       <!-- Hidden div for file QR reader -->
       <div id="file-qr-reader" class="hidden"></div>
 
-      <div class="flex flex-col items-center gap-4" v-if="!isLoading">
+      <div class="flex w-full flex-col items-center gap-4" v-if="!isLoading">
         <!-- Upload QR Code Image option -->
         <div class="mb-4 text-center">
           <h3 class="mb-4 text-lg font-medium">{{ t('Scan a QR Code') }}</h3>
@@ -445,13 +445,13 @@ defineExpose({
             {{ t('Tip: For best results, use a clear image with good lighting.') }}
           </p>
 
-          <div class="mt-4 flex flex-col items-center gap-2">
+          <div class="mt-4 flex w-full flex-col items-center gap-2">
             <p class="mb-2">{{ t('or') }}</p>
 
-            <div class="flex items-center gap-2">
+            <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-stretch">
               <!-- Camera option -->
               <button
-                class="z-40 flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
+                class="z-40 flex w-full min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-zinc-100 px-4 py-2 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200 sm:w-auto sm:flex-1"
                 @click="startCameraScanning"
                 type="button"
               >
@@ -466,7 +466,7 @@ defineExpose({
 
               <!-- Paste from clipboard option -->
               <button
-                class="z-40 flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200"
+                class="z-40 flex w-full min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-zinc-100 px-4 py-2 outline-none transition-colors hover:bg-zinc-200 focus-visible:ring-1 focus-visible:ring-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:focus-visible:ring-zinc-200 sm:w-auto sm:flex-1"
                 @click="pasteFromClipboard"
                 type="button"
                 v-if="IS_PASTE_IMAGE_FROM_CLIPBOARD_SUPPORTED"
