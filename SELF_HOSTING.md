@@ -66,6 +66,8 @@ All `VITE_*` variables are **build-time** arguments — they are baked into the 
 | `VITE_FRAME_PRESET`           | `FRAME_PRESET`             | Name of the default frame preset to apply (e.g., `"Default Frame"`)                              | `""`      |
 | `VITE_FRAME_PRESETS`          | `FRAME_PRESETS`            | JSON array of custom frame presets. See [Custom Presets](#custom-presets) below                   | `"[]"`    |
 | `VITE_DISABLE_LOCAL_STORAGE`  | `DISABLE_LOCAL_STORAGE`    | Set to `"true"` to prevent the app from loading previously saved settings on startup             | `"false"` |
+| `VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | `QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | Set to `"true"` to show the Simple/Full view toggle and the "Customize fields" button | `"false"` |
+| `VITE_FIELDS_VISIBLE`         | `FIELDS_VISIBLE`           | Comma-separated field keys. When set, the app starts in Simple mode showing only the data field plus these fields (see [Fixing the visible fields](#fixing-the-visible-fields)) | `""` |
 
 ### Passing Variables via docker-compose
 
@@ -101,6 +103,35 @@ docker build \
   --build-arg VITE_DISABLE_LOCAL_STORAGE=true \
   -t mini-qr .
 ```
+
+## Fixing the visible fields
+
+By default the app shows the full QR code configuration UI. The Simple/Full
+view toggle and the "Customize fields" button are hidden unless you set
+`QR_CREATE_SIMPLE_FULL_MODE_TOGGLE=true`.
+
+To ship a fixed, simplified generator (e.g. a kiosk where users only change a
+couple of things), set `FIELDS_VISIBLE` to the field keys you want shown. The
+app then starts in Simple mode showing only the data field plus those fields,
+and — with the toggle hidden — users cannot switch away from it.
+
+```bash
+# Only let users edit the dots color and the frame caption
+FIELDS_VISIBLE=dotsColor,frameText docker compose up -d --build
+```
+
+Valid field keys:
+
+- **QR code:** `preset`, `logoImage`, `logoBackground`, `backgroundColor`,
+  `dotsColor`, `cornersSquareColor`, `cornersDotColor`, `width`, `height`,
+  `borderRadius`, `margin`, `imageMargin`, `imageSize`, `dotsType`,
+  `cornersSquareType`, `cornersDotType`, `errorCorrectionLevel`
+- **Frame** (the frame is enabled automatically when any of these is listed):
+  `framePreset`, `frameText`, `framePosition`, `frameWidth`, `frameTextColor`,
+  `frameBackground`, `frameBorderColor`, `frameBorderWidth`, `frameBorderRadius`,
+  `framePadding`, `frameFontFamily`
+
+Unknown keys are ignored. The data field is always shown.
 
 ## Custom Presets
 

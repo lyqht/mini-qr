@@ -71,6 +71,8 @@ import {
 import {
   FRAME_FIELD_KEYS,
   isFieldVisibleInMode,
+  parseVisibleFields,
+  hasFrameField,
   type QRViewMode,
   type SimpleFieldKey
 } from '@/utils/simpleModeFields'
@@ -104,8 +106,21 @@ const isLikelyMobileDevice = computed(() => {
 // data field plus whichever fields the user pins via the customize panel. Both
 // the mode and the pinned-field list persist to localStorage so a refresh
 // returns the user to the same view (see onMounted + watchers below).
-const viewMode = ref<QRViewMode>('full')
-const simpleFields = ref<SimpleFieldKey[]>([])
+
+// Deployment config (build-time env vars):
+// - VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE: when "true", show the Simple/Full
+//   toggle and the Customize fields button. Hidden by default so self-hosted
+//   deployments are not exposed to the controls unless opted in.
+// - VITE_FIELDS_VISIBLE: comma/space separated field keys. When set, the app
+//   starts in Simple mode showing only those fields (a fixed, simplified view).
+const showModeControls = import.meta.env.VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE === 'true'
+const configuredVisibleFields = parseVisibleFields(import.meta.env.VITE_FIELDS_VISIBLE)
+const hasConfiguredVisibleFields = configuredVisibleFields.length > 0
+
+const viewMode = ref<QRViewMode>(hasConfiguredVisibleFields ? 'simple' : 'full')
+const simpleFields = ref<SimpleFieldKey[]>(
+  hasConfiguredVisibleFields ? [...configuredVisibleFields] : []
+)
 const isCustomizeFieldsOpen = ref(false)
 const isSimpleMode = computed(() => viewMode.value === 'simple')
 
@@ -986,8 +1001,31 @@ onMounted(() => {
       selectedPreset.value = { ...defaultPreset }
       selectedPresetKey.value = defaultPreset.name
     }
-    viewMode.value = loadViewMode() ?? 'full'
-    simpleFields.value = loadSimpleFields()
+    // When the deployment fixes the visible fields via env, that config is
+    // authoritative — don't let a previously persisted view/fields override it.
+    if (!hasConfiguredVisibleFields) {
+      viewMode.value = loadViewMode() ?? 'full'
+      simpleFields.value = loadSimpleFields()
+    }
+  }
+
+  // Env-configured fields force a simple, fixed view.
+  if (hasConfiguredVisibleFields) {
+    viewMode.value = 'simple'
+    simpleFields.value = [...configuredVisibleFields]
+    // Run after the preset watchers settle (applySelectedPresetToState resets
+    // showFrame for frameless presets), so our overrides stick. Enable the
+    // frame when a frame field is configured, and open the visible sections
+    // explicitly — we start in simple mode so the open-state watchers never
+    // fire on their own.
+    nextTick(() => {
+      if (hasFrameField(configuredVisibleFields)) {
+        showFrame.value = true
+      }
+      openAccordionItems.value = isFrameSectionVisible.value
+        ? ['frame-settings', 'qr-code-settings']
+        : ['qr-code-settings']
+    })
   }
 
   // Apply frame preset when QR preset does not define a frame
@@ -1774,8 +1812,9 @@ const updateDataFromModal = (newData: string) => {
 
       <!-- View mode toggle: Simple shows only the data field plus pinned
            fields; Full shows every setting. Sits at the top of the settings
-           column so it is reachable on both desktop and (stacked) mobile. -->
-      <div class="flex w-full flex-col gap-3">
+           column so it is reachable on both desktop and (stacked) mobile.
+           Hidden unless VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE is enabled. -->
+      <div v-if="showModeControls" class="flex w-full flex-col gap-3">
         <div
           class="flex flex-row flex-wrap items-center gap-2"
           role="group"

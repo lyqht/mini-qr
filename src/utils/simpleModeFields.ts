@@ -123,3 +123,22 @@ export function isFieldVisibleInMode(
 ): boolean {
   return mode === 'full' || pinnedFields.includes(key)
 }
+
+/**
+ * Parse a `VITE_FIELDS_VISIBLE` env string (comma/whitespace separated field
+ * keys) into a validated, de-duplicated list of known field keys.
+ */
+export function parseVisibleFields(raw: string | undefined | null): SimpleFieldKey[] {
+  if (!raw) return []
+  return sanitizeSimpleFields(
+    raw
+      .split(/[\s,]+/)
+      .map((part) => part.trim())
+      .filter(Boolean)
+  )
+}
+
+/** Whether any of the given keys belongs to the frame settings group. */
+export function hasFrameField(keys: readonly string[]): boolean {
+  return keys.some((key) => (FRAME_FIELD_KEYS as readonly string[]).includes(key))
+}

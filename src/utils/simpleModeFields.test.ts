@@ -6,6 +6,8 @@ import {
   isValidSimpleFieldKey,
   sanitizeSimpleFields,
   isFieldVisibleInMode,
+  parseVisibleFields,
+  hasFrameField,
   type SimpleFieldKey
 } from './simpleModeFields'
 
@@ -116,5 +118,41 @@ describe('isFieldVisibleInMode', () => {
 
   it('in simple mode with no pins shows nothing', () => {
     expect(isFieldVisibleInMode('simple', [], 'preset')).toBe(false)
+  })
+})
+
+describe('parseVisibleFields', () => {
+  it('returns [] for empty/undefined input', () => {
+    expect(parseVisibleFields(undefined)).toEqual([])
+    expect(parseVisibleFields('')).toEqual([])
+    expect(parseVisibleFields('   ')).toEqual([])
+  })
+
+  it('splits on commas and whitespace, keeping known keys', () => {
+    expect(parseVisibleFields('dotsColor, width')).toEqual(['dotsColor', 'width'])
+    expect(parseVisibleFields('dotsColor width\nframeText')).toEqual([
+      'dotsColor',
+      'width',
+      'frameText'
+    ])
+  })
+
+  it('drops unknown keys and duplicates', () => {
+    expect(parseVisibleFields('dotsColor,bogus,dotsColor,framePreset')).toEqual([
+      'dotsColor',
+      'framePreset'
+    ])
+  })
+})
+
+describe('hasFrameField', () => {
+  it('detects frame keys', () => {
+    expect(hasFrameField(['dotsColor', 'frameText'])).toBe(true)
+    expect(hasFrameField(['framePreset'])).toBe(true)
+  })
+
+  it('is false when no frame keys present', () => {
+    expect(hasFrameField(['dotsColor', 'width'])).toBe(false)
+    expect(hasFrameField([])).toBe(false)
   })
 })
