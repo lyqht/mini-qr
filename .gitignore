@@ -34,7 +34,6 @@ dev-dist
 # Playwright
 test-results/
 playwright-report/
-tests/e2e/temp-downloads/
 
 # Storybook
 storybook-static/
