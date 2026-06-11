@@ -37,7 +37,10 @@ const emit = defineEmits<{
 }>()
 
 function reset(): void {
+  // "Data only" means clear pinned fields AND turn the frame back off, so the
+  // frame section no longer shows in Simple mode.
   emit('update:modelValue', [])
+  emit('update:frameEnabled', false)
 }
 
 function setOpen(value: boolean): void {

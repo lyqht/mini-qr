@@ -1777,7 +1777,7 @@ const updateDataFromModal = (newData: string) => {
            column so it is reachable on both desktop and (stacked) mobile. -->
       <div class="flex w-full flex-col gap-3">
         <div
-          class="flex flex-row flex-wrap items-center justify-between gap-2"
+          class="flex flex-row flex-wrap items-center gap-2"
           role="group"
           :aria-label="t('Configuration view mode')"
         >
@@ -1821,7 +1821,7 @@ const updateDataFromModal = (newData: string) => {
             v-if="isSimpleMode"
             id="customize-fields-button"
             type="button"
-            class="icon-button flex flex-row items-center gap-1 text-sm"
+            class="button flex flex-row items-center gap-1 text-sm"
             @click="isCustomizeFieldsOpen = true"
           >
             <!-- Icon from Tabler Icons by Paweł Kuna -->
