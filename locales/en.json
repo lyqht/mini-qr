@@ -1,4 +1,5 @@
 {
+  "1 dot": "1 dot",
   "ach": "Acholi",
   "af": "Afrikaans",
   "ar": "Arabic",
@@ -285,6 +286,7 @@
   "Select QR code preset": "Select QR code preset",
   "Send Email": "Send Email",
   "Send SMS": "Send SMS",
+  "Set image margin to the size of one dot": "Set image margin to the size of one dot",
   "Settings to customize your QR code": "Settings to customize your QR code",
   "Show update notice": "Show update notice",
   "Showing only the fields you use. Customize to show more.": "Showing only the fields you use. Customize to show more.",

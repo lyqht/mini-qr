@@ -250,6 +250,32 @@ const margin = ref()
 const imageMargin = ref()
 const imageSize = ref<number | undefined>()
 
+// Pixel size of a single QR module ("dot") in the exported image. Mirrors the
+// renderer: size = min(width, height), moduleSize = size / (count + 2*margin),
+// where `margin` is measured in modules. Returns null when it can't be derived
+// (no data yet, missing size, or an over-long payload that fails to encode).
+const oneDotSizePx = computed<number | null>(() => {
+  const size = Math.min(Number(width.value) || 0, Number(height.value) || 0)
+  if (!size || !Number.isFinite(size)) return null
+  try {
+    const { count } = buildMatrix(previewData.value, errorCorrectionLevel.value)
+    const totalModules = count + 2 * (Number(margin.value) || 0)
+    if (totalModules <= 0) return null
+    return size / totalModules
+  } catch {
+    return null
+  }
+})
+
+// Set the image margin to exactly one dot. Combined with neighbour-aware dot
+// shapes, this gives the logo a clean one-module gap whose bordering dots round
+// into the cleared space instead of being sharply cut.
+function setImageMarginToDotSize() {
+  const dot = oneDotSizePx.value
+  if (dot == null) return
+  imageMargin.value = Math.round(dot * 100) / 100
+}
+
 watch(
   () => props.initialData,
   (newValue) => {
@@ -2582,13 +2608,25 @@ const updateDataFromModal = (newData: string) => {
                   <label for="image-margin">
                     {{ t('Image margin (px)') }}
                   </label>
-                  <input
-                    class="text-input"
-                    id="image-margin"
-                    type="number"
-                    placeholder="0"
-                    v-model="imageMargin"
-                  />
+                  <div class="flex flex-row items-stretch gap-1">
+                    <input
+                      class="text-input"
+                      id="image-margin"
+                      type="number"
+                      placeholder="0"
+                      v-model="imageMargin"
+                    />
+                    <button
+                      type="button"
+                      class="secondary-button shrink-0 whitespace-nowrap px-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+                      :disabled="oneDotSizePx == null"
+                      :title="t('Set image margin to the size of one dot')"
+                      :aria-label="t('Set image margin to the size of one dot')"
+                      @click="setImageMarginToDotSize"
+                    >
+                      {{ t('1 dot') }}
+                    </button>
+                  </div>
                 </div>
                 <div class="w-full sm:w-1/3" v-show="isFieldVisible('imageSize')">
                   <label for="image-size">
