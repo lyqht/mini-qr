@@ -16,15 +16,21 @@ export interface DotsRenderArgs {
  */
 export function buildDotsPath(args: DotsRenderArgs): string {
   const { matrix, count, moduleSize, offset, shape, hideCell } = args
+  // Mask out cells cleared for the centre logo. Neighbour-aware shapes round a
+  // corner only when the adjacent cells are empty, so the cleared cells must
+  // read as empty here too — otherwise dots bordering the logo keep a sharp
+  // edge along the margin instead of rounding into the cleared space.
+  const cells = hideCell
+    ? matrix.map((row, r) => row.map((on, c) => on && !hideCell(r, c)))
+    : matrix
   const parts: string[] = []
   for (let r = 0; r < count; r++) {
     for (let c = 0; c < count; c++) {
-      if (!matrix[r][c]) continue
+      if (!cells[r][c]) continue
       if (isFinderRegion(r, c, count)) continue
-      if (hideCell && hideCell(r, c)) continue
       const x = offset + c * moduleSize
       const y = offset + r * moduleSize
-      parts.push(cellPath(shape, x, y, moduleSize, r, c, matrix, count))
+      parts.push(cellPath(shape, x, y, moduleSize, r, c, cells, count))
     }
   }
   return parts.join(' ')

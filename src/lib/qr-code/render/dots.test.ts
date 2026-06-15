@@ -56,4 +56,47 @@ describe('buildDotsPath', () => {
     expect(hidden.length).toBe(0)
     expect(full.length).toBeGreaterThan(0)
   })
+
+  // A logo with a margin clears central cells. Neighbour-aware shapes must treat
+  // those cleared cells as empty so dots bordering the logo round the corner
+  // facing it instead of being sharply cut along the margin.
+  describe('logo-cleared cells round bordering dots (regression)', () => {
+    // 15x15 matrix (large enough for a centre outside the 7x7 finder regions).
+    // Exactly one body dot renders: (7,6). Its only filled neighbour is (6,6),
+    // which sits inside the top-left finder region, so it is never drawn as its
+    // own dot but still counts as a present neighbour for corner rounding. That
+    // lets us measure the surviving dot's rounding in isolation, mirroring a dot
+    // bordering the logo-cleared region.
+    const count = 15
+    const makeMatrix = () =>
+      Array.from({ length: count }, () => Array.from({ length: count }, () => false))
+    const matrix = makeMatrix()
+    matrix[7][6] = true
+    matrix[6][6] = true
+    const base = { matrix, count, moduleSize: 10, offset: 0 } as const
+    const arcs = (d: string) => (d.match(/a/g) ?? []).length
+
+    it('extra-rounded: a cleared neighbour rounds the dot facing it', () => {
+      // (6,6) present -> top edge stays flat: only the 2 bottom corners round.
+      const noHide = buildDotsPath({ ...base, shape: 'extra-rounded' })
+      // Clearing (6,6) (as a logo margin would) -> dot is now exposed on all
+      // sides: all 4 corners round, just like the hand-fixed sample.
+      const withHide = buildDotsPath({
+        ...base,
+        shape: 'extra-rounded',
+        hideCell: (r, c) => r === 6 && c === 6
+      })
+      expect(arcs(noHide)).toBe(2)
+      expect(arcs(withHide)).toBe(4)
+    })
+
+    it('square: unaffected by cleared neighbours (no rounding by design)', () => {
+      const withHide = buildDotsPath({
+        ...base,
+        shape: 'square',
+        hideCell: (r, c) => r === 6 && c === 6
+      })
+      expect(arcs(withHide)).toBe(0)
+    })
+  })
 })
