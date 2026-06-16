@@ -63,7 +63,7 @@
     "@tailwindcss/typography": "0.5.19",
     "@types/node": "20.19.40",
     "@typescript-eslint/parser": "8.59.2",
-    "@vitest/browser": "3.2.4",
+    "@vitest/browser": "3.2.5",
     "@vue/eslint-config-typescript": "14.7.0",
     "eslint": "9.39.4",
     "eslint-plugin-tailwindcss": "3.18.3",
