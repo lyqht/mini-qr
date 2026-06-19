@@ -9,6 +9,12 @@ import { Html5Qrcode } from 'html5-qrcode'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import QRCodeCameraScanner from './QRCodeCameraScanner.vue'
+import {
+  getScanCategory,
+  isProductBarcode,
+  getFormatLabel,
+  getBarcodeSearchUrl
+} from '@/utils/scanFormats'
 
 defineEmits<{
   'create-qr': [data: string]
@@ -18,11 +24,26 @@ const { t } = useI18n()
 
 // #region Core QR Code Data
 const capturedData = ref<string>('')
+const detectedFormat = ref<string>('')
 const errorMessage = ref<string | null>(null)
 // #endregion Core QR Code Data
 
+// #region Scan Category (QR vs 1D barcode)
+const scanCategory = computed(() => getScanCategory(detectedFormat.value))
+const isBarcode = computed(() => scanCategory.value === 'barcode')
+const formatLabel = computed(() => getFormatLabel(detectedFormat.value))
+const showProductLookup = computed(() => isProductBarcode(detectedFormat.value))
+const barcodeSearchUrl = computed(() => getBarcodeSearchUrl(capturedData.value))
+// #endregion Scan Category
+
 // #region QR Code Type Detection
 const qrCodeType = computed(() => {
+  // 1D barcodes carry raw product/identifier codes, not structured QR content.
+  // Skip the URL/email/phone heuristics so a numeric UPC isn't mislabeled.
+  if (isBarcode.value) {
+    return 'barcode'
+  }
+
   const data = capturedData.value
 
   // URL detection (more comprehensive than just http)
@@ -108,6 +129,8 @@ const isActionable = computed(() => {
 // #region UI Display Properties
 const qrCodeTypeIcon = computed(() => {
   switch (qrCodeType.value) {
+    case 'barcode':
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M2 6h2v12H2zm3 0h1v12H5zm2 0h3v12H7zm4 0h1v12h-1zm3 0h2v12h-2zm3 0h1v12h-1zm2 0h3v12h-3z"/></svg>`
     case 'url':
       return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5m-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4zm-3-4h8v2H8z"/></svg>`
     case 'email':
@@ -131,6 +154,8 @@ const qrCodeTypeIcon = computed(() => {
 
 const typeLabel = computed(() => {
   switch (qrCodeType.value) {
+    case 'barcode':
+      return formatLabel.value ? `${t('Barcode')} · ${formatLabel.value}` : t('Barcode')
     case 'url':
       return t('URL')
     case 'email':
@@ -206,8 +231,9 @@ onMounted(() => {
   window.addEventListener('paste', pasteFromClipboard)
 })
 
-const onQRDetected = (data: string) => {
+const onQRDetected = (data: string, format?: string) => {
   capturedData.value = data
+  detectedFormat.value = format ?? ''
   showCameraScanner.value = false
 }
 
@@ -222,6 +248,7 @@ const startCameraScanning = () => {
 
 const resetCapture = () => {
   capturedData.value = ''
+  detectedFormat.value = ''
   errorMessage.value = null
   copySuccess.value = false
   showCameraScanner.value = false
@@ -238,13 +265,14 @@ const catchScanFileError = async (err: Error, file: File) => {
 
   const QrScanner = (await import('qr-scanner')).default
 
-  // Fallback to nimiq/qr-scanner lib
+  // Fallback to nimiq/qr-scanner lib (QR codes only).
   try {
     const result = await QrScanner.scanImage(file, { returnDetailedScanResult: true })
     capturedData.value = result.data
+    detectedFormat.value = 'QR_CODE'
   } catch (err) {
     console.error('Fallback to nimiq/qr-scanner failed:', err)
-    errorMessage.value = t('No QR code found in the image.')
+    errorMessage.value = t('No QR code or barcode found in the image.')
   } finally {
     isLoading.value = false
   }
@@ -256,9 +284,10 @@ const scanFile = (file: File) => {
 
   const html5QrCode = new Html5Qrcode('file-qr-reader')
   html5QrCode
-    .scanFile(file, false)
-    .then((decodedText) => {
-      capturedData.value = decodedText
+    .scanFileV2(file, false)
+    .then((result) => {
+      capturedData.value = result.decodedText
+      detectedFormat.value = result.result?.format?.formatName ?? ''
       isLoading.value = false
     })
     .catch((err) => catchScanFileError(err, file))
@@ -314,7 +343,9 @@ defineExpose({
 <template>
   <div class="relative mx-auto w-full max-w-[500px]">
     <div v-if="capturedData" class="capture-result">
-      <p class="mb-4 text-xl font-semibold">{{ t('QR Code Content') }}</p>
+      <p class="mb-4 text-xl font-semibold">
+        {{ isBarcode ? t('Barcode Content') : t('QR Code Content') }}
+      </p>
 
       <!-- QR Code Type Badge -->
       <div class="mb-4 flex items-center justify-center">
@@ -354,6 +385,22 @@ defineExpose({
           </svg>
           <span>{{ t('Copy to clipboard') }}</span>
         </button>
+        <!-- Product lookup for retail barcodes (UPC/EAN) -->
+        <a
+          v-if="showProductLookup"
+          class="button flex w-full flex-row items-center justify-start gap-4"
+          :href="barcodeSearchUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+            <path
+              fill="currentColor"
+              d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19zm-6 0A4.5 4.5 0 1 1 14 9.5A4.5 4.5 0 0 1 9.5 14"
+            />
+          </svg>
+          <span>{{ t('Search this barcode online') }}</span>
+        </a>
         <button
           class="button flex w-full flex-row items-center justify-start gap-4"
           @click="resetCapture"
@@ -399,7 +446,7 @@ defineExpose({
       <div class="flex w-full flex-col items-center gap-4" v-if="!isLoading">
         <!-- Upload QR Code Image option -->
         <div class="mb-4 text-center">
-          <h3 class="mb-4 text-lg font-medium">{{ t('Scan a QR Code') }}</h3>
+          <h3 class="mb-4 text-lg font-medium">{{ t('Scan a QR Code or Barcode') }}</h3>
 
           <button
             :class="[
@@ -423,7 +470,7 @@ defineExpose({
                   d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm4 18H6V4h7v5h5z"
                 />
               </svg>
-              <p>{{ t('Upload QR Code Image') }}</p>
+              <p>{{ t('Upload QR Code or Barcode Image') }}</p>
               <p class="text-sm text-gray-500">{{ t('or drag and drop an image here') }}</p>
             </div>
           </button>
