@@ -2,7 +2,7 @@ import type { ResolvedQRCodeConfig } from '../types'
 import { buildMatrix } from '../matrix'
 import { buildDotsPath } from './dots'
 import { buildCornerDotsPath, buildCornerSquaresPath } from './corners'
-import { computeImagePlacement } from './image'
+import { computeImagePlacement, resolveEffectiveErrorCorrectionLevel } from './image'
 
 export interface RenderedQR {
   svg: string
@@ -24,7 +24,11 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
   size: number
   matrixCount: number
 } {
-  const { matrix, count } = buildMatrix(config.data, config.errorCorrectionLevel)
+  const effectiveEcLevel = resolveEffectiveErrorCorrectionLevel(
+    Boolean(config.image),
+    config.errorCorrectionLevel
+  )
+  const { matrix, count } = buildMatrix(config.data, effectiveEcLevel)
   const totalModules = count + 2 * config.margin
   const moduleSize = config.size / totalModules
   const offset = config.margin * moduleSize
@@ -46,7 +50,7 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
         moduleSize,
         offset,
         totalSize: config.size,
-        errorCorrectionLevel: config.errorCorrectionLevel
+        errorCorrectionLevel: effectiveEcLevel
       })
     : undefined
 

@@ -308,9 +308,14 @@ const imageOptions = computed(() => ({
   margin: imageMargin.value,
   imageSize: imageSize.value
 }))
+// Capped below 1: past ~0.5 the render pipeline's own scannability safety
+// cap (see computeImagePlacement's SAFE_MAX_AXIS_FRACTION) already clamps the
+// hidden centre area, so higher values stop changing the output — keeping
+// the input's range honest avoids a slider tail that silently does nothing.
+const MAX_SAFE_IMAGE_SIZE = 0.5
 const isImageSizeOutOfRange = computed(() => {
   const v = imageSize.value
-  return typeof v === 'number' && (v < 0 || v > 1)
+  return typeof v === 'number' && (v < 0 || v > MAX_SAFE_IMAGE_SIZE)
 })
 const qrOptions = computed(() => ({
   errorCorrectionLevel: errorCorrectionLevel.value
@@ -437,6 +442,16 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
     return 'L'
   }
 })
+// A logo needs a real error-correction budget to survive the hidden centre
+// area — 'L' and 'M' can leave a code unscannable once a logo is added
+// (see mini-qr#309), so the render pipeline boosts them to 'Q' whenever an
+// image is set. Surface that here so the UI doesn't silently disagree with
+// what actually gets encoded.
+const isErrorCorrectionBoostedForLogo = computed(
+  () =>
+    Boolean(image.value) &&
+    (errorCorrectionLevel.value === 'L' || errorCorrectionLevel.value === 'M')
+)
 //#endregion
 
 //#region /* Frame settings */ Start empty, default is set intelligently */
@@ -2599,7 +2614,7 @@ const updateDataFromModal = (newData: string) => {
                     id="image-size"
                     type="number"
                     min="0"
-                    max="1"
+                    :max="MAX_SAFE_IMAGE_SIZE"
                     step="0.05"
                     placeholder="0.4"
                     v-model.number="imageSize"
@@ -2611,7 +2626,7 @@ const updateDataFromModal = (newData: string) => {
                     id="image-size-error"
                     class="ms-1 mt-1 text-xs font-normal text-red-600 dark:text-red-400"
                   >
-                    {{ t('Must be between 0 and 1') }}
+                    {{ t('Must be between 0 and {max}', { max: MAX_SAFE_IMAGE_SIZE }) }}
                   </p>
                 </div>
               </div>
@@ -2723,6 +2738,16 @@ const updateDataFromModal = (newData: string) => {
                       </span>
                     </div>
                   </div>
+                  <p
+                    v-if="isErrorCorrectionBoostedForLogo"
+                    class="ms-1 mt-2 text-xs font-normal text-zinc-500 dark:text-zinc-400"
+                  >
+                    {{
+                      t(
+                        'A logo needs more error correction to stay scannable — using High (25%) instead.'
+                      )
+                    }}
+                  </p>
                 </fieldset>
               </div>
             </section>

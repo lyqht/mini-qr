@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { renderQrFragment, wrapAsSvg } from './svg'
+import { buildMatrix } from '../matrix'
 import { DEFAULT_CONFIG, type ResolvedQRCodeConfig } from '../types'
 
 function baseConfig(overrides: Partial<ResolvedQRCodeConfig> = {}): ResolvedQRCodeConfig {
@@ -64,5 +65,31 @@ describe('renderQrFragment + wrapAsSvg', () => {
     )
     expect(fragment).not.toContain('<script>')
     expect(fragment).toContain('&quot;')
+  })
+
+  it('boosts a low error-correction level to Q for matrix generation when an image is set (#309)', () => {
+    const data = 'https://a.co'
+    const { count: countAtL } = buildMatrix(data, 'L')
+    const { count: countAtQ } = buildMatrix(data, 'Q')
+
+    const { matrixCount } = renderQrFragment(
+      baseConfig({
+        data,
+        errorCorrectionLevel: 'L',
+        image: { href: 'logo.png', sizeRatio: 0.4 }
+      })
+    )
+
+    expect(matrixCount).not.toBe(countAtL)
+    expect(matrixCount).toBe(countAtQ)
+  })
+
+  it('leaves the error-correction level alone when no image is set', () => {
+    const data = 'https://a.co'
+    const { count: countAtL } = buildMatrix(data, 'L')
+
+    const { matrixCount } = renderQrFragment(baseConfig({ data, errorCorrectionLevel: 'L' }))
+
+    expect(matrixCount).toBe(countAtL)
   })
 })
