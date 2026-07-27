@@ -2583,13 +2583,13 @@ const updateDataFromModal = (newData: string) => {
               >
                 <div class="w-full sm:w-1/3" v-show="isFieldVisible('margin')">
                   <label for="margin">
-                    {{ t('Margin (px)') }}
+                    {{ t('Margin (modules)') }}
                   </label>
                   <input
                     class="text-input"
                     id="margin"
                     type="number"
-                    placeholder="0"
+                    placeholder="4"
                     v-model="margin"
                   />
                 </div>

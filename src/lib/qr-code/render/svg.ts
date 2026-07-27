@@ -14,6 +14,19 @@ export interface RenderedQR {
 const SVG_NS = 'http://www.w3.org/2000/svg'
 const XLINK_NS = 'http://www.w3.org/1999/xlink'
 
+// ISO/IEC 18004 requires a quiet zone of at least 4 modules of unbroken light
+// space on every side of the symbol — without it, scanners can mistake
+// adjacent content for part of the code and fail to lock on (#308). Enforce
+// this floor on the configured margin the same way this renderer already
+// floors error-correction level and caps logo size (see resolveEffective
+// ErrorCorrectionLevel / computeImagePlacement): the caller's value is
+// honoured above the floor, never below it.
+const MIN_QUIET_ZONE_MODULES = 4
+
+export function resolveQuietZoneModules(margin: number): number {
+  return Math.max(MIN_QUIET_ZONE_MODULES, margin)
+}
+
 /**
  * Build the QR portion of an SVG (matrix + corners + logo) at viewBox
  * `0 0 size size`. Returned as a fragment string so the caller can either
@@ -29,9 +42,10 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
     config.errorCorrectionLevel
   )
   const { matrix, count } = buildMatrix(config.data, effectiveEcLevel)
-  const totalModules = count + 2 * config.margin
+  const quietZone = resolveQuietZoneModules(config.margin)
+  const totalModules = count + 2 * quietZone
   const moduleSize = config.size / totalModules
-  const offset = config.margin * moduleSize
+  const offset = quietZone * moduleSize
 
   const parts: string[] = []
 
