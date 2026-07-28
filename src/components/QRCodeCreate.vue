@@ -11,6 +11,7 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion'
 import { Combobox } from '@/components/ui/Combobox'
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import QRSimpleFieldsCustomizer from '@/components/QRSimpleFieldsCustomizer.vue'
 import {
   Drawer,
@@ -247,6 +248,7 @@ const image = ref()
 const width = ref()
 const height = ref()
 const margin = ref()
+const showMarginHint = ref(false)
 const imageMargin = ref()
 const imageSize = ref<number | undefined>()
 
@@ -2585,13 +2587,31 @@ const updateDataFromModal = (newData: string) => {
                   <label for="margin">
                     {{ t('Margin (modules)') }}
                   </label>
-                  <input
-                    class="text-input"
-                    id="margin"
-                    type="number"
-                    placeholder="0"
-                    v-model="margin"
-                  />
+                  <Popover :open="showMarginHint">
+                    <PopoverAnchor as-child>
+                      <input
+                        class="text-input"
+                        id="margin"
+                        type="number"
+                        placeholder="0"
+                        v-model="margin"
+                        @focus="showMarginHint = true"
+                        @blur="showMarginHint = false"
+                      />
+                    </PopoverAnchor>
+                    <PopoverContent
+                      class="w-64 p-3 text-sm"
+                      side="bottom"
+                      align="start"
+                      @open-auto-focus="(e: Event) => e.preventDefault()"
+                    >
+                      {{
+                        t(
+                          'Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.'
+                        )
+                      }}
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div class="w-full sm:w-1/3" v-show="isFieldVisible('imageMargin')">
                   <label for="image-margin">
