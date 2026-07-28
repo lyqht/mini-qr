@@ -2589,7 +2589,7 @@ const updateDataFromModal = (newData: string) => {
                     class="text-input"
                     id="margin"
                     type="number"
-                    placeholder="4"
+                    placeholder="0"
                     v-model="margin"
                   />
                 </div>

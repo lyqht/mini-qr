@@ -316,47 +316,6 @@ test.describe('QR Code Creation and Management', () => {
       expect(g).toBeLessThan(80) // green channel should be low (~0)
       expect(b).toBeLessThan(80) // blue channel should be low (~0)
     })
-
-    test('exported JPG has a quiet zone even at the default margin=0 preset (#308)', async ({
-      page
-    }) => {
-      // Leave #margin untouched — the default preset ships margin=0, but the
-      // renderer must still floor the effective quiet zone to the ISO/IEC
-      // 18004 minimum of 4 modules, so a pixel sampled just inside the QR
-      // canvas still lands in unbroken background, not a flush data module.
-      const bgColor = '#ff0000'
-      await page.locator('#background-color').fill(bgColor)
-      await page.waitForTimeout(800)
-
-      await openFrameSettings(page)
-      const showFrameCheckbox = page.locator('#show-frame')
-      await expect(showFrameCheckbox).toBeVisible()
-      await showFrameCheckbox.uncheck()
-      await page.waitForTimeout(500)
-
-      const downloadPromise = page.waitForEvent('download')
-      await page.locator('#download-qr-image-button-jpg').click()
-      const download = await downloadPromise
-
-      const downloadedFilePath = path.join(tempDir, 'quiet-zone-default-margin-test.jpg')
-      await download.saveAs(downloadedFilePath)
-      expect(fs.existsSync(downloadedFilePath)).toBeTruthy()
-
-      // Same corner-sampling approach as the margin=20 test above, but this
-      // time relying entirely on the enforced floor rather than a manually
-      // widened margin.
-      const { data } = await sharp(downloadedFilePath)
-        .extract({ left: 5, top: 5, width: 1, height: 1 })
-        .raw()
-        .toBuffer({ resolveWithObject: true })
-
-      const r = data[0]
-      const g = data[1]
-      const b = data[2]
-      expect(r).toBeGreaterThan(200) // red channel should be high (~255)
-      expect(g).toBeLessThan(80) // green channel should be low (~0)
-      expect(b).toBeLessThan(80) // blue channel should be low (~0)
-    })
   })
 
   test.describe('Internal QR lib parity', () => {

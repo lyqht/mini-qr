@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { renderQrFragment, resolveQuietZoneModules, wrapAsSvg } from './svg'
+import { renderQrFragment, wrapAsSvg } from './svg'
 import { buildMatrix } from '../matrix'
 import { DEFAULT_CONFIG, type ResolvedQRCodeConfig } from '../types'
 
@@ -92,31 +92,18 @@ describe('renderQrFragment + wrapAsSvg', () => {
 
     expect(matrixCount).toBe(countAtL)
   })
-})
 
-describe('resolveQuietZoneModules (#308)', () => {
-  it('floors margin up to the ISO/IEC 18004 minimum of 4 modules', () => {
-    expect(resolveQuietZoneModules(0)).toBe(4)
-    expect(resolveQuietZoneModules(1)).toBe(4)
-    expect(resolveQuietZoneModules(3)).toBe(4)
-  })
-
-  it('honours a margin already at or above the minimum', () => {
-    expect(resolveQuietZoneModules(4)).toBe(4)
-    expect(resolveQuietZoneModules(10)).toBe(10)
-  })
-})
-
-describe('renderQrFragment quiet zone floor (#308)', () => {
-  it('renders a margin=0 config with the same geometry as an explicit margin=4', () => {
+  it('honours an explicit margin=0 verbatim — no quiet zone is forced onto the renderer (#308)', () => {
+    // The ISO/IEC 18004 quiet-zone minimum is applied as a *default*
+    // (DEFAULT_CONFIG.margin, see core.ts/svg-export.ts's resolveConfig) for
+    // configs that omit margin entirely — never as a floor here. Forcing it
+    // unconditionally at this layer would shrink module pixel density for
+    // every caller, including small/high-density exports where that breaks
+    // real-world scanning (confirmed while investigating #308: a stylised
+    // 200px export with moderate-length data stopped decoding once its
+    // modules were forced to shrink for an unwanted quiet zone).
     const zero = renderQrFragment(baseConfig({ margin: 0 }))
     const four = renderQrFragment(baseConfig({ margin: 4 }))
-    expect(zero.fragment).toBe(four.fragment)
-  })
-
-  it('still expands the quiet zone further when margin exceeds the minimum', () => {
-    const floored = renderQrFragment(baseConfig({ margin: 0 }))
-    const wider = renderQrFragment(baseConfig({ margin: 10 }))
-    expect(wider.fragment).not.toBe(floored.fragment)
+    expect(zero.fragment).not.toBe(four.fragment)
   })
 })
