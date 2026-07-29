@@ -23,6 +23,7 @@ import {
 import VCardPreview from '@/components/VCardPreview.vue'
 import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
+import { hasInsufficientContrast, isPaperDarkerThanInk } from '@/utils/contrast'
 import {
   copyImageToClipboard,
   downloadJpgElement,
@@ -306,6 +307,20 @@ const style = computed(() => ({
   borderRadius: styledBorderRadiusFormatted.value,
   background: styleBackground.value
 }))
+const isPaperDarkerThanInkColors = computed(
+  () =>
+    includeBackground.value && isPaperDarkerThanInk(styleBackground.value, dotsOptionsColor.value)
+)
+const hasInsufficientColorContrast = computed(
+  () =>
+    includeBackground.value &&
+    !isPaperDarkerThanInkColors.value &&
+    hasInsufficientContrast(styleBackground.value, dotsOptionsColor.value)
+)
+const acceptedColorContrastRisk = ref(false)
+watch([styleBackground, dotsOptionsColor], () => {
+  acceptedColorContrastRisk.value = false
+})
 const imageOptions = computed(() => ({
   margin: imageMargin.value,
   imageSize: imageSize.value
@@ -2536,6 +2551,36 @@ const updateDataFromModal = (newData: string) => {
                     class="color-input"
                     v-model="cornersDotOptionsColor"
                   />
+                </div>
+              </div>
+              <div
+                v-if="
+                  isGroupVisible(['backgroundColor', 'dotsColor']) &&
+                  (isPaperDarkerThanInkColors || hasInsufficientColorContrast) &&
+                  !acceptedColorContrastRisk
+                "
+                role="note"
+                class="field-reveal mb-4 flex w-full flex-col gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
+              >
+                <p v-if="isPaperDarkerThanInkColors">
+                  {{ t('⚠️ Not all QR code readers can read white-on-black QR codes.') }}
+                </p>
+                <p v-else-if="hasInsufficientColorContrast">
+                  {{
+                    t(
+                      '⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.'
+                    )
+                  }}
+                </p>
+                <div class="flex flex-row items-center gap-2">
+                  <input
+                    id="accept-color-contrast-risk"
+                    type="checkbox"
+                    v-model="acceptedColorContrastRisk"
+                  />
+                  <label for="accept-color-contrast-risk">
+                    {{ t('✅ I accept the risk') }}
+                  </label>
                 </div>
               </div>
               <div
