@@ -115,3 +115,12 @@ export function hasInsufficientContrast(
   const ratio = contrastRatio(colorA, colorB)
   return ratio !== null && ratio < MIN_QR_CONTRAST_RATIO
 }
+
+/**
+ * Self-hosted/Docker deployments default this warning off (see the Dockerfile's
+ * VITE_DISABLE_COLOR_CONTRAST_WARNING build arg) since they're more likely to be
+ * fixed kiosk-style setups where nobody is around to dismiss a warning.
+ */
+export function isColorContrastWarningEnabled(): boolean {
+  return import.meta.env?.VITE_DISABLE_COLOR_CONTRAST_WARNING !== 'true'
+}

@@ -56,18 +56,19 @@ php -S localhost:8080
 
 All `VITE_*` variables are **build-time** arguments — they are baked into the static assets at build time and cannot be changed at runtime without rebuilding the image.
 
-| Variable                      | `docker-compose.yml` alias | Description                                                                                       | Default   |
-| ----------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------- | --------- |
-| `BASE_PATH`                   | `BASE_PATH`                | URL sub-path for deployment (e.g., `/mini-qr` for `domain.com/mini-qr`)                           | `/`       |
-| `VITE_HIDE_CREDITS`           | `HIDE_CREDITS`             | Set to `"true"` to hide the footer credits                                                        | `"false"` |
-| `VITE_DEFAULT_PRESET`         | `DEFAULT_PRESET`           | Name of the default QR code style preset (e.g., `"plain"`, `"lyqht"`)                             | `""`      |
-| `VITE_DEFAULT_DATA_TO_ENCODE` | `DEFAULT_DATA`             | Default text/URL pre-filled in the QR code input field when the app loads                        | `""`      |
-| `VITE_QR_CODE_PRESETS`        | `PRESETS`                  | JSON array of custom QR code presets. See [Custom Presets](#custom-presets) below                 | `"[]"`    |
-| `VITE_FRAME_PRESET`           | `FRAME_PRESET`             | Name of the default frame preset to apply (e.g., `"Default Frame"`)                              | `""`      |
-| `VITE_FRAME_PRESETS`          | `FRAME_PRESETS`            | JSON array of custom frame presets. See [Custom Presets](#custom-presets) below                   | `"[]"`    |
-| `VITE_DISABLE_LOCAL_STORAGE`  | `DISABLE_LOCAL_STORAGE`    | Set to `"true"` to prevent the app from loading previously saved settings on startup             | `"false"` |
-| `VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | `QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | Set to `"true"` to show the Simple/Full view toggle and the "Customize fields" button | `"false"` |
-| `VITE_FIELDS_VISIBLE`         | `FIELDS_VISIBLE`           | Comma-separated field keys. When set, the app starts in Simple mode showing only the data field plus these fields (see [Fixing the visible fields](#fixing-the-visible-fields)) | `""` |
+| Variable                                 | `docker-compose.yml` alias          | Description                                                                                                                                                                     | Default   |
+| ---------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `BASE_PATH`                              | `BASE_PATH`                         | URL sub-path for deployment (e.g., `/mini-qr` for `domain.com/mini-qr`)                                                                                                         | `/`       |
+| `VITE_HIDE_CREDITS`                      | `HIDE_CREDITS`                      | Set to `"true"` to hide the footer credits                                                                                                                                      | `"false"` |
+| `VITE_DEFAULT_PRESET`                    | `DEFAULT_PRESET`                    | Name of the default QR code style preset (e.g., `"plain"`, `"lyqht"`)                                                                                                           | `""`      |
+| `VITE_DEFAULT_DATA_TO_ENCODE`            | `DEFAULT_DATA`                      | Default text/URL pre-filled in the QR code input field when the app loads                                                                                                       | `""`      |
+| `VITE_QR_CODE_PRESETS`                   | `PRESETS`                           | JSON array of custom QR code presets. See [Custom Presets](#custom-presets) below                                                                                               | `"[]"`    |
+| `VITE_FRAME_PRESET`                      | `FRAME_PRESET`                      | Name of the default frame preset to apply (e.g., `"Default Frame"`)                                                                                                             | `""`      |
+| `VITE_FRAME_PRESETS`                     | `FRAME_PRESETS`                     | JSON array of custom frame presets. See [Custom Presets](#custom-presets) below                                                                                                 | `"[]"`    |
+| `VITE_DISABLE_LOCAL_STORAGE`             | `DISABLE_LOCAL_STORAGE`             | Set to `"true"` to prevent the app from loading previously saved settings on startup                                                                                            | `"false"` |
+| `VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | `QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | Set to `"true"` to show the Simple/Full view toggle and the "Customize fields" button                                                                                           | `"false"` |
+| `VITE_FIELDS_VISIBLE`                    | `FIELDS_VISIBLE`                    | Comma-separated field keys. When set, the app starts in Simple mode showing only the data field plus these fields (see [Fixing the visible fields](#fixing-the-visible-fields)) | `""`      |
+| `VITE_DISABLE_COLOR_CONTRAST_WARNING`    | `DISABLE_COLOR_CONTRAST_WARNING`    | Set to `"false"` to show the background/dots color contrast warning. Defaults to hidden in the Docker image (unattended/kiosk deployments), unlike other deployment methods     | `"true"`  |
 
 ### Passing Variables via docker-compose
 
@@ -214,8 +215,8 @@ The `docker-compose.yml` includes an `nginx-proxy` service that proxies traffic 
 To override the Nginx config (e.g. for subdirectory deployment or custom headers), replace the `configs.nginx-proxy-conf.content` block in `docker-compose.yml` with your own configuration, or switch to a file-based mount:
 
 ```yaml
-    volumes:
-      - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+volumes:
+  - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
 ```
 
 ## Customization Example

@@ -23,7 +23,11 @@ import {
 import VCardPreview from '@/components/VCardPreview.vue'
 import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
-import { hasInsufficientContrast, isNearWhiteOnBlackInversion } from '@/utils/contrast'
+import {
+  hasInsufficientContrast,
+  isColorContrastWarningEnabled,
+  isNearWhiteOnBlackInversion
+} from '@/utils/contrast'
 import {
   copyImageToClipboard,
   downloadJpgElement,
@@ -55,7 +59,9 @@ import {
   type Preset
 } from '@/utils/qrCodePresets'
 import {
+  acceptColorContrastRiskForever,
   CUSTOM_LOADED_PRESET_KEYS,
+  hasAcceptedColorContrastRisk,
   hasStoredQRConfig,
   isLocalStorageEnabled,
   LAST_LOADED_LOCALLY_PRESET_KEY,
@@ -307,6 +313,7 @@ const style = computed(() => ({
   borderRadius: styledBorderRadiusFormatted.value,
   background: styleBackground.value
 }))
+const colorContrastWarningEnabled = isColorContrastWarningEnabled()
 const isWhiteOnBlackColors = computed(
   () =>
     includeBackground.value &&
@@ -318,10 +325,21 @@ const hasInsufficientColorContrast = computed(
     !isWhiteOnBlackColors.value &&
     hasInsufficientContrast(styleBackground.value, dotsOptionsColor.value)
 )
-const acceptedColorContrastRisk = ref(false)
-watch([styleBackground, dotsOptionsColor], () => {
-  acceptedColorContrastRisk.value = false
-})
+// Grandfather existing users (anyone with a config saved before this warning
+// existed) so it doesn't suddenly nag them. Once dismissed, stays dismissed
+// forever — this is a "don't ask me again" flag, not tied to a color combo.
+const acceptedColorContrastRisk = ref<boolean>(
+  isLocalStorageEnabled() && (hasAcceptedColorContrastRisk() || hasStoredQRConfig())
+)
+watch(
+  acceptedColorContrastRisk,
+  (accepted) => {
+    if (accepted && isLocalStorageEnabled()) {
+      acceptColorContrastRiskForever()
+    }
+  },
+  { immediate: true }
+)
 const imageOptions = computed(() => ({
   margin: imageMargin.value,
   imageSize: imageSize.value
@@ -2556,6 +2574,7 @@ const updateDataFromModal = (newData: string) => {
               </div>
               <div
                 v-if="
+                  colorContrastWarningEnabled &&
                   isGroupVisible(['backgroundColor', 'dotsColor']) &&
                   (isWhiteOnBlackColors || hasInsufficientColorContrast) &&
                   !acceptedColorContrastRisk

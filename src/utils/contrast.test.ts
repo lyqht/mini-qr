@@ -1,10 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, afterEach, vi } from 'vitest'
 import {
   hexToRgb,
   relativeLuminance,
   contrastRatio,
   isNearWhiteOnBlackInversion,
-  hasInsufficientContrast
+  hasInsufficientContrast,
+  isColorContrastWarningEnabled
 } from './contrast'
 
 describe('hexToRgb', () => {
@@ -103,5 +104,25 @@ describe('hasInsufficientContrast', () => {
 
   it('returns false for invalid input', () => {
     expect(hasInsufficientContrast('invalid', '#000000')).toBe(false)
+  })
+})
+
+describe('isColorContrastWarningEnabled', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
+  it('is true by default', () => {
+    expect(isColorContrastWarningEnabled()).toBe(true)
+  })
+
+  it('is false when VITE_DISABLE_COLOR_CONTRAST_WARNING is "true"', () => {
+    vi.stubEnv('VITE_DISABLE_COLOR_CONTRAST_WARNING', 'true')
+    expect(isColorContrastWarningEnabled()).toBe(false)
+  })
+
+  it('is true for any other value', () => {
+    vi.stubEnv('VITE_DISABLE_COLOR_CONTRAST_WARNING', 'false')
+    expect(isColorContrastWarningEnabled()).toBe(true)
   })
 })
