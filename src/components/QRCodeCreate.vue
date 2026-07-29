@@ -23,7 +23,7 @@ import {
 import VCardPreview from '@/components/VCardPreview.vue'
 import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
-import { hasInsufficientContrast, isPaperDarkerThanInk } from '@/utils/contrast'
+import { hasInsufficientContrast, isNearWhiteOnBlackInversion } from '@/utils/contrast'
 import {
   copyImageToClipboard,
   downloadJpgElement,
@@ -307,14 +307,15 @@ const style = computed(() => ({
   borderRadius: styledBorderRadiusFormatted.value,
   background: styleBackground.value
 }))
-const isPaperDarkerThanInkColors = computed(
+const isWhiteOnBlackColors = computed(
   () =>
-    includeBackground.value && isPaperDarkerThanInk(styleBackground.value, dotsOptionsColor.value)
+    includeBackground.value &&
+    isNearWhiteOnBlackInversion(styleBackground.value, dotsOptionsColor.value)
 )
 const hasInsufficientColorContrast = computed(
   () =>
     includeBackground.value &&
-    !isPaperDarkerThanInkColors.value &&
+    !isWhiteOnBlackColors.value &&
     hasInsufficientContrast(styleBackground.value, dotsOptionsColor.value)
 )
 const acceptedColorContrastRisk = ref(false)
@@ -2556,13 +2557,13 @@ const updateDataFromModal = (newData: string) => {
               <div
                 v-if="
                   isGroupVisible(['backgroundColor', 'dotsColor']) &&
-                  (isPaperDarkerThanInkColors || hasInsufficientColorContrast) &&
+                  (isWhiteOnBlackColors || hasInsufficientColorContrast) &&
                   !acceptedColorContrastRisk
                 "
                 role="note"
                 class="field-reveal mb-4 flex w-full flex-col gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
               >
-                <p v-if="isPaperDarkerThanInkColors">
+                <p v-if="isWhiteOnBlackColors">
                   {{ t('⚠️ Not all QR code readers can read white-on-black QR codes.') }}
                 </p>
                 <p v-else-if="hasInsufficientColorContrast">

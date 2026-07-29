@@ -56,21 +56,56 @@ export function contrastRatio(
   return (lighter + 0.05) / (darker + 0.05)
 }
 
+function hslLightnessAndSaturation(hex: string | undefined): { l: number; s: number } | null {
+  const rgb = hexToRgb(hex)
+  if (!rgb) {
+    return null
+  }
+
+  const r = rgb.r / 255
+  const g = rgb.g / 255
+  const b = rgb.b / 255
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  const l = (max + min) / 2
+
+  if (max === min) {
+    return { l, s: 0 }
+  }
+
+  const delta = max - min
+  const s = l > 0.5 ? delta / (2 - max - min) : delta / (max + min)
+
+  return { l, s }
+}
+
+const NEAR_BLACK_LIGHTNESS = 0.3
+const NEAR_WHITE_LIGHTNESS = 0.7
+const NEAR_GRAYSCALE_SATURATION = 0.15
+
 /**
  * ISO/IEC 18004 expects the foreground (ink) to be darker than the
- * background (paper). Readers aren't guaranteed to support the inverse.
+ * background (paper). Readers aren't guaranteed to support the inverse,
+ * but that risk is really only associated with a near-monochrome
+ * white-on-black style swap — not with colorful/branded combinations
+ * that merely happen to have a darker background than dots color.
  */
-export function isPaperDarkerThanInk(
+export function isNearWhiteOnBlackInversion(
   paperColor: string | undefined,
   inkColor: string | undefined
 ): boolean {
-  const paperLuminance = relativeLuminance(paperColor)
-  const inkLuminance = relativeLuminance(inkColor)
-  if (paperLuminance === null || inkLuminance === null) {
+  const paper = hslLightnessAndSaturation(paperColor)
+  const ink = hslLightnessAndSaturation(inkColor)
+  if (!paper || !ink) {
     return false
   }
 
-  return paperLuminance < inkLuminance
+  return (
+    paper.l <= NEAR_BLACK_LIGHTNESS &&
+    paper.s <= NEAR_GRAYSCALE_SATURATION &&
+    ink.l >= NEAR_WHITE_LIGHTNESS &&
+    ink.s <= NEAR_GRAYSCALE_SATURATION
+  )
 }
 
 export function hasInsufficientContrast(
