@@ -90,3 +90,17 @@ export function loadSimpleFields(): SimpleFieldKey[] {
     return []
   }
 }
+
+// --- Color contrast risk acknowledgement ----------------------------------
+// Once dismissed, the color-contrast warning stays dismissed for good: this
+// is a "don't ask me again" flag, not tied to any particular color combo.
+
+export const QR_COLOR_CONTRAST_RISK_ACCEPTED_KEY = 'qrColorContrastRiskAccepted'
+
+export function hasAcceptedColorContrastRisk(): boolean {
+  return localStorage.getItem(QR_COLOR_CONTRAST_RISK_ACCEPTED_KEY) === 'true'
+}
+
+export function acceptColorContrastRiskForever(): void {
+  localStorage.setItem(QR_COLOR_CONTRAST_RISK_ACCEPTED_KEY, 'true')
+}
