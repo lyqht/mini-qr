@@ -3,7 +3,7 @@ import {
   hexToRgb,
   relativeLuminance,
   contrastRatio,
-  isPaperDarkerThanInk,
+  isNearWhiteOnBlackInversion,
   hasInsufficientContrast
 } from './contrast'
 
@@ -59,21 +59,36 @@ describe('contrastRatio', () => {
   })
 })
 
-describe('isPaperDarkerThanInk', () => {
+describe('isNearWhiteOnBlackInversion', () => {
   it('is false for standard black-on-white', () => {
-    expect(isPaperDarkerThanInk('#ffffff', '#000000')).toBe(false)
+    expect(isNearWhiteOnBlackInversion('#ffffff', '#000000')).toBe(false)
   })
 
-  it('is true for white-on-black (paper darker than ink)', () => {
-    expect(isPaperDarkerThanInk('#000000', '#ffffff')).toBe(true)
+  it('is true for literal white-on-black', () => {
+    expect(isNearWhiteOnBlackInversion('#000000', '#ffffff')).toBe(true)
+  })
+
+  it('is true for near-black paper with near-white ink', () => {
+    expect(isNearWhiteOnBlackInversion('#1a1a1a', '#f5f5f5')).toBe(true)
   })
 
   it('is false when paper and ink are equally light', () => {
-    expect(isPaperDarkerThanInk('#808080', '#808080')).toBe(false)
+    expect(isNearWhiteOnBlackInversion('#808080', '#808080')).toBe(false)
+  })
+
+  it('is false for colorful branded combos that merely have a darker background', () => {
+    // e.g. mini-qr's own default preset: a light teal-gray on a darker teal-gray.
+    // Technically paper-darker-than-ink by luminance, but nothing like white-on-black.
+    expect(isNearWhiteOnBlackInversion('#697d80', '#abcbca')).toBe(false)
+  })
+
+  it('is false when either color is too saturated to read as near-grayscale', () => {
+    expect(isNearWhiteOnBlackInversion('#000080', '#ffffff')).toBe(false)
+    expect(isNearWhiteOnBlackInversion('#000000', '#ff0000')).toBe(false)
   })
 
   it('returns false for invalid input', () => {
-    expect(isPaperDarkerThanInk('invalid', '#000000')).toBe(false)
+    expect(isNearWhiteOnBlackInversion('invalid', '#000000')).toBe(false)
   })
 })
 
