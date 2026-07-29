@@ -343,5 +343,9 @@
   "Reset to data only": "Återställ till enbart data",
   "Showing only the fields you use. Customize to show more.": "Här visas endast de fält du använder. Anpassa inställningarna för att visa fler.",
   "Simple": "Enkelt",
-  "Width": "Bredd"
+  "Width": "Bredd",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "En logotyp kräver mer felkorrigering för att förbli läsbar – använd istället inställningen ”Hög” (25 %).",
+  "Margin (modules)": "Marginal (moduler)",
+  "Must be between 0 and {max}": "Måste ligga mellan 0 och {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Rekommenderat: 4 moduler – det minsta antalet enligt ISO/IEC 18004 för en tyst zon som garanterar tillförlitlig avläsning."
 }

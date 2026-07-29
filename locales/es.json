@@ -317,7 +317,7 @@
   "What is error correction level?": "¿Qué es el nivel de corrección de errores?",
   "What is this?": "¿Qué es esto?",
   "Width (px)": "Ancho (px)",
-  "WiFi": "WiFi",
+  "WiFi": "Wi-Fi",
   "Wireless SSID": "SSID inalámbrico",
   "Wireless SSID is required": "Es necesario introducir el SSID de la red inalámbrica",
   "With background": "Con fondo",
@@ -343,5 +343,9 @@
   "Reset to data only": "Restablecer a solo datos",
   "Showing only the fields you use. Customize to show more.": "Se muestran solo los campos que utilizas. Personaliza la vista para ver más.",
   "Simple": "Sencillo",
-  "Width": "Ancho"
+  "Width": "Ancho",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Un logotipo necesita una mayor corrección de errores para que se pueda escanear; por eso, se utiliza el nivel «Alto» (25 %).",
+  "Margin (modules)": "Margen (módulos)",
+  "Must be between 0 and {max}": "Debe estar entre 0 y {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Recomendación: 4 módulos — el mínimo establecido por la norma ISO/IEC 18004 para la zona de silencio, a fin de garantizar un escaneo fiable."
 }

@@ -348,5 +348,9 @@
   "Your network name": "Jūsu tīkla nosaukums",
   "YYYY-MM-DDTHH:MM": "GGGG-MM-DDHH:MM",
   "Zip Code": "Pasta indekss",
-  "Zipcode": "Pasta indekss"
+  "Zipcode": "Pasta indekss",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Lai logotips būtu viegli nolasāms, ir nepieciešama plašāka kļūdu korekcija — tā vietā izmantojot iestatījumu „Augsts“ (25 %).",
+  "Margin (modules)": "Malas (moduļi)",
+  "Must be between 0 and {max}": "Vērtībai jābūt no 0 līdz {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Ieteikums: 4 moduļi — ISO/IEC 18004 noteiktā minimālā klusā zona uzticamai skenēšanai."
 }

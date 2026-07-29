@@ -343,5 +343,9 @@
   "Reset to data only": "Ripristina solo dati",
   "Showing only the fields you use. Customize to show more.": "Vengono visualizzati solo i campi che utilizzi. Personalizza per visualizzarne altri.",
   "Simple": "Semplice",
-  "Width": "Larghezza"
+  "Width": "Larghezza",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Un logo richiede una maggiore correzione degli errori per garantire una buona leggibilità: utilizzare invece l'impostazione \"Alta\" (25%).",
+  "Margin (modules)": "Margine (moduli)",
+  "Must be between 0 and {max}": "Deve essere compreso tra 0 e {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Consigliato: 4 moduli — il minimo previsto dalla norma ISO/IEC 18004 per la zona di silenzio, necessario per garantire un'acquisizione affidabile."
 }

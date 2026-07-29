@@ -343,5 +343,9 @@
   "Reset to data only": "Yalnızca veri moduna geri dön",
   "Showing only the fields you use. Customize to show more.": "Yalnızca kullandığınız alanlar gösteriliyor. Daha fazlasını görmek için ayarlamalar yapın.",
   "Simple": "Basit",
-  "Width": "Genişlik"
+  "Width": "Genişlik",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Bir logonun gözle kolayca okunabilir kalabilmesi için daha fazla hata düzeltmesi gerekir — bunun yerine “Yüksek (%25)” seçeneği kullanılmalıdır.",
+  "Margin (modules)": "Kenar boşluğu (modüller)",
+  "Must be between 0 and {max}": "0 ile {max} arasında olmalıdır",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Önerilen: 4 modül — güvenilir tarama için ISO/IEC 18004 standardında belirtilen sessiz bölge asgari değeri."
 }

@@ -343,5 +343,9 @@
   "Reset to data only": "إعادة الضبط إلى وضع البيانات فقط",
   "Showing only the fields you use. Customize to show more.": "يتم عرض الحقول التي تستخدمها فقط. قم بالتخصيص لعرض المزيد.",
   "Simple": "بسيط",
-  "Width": "العرض"
+  "Width": "العرض",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "يحتاج الشعار إلى مزيد من تصحيح الأخطاء ليظل قابلاً للمسح الضوئي — استخدم الإعداد «عالي» (25٪) بدلاً من ذلك.",
+  "Margin (modules)": "الهامش (الوحدات)",
+  "Must be between 0 and {max}": "يجب أن يكون القيمة بين 0 و{max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "المقترح: 4 وحدات — الحد الأدنى للمنطقة الهادئة وفقًا لمعيار ISO/IEC 18004 لضمان موثوقية عملية المسح الضوئي."
 }

@@ -348,5 +348,9 @@
   "Your network name": "Ime vašega omrežja",
   "YYYY-MM-DDTHH:MM": "LLLL-MM-DD UU:MM",
   "Zip Code": "Poštna številka",
-  "Zipcode": "Poštna številka"
+  "Zipcode": "Poštna številka",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Logotip potrebuje več popravkov napak, da ostane berljiv – namesto tega uporabite nastavitev »Visoko« (25 %).",
+  "Margin (modules)": "Rob (moduli)",
+  "Must be between 0 and {max}": "Vrednost mora biti med 0 in {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Priporočeno: 4 moduli — minimalna zahteva standarda ISO/IEC 18004 za tiho območje, ki zagotavlja zanesljivo skeniranje."
 }

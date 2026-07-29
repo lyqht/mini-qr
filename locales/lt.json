@@ -343,5 +343,9 @@
   "Reset to data only": "Grįžti prie duomenų perdavimo režimo",
   "Showing only the fields you use. Customize to show more.": "Rodomi tik tie laukai, kuriuos naudojate. Norėdami matyti daugiau, pritaikykite nustatymus.",
   "Simple": "Paprasta",
-  "Width": "Plotis"
+  "Width": "Plotis",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Kad logotipas išliktų lengvai atpažįstamas, reikia daugiau klaidų taisymo — vietoj to naudokite nustatymą „Aukštas“ (25 %).",
+  "Margin (modules)": "Paraštė (moduliai)",
+  "Must be between 0 and {max}": "Turi būti nuo 0 iki {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Rekomenduojama: 4 moduliai — tai ISO/IEC 18004 standarte nustatytas minimalus „tylos zonos“ dydis, užtikrinantis patikimą nuskaitymą."
 }

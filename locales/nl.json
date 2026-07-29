@@ -343,5 +343,9 @@
   "Reset to data only": "Terugzetten naar alleen data",
   "Showing only the fields you use. Customize to show more.": "Alleen de velden weergeven die u gebruikt. Pas de weergave aan om meer te zien.",
   "Simple": "Eenvoudig",
-  "Width": "Breedte"
+  "Width": "Breedte",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Een logo vereist meer foutcorrectie om goed scanbaar te blijven — gebruik in plaats daarvan de instelling ‘Hoog’ (25%).",
+  "Margin (modules)": "Marge (modules)",
+  "Must be between 0 and {max}": "Moet tussen 0 en {max} liggen",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Aanbevolen: 4 modules — het minimum voor de stille zone volgens ISO/IEC 18004 voor betrouwbaar scannen."
 }

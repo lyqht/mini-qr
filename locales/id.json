@@ -343,5 +343,9 @@
   "Reset to data only": "Kembalikan ke mode data saja",
   "Showing only the fields you use. Customize to show more.": "Hanya menampilkan kolom yang Anda gunakan. Sesuaikan untuk menampilkan lebih banyak.",
   "Simple": "Sederhana",
-  "Width": "Lebar"
+  "Width": "Lebar",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Sebuah logo memerlukan lebih banyak koreksi kesalahan agar tetap mudah dibaca — gunakan pengaturan Tinggi (25%) sebagai gantinya.",
+  "Margin (modules)": "Margin (modul)",
+  "Must be between 0 and {max}": "Harus berada di antara 0 dan {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Disarankan: 4 modul — batas minimum zona tenang sesuai ISO/IEC 18004 untuk pemindaian yang andal."
 }

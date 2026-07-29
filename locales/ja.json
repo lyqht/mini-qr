@@ -343,5 +343,9 @@
   "Reset to data only": "データ通信のみに戻す",
   "Showing only the fields you use. Customize to show more.": "使用しているフィールドのみを表示しています。表示項目を増やすには、設定を変更してください。",
   "Simple": "シンプル",
-  "Width": "幅"
+  "Width": "幅",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "ロゴは視認性を保つために、より多くのエラー補正が必要だ――代わりに「High（25%）」を使用する。",
+  "Margin (modules)": "マージン（モジュール）",
+  "Must be between 0 and {max}": "0 から {max} の間でなければなりません",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "推奨：4モジュール — 信頼性の高いスキャンを行うためのISO/IEC 18004で規定されたクワイエットゾーンの最小要件。"
 }

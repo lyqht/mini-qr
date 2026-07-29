@@ -343,5 +343,9 @@
   "Reset to data only": "Palauta pelkästään datakäyttöön",
   "Showing only the fields you use. Customize to show more.": "Näytetään vain ne kentät, joita käytät. Mukauta asetuksia, jos haluat nähdä lisää.",
   "Simple": "Yksinkertainen",
-  "Width": "Leveys"
+  "Width": "Leveys",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Logo vaatii enemmän virheenkorjausta, jotta se pysyy skannattavissa — käytä sen sijaan asetusta ”Korkea” (25 %).",
+  "Margin (modules)": "Marginaali (moduulit)",
+  "Must be between 0 and {max}": "Arvon on oltava välillä 0 ja {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Suositus: 4 moduulia — ISO/IEC 18004 -standardin mukainen hiljaisen vyöhykkeen vähimmäisvaatimus luotettavaa skannausta varten."
 }

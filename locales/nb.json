@@ -348,5 +348,9 @@
   "Your network name": "Nettverksnavnet ditt",
   "YYYY-MM-DDTHH:MM": "ÅÅÅÅ-MM-DDTT:MM",
   "Zip Code": "Postnummer",
-  "Zipcode": "Postnummer"
+  "Zipcode": "Postnummer",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "En logo krever mer feilretting for å forbli lesbar — bruk i stedet innstillingen «Høy» (25 %).",
+  "Margin (modules)": "Margin (moduler)",
+  "Must be between 0 and {max}": "Må være mellom 0 og {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Anbefalt: 4 moduler — minimumskravet for stille sone i henhold til ISO/IEC 18004 for pålitelig skanning."
 }

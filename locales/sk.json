@@ -343,5 +343,9 @@
   "Reset to data only": "Obnoviť na režim len s dátami",
   "Showing only the fields you use. Customize to show more.": "Zobrazujú sa len polia, ktoré používate. Prispôsobte si zobrazenie, ak chcete zobraziť viac.",
   "Simple": "Jednoduché",
-  "Width": "Šírka"
+  "Width": "Šírka",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Logo si vyžaduje väčšiu korekciu chýb, aby zostalo čitateľné – namiesto toho použite nastavenie „Vysoká“ (25 %).",
+  "Margin (modules)": "Okraj (moduly)",
+  "Must be between 0 and {max}": "Musí byť v rozmedzí od 0 do {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Odporúčané: 4 moduly — minimálny počet podľa normy ISO/IEC 18004 pre spoľahlivé skenovanie v tichej zóne."
 }

@@ -343,5 +343,9 @@
   "Reset to data only": "Researează la „Doar date”",
   "Showing only the fields you use. Customize to show more.": "Se afișează doar câmpurile pe care le folosiți. Personalizați pentru a afișa mai multe.",
   "Simple": "Simplu",
-  "Width": "Lățime"
+  "Width": "Lățime",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Un logo necesită o corecție mai mare a erorilor pentru a rămâne ușor de scanat — se recomandă utilizarea nivelului „Ridicat” (25%) în schimb.",
+  "Margin (modules)": "Margine (module)",
+  "Must be between 0 and {max}": "Trebuie să fie între 0 și {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Recomandare: 4 module — numărul minim de module prevăzut de standardul ISO/IEC 18004 pentru zona de liniște, necesar pentru o scanare fiabilă."
 }

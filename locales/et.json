@@ -343,5 +343,9 @@
   "Reset to data only": "Taasta ainult andmeside režiim",
   "Showing only the fields you use. Customize to show more.": "Näidatakse ainult neid välju, mida kasutad. Kohanda, et näha rohkem.",
   "Simple": "Lihtne",
-  "Width": "Laius"
+  "Width": "Laius",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Logo peab olema paremini loetav, mistõttu tuleb selle puhul kasutada seadet „Kõrge“ (25%).",
+  "Margin (modules)": "Äär (moodulid)",
+  "Must be between 0 and {max}": "Peab olema vahemikus 0 kuni {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Soovitus: 4 moodulit — ISO/IEC 18004 standardis sätestatud vaikusvööndi miinimum, mis tagab usaldusväärse skaneerimise."
 }

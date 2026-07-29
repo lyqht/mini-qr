@@ -343,5 +343,9 @@
   "Reset to data only": "Επαναφορά σε λειτουργία μόνο δεδομένων",
   "Showing only the fields you use. Customize to show more.": "Εμφανίζονται μόνο τα πεδία που χρησιμοποιείτε. Προσαρμόστε την προβολή για να δείτε περισσότερα.",
   "Simple": "Απλό",
-  "Width": "Πλάτος"
+  "Width": "Πλάτος",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Ένα λογότυπο χρειάζεται περισσότερη διόρθωση σφαλμάτων για να παραμείνει ευανάγνωστο — χρησιμοποιήστε αντί αυτού την επιλογή «Υψηλή» (25%).",
+  "Margin (modules)": "Περιθώριο (ενότητες)",
+  "Must be between 0 and {max}": "Πρέπει να είναι μεταξύ 0 και {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Προτεινόμενο: 4 ενότητες — το ελάχιστο όριο της «ήσυχης ζώνης» σύμφωνα με το πρότυπο ISO/IEC 18004 για αξιόπιστη σάρωση."
 }

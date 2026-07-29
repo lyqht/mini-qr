@@ -343,5 +343,9 @@
   "Reset to data only": "데이터 전용 모드로 재설정",
   "Showing only the fields you use. Customize to show more.": "사용하는 필드만 표시됩니다. 더 많은 필드를 보려면 설정을 변경하세요.",
   "Simple": "간단한",
-  "Width": "너비"
+  "Width": "너비",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "로고는 한눈에 알아보기 쉽도록 오류 보정 수준을 더 높여야 합니다. 대신 ‘높음(25%)’을 사용하세요.",
+  "Margin (modules)": "여백 (모듈)",
+  "Must be between 0 and {max}": "0과 {max} 사이여야 합니다.",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "권장 사항: 4개 모듈 — 안정적인 스캔을 위한 ISO/IEC 18004 규정의 최소 무신호 구역."
 }

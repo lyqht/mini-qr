@@ -348,5 +348,9 @@
   "Your network name": "您的网络名称",
   "YYYY-MM-DDTHH:MM": "YYYY-MM-DD THH:MM",
   "Zip Code": "邮政编码",
-  "Zipcode": "邮政编码"
+  "Zipcode": "邮政编码",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "为了确保标志易于识别，需要增加错误校正——改用“高”（25%）选项。",
+  "Margin (modules)": "边距（模块）",
+  "Must be between 0 and {max}": "必须在 0 到 {max} 之间",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "建议：4个模块——这是ISO/IEC 18004标准中确保可靠扫描所需的静区最小值。"
 }

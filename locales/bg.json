@@ -343,5 +343,9 @@
   "Reset to data only": "Възстановяване на режим „Само данни“",
   "Showing only the fields you use. Customize to show more.": "Показват се само полетата, които използвате. Настройте, за да видите повече.",
   "Simple": "Просто",
-  "Width": "Ширина"
+  "Width": "Ширина",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Логото се нуждае от по-голяма корекция на грешките, за да остане разпознаваемо при сканиране — затова използвайте настройката „Висока“ (25%).",
+  "Margin (modules)": "Маргин (модули)",
+  "Must be between 0 and {max}": "Трябва да е между 0 и {max}",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Препоръчително: 4 модула — минималният брой за „тиха зона“ съгласно ISO/IEC 18004, необходим за надеждно сканиране."
 }

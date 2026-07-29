@@ -343,5 +343,9 @@
   "Reset to data only": "Visszaállítás „csak adat” módra",
   "Showing only the fields you use. Customize to show more.": "Csak az Ön által használt mezők jelennek meg. További mezők megjelenítéséhez állítsa be a beállításokat.",
   "Simple": "Egyszerű",
-  "Width": "Szélesség"
+  "Width": "Szélesség",
+  "A logo needs more error correction to stay scannable — using High (25%) instead.": "Ahhoz, hogy a logó jól olvasható maradjon, több hibajavításra van szükség – ehelyett a „Magas” (25%) beállítást használjuk.",
+  "Margin (modules)": "Margó (modulok)",
+  "Must be between 0 and {max}": "0 és {max} között kell lennie",
+  "Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.": "Ajánlott: 4 modul — az ISO/IEC 18004 szabványban meghatározott, a megbízható szkenneléshez szükséges minimális csendes zóna."
 }
