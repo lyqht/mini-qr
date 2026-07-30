@@ -353,6 +353,55 @@ export const generateEventData = (data: {
   return `BEGIN:VCALENDAR\nVERSION:2.0\n${lines.join('\n')}\nEND:VCALENDAR`
 }
 
+/**
+ * Generates an EPC069-12 version 2 ("GiroCode"/EPC QR) SEPA credit-transfer payload
+ * @param {object} data - Payment data to encode
+ * @param {string} data.beneficiaryName - Name of the payment beneficiary
+ * @param {string} data.iban - Beneficiary's IBAN
+ * @param {number|string} data.amount - Payment amount in EUR
+ * @param {string} [data.bic] - Beneficiary bank's BIC (optional in v2 for SEPA countries)
+ * @param {string} [data.purpose] - Purpose code
+ * @param {string} [data.remittanceReference] - Structured creditor reference
+ * @param {string} [data.remittanceText] - Unstructured remittance text (ignored if remittanceReference is set)
+ * @param {string} [data.information] - Beneficiary-to-originator information
+ * @returns {string} - Formatted 12-line EPC069-12 v2 payload, or '' if a required field is missing/invalid
+ */
+export const generateEpcData = (data: {
+  beneficiaryName: string
+  iban: string
+  amount: number | string
+  bic?: string
+  purpose?: string
+  remittanceReference?: string
+  remittanceText?: string
+  information?: string
+}): string => {
+  const amountNum = typeof data.amount === 'string' ? parseFloat(data.amount) : data.amount
+
+  if (!data.beneficiaryName || !data.iban || !amountNum || isNaN(amountNum) || amountNum <= 0) {
+    return ''
+  }
+
+  const iban = electronicFormatIBAN(data.iban) || data.iban.replace(/\s/g, '')
+
+  const lines = [
+    'BCD',
+    '002',
+    '1',
+    'SCT',
+    data.bic || '',
+    data.beneficiaryName,
+    iban,
+    `EUR${amountNum.toFixed(2)}`,
+    data.purpose || '',
+    data.remittanceReference || '',
+    data.remittanceReference ? '' : data.remittanceText || '',
+    data.information || ''
+  ]
+
+  return lines.join('\n')
+}
+
 // --- Data Detection ---
 
 /**

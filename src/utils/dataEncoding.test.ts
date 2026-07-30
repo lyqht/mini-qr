@@ -9,6 +9,7 @@ import {
   generateVCardData,
   generateLocationData,
   generateEventData,
+  generateEpcData,
   detectDataType,
   escapeVCard,
   escapeWiFi,
@@ -247,6 +248,60 @@ FN:Jane Smith
 EMAIL:jane@test.com
 END:VCARD`
     expect(generateVCardData(data)).toBe(expectedVCard)
+  })
+
+  it('generateEpcData formats a full EPC069-12 payload correctly', () => {
+    expect(
+      generateEpcData({
+        beneficiaryName: 'Jane Smith',
+        iban: 'DE89 3704 0044 0532 0130 00',
+        amount: 25,
+        bic: 'COBADEFFXXX',
+        purpose: 'GDDS',
+        remittanceReference: 'RF18539007547034',
+        information: 'Thanks!'
+      })
+    ).toBe(
+      'BCD\n002\n1\nSCT\nCOBADEFFXXX\nJane Smith\nDE89370400440532013000\nEUR25.00\nGDDS\nRF18539007547034\n\nThanks!'
+    )
+  })
+
+  it('generateEpcData formats a minimal (required-fields-only) payload correctly', () => {
+    expect(
+      generateEpcData({
+        beneficiaryName: 'Jane Smith',
+        iban: 'DE89370400440532013000',
+        amount: '25.00'
+      })
+    ).toBe('BCD\n002\n1\nSCT\n\nJane Smith\nDE89370400440532013000\nEUR25.00\n\n\n\n')
+  })
+
+  it('generateEpcData returns empty string when a required field is missing', () => {
+    expect(
+      generateEpcData({ beneficiaryName: '', iban: 'DE89370400440532013000', amount: 25 })
+    ).toBe('')
+    expect(generateEpcData({ beneficiaryName: 'Jane Smith', iban: '', amount: 25 })).toBe('')
+    expect(
+      generateEpcData({ beneficiaryName: 'Jane Smith', iban: 'DE89370400440532013000', amount: 0 })
+    ).toBe('')
+    expect(
+      generateEpcData({
+        beneficiaryName: 'Jane Smith',
+        iban: 'DE89370400440532013000',
+        amount: ''
+      })
+    ).toBe('')
+  })
+
+  it('generateEpcData uses remittanceText when remittanceReference is not provided', () => {
+    expect(
+      generateEpcData({
+        beneficiaryName: 'Jane Smith',
+        iban: 'DE89370400440532013000',
+        amount: 25,
+        remittanceText: 'Invoice 1234'
+      })
+    ).toBe('BCD\n002\n1\nSCT\n\nJane Smith\nDE89370400440532013000\nEUR25.00\n\n\nInvoice 1234\n')
   })
 })
 
