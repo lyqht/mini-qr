@@ -15,6 +15,9 @@ import {
   loadViewMode,
   saveSimpleFields,
   loadSimpleFields,
+  QR_COLOR_CONTRAST_RISK_ACCEPTED_KEY,
+  hasAcceptedColorContrastRisk,
+  acceptColorContrastRiskForever,
   type QRCodeConfig
 } from './useQRCodeStorage'
 
@@ -279,5 +282,30 @@ describe('simple fields persistence', () => {
   it('returns [] when stored value is not an array', () => {
     localStorage.setItem(QR_SIMPLE_FIELDS_STORAGE_KEY, JSON.stringify({ a: 1 }))
     expect(loadSimpleFields()).toEqual([])
+  })
+})
+
+describe('color contrast risk acknowledgement', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it('exports the expected storage key', () => {
+    expect(QR_COLOR_CONTRAST_RISK_ACCEPTED_KEY).toBe('qrColorContrastRiskAccepted')
+  })
+
+  it('is not accepted by default', () => {
+    expect(hasAcceptedColorContrastRisk()).toBe(false)
+  })
+
+  it('stays accepted after acceptColorContrastRiskForever is called', () => {
+    acceptColorContrastRiskForever()
+    expect(hasAcceptedColorContrastRisk()).toBe(true)
+    expect(localStorage.getItem(QR_COLOR_CONTRAST_RISK_ACCEPTED_KEY)).toBe('true')
+  })
+
+  it('ignores unrelated stored values', () => {
+    localStorage.setItem(QR_COLOR_CONTRAST_RISK_ACCEPTED_KEY, 'yes')
+    expect(hasAcceptedColorContrastRisk()).toBe(false)
   })
 })

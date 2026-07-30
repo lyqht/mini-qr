@@ -24,6 +24,11 @@ import VCardPreview from '@/components/VCardPreview.vue'
 import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
 import {
+  hasInsufficientContrast,
+  isColorContrastWarningEnabled,
+  isNearWhiteOnBlackInversion
+} from '@/utils/contrast'
+import {
   copyImageToClipboard,
   downloadJpgElement,
   downloadPngElement,
@@ -54,7 +59,9 @@ import {
   type Preset
 } from '@/utils/qrCodePresets'
 import {
+  acceptColorContrastRiskForever,
   CUSTOM_LOADED_PRESET_KEYS,
+  hasAcceptedColorContrastRisk,
   hasStoredQRConfig,
   isLocalStorageEnabled,
   LAST_LOADED_LOCALLY_PRESET_KEY,
@@ -570,7 +577,73 @@ function applyFrameFromPreset(frame?: QRCodeFrameConfig) {
   loadFrameFont(frame.style?.fontFamily)
 }
 
+// --- Color contrast warning (QR background/frame vs dots) -----------------
+// The "paper" a scanner actually sees is the QR's own background when "With
+// background" is on; when that's transparent, it's whatever shows through —
+// the frame's solid background color if one is shown, or nothing checkable
+// if there's no frame or the frame uses a background image instead.
+const effectivePaperColor = computed(() => {
+  if (includeBackground.value) return styleBackground.value
+  if (showFrame.value && !frameStyle.value.backgroundImage) {
+    return frameStyle.value.backgroundColor
+  }
+  return undefined
+})
+const colorContrastWarningEnabled = isColorContrastWarningEnabled()
+const isWhiteOnBlackColors = computed(() =>
+  isNearWhiteOnBlackInversion(effectivePaperColor.value, dotsOptionsColor.value)
+)
+const hasInsufficientColorContrast = computed(
+  () =>
+    !isWhiteOnBlackColors.value &&
+    hasInsufficientContrast(effectivePaperColor.value, dotsOptionsColor.value)
+)
+// Grandfather existing users (anyone with a config saved before this warning
+// existed) so it doesn't suddenly nag them. Once dismissed, stays dismissed
+// forever — this is a "don't ask me again" flag, not tied to a color combo.
+const acceptedColorContrastRisk = ref<boolean>(
+  isLocalStorageEnabled() && (hasAcceptedColorContrastRisk() || hasStoredQRConfig())
+)
+watch(
+  acceptedColorContrastRisk,
+  (accepted) => {
+    if (accepted && isLocalStorageEnabled()) {
+      acceptColorContrastRiskForever()
+    }
+  },
+  { immediate: true }
+)
+// Presets assign colors programmatically; suppress the warning while one is
+// being applied so picking a preset never nags by itself. It reappears the
+// moment the user actually edits a relevant color, anchored to whichever
+// field they touched last.
+let isApplyingPresetColors = false
+const hasManualColorEditSincePreset = ref(false)
+const colorWarningAnchor = ref<'colorSettings' | 'frameBackground'>('colorSettings')
+watch([styleBackground, dotsOptionsColor], () => {
+  if (isApplyingPresetColors) return
+  colorWarningAnchor.value = 'colorSettings'
+  hasManualColorEditSincePreset.value = true
+})
+watch(
+  () => frameStyle.value.backgroundColor,
+  () => {
+    if (isApplyingPresetColors) return
+    colorWarningAnchor.value = 'frameBackground'
+    hasManualColorEditSincePreset.value = true
+  }
+)
+const showColorContrastWarning = computed(
+  () =>
+    colorContrastWarningEnabled &&
+    hasManualColorEditSincePreset.value &&
+    (isWhiteOnBlackColors.value || hasInsufficientColorContrast.value) &&
+    !acceptedColorContrastRisk.value
+)
+
 function applySelectedPresetToState() {
+  isApplyingPresetColors = true
+  hasManualColorEditSincePreset.value = false
   const preset = selectedPreset.value
   // Note: We no longer auto-fill data from presets. Users can keep their own data
   // while changing the visual style. The QR preview will show default text if empty.
@@ -603,6 +676,9 @@ function applySelectedPresetToState() {
   } else {
     showFrame.value = false
   }
+  nextTick(() => {
+    isApplyingPresetColors = false
+  })
 }
 
 watch(selectedPreset, applySelectedPresetToState, { immediate: true })
@@ -623,6 +699,8 @@ const allFramePresetOptions = computed(() => {
 })
 
 function applyFramePreset(preset: FramePreset) {
+  isApplyingPresetColors = true
+  hasManualColorEditSincePreset.value = false
   if (preset.style) {
     frameStyle.value = toFrameStyle(preset.style)
     loadFrameFont(preset.style.fontFamily)
@@ -630,6 +708,9 @@ function applyFramePreset(preset: FramePreset) {
   if (preset.text) frameText.value = preset.text
   if (preset.position) frameTextPosition.value = preset.position
   showFrame.value = true
+  nextTick(() => {
+    isApplyingPresetColors = false
+  })
 }
 
 watch(selectedFramePresetKey, (newKey, prevKey) => {
@@ -2095,6 +2176,36 @@ const updateDataFromModal = (newData: string) => {
                         />
                       </div>
                     </fieldset>
+                    <div
+                      v-if="
+                        showColorContrastWarning &&
+                        colorWarningAnchor === 'frameBackground' &&
+                        isFieldVisible('frameBackground')
+                      "
+                      role="note"
+                      class="field-reveal mb-4 flex w-full flex-col gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
+                    >
+                      <p v-if="isWhiteOnBlackColors">
+                        {{ t('⚠️ Not all QR code readers can read white-on-black QR codes.') }}
+                      </p>
+                      <p v-else-if="hasInsufficientColorContrast">
+                        {{
+                          t(
+                            '⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.'
+                          )
+                        }}
+                      </p>
+                      <div class="flex flex-row items-center gap-2">
+                        <input
+                          id="accept-frame-color-contrast-risk"
+                          type="checkbox"
+                          v-model="acceptedColorContrastRisk"
+                        />
+                        <label for="accept-frame-color-contrast-risk">
+                          {{ t('✅ I accept the risk') }}
+                        </label>
+                      </div>
+                    </div>
                     <div v-show="isFieldVisible('frameBorderColor')">
                       <label for="frame-border-color" class="mb-1 block text-sm">{{
                         t('Border color')
@@ -2536,6 +2647,36 @@ const updateDataFromModal = (newData: string) => {
                     class="color-input"
                     v-model="cornersDotOptionsColor"
                   />
+                </div>
+              </div>
+              <div
+                v-if="
+                  showColorContrastWarning &&
+                  colorWarningAnchor === 'colorSettings' &&
+                  isGroupVisible(['backgroundColor', 'dotsColor'])
+                "
+                role="note"
+                class="field-reveal mb-4 flex w-full flex-col gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
+              >
+                <p v-if="isWhiteOnBlackColors">
+                  {{ t('⚠️ Not all QR code readers can read white-on-black QR codes.') }}
+                </p>
+                <p v-else-if="hasInsufficientColorContrast">
+                  {{
+                    t(
+                      '⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.'
+                    )
+                  }}
+                </p>
+                <div class="flex flex-row items-center gap-2">
+                  <input
+                    id="accept-color-contrast-risk"
+                    type="checkbox"
+                    v-model="acceptedColorContrastRisk"
+                  />
+                  <label for="accept-color-contrast-risk">
+                    {{ t('✅ I accept the risk') }}
+                  </label>
                 </div>
               </div>
               <div
