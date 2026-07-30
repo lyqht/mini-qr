@@ -22,7 +22,12 @@ import {
 } from '@/components/ui/drawer'
 import VCardPreview from '@/components/VCardPreview.vue'
 import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
-import { createRandomColor, getRandomItemInArray } from '@/utils/color'
+import {
+  createRandomColor,
+  generateComplementaryQRPalette,
+  getAverageColorFromImage,
+  getRandomItemInArray
+} from '@/utils/color'
 import {
   copyImageToClipboard,
   downloadJpgElement,
@@ -336,7 +341,7 @@ const qrCodeProps = computed<StyledQRCodeProps>(() => ({
   qrOptions: qrOptions.value
 }))
 
-function randomizeStyleSettings() {
+async function randomizeStyleSettings() {
   const dotTypes: DotType[] = [
     'dots',
     'rounded',
@@ -349,15 +354,19 @@ function randomizeStyleSettings() {
   const cornerDotTypes: CornerDotType[] = ['dot', 'square', 'rounded']
 
   dotsOptionsType.value = getRandomItemInArray(dotTypes)
-  dotsOptionsColor.value = createRandomColor()
-
   cornersSquareOptionsType.value = getRandomItemInArray(cornerSquareTypes)
-  cornersSquareOptionsColor.value = createRandomColor()
-
   cornersDotOptionsType.value = getRandomItemInArray(cornerDotTypes)
-  cornersDotOptionsColor.value = createRandomColor()
 
-  styleBackground.value = createRandomColor()
+  // Seed the palette from the logo's own color when one is present, so the
+  // generated style stays complementary to it instead of clashing (mini-qr#26).
+  const seedColor =
+    (image.value && (await getAverageColorFromImage(image.value))) || createRandomColor()
+  const palette = generateComplementaryQRPalette(seedColor)
+
+  dotsOptionsColor.value = palette.dotsColor
+  cornersSquareOptionsColor.value = palette.cornersSquareColor
+  cornersDotOptionsColor.value = palette.cornersDotColor
+  styleBackground.value = palette.backgroundColor
 }
 
 function uploadImage() {

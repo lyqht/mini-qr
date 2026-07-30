@@ -29,6 +29,7 @@
   "dependencies": {
     "@floating-ui/vue": "1.1.11",
     "@lucide/vue": "1.17.0",
+    "@material/material-color-utilities": "0.3.0",
     "@vercel/analytics": "2.0.1",
     "@vitejs/plugin-vue": "5.2.4",
     "@vitejs/plugin-vue-jsx": "3.1.0",
