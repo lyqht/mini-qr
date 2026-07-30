@@ -183,6 +183,12 @@ Everything _after_ the matrix:
 
 Storybook examples for each unit live in [`src/lib/qr-code/stories/`](src/lib/qr-code/stories/) — `pnpm storybook` to browse.
 
+## Data templates: IBAN/BIC validation
+
+The "SEPA Payment" data template (EPC069-12 / GiroCode QR codes) validates IBAN and BIC input using [`ibantools`](https://github.com/Simplify/ibantools) (MIT/MPL-2.0, zero runtime dependencies) rather than a hand-rolled checksum implementation, for the same reason `qrcode-generator` stays a dependency: correctly validating every country's IBAN format/length (not just the mod-97 checksum) and BIC structure is real spec-table work that a well-tested, widely-used library already does correctly.
+
+**If a bug report comes in about IBAN/BIC validation** — e.g. a valid IBAN for some country is rejected, or an invalid one is accepted — check whether it's a mini-qr issue (wrong data passed to the validator, wrong field mapping in the EPC payload) or an `ibantools` issue (the validator itself gets the wrong answer for correctly-passed input). Bugs in the latter category should be filed upstream at [Simplify/ibantools/issues](https://github.com/Simplify/ibantools/issues), not against mini-qr — mini-qr's own tracker is for the template's UI/UX and EPC payload-format concerns.
+
 ## End-to-End (E2E) Testing
 
 This project uses [Playwright](https://playwright.dev/) for end-to-end testing.
