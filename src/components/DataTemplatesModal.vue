@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import {
   detectDataType,
   generateEmailData,
+  generateEpcData,
   generateEventData,
   generateLocationData,
   generatePhoneData,
@@ -11,7 +12,9 @@ import {
   generateTextData,
   generateUrlData,
   generateVCardData,
-  generateWifiData
+  generateWifiData,
+  isValidBic,
+  isValidIban
 } from '../utils/dataEncoding'
 
 const { t } = useI18n()
@@ -71,6 +74,16 @@ const eventTitle = ref('')
 const eventLocation = ref('')
 const eventStartTime = ref('')
 const eventEndTime = ref('')
+
+// EPC (SEPA Payment) refs
+const epcBeneficiaryName = ref('')
+const epcIban = ref('')
+const epcBic = ref('')
+const epcAmount = ref<number | string>('')
+const epcPurpose = ref('')
+const epcRemittanceReference = ref('')
+const epcRemittanceText = ref('')
+const epcInformation = ref('')
 
 // Add validation state
 const invalidFields = ref<string[]>([])
@@ -166,6 +179,32 @@ watch(eventEndTime, (newValue) => {
   }
 })
 
+watch(epcBeneficiaryName, (newValue) => {
+  if (newValue && invalidFields.value.includes('epcBeneficiaryName')) {
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'epcBeneficiaryName')
+  }
+})
+
+watch(epcIban, (newValue) => {
+  if (newValue) {
+    invalidFields.value = invalidFields.value.filter(
+      (field) => field !== 'epcIbanRequired' && field !== 'epcIbanInvalid'
+    )
+  }
+})
+
+watch(epcBic, (newValue) => {
+  if (!newValue && invalidFields.value.includes('epcBic')) {
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'epcBic')
+  }
+})
+
+watch(epcAmount, (newValue) => {
+  if (newValue && invalidFields.value.includes('epcAmount')) {
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'epcAmount')
+  }
+})
+
 // Use imported detectDataType to populate form fields
 const detectAndSetDataType = (data: string) => {
   const result = detectDataType(data)
@@ -235,6 +274,17 @@ const detectAndSetDataType = (data: string) => {
       eventLocation.value = (result.parsedData.location as string) || ''
       eventStartTime.value = (result.parsedData.startTime as string) || ''
       eventEndTime.value = (result.parsedData.endTime as string) || ''
+      break
+
+    case 'epc':
+      epcBic.value = (result.parsedData.bic as string) || ''
+      epcBeneficiaryName.value = (result.parsedData.beneficiaryName as string) || ''
+      epcIban.value = (result.parsedData.iban as string) || ''
+      epcAmount.value = (result.parsedData.amount as string) || ''
+      epcPurpose.value = (result.parsedData.purpose as string) || ''
+      epcRemittanceReference.value = (result.parsedData.remittanceReference as string) || ''
+      epcRemittanceText.value = (result.parsedData.remittanceText as string) || ''
+      epcInformation.value = (result.parsedData.information as string) || ''
       break
   }
 }
@@ -307,6 +357,27 @@ const validateForm = () => {
       }
       if (!eventEndTime.value) {
         invalidFields.value.push('eventEndTime')
+        isValid = false
+      }
+      break
+    case 'epc':
+      if (!epcBeneficiaryName.value) {
+        invalidFields.value.push('epcBeneficiaryName')
+        isValid = false
+      }
+      if (!epcIban.value) {
+        invalidFields.value.push('epcIbanRequired')
+        isValid = false
+      } else if (!isValidIban(epcIban.value)) {
+        invalidFields.value.push('epcIbanInvalid')
+        isValid = false
+      }
+      if (epcBic.value && !isValidBic(epcBic.value)) {
+        invalidFields.value.push('epcBic')
+        isValid = false
+      }
+      if (!epcAmount.value || Number(epcAmount.value) <= 0) {
+        invalidFields.value.push('epcAmount')
         isValid = false
       }
       break
@@ -390,6 +461,18 @@ const generateDataString = () => {
         endTime: eventEndTime.value
       })
       break
+    case 'epc':
+      generatedString = generateEpcData({
+        beneficiaryName: epcBeneficiaryName.value,
+        iban: epcIban.value,
+        amount: epcAmount.value,
+        bic: epcBic.value,
+        purpose: epcPurpose.value,
+        remittanceReference: epcRemittanceReference.value,
+        remittanceText: epcRemittanceText.value,
+        information: epcInformation.value
+      })
+      break
     default:
       generatedString = ''
   }
@@ -462,6 +545,16 @@ const fillWithExampleData = () => {
       eventLocation.value = 'Online'
       eventStartTime.value = formatForInput(now)
       eventEndTime.value = formatForInput(oneHourLater)
+      break
+    case 'epc':
+      epcBeneficiaryName.value = 'Jane Smith'
+      epcIban.value = 'DE89370400440532013000'
+      epcBic.value = 'COBADEFFXXX'
+      epcAmount.value = '25.00'
+      epcPurpose.value = ''
+      epcRemittanceReference.value = ''
+      epcRemittanceText.value = 'Invoice 1234'
+      epcInformation.value = ''
       break
     // No example required for 'text' type... right? xD
   }
@@ -538,6 +631,7 @@ const closeModal = () => {
           <option value="vcard">{{ t('vCard') }}</option>
           <option value="location">{{ t('Location') }}</option>
           <option value="event">{{ t('Event') }}</option>
+          <option value="epc">{{ t('SEPA Payment') }}</option>
         </select>
       </div>
 
@@ -1029,6 +1123,134 @@ const closeModal = () => {
           <p v-if="isFieldInvalid('eventEndTime')" class="mt-1 text-sm text-red-500">
             {{ t('End time is required') }}
           </p>
+        </div>
+
+        <div v-if="selectedType === 'epc'" class="flex flex-col gap-4">
+          <div
+            class="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
+          >
+            {{
+              t(
+                'IBAN is checked for correct format and check-digit (mod-97) validity per the official IBAN registry. This does not verify that the account actually exists or is active at the bank.'
+              )
+            }}
+          </div>
+
+          <label for="epcBeneficiaryName" class="label">
+            {{ t('Beneficiary Name') }} <span class="text-red-500" aria-hidden="true">*</span>
+          </label>
+          <input
+            type="text"
+            id="epcBeneficiaryName"
+            v-model="epcBeneficiaryName"
+            :placeholder="t('e.g., Jane Smith')"
+            class="text-input"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500':
+                isFieldInvalid('epcBeneficiaryName')
+            }"
+            required
+            aria-required="true"
+          />
+          <p v-if="isFieldInvalid('epcBeneficiaryName')" class="mt-1 text-sm text-red-500">
+            {{ t('Beneficiary name is required') }}
+          </p>
+
+          <label for="epcIban" class="label">
+            {{ t('IBAN') }} <span class="text-red-500" aria-hidden="true">*</span>
+          </label>
+          <input
+            type="text"
+            id="epcIban"
+            v-model="epcIban"
+            placeholder="DE89370400440532013000"
+            class="text-input"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500':
+                isFieldInvalid('epcIbanRequired') || isFieldInvalid('epcIbanInvalid')
+            }"
+            required
+            aria-required="true"
+          />
+          <p v-if="isFieldInvalid('epcIbanRequired')" class="mt-1 text-sm text-red-500">
+            {{ t('IBAN is required') }}
+          </p>
+          <p v-if="isFieldInvalid('epcIbanInvalid')" class="mt-1 text-sm text-red-500">
+            {{ t('IBAN is not valid') }}
+          </p>
+
+          <label for="epcBic" class="label">{{ t('BIC') }}</label>
+          <input
+            type="text"
+            id="epcBic"
+            v-model="epcBic"
+            placeholder="COBADEFFXXX"
+            class="text-input"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('epcBic')
+            }"
+          />
+          <p v-if="isFieldInvalid('epcBic')" class="mt-1 text-sm text-red-500">
+            {{ t('BIC is not valid') }}
+          </p>
+
+          <label for="epcAmount" class="label">
+            {{ t('Amount (EUR)') }} <span class="text-red-500" aria-hidden="true">*</span>
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            id="epcAmount"
+            v-model="epcAmount"
+            placeholder="25.00"
+            class="text-input"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('epcAmount')
+            }"
+            required
+            aria-required="true"
+          />
+          <p v-if="isFieldInvalid('epcAmount')" class="mt-1 text-sm text-red-500">
+            {{ t('Amount is required') }}
+          </p>
+
+          <label for="epcPurpose" class="label">{{ t('Purpose Code') }}</label>
+          <input
+            type="text"
+            id="epcPurpose"
+            v-model="epcPurpose"
+            :placeholder="t('Optional purpose code')"
+            class="text-input"
+          />
+
+          <label for="epcRemittanceReference" class="label">{{ t('Remittance Reference') }}</label>
+          <input
+            type="text"
+            id="epcRemittanceReference"
+            v-model="epcRemittanceReference"
+            :disabled="!!epcRemittanceText"
+            :placeholder="t('Optional structured creditor reference')"
+            class="text-input"
+          />
+
+          <label for="epcRemittanceText" class="label">{{ t('Remittance Text') }}</label>
+          <textarea
+            id="epcRemittanceText"
+            v-model="epcRemittanceText"
+            :disabled="!!epcRemittanceReference"
+            class="text-input"
+            :placeholder="t('Optional remittance message')"
+          ></textarea>
+
+          <label for="epcInformation" class="label">{{ t('Information') }}</label>
+          <input
+            type="text"
+            id="epcInformation"
+            v-model="epcInformation"
+            :placeholder="t('Optional beneficiary-to-originator information')"
+            class="text-input"
+          />
         </div>
       </div>
 
