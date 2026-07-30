@@ -1,3 +1,5 @@
+import { electronicFormatIBAN, isValidIBAN, isValidBIC } from 'ibantools'
+
 /** Generic function to escape special characters in a string */
 const escapeSpecialChars = (val: string, charsToEscape: string): string => {
   if (!val) return ''
@@ -26,6 +28,22 @@ export const escapeWiFi = (val: string): string => escapeSpecialChars(val, '\\;,
  * @see https://datatracker.ietf.org/doc/html/rfc5545
  */
 export const escapeICal = (val: string): string => escapeSpecialChars(val, '\\,;')
+
+/**
+ * Validates an IBAN's structure and mod-97 checksum via the `ibantools` library
+ * (implements the official SWIFT IBAN Registry). Does not verify the account exists.
+ */
+export const isValidIban = (iban: string): boolean => {
+  if (!iban) return false
+  const formatted = electronicFormatIBAN(iban)
+  return formatted ? isValidIBAN(formatted) : false
+}
+
+/** Validates a BIC/SWIFT code's structure via the `ibantools` library. */
+export const isValidBic = (bic: string): boolean => {
+  if (!bic) return false
+  return isValidBIC(bic.replace(/\s/g, ''))
+}
 
 /** Formats a Date object or date string into YYYYMMDDTHHMMSSZ format for iCalendar */
 const formatICalDateTime = (dateTime: string | Date): string => {

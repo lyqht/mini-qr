@@ -39,6 +39,7 @@
     "clsx": "2.1.1",
     "file-saver": "2.0.5",
     "html5-qrcode": "2.3.8",
+    "ibantools": "4.5.4",
     "jszip": "3.10.1",
     "marked": "15.0.12",
     "qr-scanner": "1.4.2",

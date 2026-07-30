@@ -12,7 +12,9 @@ import {
   detectDataType,
   escapeVCard,
   escapeWiFi,
-  escapeICal
+  escapeICal,
+  isValidIban,
+  isValidBic
 } from './dataEncoding'
 
 describe('Data Encoding Functions', () => {
@@ -462,5 +464,31 @@ describe('Escape Functions', () => {
       expect(escapeICal('12345')).toBe('12345')
       expect(escapeICal('test@example.com')).toBe('test@example.com')
     })
+  })
+})
+
+describe('IBAN/BIC Validation Functions', () => {
+  it('isValidIban returns true for a valid IBAN', () => {
+    expect(isValidIban('DE89370400440532013000')).toBe(true)
+    expect(isValidIban('DE89 3704 0044 0532 0130 00')).toBe(true)
+  })
+
+  it('isValidIban returns false for an invalid checksum', () => {
+    expect(isValidIban('DE89370400440532013001')).toBe(false)
+  })
+
+  it('isValidIban returns false for empty or malformed input', () => {
+    expect(isValidIban('')).toBe(false)
+    expect(isValidIban('not an iban')).toBe(false)
+  })
+
+  it('isValidBic returns true for a valid BIC', () => {
+    expect(isValidBic('COBADEFFXXX')).toBe(true)
+    expect(isValidBic('COBADEFF')).toBe(true)
+  })
+
+  it('isValidBic returns false for invalid or empty input', () => {
+    expect(isValidBic('INVALID')).toBe(false)
+    expect(isValidBic('')).toBe(false)
   })
 })
