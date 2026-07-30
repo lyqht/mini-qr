@@ -369,6 +369,41 @@ describe('Data Type Detection Functions', () => {
     expect(result.parsedData.hidden).toBe(true)
   })
 
+  it('detectDataType identifies and parses EPC (SEPA payment) QR payloads', () => {
+    const payload = generateEpcData({
+      beneficiaryName: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      amount: 25,
+      bic: 'COBADEFFXXX',
+      purpose: 'GDDS',
+      remittanceReference: 'RF18539007547034',
+      information: 'Thanks!'
+    })
+    const result = detectDataType(payload)
+    expect(result.type).toBe('epc')
+    expect(result.parsedData).toEqual({
+      bic: 'COBADEFFXXX',
+      beneficiaryName: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      amount: '25.00',
+      purpose: 'GDDS',
+      remittanceReference: 'RF18539007547034',
+      remittanceText: '',
+      information: 'Thanks!'
+    })
+  })
+
+  it('detectDataType parses a minimal EPC payload with blank optional fields', () => {
+    const result = detectDataType(
+      'BCD\n002\n1\nSCT\n\nJane Smith\nDE89370400440532013000\nEUR25.00\n\n\n\n'
+    )
+    expect(result.type).toBe('epc')
+    expect(result.parsedData.bic).toBe('')
+    expect(result.parsedData.beneficiaryName).toBe('Jane Smith')
+    expect(result.parsedData.iban).toBe('DE89370400440532013000')
+    expect(result.parsedData.amount).toBe('25.00')
+  })
+
   it('detectDataType identifies vCard data', () => {
     const vcard = `BEGIN:VCARD
 VERSION:3.0

@@ -426,12 +426,22 @@ export const generateEpcData = (data: {
 export const detectDataType = (
   data: string
 ): {
-  type: 'text' | 'url' | 'email' | 'phone' | 'sms' | 'wifi' | 'vcard' | 'location' | 'event'
+  type: 'text' | 'url' | 'email' | 'phone' | 'sms' | 'wifi' | 'vcard' | 'location' | 'event' | 'epc'
   parsedData: Record<string, string | boolean>
 } => {
   // Default result
   const result: {
-    type: 'text' | 'url' | 'email' | 'phone' | 'sms' | 'wifi' | 'vcard' | 'location' | 'event'
+    type:
+      | 'text'
+      | 'url'
+      | 'email'
+      | 'phone'
+      | 'sms'
+      | 'wifi'
+      | 'vcard'
+      | 'location'
+      | 'event'
+      | 'epc'
     parsedData: Record<string, string | boolean>
   } = {
     type: 'text',
@@ -717,6 +727,28 @@ export const detectDataType = (
     if (endMatch && endMatch[1]) {
       result.parsedData.endTime = formatDateFromICal(endMatch[1])
     }
+
+    return result
+  }
+
+  // EPC QR (SEPA Payment) detection
+  if (data.match(/^BCD\n/)) {
+    result.type = 'epc'
+    result.parsedData = {}
+
+    const fields = data.replace(/\r/g, '').split('\n')
+
+    result.parsedData.bic = fields[4] || ''
+    result.parsedData.beneficiaryName = fields[5] || ''
+    result.parsedData.iban = fields[6] || ''
+
+    const amountMatch = (fields[7] || '').match(/^EUR([\d.]+)$/)
+    result.parsedData.amount = amountMatch ? amountMatch[1] : ''
+
+    result.parsedData.purpose = fields[8] || ''
+    result.parsedData.remittanceReference = fields[9] || ''
+    result.parsedData.remittanceText = fields[10] || ''
+    result.parsedData.information = fields[11] || ''
 
     return result
   }
