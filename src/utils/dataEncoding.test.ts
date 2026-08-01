@@ -214,6 +214,31 @@ describe('Data Encoding Functions', () => {
     expect(generateEpcData({ name: 'Jane Smith', iban: '' })).toBe('')
   })
 
+  it('generateEpcData returns empty string for version 001 without a BIC', () => {
+    expect(
+      generateEpcData({ name: 'Jane Smith', iban: 'DE89370400440532013000', version: '001' })
+    ).toBe('')
+  })
+
+  it('generateEpcData succeeds for version 002 without a BIC', () => {
+    const result = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      version: '002'
+    })
+    expect(result).toBe('BCD\n002\n1\nSCT\n\nJane Smith\nDE89370400440532013000')
+  })
+
+  it('generateEpcData succeeds for version 001 when a BIC is provided', () => {
+    const result = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      bic: 'DEUTDEFF',
+      version: '001'
+    })
+    expect(result).toBe('BCD\n001\n1\nSCT\nDEUTDEFF\nJane Smith\nDE89370400440532013000')
+  })
+
   it('generateEpcData strips newlines from the beneficiary name to prevent field shifting', () => {
     const clean = generateEpcData({ name: 'Jane Smith', iban: 'DE89370400440532013000' })
     const withNewline = generateEpcData({

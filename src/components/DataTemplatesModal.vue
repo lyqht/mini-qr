@@ -190,6 +190,20 @@ watch(epcIban, (newValue) => {
   }
 })
 
+watch(epcBic, (newValue) => {
+  if (newValue && invalidFields.value.includes('epcBic')) {
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'epcBic')
+  }
+})
+
+// BIC is only required for version '001'; dismiss a stale "BIC required" error
+// once the user switches to '002', where it becomes optional again.
+watch(epcVersion, (newValue) => {
+  if (newValue !== '001' && invalidFields.value.includes('epcBic')) {
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'epcBic')
+  }
+})
+
 // Use imported detectDataType to populate form fields
 const detectAndSetDataType = (data: string) => {
   const result = detectDataType(data)
@@ -353,6 +367,10 @@ const validateForm = () => {
       }
       if (!epcIban.value) {
         invalidFields.value.push('epcIban')
+        isValid = false
+      }
+      if (epcVersion.value === '001' && !epcBic.value) {
+        invalidFields.value.push('epcBic')
         isValid = false
       }
       break
@@ -1157,7 +1175,10 @@ const closeModal = () => {
             {{ t('IBAN is required') }}
           </p>
 
-          <label for="epcBic" class="label">{{ t('BIC') }}</label>
+          <label for="epcBic" class="label">
+            {{ t('BIC') }}
+            <span v-if="epcVersion === '001'" class="text-red-500" aria-hidden="true">*</span>
+          </label>
           <input
             type="text"
             id="epcBic"
@@ -1165,7 +1186,15 @@ const closeModal = () => {
             placeholder="DEUTDEFF"
             maxlength="11"
             class="text-input"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('epcBic')
+            }"
+            :required="epcVersion === '001'"
+            :aria-required="epcVersion === '001'"
           />
+          <p v-if="isFieldInvalid('epcBic')" class="mt-1 text-sm text-red-500">
+            {{ t('BIC is required for EPC QR version 1') }}
+          </p>
 
           <label for="epcAmount" class="label">{{ t('Amount (EUR)') }}</label>
           <input

@@ -376,6 +376,10 @@ export const generateEpcData = (data: {
 
   const version = data.version === '001' ? '001' : '002'
   const bic = (data.bic || '').replace(/\s+/g, '').toUpperCase()
+
+  // BIC is mandatory for version '001'; only optional for '002' (SEPA/EEA-only transfers).
+  if (version === '001' && !bic) return ''
+
   const name = sanitizeEpcLine(data.name).slice(0, 70)
   const iban = data.iban.replace(/\s+/g, '').toUpperCase()
 

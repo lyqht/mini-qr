@@ -68,6 +68,7 @@
   "Beneficiary Name": "Beneficiary Name",
   "Beneficiary name is required": "Beneficiary name is required",
   "BIC": "BIC",
+  "BIC is required for EPC QR version 1": "BIC is required for EPC QR version 1",
   "Border color": "Border color",
   "Border radius": "Border radius",
   "Border radius (px)": "Border radius (px)",
