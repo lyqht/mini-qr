@@ -27,6 +27,16 @@ export const escapeWiFi = (val: string): string => escapeSpecialChars(val, '\\;,
  */
 export const escapeICal = (val: string): string => escapeSpecialChars(val, '\\,;')
 
+/**
+ * Normalizes a string to a single line for use in a line-delimited format
+ * (e.g. EPC QR). Any run of CRLF/CR/LF is collapsed to a single space so
+ * words don't get glued together, and the result is trimmed.
+ */
+export const sanitizeEpcLine = (val: string): string => {
+  if (!val) return ''
+  return val.replace(/\r\n|\r|\n/g, ' ').trim()
+}
+
 /** Formats a Date object or date string into YYYYMMDDTHHMMSSZ format for iCalendar */
 const formatICalDateTime = (dateTime: string | Date): string => {
   try {
@@ -366,7 +376,7 @@ export const generateEpcData = (data: {
 
   const version = data.version === '001' ? '001' : '002'
   const bic = (data.bic || '').replace(/\s+/g, '').toUpperCase()
-  const name = data.name.slice(0, 70)
+  const name = sanitizeEpcLine(data.name).slice(0, 70)
   const iban = data.iban.replace(/\s+/g, '').toUpperCase()
 
   let amount = ''
@@ -377,11 +387,15 @@ export const generateEpcData = (data: {
     }
   }
 
-  const purpose = (data.purpose || '').slice(0, 4).toUpperCase()
-  const remittanceReference = (data.remittanceReference || '').slice(0, 35)
+  const purpose = sanitizeEpcLine(data.purpose || '')
+    .slice(0, 4)
+    .toUpperCase()
+  const remittanceReference = sanitizeEpcLine(data.remittanceReference || '').slice(0, 35)
   // Structured and unstructured remittance information are mutually exclusive.
-  const remittanceText = remittanceReference ? '' : (data.remittanceText || '').slice(0, 140)
-  const originatorInfo = (data.originatorInfo || '').slice(0, 70)
+  const remittanceText = remittanceReference
+    ? ''
+    : sanitizeEpcLine(data.remittanceText || '').slice(0, 140)
+  const originatorInfo = sanitizeEpcLine(data.originatorInfo || '').slice(0, 70)
 
   const lines = [
     'BCD',

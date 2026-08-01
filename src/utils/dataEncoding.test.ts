@@ -214,6 +214,57 @@ describe('Data Encoding Functions', () => {
     expect(generateEpcData({ name: 'Jane Smith', iban: '' })).toBe('')
   })
 
+  it('generateEpcData strips newlines from the beneficiary name to prevent field shifting', () => {
+    const clean = generateEpcData({ name: 'Jane Smith', iban: 'DE89370400440532013000' })
+    const withNewline = generateEpcData({
+      name: 'Jane\nSmith',
+      iban: 'DE89370400440532013000'
+    })
+
+    expect(withNewline).not.toContain('Jane\nSmith')
+    expect(withNewline.split('\n')).toHaveLength(clean.split('\n').length)
+    expect(withNewline.split('\n')).toHaveLength(7)
+    expect(withNewline.split('\n')[5]).toBe('Jane Smith')
+
+    const detected = detectDataType(withNewline)
+    expect(detected.type).toBe('epc')
+    expect(detected.parsedData.name).toBe('Jane Smith')
+    expect(detected.parsedData.iban).toBe('DE89370400440532013000')
+  })
+
+  it('generateEpcData strips CRLF from purpose, remittance and originator info fields', () => {
+    const clean = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      purpose: 'GD',
+      remittanceText: 'Invoice 12345',
+      originatorInfo: 'Thanks'
+    })
+    const withCrlf = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      purpose: 'G\r\nD',
+      remittanceText: 'Invoice\r\n12345',
+      originatorInfo: 'Thanks\r\na lot'
+    })
+
+    expect(withCrlf).not.toContain('\r')
+    expect(withCrlf.split('\n')).toHaveLength(clean.split('\n').length)
+    expect(withCrlf.split('\n')).toHaveLength(12)
+
+    const [, , , , , , , , purposeLine, , remittanceTextLine, originatorInfoLine] =
+      withCrlf.split('\n')
+    expect(purposeLine).toBe('G D')
+    expect(remittanceTextLine).toBe('Invoice 12345')
+    expect(originatorInfoLine).toBe('Thanks a lot')
+
+    const detected = detectDataType(withCrlf)
+    expect(detected.type).toBe('epc')
+    expect(detected.parsedData.purpose).toBe('G D')
+    expect(detected.parsedData.remittanceText).toBe('Invoice 12345')
+    expect(detected.parsedData.originatorInfo).toBe('Thanks a lot')
+  })
+
   it('generateVCardData formats full address correctly for vCard 3.0', () => {
     const data = {
       firstName: 'Jane',
