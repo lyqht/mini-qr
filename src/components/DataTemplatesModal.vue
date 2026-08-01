@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import {
   detectDataType,
   generateEmailData,
+  generateEpcData,
   generateEventData,
   generateLocationData,
   generatePhoneData,
@@ -71,6 +72,17 @@ const eventTitle = ref('')
 const eventLocation = ref('')
 const eventStartTime = ref('')
 const eventEndTime = ref('')
+
+// EPC (SEPA payment / GiroCode) refs
+const epcName = ref('')
+const epcIban = ref('')
+const epcBic = ref('')
+const epcAmount = ref('')
+const epcPurpose = ref('')
+const epcRemittanceReference = ref('')
+const epcRemittanceText = ref('')
+const epcOriginatorInfo = ref('')
+const epcVersion = ref('002')
 
 // Add validation state
 const invalidFields = ref<string[]>([])
@@ -166,6 +178,18 @@ watch(eventEndTime, (newValue) => {
   }
 })
 
+watch(epcName, (newValue) => {
+  if (newValue && invalidFields.value.includes('epcName')) {
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'epcName')
+  }
+})
+
+watch(epcIban, (newValue) => {
+  if (newValue && invalidFields.value.includes('epcIban')) {
+    invalidFields.value = invalidFields.value.filter((field) => field !== 'epcIban')
+  }
+})
+
 // Use imported detectDataType to populate form fields
 const detectAndSetDataType = (data: string) => {
   const result = detectDataType(data)
@@ -235,6 +259,18 @@ const detectAndSetDataType = (data: string) => {
       eventLocation.value = (result.parsedData.location as string) || ''
       eventStartTime.value = (result.parsedData.startTime as string) || ''
       eventEndTime.value = (result.parsedData.endTime as string) || ''
+      break
+
+    case 'epc':
+      epcName.value = (result.parsedData.name as string) || ''
+      epcIban.value = (result.parsedData.iban as string) || ''
+      epcBic.value = (result.parsedData.bic as string) || ''
+      epcAmount.value = (result.parsedData.amount as string) || ''
+      epcPurpose.value = (result.parsedData.purpose as string) || ''
+      epcRemittanceReference.value = (result.parsedData.remittanceReference as string) || ''
+      epcRemittanceText.value = (result.parsedData.remittanceText as string) || ''
+      epcOriginatorInfo.value = (result.parsedData.originatorInfo as string) || ''
+      epcVersion.value = (result.parsedData.version as string) || '002'
       break
   }
 }
@@ -307,6 +343,16 @@ const validateForm = () => {
       }
       if (!eventEndTime.value) {
         invalidFields.value.push('eventEndTime')
+        isValid = false
+      }
+      break
+    case 'epc':
+      if (!epcName.value) {
+        invalidFields.value.push('epcName')
+        isValid = false
+      }
+      if (!epcIban.value) {
+        invalidFields.value.push('epcIban')
         isValid = false
       }
       break
@@ -390,6 +436,19 @@ const generateDataString = () => {
         endTime: eventEndTime.value
       })
       break
+    case 'epc':
+      generatedString = generateEpcData({
+        name: epcName.value,
+        iban: epcIban.value,
+        bic: epcBic.value,
+        amount: epcAmount.value,
+        purpose: epcPurpose.value,
+        remittanceReference: epcRemittanceReference.value,
+        remittanceText: epcRemittanceText.value,
+        originatorInfo: epcOriginatorInfo.value,
+        version: epcVersion.value as '001' | '002'
+      })
+      break
     default:
       generatedString = ''
   }
@@ -462,6 +521,17 @@ const fillWithExampleData = () => {
       eventLocation.value = 'Online'
       eventStartTime.value = formatForInput(now)
       eventEndTime.value = formatForInput(oneHourLater)
+      break
+    case 'epc':
+      epcName.value = 'Jane Smith'
+      epcIban.value = 'DE89370400440532013000'
+      epcBic.value = 'DEUTDEFF'
+      epcAmount.value = '25.00'
+      epcPurpose.value = ''
+      epcRemittanceReference.value = ''
+      epcRemittanceText.value = 'Invoice 12345'
+      epcOriginatorInfo.value = ''
+      epcVersion.value = '002'
       break
     // No example required for 'text' type... right? xD
   }
@@ -538,6 +608,7 @@ const closeModal = () => {
           <option value="vcard">{{ t('vCard') }}</option>
           <option value="location">{{ t('Location') }}</option>
           <option value="event">{{ t('Event') }}</option>
+          <option value="epc">{{ t('EPC QR (SEPA Payment)') }}</option>
         </select>
       </div>
 
@@ -1029,6 +1100,132 @@ const closeModal = () => {
           <p v-if="isFieldInvalid('eventEndTime')" class="mt-1 text-sm text-red-500">
             {{ t('End time is required') }}
           </p>
+        </div>
+
+        <div v-if="selectedType === 'epc'" class="flex flex-col gap-4">
+          <p class="text-sm text-zinc-500 dark:text-zinc-400">
+            {{
+              t(
+                'Generates a SEPA Credit Transfer QR code (also known as GiroCode) that banking apps can scan to pre-fill a payment.'
+              )
+            }}
+          </p>
+
+          <label for="epcVersion" class="label">{{ t('EPC QR Version') }}</label>
+          <select id="epcVersion" v-model="epcVersion" class="text-input">
+            <option value="002">{{ t('Version 2 (BIC optional within SEPA)') }}</option>
+            <option value="001">{{ t('Version 1 (BIC required)') }}</option>
+          </select>
+
+          <label for="epcName" class="label">
+            {{ t('Beneficiary Name') }} <span class="text-red-500" aria-hidden="true">*</span>
+          </label>
+          <input
+            type="text"
+            id="epcName"
+            v-model="epcName"
+            :placeholder="t('e.g., Jane Smith')"
+            maxlength="70"
+            class="text-input"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('epcName')
+            }"
+            required
+            aria-required="true"
+          />
+          <p v-if="isFieldInvalid('epcName')" class="mt-1 text-sm text-red-500">
+            {{ t('Beneficiary name is required') }}
+          </p>
+
+          <label for="epcIban" class="label">
+            {{ t('IBAN') }} <span class="text-red-500" aria-hidden="true">*</span>
+          </label>
+          <input
+            type="text"
+            id="epcIban"
+            v-model="epcIban"
+            placeholder="DE89370400440532013000"
+            maxlength="34"
+            class="text-input"
+            :class="{
+              'border-red-500 focus:border-red-500 focus:ring-red-500': isFieldInvalid('epcIban')
+            }"
+            required
+            aria-required="true"
+          />
+          <p v-if="isFieldInvalid('epcIban')" class="mt-1 text-sm text-red-500">
+            {{ t('IBAN is required') }}
+          </p>
+
+          <label for="epcBic" class="label">{{ t('BIC') }}</label>
+          <input
+            type="text"
+            id="epcBic"
+            v-model="epcBic"
+            placeholder="DEUTDEFF"
+            maxlength="11"
+            class="text-input"
+          />
+
+          <label for="epcAmount" class="label">{{ t('Amount (EUR)') }}</label>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            id="epcAmount"
+            v-model="epcAmount"
+            placeholder="25.00"
+            class="text-input"
+          />
+
+          <label for="epcPurpose" class="label">{{ t('Purpose Code') }}</label>
+          <input
+            type="text"
+            id="epcPurpose"
+            v-model="epcPurpose"
+            placeholder="GDDS"
+            maxlength="4"
+            class="text-input"
+          />
+
+          <label for="epcRemittanceText" class="label">{{ t('Payment Reference') }}</label>
+          <input
+            type="text"
+            id="epcRemittanceText"
+            v-model="epcRemittanceText"
+            :placeholder="t('e.g., Invoice 12345')"
+            maxlength="140"
+            class="text-input"
+            :disabled="!!epcRemittanceReference"
+          />
+
+          <label for="epcRemittanceReference" class="label">
+            {{ t('Structured Creditor Reference') }}
+          </label>
+          <input
+            type="text"
+            id="epcRemittanceReference"
+            v-model="epcRemittanceReference"
+            :placeholder="t('e.g., RF18539007547034')"
+            maxlength="35"
+            class="text-input"
+          />
+          <p class="-mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            {{
+              t(
+                'Only one of Payment Reference or Structured Creditor Reference is included; the reference takes priority when both are filled.'
+              )
+            }}
+          </p>
+
+          <label for="epcOriginatorInfo" class="label">{{ t('Beneficiary Information') }}</label>
+          <input
+            type="text"
+            id="epcOriginatorInfo"
+            v-model="epcOriginatorInfo"
+            maxlength="70"
+            class="text-input"
+          />
         </div>
       </div>
 

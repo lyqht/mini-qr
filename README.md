@@ -35,7 +35,7 @@ An app to create beautiful QR codes and scan various QR code types.
 - 📱 QR Code Scanner: Scan QR codes using your camera or by uploading images, with intelligent detection for URLs, emails, phone numbers, WiFi credentials, and more
 - 📦 Batch data export: Import a CSV file with multiple data strings and export QR codes for them all at once. Template CSV files can be found in [`public/batch_export_templates/`](public/batch_export_templates/).
 - 📲 PWA Support: Install MiniQR as a desktop or mobile app
-- 📝 Data templates: Support for various data types including text, URLs, emails, phone numbers, SMS, WiFi credentials, vCards, locations, and calendar events
+- 📝 Data templates: Support for various data types including text, URLs, emails, phone numbers, SMS, WiFi credentials, vCards, locations, calendar events, and EPC QR (SEPA payment / GiroCode)
 - 🌍 UTF-8 input support: Vietnamese, CJK, Arabic, emoji, and other multibyte text
 
 See [ROADMAP.md](./ROADMAP.md) for future planned features.

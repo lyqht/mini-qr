@@ -9,6 +9,7 @@ import {
   generateVCardData,
   generateLocationData,
   generateEventData,
+  generateEpcData,
   detectDataType,
   escapeVCard,
   escapeWiFi,
@@ -175,6 +176,42 @@ describe('Data Encoding Functions', () => {
     expect(resultStringDates).toContain('DTSTART:20241225T180000Z')
     expect(resultStringDates).toContain('DTEND:20241225T220000Z')
     expect(generateEventData({})).toContain('BEGIN:VCALENDAR')
+  })
+
+  it('generateEpcData formats a minimal EPC QR payload correctly', () => {
+    const result = generateEpcData({ name: 'Jane Smith', iban: 'DE89 3704 0044 0532 0130 00' })
+    expect(result).toBe('BCD\n002\n1\nSCT\n\nJane Smith\nDE89370400440532013000')
+  })
+
+  it('generateEpcData includes optional fields when provided', () => {
+    const result = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      bic: 'deutdeff',
+      amount: 25,
+      purpose: 'gdds',
+      remittanceText: 'Invoice 12345',
+      version: '001'
+    })
+    expect(result).toBe(
+      'BCD\n001\n1\nSCT\nDEUTDEFF\nJane Smith\nDE89370400440532013000\nEUR25.00\nGDDS\n\nInvoice 12345'
+    )
+  })
+
+  it('generateEpcData prefers structured reference over unstructured text', () => {
+    const result = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      remittanceReference: 'RF18539007547034',
+      remittanceText: 'Invoice 12345'
+    })
+    expect(result).toContain('RF18539007547034')
+    expect(result).not.toContain('Invoice 12345')
+  })
+
+  it('generateEpcData returns empty string when required fields are missing', () => {
+    expect(generateEpcData({ name: '', iban: 'DE89370400440532013000' })).toBe('')
+    expect(generateEpcData({ name: 'Jane Smith', iban: '' })).toBe('')
   })
 
   it('generateVCardData formats full address correctly for vCard 3.0', () => {
@@ -400,6 +437,21 @@ END:VCALENDAR`
     expect(result.parsedData.location).toBe('Conference Room A')
     expect(result.parsedData.startTime).toContain('2024-01-15T10:00:00')
     expect(result.parsedData.endTime).toContain('2024-01-15T11:00:00')
+  })
+
+  it('detectDataType identifies EPC QR (SEPA payment) data', () => {
+    const epc =
+      'BCD\n002\n1\nSCT\nDEUTDEFF\nJane Smith\nDE89370400440532013000\nEUR25.00\nGDDS\n\nInvoice 12345'
+
+    const result = detectDataType(epc)
+    expect(result.type).toBe('epc')
+    expect(result.parsedData.version).toBe('002')
+    expect(result.parsedData.bic).toBe('DEUTDEFF')
+    expect(result.parsedData.name).toBe('Jane Smith')
+    expect(result.parsedData.iban).toBe('DE89370400440532013000')
+    expect(result.parsedData.amount).toBe('25.00')
+    expect(result.parsedData.purpose).toBe('GDDS')
+    expect(result.parsedData.remittanceText).toBe('Invoice 12345')
   })
 })
 
