@@ -73,7 +73,14 @@ const eventLocation = ref('')
 const eventStartTime = ref('')
 const eventEndTime = ref('')
 
-// EPC (SEPA payment / GiroCode) refs
+// EPC (SEPA payment / GiroCode) refs.
+// This implements the EPC069-12 "EPC Quick Response Code" standard
+// (European Payments Council, SEPA Credit Transfer), the pan-European spec
+// behind "GiroCode" (Germany/Austria), branded similarly elsewhere in SEPA.
+// It is NOT the same as unrelated national QR-payment formats outside SEPA
+// (e.g. the Swiss QR-bill), which use a different field layout.
+// Spec: https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/quick-response-code-guidelines-enable-data-capture-initiation
+// Plain-language overview: https://en.wikipedia.org/wiki/EPC_QR_code
 const epcName = ref('')
 const epcIban = ref('')
 const epcBic = ref('')
@@ -82,7 +89,7 @@ const epcPurpose = ref('')
 const epcRemittanceReference = ref('')
 const epcRemittanceText = ref('')
 const epcOriginatorInfo = ref('')
-const epcVersion = ref('002')
+const epcVersion = ref<'001' | '002'>('002')
 
 // Add validation state
 const invalidFields = ref<string[]>([])
@@ -284,7 +291,7 @@ const detectAndSetDataType = (data: string) => {
       epcRemittanceReference.value = (result.parsedData.remittanceReference as string) || ''
       epcRemittanceText.value = (result.parsedData.remittanceText as string) || ''
       epcOriginatorInfo.value = (result.parsedData.originatorInfo as string) || ''
-      epcVersion.value = (result.parsedData.version as string) || '002'
+      epcVersion.value = result.parsedData.version === '001' ? '001' : '002'
       break
   }
 }
@@ -464,7 +471,7 @@ const generateDataString = () => {
         remittanceReference: epcRemittanceReference.value,
         remittanceText: epcRemittanceText.value,
         originatorInfo: epcOriginatorInfo.value,
-        version: epcVersion.value as '001' | '002'
+        version: epcVersion.value
       })
       break
     default:
