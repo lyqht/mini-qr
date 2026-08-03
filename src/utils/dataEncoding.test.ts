@@ -10,6 +10,8 @@ import {
   generateLocationData,
   generateEventData,
   generateEpcData,
+  isValidIban,
+  isEpcPayloadOversized,
   detectDataType,
   escapeVCard,
   escapeWiFi,
@@ -288,6 +290,42 @@ describe('Data Encoding Functions', () => {
     expect(detected.parsedData.purpose).toBe('G D')
     expect(detected.parsedData.remittanceText).toBe('Invoice 12345')
     expect(detected.parsedData.originatorInfo).toBe('Thanks a lot')
+  })
+
+  it('generateEpcData returns empty string when the IBAN fails the checksum', () => {
+    // Same digits as the valid reference IBAN below, with the last two swapped.
+    expect(generateEpcData({ name: 'Jane Smith', iban: 'DE89370400440532013001' })).toBe('')
+  })
+
+  it('generateEpcData accepts IBANs from other SEPA countries', () => {
+    expect(generateEpcData({ name: 'Jane Smith', iban: 'FR1420041010050500013M02606' })).toContain(
+      'FR1420041010050500013M02606'
+    )
+  })
+
+  it('isValidIban validates the checksum and rejects malformed input', () => {
+    expect(isValidIban('DE89 3704 0044 0532 0130 00')).toBe(true)
+    expect(isValidIban('DE89370400440532013001')).toBe(false)
+    expect(isValidIban('not-an-iban')).toBe(false)
+    expect(isValidIban('')).toBe(false)
+  })
+
+  it('isEpcPayloadOversized flags payloads above the recommended size', () => {
+    const small = generateEpcData({ name: 'Jane Smith', iban: 'DE89370400440532013000' })
+    expect(isEpcPayloadOversized(small)).toBe(false)
+
+    // Every field filled at (or near) its maximum allowed length.
+    const large = generateEpcData({
+      name: 'A'.repeat(70),
+      iban: 'DE89370400440532013000',
+      bic: 'DEUTDEFFXXX',
+      amount: 99999.99,
+      purpose: 'GDDS',
+      remittanceText: 'X'.repeat(140),
+      originatorInfo: 'Y'.repeat(70),
+      version: '001'
+    })
+    expect(isEpcPayloadOversized(large)).toBe(true)
   })
 
   it('generateVCardData formats full address correctly for vCard 3.0', () => {

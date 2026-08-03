@@ -346,6 +346,32 @@ export const generateEventData = (data: {
 }
 
 /**
+ * Validates an IBAN using the ISO 7064 MOD 97-10 checksum defined by ISO 13616.
+ * Accepts spaces/mixed case (e.g. as typed by a user) and validates the
+ * normalized value.
+ */
+export const isValidIban = (iban: string): boolean => {
+  const normalized = iban.replace(/\s+/g, '').toUpperCase()
+
+  // Country code + 2 check digits + up to 30 alphanumeric BBAN characters.
+  if (!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/.test(normalized)) return false
+
+  // Move the first 4 characters to the end, then convert letters to numbers
+  // (A=10, B=11, ..., Z=35) before computing the checksum mod 97.
+  const rearranged = normalized.slice(4) + normalized.slice(0, 4)
+  const numeric = rearranged.replace(/[A-Z]/g, (char) => (char.charCodeAt(0) - 55).toString())
+
+  // Compute mod 97 over the (potentially very long) numeric string in chunks,
+  // since it can exceed Number.MAX_SAFE_INTEGER.
+  let remainder = 0
+  for (let i = 0; i < numeric.length; i += 7) {
+    remainder = Number(`${remainder}${numeric.slice(i, i + 7)}`) % 97
+  }
+
+  return remainder === 1
+}
+
+/**
  * Generates an EPC QR Code (EPC069-12) payload, used for SEPA Credit Transfers
  * and commonly known as "GiroCode" in electronic banking apps.
  * @param {object} data - SEPA credit transfer data to encode
@@ -382,6 +408,7 @@ export const generateEpcData = (data: {
 
   const name = sanitizeEpcLine(data.name).slice(0, 70)
   const iban = data.iban.replace(/\s+/g, '').toUpperCase()
+  if (!isValidIban(iban)) return ''
 
   let amount = ''
   if (data.amount !== undefined && data.amount !== '') {
@@ -423,6 +450,17 @@ export const generateEpcData = (data: {
 
   return lines.join('\n')
 }
+
+/**
+ * The EPC069-12 guidelines recommend keeping the encoded payload at or below
+ * this many bytes so that banking apps with stricter QR-scanning limits can
+ * still read it reliably.
+ */
+export const EPC_RECOMMENDED_MAX_BYTES = 331
+
+/** Returns true if an EPC QR payload exceeds the spec's recommended byte length. */
+export const isEpcPayloadOversized = (payload: string): boolean =>
+  new TextEncoder().encode(payload).length > EPC_RECOMMENDED_MAX_BYTES
 
 // --- Data Detection ---
 

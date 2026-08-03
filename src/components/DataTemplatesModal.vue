@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   detectDataType,
@@ -12,7 +12,9 @@ import {
   generateTextData,
   generateUrlData,
   generateVCardData,
-  generateWifiData
+  generateWifiData,
+  isEpcPayloadOversized,
+  isValidIban
 } from '../utils/dataEncoding'
 
 const { t } = useI18n()
@@ -191,8 +193,10 @@ watch(epcName, (newValue) => {
   }
 })
 
+// Keep the "invalid" state (and its message) while the user is still typing
+// an incomplete/malformed IBAN; only clear once it passes the checksum.
 watch(epcIban, (newValue) => {
-  if (newValue && invalidFields.value.includes('epcIban')) {
+  if (newValue && isValidIban(newValue) && invalidFields.value.includes('epcIban')) {
     invalidFields.value = invalidFields.value.filter((field) => field !== 'epcIban')
   }
 })
@@ -372,7 +376,7 @@ const validateForm = () => {
         invalidFields.value.push('epcName')
         isValid = false
       }
-      if (!epcIban.value) {
+      if (!epcIban.value || !isValidIban(epcIban.value)) {
         invalidFields.value.push('epcIban')
         isValid = false
       }
@@ -389,6 +393,27 @@ const validateForm = () => {
 const isFieldInvalid = (fieldName: string) => {
   return formSubmitted.value && invalidFields.value.includes(fieldName)
 }
+
+// EPC069-12 recommends keeping the payload small enough for scanners with
+// stricter limits; this is a soft, non-blocking heads-up rather than a
+// validation error, since the QR code itself can still encode a larger payload.
+const epcPayloadWarning = computed(() => {
+  if (selectedType.value !== 'epc' || !epcName.value || !epcIban.value) return false
+
+  const payload = generateEpcData({
+    name: epcName.value,
+    iban: epcIban.value,
+    bic: epcBic.value,
+    amount: epcAmount.value,
+    purpose: epcPurpose.value,
+    remittanceReference: epcRemittanceReference.value,
+    remittanceText: epcRemittanceText.value,
+    originatorInfo: epcOriginatorInfo.value,
+    version: epcVersion.value
+  })
+
+  return isEpcPayloadOversized(payload)
+})
 
 const generateDataString = () => {
   if (!validateForm()) {
@@ -1179,7 +1204,7 @@ const closeModal = () => {
             aria-required="true"
           />
           <p v-if="isFieldInvalid('epcIban')" class="mt-1 text-sm text-red-500">
-            {{ t('IBAN is required') }}
+            {{ epcIban ? t('IBAN is invalid') : t('IBAN is required') }}
           </p>
 
           <label for="epcBic" class="label">
@@ -1245,6 +1270,7 @@ const closeModal = () => {
             :placeholder="t('e.g., RF18539007547034')"
             maxlength="35"
             class="text-input"
+            :disabled="!!epcRemittanceText"
           />
           <p class="-mt-2 text-sm text-zinc-500 dark:text-zinc-400">
             {{
@@ -1262,6 +1288,17 @@ const closeModal = () => {
             maxlength="70"
             class="text-input"
           />
+
+          <p
+            v-if="epcPayloadWarning"
+            class="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
+          >
+            {{
+              t(
+                'This EPC QR payload is larger than the recommended size and some banking apps may fail to scan it. Consider shortening the optional fields.'
+              )
+            }}
+          </p>
         </div>
       </div>
 
