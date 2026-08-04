@@ -65,6 +65,11 @@ const qrCodeType = computed(() => {
     return 'calendar'
   }
 
+  // EPC QR (SEPA Credit Transfer / GiroCode) detection
+  if (/^BCD\r?\n/.test(data)) {
+    return 'epc'
+  }
+
   // Geo location detection
   if (/^geo:(.+)$/i.test(data)) {
     return 'geo'
@@ -94,6 +99,7 @@ const formattedData = computed(() => {
     case 'vcard':
     case 'calendar':
     case 'geo':
+    case 'epc':
       return data
     default:
       return data
@@ -124,6 +130,8 @@ const qrCodeTypeIcon = computed(() => {
       return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 16H5V8h14zm-7-5h5v5h-5z"/></svg>`
     case 'geo':
       return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5z"/></svg>`
+    case 'epc':
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M15.4 9.85V8.4h-4.53c-.03-.17-.03-.33-.03-.5c0-.09 0-.19.01-.28h4.55V6.17H11.2C11.94 4.85 13.33 4 15 4c1.16 0 2.24.42 3.05 1.15l1.42-1.42A7.99 7.99 0 0 0 15 2C12.24 2 9.86 3.6 8.71 6.17H6v1.45h2.34a5.7 5.7 0 0 0-.02.28c0 .17 0 .33.03.5H6v1.45h2.71C9.85 12.4 12.24 14 15 14c1.06 0 2.06-.24 2.94-.66l-1.28-1.28c-.5.19-1.05.3-1.66.3c-1.67 0-3.06-.85-3.8-2.17h4.2z"/></svg>`
     default:
       return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83l3.75 3.75l1.83-1.83a.996.996 0 0 0 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29m-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/></svg>`
   }
@@ -147,6 +155,8 @@ const typeLabel = computed(() => {
       return t('Calendar Event')
     case 'geo':
       return t('Location')
+    case 'epc':
+      return t('SEPA Payment')
     default:
       return t('Text')
   }
