@@ -103,12 +103,6 @@ For all other matters, before opening an issue or contacting the project maintai
 
 Component stories live in Storybook (`pnpm storybook` locally, or the production build at [mini-qr-storybook.vercel.app](https://mini-qr-storybook.vercel.app)). Pull requests that touch the UI get an auto-deployed Storybook preview on Vercel — see [docs/storybook-vercel-previews.md](docs/storybook-vercel-previews.md) for how it's wired up.
 
-Maintainers: see [RELEASING.md](RELEASING.md) for how releases are cut.
-
-> **Release process:** Releases are cut manually — bump `package.json`, add the entry to
-> `public/CHANGELOG.md`, then publish a `vX.Y.Z` GitHub Release (which builds the Docker image).
-> Translations are automated separately via DeepL. See [RELEASING.md](RELEASING.md).
-
 ---
 
 Thank you for everyone here for taking their time out to improve MiniQR 🧡
