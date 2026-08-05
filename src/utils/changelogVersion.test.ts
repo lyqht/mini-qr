@@ -19,7 +19,7 @@ describe('getDisplayVersion', () => {
     expect(getDisplayVersion('# Changelog', 'main')).toBe('N/A')
   })
 
-  it('parses a release-please linked header and normalizes to a v-prefixed version', () => {
+  it('parses a linked header and normalizes to a v-prefixed version', () => {
     const md =
       '## [0.31.0](https://github.com/lyqht/mini-qr/compare/v0.30.2...v0.31.0) (2026-06-10)'
     expect(getDisplayVersion(md, undefined)).toBe('v0.31.0')
@@ -29,13 +29,13 @@ describe('getDisplayVersion', () => {
     expect(getDisplayVersion('## v0.30.2 (2026-05-25)', undefined)).toBe('v0.30.2')
   })
 
-  it('parses a plain (unlinked) release-please header without a v prefix', () => {
+  it('parses a plain (unlinked) header without a v prefix', () => {
     expect(getDisplayVersion('## 0.31.0 (2026-06-10)', undefined)).toBe('v0.31.0')
   })
 })
 
 describe('extractChangelogVersion', () => {
-  it('returns the first version from a release-please linked header', () => {
+  it('returns the first version from a linked header', () => {
     const md = [
       '# Changelog',
       '',
@@ -46,7 +46,7 @@ describe('extractChangelogVersion', () => {
     expect(extractChangelogVersion(md)).toBe('v0.32.0')
   })
 
-  it('parses a plain release-please header without a v prefix', () => {
+  it('parses a plain header without a v prefix', () => {
     expect(extractChangelogVersion('## 0.31.0 (2026-06-10)')).toBe('v0.31.0')
   })
 
