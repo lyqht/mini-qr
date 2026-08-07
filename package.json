@@ -71,7 +71,7 @@
     "husky": "8.0.3",
     "lint-staged": "15.5.2",
     "playwright": "1.59.1",
-    "postcss": "8.5.14",
+    "postcss": "8.5.23",
     "prettier": "3.8.3",
     "prettier-plugin-tailwindcss": "0.8.0",
     "sharp": "0.33.5",
