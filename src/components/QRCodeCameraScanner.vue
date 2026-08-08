@@ -4,7 +4,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits<{
-  'qr-detected': [data: string]
+  'qr-detected': [data: string, format?: string]
   cancel: []
 }>()
 
@@ -97,12 +97,17 @@ const startScanning = async () => {
       cameraId,
       {
         fps: 10,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0,
+        // Wide scan region so both QR (roughly square) and 1D barcodes
+        // (wide/short) sit comfortably inside the viewfinder.
+        qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+          const width = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.9)
+          const height = Math.floor(Math.min(width * 0.6, viewfinderHeight * 0.8))
+          return { width, height }
+        },
         disableFlip: false
       },
-      (decodedText) => {
-        emit('qr-detected', decodedText)
+      (decodedText, decodedResult) => {
+        emit('qr-detected', decodedText, decodedResult?.result?.format?.formatName)
         stopScanning()
       },
       (_errorMessage) => {
