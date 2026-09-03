@@ -7,18 +7,27 @@ on:
     branches: [main]
   release:
     types: [published]
+  # Lets a maintainer publish the image for a ref that has no image yet — pick the
+  # release tag (e.g. v0.33.0) in the "Run workflow" ref dropdown. Needed because a
+  # `release: published` event fires exactly once and cannot be replayed, so a release
+  # whose build failed would otherwise need a brand new release to get an image.
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
+  contents: read
   packages: write
 
 jobs:
   build_and_push:
     name: Build and Push
     runs-on: ubuntu-latest
+    # A build that wedges must fail fast rather than sit until GitHub's 6-hour
+    # job limit cancels it — a cancelled release build publishes no image at all.
+    timeout-minutes: 30
     strategy:
       # Prevent a failure in one image from stopping the other builds
       fail-fast: false
@@ -27,16 +36,18 @@ jobs:
           - context: "."
             file: "Dockerfile"
             image: "mini-qr"
-            # ARM not working. Needs further research.
             platforms: "linux/arm64,linux/amd64"
 
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-      
+
+      # Still needed so buildx can assemble the arm64 image, but no command is
+      # executed under emulation — every RUN in the Dockerfile is pinned to
+      # $BUILDPLATFORM. See the Dockerfile comments and issue #328.
       - name: Set up QEMU
         uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
         # Workaround to fix error:
@@ -65,8 +76,11 @@ jobs:
         id: metadata
         uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
+          # `latest` tracks main. Pull request builds must not claim it —
+          # docker-compose.yml pulls `:latest`, so a PR build overwriting it
+          # would hand self-hosters unmerged code.
           flavor: |
-            latest=true
+            latest=${{ github.event_name != 'pull_request' }}
           images: |
             name=ghcr.io/${{ steps.sanitize_names.outputs.lowercase }}/${{matrix.image}}
           tags: |
@@ -76,7 +90,9 @@ jobs:
             type=ref,event=pr
             # Tag with git tag on release
             type=ref,event=tag
-            type=raw,value=release,enable=${{ github.event_name == 'release' }}
+            # `release` tracks the newest release tag. Keyed off the ref rather than
+            # the event name so a manual re-run on a release tag moves it too.
+            type=raw,value=release,enable=${{ startsWith(github.ref, 'refs/tags/') }}
 
       - name: Determine build cache output
         id: cache-target
@@ -102,3 +118,29 @@ jobs:
             VITE_APP_VERSION=${{ github.ref_name }}
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
+
+      # Turns a silently missing release image into a red build. Without this, the
+      # only signal that a release has no image is someone noticing on ghcr later.
+      - name: Verify published tags
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        env:
+          TAGS: ${{ steps.metadata.outputs.tags }}
+        run: |
+          set -euo pipefail
+          while IFS= read -r tag; do
+            [[ -n "$tag" ]] || continue
+            echo "::group::$tag"
+            # Retry a couple of times so registry propagation lag can't turn a
+            # perfectly good release red.
+            for attempt in 1 2 3; do
+              if docker buildx imagetools inspect "$tag"; then
+                break
+              elif [[ "$attempt" == 3 ]]; then
+                echo "::error::$tag was not published"
+                exit 1
+              else
+                sleep 10
+              fi
+            done
+            echo "::endgroup::"
+          done <<< "$TAGS"

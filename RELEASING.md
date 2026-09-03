@@ -26,6 +26,21 @@ Releases are cut manually. Translations are the only automated part.
    builds and pushes the versioned image to ghcr.io. Vercel redeploys from `main` and picks up the
    new `public/CHANGELOG.md`.
 
+6. **Check the Docker run went green.** A successful release build publishes three ghcr tags:
+   `vX.Y.Z`, `release`, and `latest`. The run's "Verify published tags" step inspects each one, so
+   a red run means the image is missing — don't assume it landed.
+
+## Publishing an image for a release that has none
+
+`release: published` fires exactly once per release and cannot be replayed, so if the Docker run
+failed or was cancelled the release ends up with no image and the `release` tag keeps pointing at
+the previous version (this is what [#328](https://github.com/lyqht/mini-qr/issues/328) reported —
+the v0.33.0 build died in QEMU emulation and was cancelled at GitHub's 6-hour job limit).
+
+You do not need to cut a new release to fix that. Go to **Actions → Docker → Run workflow** and
+pick the release tag (e.g. `v0.33.0`) in the ref dropdown. Building from a tag ref publishes the
+same `vX.Y.Z` + `release` + `latest` tags the release event would have.
+
 ## Translations
 
 These run on their own and are not tied to cutting a release.
