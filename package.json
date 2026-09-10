@@ -79,7 +79,7 @@
     "typescript": "5.9.3",
     "typescript-eslint": "8.59.2",
     "vite-plugin-pwa": "0.21.2",
-    "vitest": "3.2.4",
+    "vitest": "4.1.11",
     "vue-eslint-parser": "10.4.0",
     "vue-tsc": "3.2.8"
   }
