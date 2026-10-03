@@ -5,6 +5,11 @@ import type { Options as LegacyOptions } from './legacy-types'
 import type { FrameConfig, QRCodeConfig, ResolvedQRCodeConfig, TextPosition } from './types'
 import { DEFAULT_CONFIG } from './types'
 
+// Framed previews use a fixed 200px QR and Tailwind's text-lg (18px).
+// Export chrome is expressed in that same preview coordinate system.
+const FRAME_PREVIEW_QR_SIZE = 200
+const FRAME_PREVIEW_FONT_SIZE = 18
+
 function resolve(config: QRCodeConfig): ResolvedQRCodeConfig {
   return {
     data: config.data,
@@ -46,6 +51,8 @@ export interface SvgExportInput {
   outerBackground?: string
   /** Outer container rounded corners as a CSS pixel string (e.g., "24px"). */
   borderRadius?: string
+  /** QR box rounded corners in preview pixels, used independently from the frame radius. */
+  qrBorderRadius?: string
   /** Target export size — picks the smaller of width/height (square-only in v1). */
   size?: { width: number; height: number }
 }
@@ -57,12 +64,13 @@ export interface SvgExportInput {
  */
 export function buildSvgExportString(input: SvgExportInput): string {
   const baseConfig = fromLegacyOptions(input.options)
-  const config: QRCodeConfig = {
-    ...baseConfig,
-    frame: input.frame ? toFrameConfig(input.frame) : undefined
-  }
+  const config: QRCodeConfig = { ...baseConfig, frame: undefined }
   if (input.size) {
     config.size = Math.min(input.size.width, input.size.height)
+  }
+  if (input.frame) {
+    const qrSize = config.size ?? DEFAULT_CONFIG.size
+    config.frame = toFrameConfig(input.frame, qrSize / FRAME_PREVIEW_QR_SIZE)
   }
 
   // Apply the preset's container background to the QR itself. The preview
@@ -77,14 +85,15 @@ export function buildSvgExportString(input: SvgExportInput): string {
   const resolved = resolve(config)
 
   if (resolved.frame) {
-    const { svg } = renderFramed(resolved)
+    const qrRadius = parsePxLength(input.qrBorderRadius) * (resolved.size / FRAME_PREVIEW_QR_SIZE)
+    const { svg } = renderFramed(resolved, qrRadius)
     return svg
   }
 
   // No-frame path — render the QR portion and wrap in our own outer <svg> so
   // we can apply rounded corners via a clipPath without the lib's frame chrome.
   const size = resolved.size
-  const radius = parsePxLength(input.borderRadius)
+  const radius = parsePxLength(input.borderRadius) * (size / FRAME_PREVIEW_QR_SIZE)
   const bgColor = input.outerBackground ?? resolved.background.color
   return renderStandalone(resolved, size, radius, bgColor)
 }
@@ -128,7 +137,7 @@ function renderStandalone(
   )
 }
 
-function toFrameConfig(input: LegacyFrameInput): FrameConfig {
+function toFrameConfig(input: LegacyFrameInput, scale = 1): FrameConfig {
   const s = input.style
   // Build piecewise so undefined keys are absent (not present-with-undefined).
   // The frame renderer spreads defaults under config; setting fontFamily etc.
@@ -136,18 +145,19 @@ function toFrameConfig(input: LegacyFrameInput): FrameConfig {
   // break downstream escapeAttr calls.
   const out: FrameConfig = {
     text: input.text,
-    textPosition: input.position
+    textPosition: input.position,
+    fontSize: FRAME_PREVIEW_FONT_SIZE * scale
   }
   if (s.textColor) out.textColor = s.textColor
   if (s.backgroundColor) out.backgroundColor = s.backgroundColor
   if (s.borderColor) out.borderColor = s.borderColor
-  if (s.borderWidth) out.borderWidth = parsePxLength(s.borderWidth)
-  if (s.borderRadius) out.borderRadius = parsePxLength(s.borderRadius)
-  if (s.padding) out.padding = parsePxLength(s.padding)
+  if (s.borderWidth) out.borderWidth = parsePxLength(s.borderWidth) * scale
+  if (s.borderRadius) out.borderRadius = parsePxLength(s.borderRadius) * scale
+  if (s.padding) out.padding = parsePxLength(s.padding) * scale
   if (s.fontFamily) out.fontFamily = s.fontFamily
   if (s.backgroundImage) out.backgroundImage = s.backgroundImage
   if (input.captionWidth && input.captionWidth > 0) {
-    out.captionWidth = input.captionWidth
+    out.captionWidth = input.captionWidth * scale
   }
   return out
 }

@@ -850,6 +850,7 @@ function buildSvgExportInput() {
       : null,
     outerBackground: styleBackground.value,
     borderRadius: exportBorderRadius.value,
+    qrBorderRadius: styledBorderRadiusFormatted.value,
     // SVG natural size: the QR's intrinsic dimensions. Frame chrome is added
     // by the lib's renderFramed primitive on top of this.
     size: { width: width.value, height: height.value }

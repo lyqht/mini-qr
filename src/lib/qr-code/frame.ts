@@ -26,7 +26,7 @@ export interface FramedSvg {
  * single SVG element so SVG-to-canvas rasterisation stays flat and
  * cross-browser safe.
  */
-export function renderFramed(config: ResolvedQRCodeConfig): FramedSvg {
+export function renderFramed(config: ResolvedQRCodeConfig, qrBorderRadius = 0): FramedSvg {
   const { fragment, size, matrixCount } = renderQrFragment(config)
   if (!config.frame) {
     return { svg: wrapAsSvg(fragment, size, size), width: size, height: size, matrixCount }
@@ -154,7 +154,16 @@ export function renderFramed(config: ResolvedQRCodeConfig): FramedSvg {
   // transform. Visually identical to the original — same final position,
   // same z-order (still drawn after the QR fragment).
   const { fragment: qrInnerFragment, image: liftedImage } = liftImage(fragment, qrX, qrY)
-  const qrGroup = `<g transform="translate(${qrX}, ${qrY})">${qrInnerFragment}</g>`
+  const qrClipId = 'qr-corner-clip'
+  const clipsQr = qrBorderRadius > 0
+  const qrClipDef = clipsQr
+    ? `<defs><clipPath id="${qrClipId}"><rect x="0" y="0" width="${size}" height="${size}" ` +
+      `rx="${qrBorderRadius}" ry="${qrBorderRadius}"/></clipPath></defs>`
+    : ''
+  const qrGroup =
+    qrClipDef +
+    `<g transform="translate(${qrX}, ${qrY})"${clipsQr ? ` clip-path="url(#${qrClipId})"` : ''}>` +
+    `${qrInnerFragment}</g>`
 
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ` +
