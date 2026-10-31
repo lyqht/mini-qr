@@ -3,7 +3,6 @@ import LanguageSelector from '@/components/LanguageSelector.vue'
 import MobileMenu from '@/components/MobileMenu.vue'
 import QRCodeScan from '@/components/QRCodeScan.vue'
 import QRCodeCreate from '@/components/QRCodeCreate.vue'
-import AppFooter from '@/components/AppFooter.vue'
 import useDarkModePreference from '@/utils/useDarkModePreference'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -269,7 +268,6 @@ const isModeToggleDisabled = computed(() => {
         </div>
       </div>
     </div>
-    <AppFooter />
   </main>
 </template>
 
