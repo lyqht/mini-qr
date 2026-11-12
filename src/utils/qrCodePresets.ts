@@ -1,5 +1,6 @@
 import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
 import { isValidFrameConfig } from './framePresets'
+import { getRuntimeConfig } from './runtimeConfig'
 import GeeksHackingConfig from '@/assets/presets/geekshacking.json'
 import SpDigitalConfig from '@/assets/presets/spdigital.json'
 import GovtechStackCommunityConfig from '@/assets/presets/govtech_stack.json'
@@ -349,12 +350,35 @@ function parsePresetsFromEnv(envVal?: string): Preset[] | undefined {
 }
 
 const envPresets = parsePresetsFromEnv(import.meta.env.VITE_QR_CODE_PRESETS)
-export const allQrCodePresets: Preset[] = envPresets ?? builtInPresets
+const basePresets: Preset[] = envPresets ?? builtInPresets
 
-export const defaultPreset: Preset = import.meta.env.VITE_DEFAULT_PRESET
-  ? (allQrCodePresets.find((p) => p.name === import.meta.env.VITE_DEFAULT_PRESET) ??
-    allQrCodePresets[0])
-  : allQrCodePresets[0]
+const baseDefaultPreset: Preset = import.meta.env.VITE_DEFAULT_PRESET
+  ? (basePresets.find((p) => p.name === import.meta.env.VITE_DEFAULT_PRESET) ?? basePresets[0])
+  : basePresets[0]
+
+/**
+ * Overrides the logo of a preset with the runtime-configured default logo.
+ * Unsafe or empty values leave the preset untouched.
+ */
+export function applyDefaultLogo(preset: Preset, logo?: string): Preset {
+  const value = logo?.trim()
+  if (!value) return preset
+  if (!isSafeImageUrl(value)) {
+    console.error('Ignoring unsafe DEFAULT_LOGO value')
+    return preset
+  }
+  return { ...preset, image: value }
+}
+
+const defaultLogo = getRuntimeConfig().defaultLogo
+
+// Replace the default entry in the list too, so re-selecting it in the preset
+// dropdown keeps the configured logo.
+export const allQrCodePresets: Preset[] = basePresets.map((p) =>
+  p === baseDefaultPreset ? applyDefaultLogo(p, defaultLogo) : p
+)
+
+export const defaultPreset: Preset = allQrCodePresets[basePresets.indexOf(baseDefaultPreset)]
 
 /**
  * Logo image URLs are looser than frame background images
