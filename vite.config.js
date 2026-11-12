@@ -85,7 +85,7 @@ export default defineConfig(({ mode }) => {
         workbox: {
           globPatterns: ['**/*.{js,css,svg,png,jpg,jpeg,gif,ico,woff,woff2}'], // Removed html from patterns
           // Exclude large files from precaching and HTML files to avoid base path issues
-          globIgnores: ['**/app_preview.*', '**/presets/*.svg', '**/*.html'],
+          globIgnores: ['**/app_preview.*', '**/presets/*.svg', '**/*.html', '**/config.js'],
           maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
           // Don't precache index.html to avoid base path issues
           dontCacheBustURLsMatching: /\.\w{8}\./,
