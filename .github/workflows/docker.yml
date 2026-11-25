@@ -67,11 +67,14 @@ jobs:
         id: metadata
         uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
+          # Only builds from main move the `latest` tag. PR builds get pr-N and
+          # releases get their version tag plus `release`.
           flavor: |
-            latest=true
+            latest=false
           images: |
             name=ghcr.io/${{ steps.sanitize_names.outputs.lowercase }}/${{matrix.image}}
           tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
             # Tag with branch name
             type=ref,event=branch
             # Tag with pr-number
