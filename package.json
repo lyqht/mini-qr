@@ -51,7 +51,7 @@
     "vaul-vue": "0.4.1",
     "vite": "5.4.21",
     "vue": "3.5.34",
-    "vue-i18n": "9.14.5"
+    "vue-i18n": "11.4.14"
   },
   "devDependencies": {
     "@eslint/js": "9.39.4",
