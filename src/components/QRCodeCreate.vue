@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BatchExportFieldsGuide from '@/components/BatchExportFieldsGuide.vue'
+import ColorContrastToast from '@/components/ColorContrastToast.vue'
 import CopyImageModal from '@/components/CopyImageModal.vue'
 import DataTemplatesModal from '@/components/DataTemplatesModal.vue'
 import QRCodeFrame from '@/components/QRCodeFrame.vue'
@@ -23,6 +24,11 @@ import {
 import VCardPreview from '@/components/VCardPreview.vue'
 import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
 import { createRandomColor, getRandomItemInArray } from '@/utils/color'
+import {
+  hasInsufficientContrast,
+  isColorContrastWarningEnabled,
+  isNearWhiteOnBlackInversion
+} from '@/utils/contrast'
 import {
   copyImageToClipboard,
   downloadJpgElement,
@@ -570,7 +576,57 @@ function applyFrameFromPreset(frame?: QRCodeFrameConfig) {
   loadFrameFont(frame.style?.fontFamily)
 }
 
+// --- Color contrast warning (QR background/frame vs dots) -----------------
+// The "paper" a scanner actually sees is the QR's own background when "With
+// background" is on; when that's transparent, it's whatever shows through —
+// the frame's solid background color if one is shown, or nothing checkable
+// if there's no frame or the frame uses a background image instead.
+const effectivePaperColor = computed(() => {
+  if (includeBackground.value) return styleBackground.value
+  if (showFrame.value && !frameStyle.value.backgroundImage) {
+    return frameStyle.value.backgroundColor
+  }
+  return undefined
+})
+const colorContrastWarningEnabled = isColorContrastWarningEnabled()
+const isWhiteOnBlackColors = computed(() =>
+  isNearWhiteOnBlackInversion(effectivePaperColor.value, dotsOptionsColor.value)
+)
+const hasInsufficientColorContrast = computed(
+  () =>
+    !isWhiteOnBlackColors.value &&
+    hasInsufficientContrast(effectivePaperColor.value, dotsOptionsColor.value)
+)
+// Presets assign colors programmatically; suppress the warning while one is
+// being applied so picking a preset never warns by itself. It comes back the
+// moment the user actually edits a relevant color.
+let isApplyingPresetColors = false
+const hasManualColorEditSincePreset = ref(false)
+watch([styleBackground, dotsOptionsColor, () => frameStyle.value.backgroundColor], () => {
+  if (isApplyingPresetColors) return
+  hasManualColorEditSincePreset.value = true
+})
+// Shown as a temporary toast (see ColorContrastToast.vue), not a blocking prompt.
+const colorContrastWarningMessage = computed<string | null>(() => {
+  if (!colorContrastWarningEnabled || !hasManualColorEditSincePreset.value) return null
+  if (isWhiteOnBlackColors.value) {
+    return t('⚠️ Not all QR code readers can read white-on-black QR codes.')
+  }
+  if (hasInsufficientColorContrast.value) {
+    return includeBackground.value
+      ? t(
+          '⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.'
+        )
+      : t(
+          '⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.'
+        )
+  }
+  return null
+})
+
 function applySelectedPresetToState() {
+  isApplyingPresetColors = true
+  hasManualColorEditSincePreset.value = false
   const preset = selectedPreset.value
   // Note: We no longer auto-fill data from presets. Users can keep their own data
   // while changing the visual style. The QR preview will show default text if empty.
@@ -603,6 +659,9 @@ function applySelectedPresetToState() {
   } else {
     showFrame.value = false
   }
+  nextTick(() => {
+    isApplyingPresetColors = false
+  })
 }
 
 watch(selectedPreset, applySelectedPresetToState, { immediate: true })
@@ -623,6 +682,8 @@ const allFramePresetOptions = computed(() => {
 })
 
 function applyFramePreset(preset: FramePreset) {
+  isApplyingPresetColors = true
+  hasManualColorEditSincePreset.value = false
   if (preset.style) {
     frameStyle.value = toFrameStyle(preset.style)
     loadFrameFont(preset.style.fontFamily)
@@ -630,6 +691,9 @@ function applyFramePreset(preset: FramePreset) {
   if (preset.text) frameText.value = preset.text
   if (preset.position) frameTextPosition.value = preset.position
   showFrame.value = true
+  nextTick(() => {
+    isApplyingPresetColors = false
+  })
 }
 
 watch(selectedFramePresetKey, (newKey, prevKey) => {
@@ -2776,6 +2840,8 @@ const updateDataFromModal = (newData: string) => {
       </Accordion>
     </section>
   </div>
+
+  <ColorContrastToast :message="colorContrastWarningMessage" />
 
   <DataTemplatesModal
     :show="isDataModalVisible"
