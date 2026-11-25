@@ -31,6 +31,10 @@ needs no build command of its own.
    > would double-deploy.
 
 2. **Create an access token**: Vercel → Settings → Tokens → _Create_.
+   If you give it an expiry date, set a reminder: once it expires, every
+   Storybook deploy fails at "Pull Vercel project settings" with "The token
+   provided via the `--token` option is not valid". Create a new token and
+   replace the `VERCEL_TOKEN` secret to fix it.
 
 3. **Add three repo secrets** (GitHub → Settings → Secrets and variables →
    Actions → _New repository secret_):

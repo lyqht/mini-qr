@@ -36,11 +36,13 @@ jobs:
   deploy:
     name: Deploy Storybook to Vercel
     runs-on: ubuntu-latest
-    # Skip on PRs from forks: secrets aren't exposed there, so the deploy would
-    # fail. Pushes to main (and same-repo branch PRs) always run.
+    # Skip on PRs from forks and on Dependabot PRs: neither can read the repo's
+    # Actions secrets, so the deploy would fail. Pushes to main (and other
+    # same-repo branch PRs) always run.
     if: >-
       github.event_name == 'push' ||
-      github.event.pull_request.head.repo.full_name == github.repository
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.user.login != 'dependabot[bot]')
     permissions:
       contents: read
       pull-requests: write
