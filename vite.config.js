@@ -19,10 +19,7 @@ export default defineConfig(({ mode }) => {
     base,
     define: {
       // Make BASE_PATH available to client-side code through import.meta.env
-      'import.meta.env.BASE_PATH': JSON.stringify(base),
-      // Compile translations without eval (new Function), so the app works
-      // under a Content Security Policy without 'unsafe-eval'.
-      __INTLIFY_JIT_COMPILATION__: true
+      'import.meta.env.BASE_PATH': JSON.stringify(base)
     },
     plugins: [
       vue(),
