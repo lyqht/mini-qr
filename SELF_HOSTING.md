@@ -54,72 +54,73 @@ php -S localhost:8080
 
 ## Environment Variables
 
-All `VITE_*` variables are **build-time** arguments — they are baked into the static assets at build time and cannot be changed at runtime without rebuilding the image.
+Except for `BASE_PATH`, every setting below works with the prebuilt image. Set it when the container starts and no rebuild is needed. The container writes these values to `dist/config.js` on start, and the app loads that file before it starts.
 
-| Variable                                 | `docker-compose.yml` alias          | Description                                                                                                                                                                     | Default   |
-| ---------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| `BASE_PATH`                              | `BASE_PATH`                         | URL sub-path for deployment (e.g., `/mini-qr` for `domain.com/mini-qr`)                                                                                                         | `/`       |
-| `VITE_HIDE_CREDITS`                      | `HIDE_CREDITS`                      | Set to `"true"` to hide the footer credits                                                                                                                                      | `"false"` |
-| `VITE_DEFAULT_PRESET`                    | `DEFAULT_PRESET`                    | Name of the default QR code style preset (e.g., `"plain"`, `"lyqht"`)                                                                                                           | `""`      |
-| `VITE_DEFAULT_DATA_TO_ENCODE`            | `DEFAULT_DATA`                      | Default text/URL pre-filled in the QR code input field when the app loads                                                                                                       | `""`      |
-| `VITE_QR_CODE_PRESETS`                   | `PRESETS`                           | JSON array of custom QR code presets. See [Custom Presets](#custom-presets) below                                                                                               | `"[]"`    |
-| `VITE_FRAME_PRESET`                      | `FRAME_PRESET`                      | Name of the default frame preset to apply (e.g., `"Default Frame"`)                                                                                                             | `""`      |
-| `VITE_FRAME_PRESETS`                     | `FRAME_PRESETS`                     | JSON array of custom frame presets. See [Custom Presets](#custom-presets) below                                                                                                 | `"[]"`    |
-| `VITE_DISABLE_LOCAL_STORAGE`             | `DISABLE_LOCAL_STORAGE`             | Set to `"true"` to prevent the app from loading previously saved settings on startup                                                                                            | `"false"` |
-| `VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | `QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | Set to `"true"` to show the Simple/Full view toggle and the "Customize fields" button                                                                                           | `"false"` |
-| `VITE_FIELDS_VISIBLE`                    | `FIELDS_VISIBLE`                    | Comma-separated field keys. When set, the app starts in Simple mode showing only the data field plus these fields (see [Fixing the visible fields](#fixing-the-visible-fields)) | `""`      |
-| `VITE_DISABLE_COLOR_CONTRAST_WARNING`    | `DISABLE_COLOR_CONTRAST_WARNING`    | Set to `"false"` to show the background/dots color contrast warning. Defaults to hidden in the Docker image (unattended/kiosk deployments), unlike other deployment methods     | `"true"`  |
+You can use either the full `VITE_*` name or the short name. If you build the image yourself, you can still pass the `VITE_*` names as `--build-arg` instead. A value set when the container starts wins over one built into the image.
 
-### Runtime Environment Variables
+| Variable                                 | Short name                          | Description                                                                                                                                                                               | Default   |
+| ---------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `VITE_HIDE_CREDITS`                      | `HIDE_CREDITS`                      | Set to `"true"` to hide the footer credits                                                                                                                                                | `"false"` |
+| `VITE_DEFAULT_PRESET`                    | `DEFAULT_PRESET`                    | Name of the default QR code style preset (e.g., `"plain"`, `"lyqht"`)                                                                                                                     | `""`      |
+| `VITE_DEFAULT_DATA_TO_ENCODE`            | `DEFAULT_DATA`                      | Default text/URL pre-filled in the QR code input field when the app loads                                                                                                                 | `""`      |
+| `VITE_QR_CODE_PRESETS`                   | `PRESETS`                           | JSON array of custom QR code presets. See [Custom Presets](#custom-presets) below                                                                                                         | `"[]"`    |
+| `VITE_FRAME_PRESET`                      | `FRAME_PRESET`                      | Name of the default frame preset to apply (e.g., `"Default Frame"`)                                                                                                                       | `""`      |
+| `VITE_FRAME_PRESETS`                     | `FRAME_PRESETS`                     | JSON array of custom frame presets. See [Custom Presets](#custom-presets) below                                                                                                           | `"[]"`    |
+| `VITE_DISABLE_LOCAL_STORAGE`             | `DISABLE_LOCAL_STORAGE`             | Set to `"true"` to prevent the app from loading previously saved settings on startup                                                                                                      | `"false"` |
+| `VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | `QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | Set to `"true"` to show the Simple/Full view toggle and the "Customize fields" button                                                                                                     | `"false"` |
+| `VITE_FIELDS_VISIBLE`                    | `FIELDS_VISIBLE`                    | Comma-separated field keys. When set, the app starts in Simple mode showing only the data field plus these fields (see [Fixing the visible fields](#fixing-the-visible-fields))           | `""`      |
+| `VITE_DISABLE_COLOR_CONTRAST_WARNING`    | `DISABLE_COLOR_CONTRAST_WARNING`    | Set to `"false"` to show the background/dots color contrast warning. Defaults to hidden in the Docker image (unattended/kiosk deployments), unlike other deployment methods               | `"true"`  |
+| `DEFAULT_LOGO`                           | `DEFAULT_LOGO`                      | Logo placed in the centre of the default preset's QR code. Accepts an `http(s)` URL, a same-origin path (e.g. a mounted file) or a `data:image/...` URI. Overrides the preset's own image | `""`      |
 
-Unlike the `VITE_*` build arguments, these are read when the container starts, so they work with the prebuilt image and need no rebuild.
+### Build-time only: `BASE_PATH`
 
-| Variable       | Description                                                                                                                                                  | Default |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
-| `DEFAULT_LOGO` | Logo placed in the centre of the default preset's QR code. Accepts an `http(s)` URL, a same-origin path (e.g. a mounted file) or a `data:image/...` URI. Overrides the preset's own image. | `""`    |
+`BASE_PATH` sets the URL sub-path the app is served from (e.g. `/mini-qr` for `domain.com/mini-qr`). It is built into the asset URLs, so it only works when you build the image yourself (see [Build Locally](#build-locally)):
+
+```bash
+docker build --build-arg BASE_PATH=/mini-qr -t mini-qr .
+```
+
+### Passing Variables via docker-compose
+
+`docker-compose.yml` passes the short names through to the container. Set them in your shell:
+
+```bash
+QR_CREATE_SIMPLE_FULL_MODE_TOGGLE=true FIELDS_VISIBLE=dotsColor,frameText docker compose up -d
+```
+
+Or create a `.env` file alongside `docker-compose.yml`:
+
+```dotenv
+DEFAULT_PRESET=plain
+HIDE_CREDITS=true
+DISABLE_LOCAL_STORAGE=true
+```
+
+Then run `docker compose up -d`. If you write your own compose file, set them under the service's `environment:` key:
 
 ```yaml
 services:
   mini-qr:
     image: ghcr.io/lyqht/mini-qr:latest
     environment:
+      QR_CREATE_SIMPLE_FULL_MODE_TOGGLE: 'true'
+      FIELDS_VISIBLE: dotsColor,frameText
       DEFAULT_LOGO: /logo.svg
     volumes:
       - ./logo.svg:/app/dist/logo.svg:ro
 ```
 
-The container writes these values to `dist/config.js` on start, which the app loads before starting. Users can still upload their own logo or pick another preset.
+After changing a value, recreate the container (`docker compose up -d` does this) and reload the page.
+
+### Notes on `DEFAULT_LOGO`
 
 If the image was built with a `BASE_PATH`, include it in a same-origin logo path. For example, with `BASE_PATH=/mini-qr`, mount the file as above and set `DEFAULT_LOGO: /mini-qr/logo.svg`.
 
 `DEFAULT_LOGO` only changes the default preset. Returning users whose design is saved in local storage keep their saved design, so they see the logo once they select the default preset again.
 
-### Passing Variables via docker-compose
-
-The `docker-compose.yml` maps shorter environment variable names to the full build arg names. Set them on the host before running:
-
-```bash
-BASE_PATH=/mini-qr DEFAULT_PRESET=plain DISABLE_LOCAL_STORAGE=true docker compose up -d --build
-```
-
-Or create a `.env` file alongside `docker-compose.yml`:
-
-```dotenv
-BASE_PATH=/mini-qr
-DEFAULT_PRESET=plain
-HIDE_CREDITS=false
-DISABLE_LOCAL_STORAGE=true
-```
-
-Then run:
-
-```bash
-docker compose up -d --build
-```
-
 ### Passing Variables via `docker build`
 
-When building directly, pass each variable as a `--build-arg`:
+When building the image yourself, you can also build settings into it with `--build-arg`:
 
 ```bash
 docker build \
@@ -142,7 +143,7 @@ and — with the toggle hidden — users cannot switch away from it.
 
 ```bash
 # Only let users edit the dots color and the frame caption
-FIELDS_VISIBLE=dotsColor,frameText docker compose up -d --build
+FIELDS_VISIBLE=dotsColor,frameText docker compose up -d
 ```
 
 Valid field keys:
@@ -176,10 +177,10 @@ A JSON array of preset objects. Each preset overrides the visual style of the QR
 ]
 ```
 
-Pass as a build arg (escape the JSON or use a `.env` file):
+Pass it like any other setting (escape the JSON or use a `.env` file):
 
 ```bash
-PRESETS='[{"name":"My Brand","dotsOptions":{"color":"#ff0000","type":"rounded"}}]' docker compose up -d --build
+PRESETS='[{"name":"My Brand","dotsOptions":{"color":"#ff0000","type":"rounded"}}]' docker compose up -d
 ```
 
 ### Frame Presets (`VITE_FRAME_PRESETS`)
@@ -214,22 +215,29 @@ docker compose up -d
 
 ### Deploy at a subdirectory
 
-```bash
-BASE_PATH=/mini-qr docker compose up -d --build
+`BASE_PATH` needs a local build. Replace the `image:` line in `docker-compose.yml` with:
+
+```yaml
+build:
+  context: .
+  args:
+    BASE_PATH: /mini-qr
 ```
+
+Then run `docker compose up -d --build`.
 
 ### Fixed preset with localStorage disabled
 
 Useful when embedding MiniQR in a branded context where users should always see the configured preset:
 
 ```bash
-DEFAULT_PRESET=plain DISABLE_LOCAL_STORAGE=true docker compose up -d --build
+DEFAULT_PRESET=plain DISABLE_LOCAL_STORAGE=true docker compose up -d
 ```
 
 ### Hide footer credits
 
 ```bash
-HIDE_CREDITS=true docker compose up -d --build
+HIDE_CREDITS=true docker compose up -d
 ```
 
 ## Nginx Proxy

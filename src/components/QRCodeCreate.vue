@@ -97,6 +97,7 @@ import {
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
+import { getEnv } from '@/utils/runtimeConfig'
 
 const props = defineProps<{
   initialData?: string
@@ -120,8 +121,8 @@ const isLikelyMobileDevice = computed(() => {
 //   deployments are not exposed to the controls unless opted in.
 // - VITE_FIELDS_VISIBLE: comma/space separated field keys. When set, the app
 //   starts in Simple mode showing only those fields (a fixed, simplified view).
-const showModeControls = import.meta.env.VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE === 'true'
-const configuredVisibleFields = parseVisibleFields(import.meta.env.VITE_FIELDS_VISIBLE)
+const showModeControls = getEnv('VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE') === 'true'
+const configuredVisibleFields = parseVisibleFields(getEnv('VITE_FIELDS_VISIBLE'))
 const hasConfiguredVisibleFields = configuredVisibleFields.length > 0
 
 const viewMode = ref<QRViewMode>(hasConfiguredVisibleFields ? 'simple' : 'full')
@@ -233,7 +234,7 @@ const { t, locale } = useI18n()
 //#endregion
 
 //#region /* QR code style settings */
-const data = ref(props.initialData || import.meta.env.VITE_DEFAULT_DATA_TO_ENCODE || '')
+const data = ref(props.initialData || getEnv('VITE_DEFAULT_DATA_TO_ENCODE') || '')
 const debouncedData = ref(data.value)
 const previewData = computed(() =>
   debouncedData.value?.length > 0 ? debouncedData.value : defaultQRCodeText.value
@@ -412,7 +413,7 @@ watch(
     if (newKey === prevKey || !newKey) return
 
     if (
-      import.meta.env.VITE_DISABLE_LOCAL_STORAGE !== 'true' &&
+      getEnv('VITE_DISABLE_LOCAL_STORAGE') !== 'true' &&
       CUSTOM_LOADED_PRESET_KEYS.includes(newKey) &&
       lastCustomLoadedPreset.value
     ) {
@@ -505,7 +506,7 @@ const frameStyle = ref<FrameStyle>({
 })
 
 const selectedFramePresetKey = ref<string>(
-  import.meta.env.VITE_FRAME_PRESET || defaultFramePreset.name
+  getEnv('VITE_FRAME_PRESET') || defaultFramePreset.name
 )
 
 function toFrameStyle(style: Partial<FrameStyle>): FrameStyle {
@@ -652,7 +653,7 @@ function applySelectedPresetToState() {
   const frame = (preset as Preset & { frame?: QRCodeFrameConfig }).frame
   if (frame) {
     applyFrameFromPreset(frame)
-    const framePresetName = import.meta.env.VITE_FRAME_PRESET || preset.name
+    const framePresetName = getEnv('VITE_FRAME_PRESET') || preset.name
     if (allFramePresets.some((p) => p.name === framePresetName)) {
       selectedFramePresetKey.value = framePresetName
     }
@@ -700,7 +701,7 @@ watch(selectedFramePresetKey, (newKey, prevKey) => {
   if (newKey === prevKey || !newKey) return
 
   if (
-    import.meta.env.VITE_DISABLE_LOCAL_STORAGE !== 'true' &&
+    getEnv('VITE_DISABLE_LOCAL_STORAGE') !== 'true' &&
     CUSTOM_LOADED_FRAME_PRESET_KEYS.includes(newKey) &&
     lastCustomLoadedFramePreset.value
   ) {

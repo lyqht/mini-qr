@@ -11,6 +11,7 @@ interface ImportMetaEnv {
   readonly VITE_DISABLE_LOCAL_STORAGE?: string
   readonly VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE?: string
   readonly VITE_FIELDS_VISIBLE?: string
+  readonly VITE_DISABLE_COLOR_CONTRAST_WARNING?: string
 }
 
 interface ImportMeta {

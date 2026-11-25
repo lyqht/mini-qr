@@ -1,6 +1,6 @@
 import PLACEHOLDER_IMAGE_URL from '@/assets/placeholder_image.png'
 import { isValidFrameConfig } from './framePresets'
-import { getRuntimeConfig } from './runtimeConfig'
+import { getEnv, getRuntimeConfig } from './runtimeConfig'
 import GeeksHackingConfig from '@/assets/presets/geekshacking.json'
 import SpDigitalConfig from '@/assets/presets/spdigital.json'
 import GovtechStackCommunityConfig from '@/assets/presets/govtech_stack.json'
@@ -349,11 +349,11 @@ function parsePresetsFromEnv(envVal?: string): Preset[] | undefined {
   }
 }
 
-const envPresets = parsePresetsFromEnv(import.meta.env.VITE_QR_CODE_PRESETS)
+const envPresets = parsePresetsFromEnv(getEnv('VITE_QR_CODE_PRESETS'))
 const basePresets: Preset[] = envPresets ?? builtInPresets
 
-const baseDefaultPreset: Preset = import.meta.env.VITE_DEFAULT_PRESET
-  ? (basePresets.find((p) => p.name === import.meta.env.VITE_DEFAULT_PRESET) ?? basePresets[0])
+const baseDefaultPreset: Preset = getEnv('VITE_DEFAULT_PRESET')
+  ? (basePresets.find((p) => p.name === getEnv('VITE_DEFAULT_PRESET')) ?? basePresets[0])
   : basePresets[0]
 
 /**

@@ -2,6 +2,7 @@ import type { Options as StyledQRCodeProps } from '@/lib/qr-code'
 import type { FrameStyle } from './framePresets'
 import { isValidQRCodeConfig } from './qrCodePresets'
 import { sanitizeSimpleFields, type QRViewMode, type SimpleFieldKey } from './simpleModeFields'
+import { getEnv } from './runtimeConfig'
 
 export interface QRCodeFrameConfig {
   text: string
@@ -29,7 +30,7 @@ export const CUSTOM_LOADED_PRESET_KEYS = [
 ] as const
 
 export function isLocalStorageEnabled(): boolean {
-  return import.meta.env?.VITE_DISABLE_LOCAL_STORAGE !== 'true'
+  return getEnv('VITE_DISABLE_LOCAL_STORAGE') !== 'true'
 }
 
 export function hasStoredQRConfig(): boolean {

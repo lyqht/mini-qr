@@ -1,3 +1,5 @@
+import { getEnv } from './runtimeConfig'
+
 const HEX_COLOR_PATTERN = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
 
 export const MIN_QR_CONTRAST_RATIO = 3
@@ -122,5 +124,5 @@ export function hasInsufficientContrast(
  * fixed kiosk-style setups where nobody is around to dismiss a warning.
  */
 export function isColorContrastWarningEnabled(): boolean {
-  return import.meta.env?.VITE_DISABLE_COLOR_CONTRAST_WARNING !== 'true'
+  return getEnv('VITE_DISABLE_COLOR_CONTRAST_WARNING') !== 'true'
 }

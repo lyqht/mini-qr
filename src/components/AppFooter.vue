@@ -15,13 +15,14 @@ import {
   DialogClose
 } from '@/components/ui/dialog'
 import { X } from '@lucide/vue'
+import { getEnv } from '@/utils/runtimeConfig'
 
 const { t } = useI18n()
 const { hasUnseenChangelog, markAsSeen } = useChangelogNotice()
 const version = ref('...')
 const changelogContent = ref<string | null>(null)
 const isLoading = ref(true)
-const hideCredits = ['1', 'true'].includes((import.meta.env.VITE_HIDE_CREDITS ?? '').toLowerCase())
+const hideCredits = ['1', 'true'].includes((getEnv('VITE_HIDE_CREDITS') ?? '').toLowerCase())
 
 async function fetchAndProcessChangelog() {
   if (changelogContent.value === null) {
