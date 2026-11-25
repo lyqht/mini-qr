@@ -1,0 +1,11 @@
+# Shapes the notes GitHub generates for a Release (used by release.yml's
+# `gh release create --generate-notes` and by "Generate release notes" in the UI).
+changelog:
+  exclude:
+    authors:
+      - dependabot
+      - dependabot[bot]
+      - github-actions
+      - github-actions[bot]
+      - allcontributors
+      - allcontributors[bot]

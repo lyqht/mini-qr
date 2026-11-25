@@ -7,6 +7,13 @@ on:
     branches: [main]
   release:
     types: [published]
+  # Called by release.yml, whose own release doesn't trigger `release: published`.
+  workflow_call:
+    inputs:
+      version:
+        description: Release version without the leading v, e.g. 0.34.0
+        type: string
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -35,6 +42,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          # From release.yml, build the release tag rather than the commit the
+          # workflow was started on (the tag adds the version bump on top).
+          ref: ${{ inputs.version && format('v{0}', inputs.version) || '' }}
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
@@ -68,20 +79,23 @@ jobs:
         uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           # Only builds from main move the `latest` tag. PR builds get pr-N and
-          # releases get their version tag plus `release`.
+          # releases (published by hand or from release.yml) get their version
+          # tag plus `release`.
           flavor: |
             latest=false
           images: |
             name=ghcr.io/${{ steps.sanitize_names.outputs.lowercase }}/${{matrix.image}}
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest,enable=${{ !inputs.version && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
             # Tag with branch name
-            type=ref,event=branch
+            type=ref,event=branch,enable=${{ !inputs.version }}
             # Tag with pr-number
             type=ref,event=pr
             # Tag with git tag on release
             type=ref,event=tag
-            type=raw,value=release,enable=${{ github.event_name == 'release' }}
+            # Tag with the version when called from release.yml
+            type=raw,value=v${{ inputs.version }},enable=${{ !!inputs.version }}
+            type=raw,value=release,enable=${{ github.event_name == 'release' || !!inputs.version }}
 
       - name: Determine build cache output
         id: cache-target
@@ -104,6 +118,6 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/${{ steps.sanitize_names.outputs.lowercase }}/mini-qr-build-cache:${{matrix.image}}
           cache-to: ${{ steps.cache-target.outputs.cache-to }}
           build-args: |
-            VITE_APP_VERSION=${{ github.ref_name }}
+            VITE_APP_VERSION=${{ inputs.version && format('v{0}', inputs.version) || github.ref_name }}
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}

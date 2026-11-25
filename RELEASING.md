@@ -1,30 +1,51 @@
 # Releasing mini-qr
 
-Releases are cut manually. Translations are the only automated part.
+Releases are one click. Translations are automated separately (see below).
 
 ## Cutting a release
 
-1. **Pick the version.** Pre-1.0 (`0.x`), follow the usual convention: a new feature bumps the
-   minor (`0.30.x` → `0.31.0`), fixes and chores bump the patch.
+1. Open **Actions → Release → Run workflow** (on `main`).
+2. Pick the bump. Pre-1.0 (`0.x`): a new feature bumps the **minor** (`0.33.x` → `0.34.0`), fixes
+   and chores bump the **patch**.
+3. Optional: tick **Dry run** to preview the changelog entry in the run summary without changing
+   anything, then run it again unticked.
 
-2. **Bump `package.json`** to the new version.
+The workflow (`.github/workflows/release.yml`) then:
 
-3. **Add the entry to `public/CHANGELOG.md`**, newest on top, matching the existing format:
+- works out the next version from the latest `vX.Y.Z` tag;
+- writes the `public/CHANGELOG.md` entry from the PRs merged since that tag, and bumps
+  `package.json` (`scripts/release.mjs`);
+- commits `chore(release): vX.Y.Z` to `main`, tags `vX.Y.Z` and publishes the GitHub Release with
+  generated notes (shaped by `.github/release.yml`, which leaves out bot PRs);
+- builds and pushes the Docker image tagged `vX.Y.Z` and `release` by calling `docker.yml`.
 
-   ```md
-   ## v0.31.0 (2026-08-05)
-   - ✨ Short description of the feature ([#123](https://github.com/lyqht/mini-qr/pull/123))
-   - 🐛 Short description of the fix ([#124](https://github.com/lyqht/mini-qr/pull/124))
-   ```
+Vercel redeploys from the release commit on `main`, so the in-app version badge and changelog
+update with it.
 
-   This file is served in-app (footer + mobile menu), so it is the user-facing changelog.
+### The in-app changelog
 
-4. **Merge the bump to `main`.**
+`public/CHANGELOG.md` is served in-app (footer + mobile menu), so it is the user-facing changelog.
+Each line comes from a squash-merge subject ending in `(#123)`, with the emoji picked from the
+title:
 
-5. **Tag and publish a GitHub Release** for `vX.Y.Z` (Releases → Draft a new release → create the
-   tag on `main`). Publishing the release triggers `docker.yml`'s `release: published` job, which
-   builds and pushes the versioned image to ghcr.io. Vercel redeploys from `main` and picks up the
-   new `public/CHANGELOG.md`.
+| Title starts with | Emoji |
+| --- | --- |
+| `feat:`, or no prefix and `Add` / `Introduce` / `Support` / `Implement` | ✨ |
+| `fix:`, or no prefix and `Fix` | 🐛 |
+| `perf:` | ⚡ |
+| `refactor:` | ♻️ |
+| anything else | 🔧 |
+
+It leaves out commits without a PR number, translation (`chore(i18n)`), Dependabot bump and
+all-contributors PRs, `test:` PRs, and PRs that only touch `.github/`. Conventional PR titles are
+not required; a clearer title at squash-merge just gives a better line. If a line reads badly
+after a release, edit `public/CHANGELOG.md` and push.
+
+### Releasing by hand
+
+Publishing a GitHub Release from the UI still works: `docker.yml`'s `release: published` job
+builds the image. You then need to bump `package.json` and add the `public/CHANGELOG.md` entry
+yourself.
 
 ## Translations
 
