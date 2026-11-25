@@ -54,9 +54,9 @@ php -S localhost:8080
 
 ## Environment Variables
 
-Except for `BASE_PATH`, every setting below works with the prebuilt image. Set it when the container starts and no rebuild is needed. The container writes these values to `dist/config.js` on start, and the app loads that file before it starts.
+Every setting below works with the prebuilt image. Set it when the container starts and no rebuild is needed. The container writes these values to `dist/config.js` on start, and the app loads that file before it starts.
 
-You can use either the full `VITE_*` name or the short name. If you build the image yourself, you can still pass the `VITE_*` names as `--build-arg` instead. A value set when the container starts wins over one built into the image.
+You can use either the full `VITE_*` name or the short name. If you build the image yourself, you can still pass the `VITE_*` names as `--build-arg` instead. A value set when the container starts wins over one built into the image. For true/false settings, `true` and `1` both work, in any letter case.
 
 | Variable                                 | Short name                          | Description                                                                                                                                                                               | Default   |
 | ---------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
@@ -72,9 +72,11 @@ You can use either the full `VITE_*` name or the short name. If you build the im
 | `VITE_DISABLE_COLOR_CONTRAST_WARNING`    | `DISABLE_COLOR_CONTRAST_WARNING`    | Set to `"false"` to show the background/dots color contrast warning. Defaults to hidden in the Docker image (unattended/kiosk deployments), unlike other deployment methods               | `"true"`  |
 | `DEFAULT_LOGO`                           | `DEFAULT_LOGO`                      | Logo placed in the centre of the default preset's QR code. Accepts an `http(s)` URL, a same-origin path (e.g. a mounted file) or a `data:image/...` URI. Overrides the preset's own image | `""`      |
 
-### Build-time only: `BASE_PATH`
+### Serving at a sub-path
 
-`BASE_PATH` sets the URL sub-path the app is served from (e.g. `/mini-qr` for `domain.com/mini-qr`). It is built into the asset URLs, so it only works when you build the image yourself (see [Build Locally](#build-locally)):
+The image uses relative asset URLs, so the prebuilt image works at the domain root or behind a reverse proxy at any sub-path (e.g. `domain.com/mini-qr/`) with no extra settings. See [Deploy at a subdirectory](#deploy-at-a-subdirectory).
+
+`BASE_PATH` is a build argument that forces absolute asset URLs instead. You rarely need it. It only takes effect when you build the image yourself, and setting it on a running container has no effect:
 
 ```bash
 docker build --build-arg BASE_PATH=/mini-qr -t mini-qr .
@@ -114,7 +116,7 @@ After changing a value, recreate the container (`docker compose up -d` does this
 
 ### Notes on `DEFAULT_LOGO`
 
-If the image was built with a `BASE_PATH`, include it in a same-origin logo path. For example, with `BASE_PATH=/mini-qr`, mount the file as above and set `DEFAULT_LOGO: /mini-qr/logo.svg`.
+If you serve the app at a sub-path, include it in a same-origin logo path. For example, at `domain.com/mini-qr/`, mount the file as above and set `DEFAULT_LOGO: /mini-qr/logo.svg`.
 
 `DEFAULT_LOGO` only changes the default preset. Returning users whose design is saved in local storage keep their saved design, so they see the logo once they select the default preset again.
 
@@ -215,16 +217,15 @@ docker compose up -d
 
 ### Deploy at a subdirectory
 
-`BASE_PATH` needs a local build. Replace the `image:` line in `docker-compose.yml` with:
+The prebuilt image works at any sub-path. Point your reverse proxy's sub-path at the container and strip the prefix. For example, in the Nginx config in `docker-compose.yml`:
 
-```yaml
-build:
-  context: .
-  args:
-    BASE_PATH: /mini-qr
+```nginx
+location /mini-qr/ {
+    proxy_pass http://mini-qr-backend/;
+}
 ```
 
-Then run `docker compose up -d --build`.
+Note the trailing `/` on both lines: it makes Nginx strip `/mini-qr` before passing the request on. Open the app at `domain.com/mini-qr/`, with the trailing slash.
 
 ### Fixed preset with localStorage disabled
 

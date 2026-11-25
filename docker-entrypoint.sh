@@ -37,4 +37,9 @@ fs.writeFileSync(
 )
 ' || echo "warning: could not write dist/config.js, using built-in defaults" >&2
 
+if [ -n "$BASE_PATH" ]; then
+  echo "warning: BASE_PATH is only read when the image is built, so setting it on the container has no effect." >&2
+  echo "warning: The prebuilt image already works at any sub-path. See SELF_HOSTING.md." >&2
+fi
+
 exec "$@"

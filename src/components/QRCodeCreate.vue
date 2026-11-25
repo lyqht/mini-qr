@@ -97,7 +97,7 @@ import {
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
-import { getEnv } from '@/utils/runtimeConfig'
+import { getBoolEnv, getEnv } from '@/utils/runtimeConfig'
 
 const props = defineProps<{
   initialData?: string
@@ -115,13 +115,13 @@ const isLikelyMobileDevice = computed(() => {
 // the mode and the pinned-field list persist to localStorage so a refresh
 // returns the user to the same view (see onMounted + watchers below).
 
-// Deployment config (build-time env vars):
-// - VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE: when "true", show the Simple/Full
+// Deployment config (env vars, set at build time or when the container starts):
+// - VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE: when "true" or "1", show the Simple/Full
 //   toggle and the Customize fields button. Hidden by default so self-hosted
 //   deployments are not exposed to the controls unless opted in.
 // - VITE_FIELDS_VISIBLE: comma/space separated field keys. When set, the app
 //   starts in Simple mode showing only those fields (a fixed, simplified view).
-const showModeControls = getEnv('VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE') === 'true'
+const showModeControls = getBoolEnv('VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE')
 const configuredVisibleFields = parseVisibleFields(getEnv('VITE_FIELDS_VISIBLE'))
 const hasConfiguredVisibleFields = configuredVisibleFields.length > 0
 
@@ -413,7 +413,7 @@ watch(
     if (newKey === prevKey || !newKey) return
 
     if (
-      getEnv('VITE_DISABLE_LOCAL_STORAGE') !== 'true' &&
+      !getBoolEnv('VITE_DISABLE_LOCAL_STORAGE') &&
       CUSTOM_LOADED_PRESET_KEYS.includes(newKey) &&
       lastCustomLoadedPreset.value
     ) {
@@ -701,7 +701,7 @@ watch(selectedFramePresetKey, (newKey, prevKey) => {
   if (newKey === prevKey || !newKey) return
 
   if (
-    getEnv('VITE_DISABLE_LOCAL_STORAGE') !== 'true' &&
+    !getBoolEnv('VITE_DISABLE_LOCAL_STORAGE') &&
     CUSTOM_LOADED_FRAME_PRESET_KEYS.includes(newKey) &&
     lastCustomLoadedFramePreset.value
   ) {

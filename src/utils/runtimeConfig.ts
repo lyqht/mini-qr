@@ -66,3 +66,8 @@ export function getEnv(key: RuntimeEnvKey): string | undefined {
   if (runtimeValue !== undefined && runtimeValue !== '') return runtimeValue
   return buildTimeEnv()[key]
 }
+
+/** Reads a true/false setting. Accepts "true" or "1" in any letter case. */
+export function getBoolEnv(key: RuntimeEnvKey): boolean {
+  return ['1', 'true'].includes((getEnv(key) ?? '').trim().toLowerCase())
+}
