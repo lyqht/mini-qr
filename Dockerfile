@@ -69,8 +69,13 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-# Make sure the entrypoint is executable even if the checkout lost the exec bit
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Make sure the entrypoint is executable even if the checkout lost the exec
+# bit. The app files stay owned by root: the app user can only rewrite
+# dist/config.js, which the entrypoint regenerates on every start.
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh && chown node:node dist/config.js
+# Run as the unprivileged user from the node base image. Port 8080 needs no
+# extra privileges.
+USER node
 EXPOSE 8080
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["serve", "-s", "dist", "-l", "8080"]
