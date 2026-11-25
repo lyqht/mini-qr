@@ -116,6 +116,10 @@ jobs:
           platforms: ${{ matrix.platforms }}
           # Skip pushing when PR from a fork
           push: ${{ !github.event.pull_request.head.repo.fork }}
+          # Attach a build provenance record and an SBOM to every pushed image,
+          # so self-hosters can check how it was built and what it contains.
+          provenance: ${{ !github.event.pull_request.head.repo.fork && 'mode=max' || 'false' }}
+          sbom: ${{ !github.event.pull_request.head.repo.fork }}
           cache-from: type=registry,ref=ghcr.io/${{ steps.sanitize_names.outputs.lowercase }}/mini-qr-build-cache:${{matrix.image}}
           cache-to: ${{ steps.cache-target.outputs.cache-to }}
           build-args: |
