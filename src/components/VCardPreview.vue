@@ -12,6 +12,12 @@ const address = [
 ]
   .filter(Boolean)
   .join(', ')
+
+// The website comes from an imported CSV, so only http(s) values become links.
+// Anything else (e.g. `javascript:`) is shown as plain text.
+const websiteHref = /^https?:\/\//i.test(props.vCard.website ?? '')
+  ? props.vCard.website
+  : undefined
 </script>
 <template>
   <div
@@ -77,11 +83,13 @@ const address = [
       </svg>
       <span class="truncate"
         ><a
-          :href="vCard.website"
+          v-if="websiteHref"
+          :href="websiteHref"
           target="_blank"
+          rel="noopener noreferrer"
           class="text-blue-600 hover:underline dark:text-blue-400"
           >{{ vCard.website }}</a
-        ></span
+        ><template v-else>{{ vCard.website }}</template></span
       >
     </div>
     <div v-if="address" class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
