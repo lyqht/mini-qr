@@ -1,3 +1,29 @@
+## v0.33.0 (2026-08-21)
+- ✨ Add EPC QR (SEPA payment / GiroCode) data template ([#318](https://github.com/lyqht/mini-qr/pull/318))
+- 🔧 Switch from automated to manual release process ([#324](https://github.com/lyqht/mini-qr/pull/324))
+
+## v0.32.0 (2026-07-29)
+- ✨ Simple Mode for QR creation (with optional toggle + env config) ([#300](https://github.com/lyqht/mini-qr/pull/300))
+- 🐛 Enforce ISO/IEC 18004 minimum quiet zone around QR codes (#308) ([#314](https://github.com/lyqht/mini-qr/pull/314))
+- 🐛 Cap logo size and floor error correction to keep QR codes with a centre image scannable ([#312](https://github.com/lyqht/mini-qr/pull/312))
+- 🔧 Migrate from lucide-vue-next to @lucide/vue ([#299](https://github.com/lyqht/mini-qr/pull/299))
+- 🔧 Automate releases with release-please + DeepL/Crowdin translations ([#298](https://github.com/lyqht/mini-qr/pull/298))
+
+## v0.31.0 (2026-06-05)
+- ✨ Add option for frame background to be image ([#296](https://github.com/lyqht/mini-qr/pull/296))
+- ✨ Frame width setting (#290) ([#291](https://github.com/lyqht/mini-qr/pull/291))
+- 🐛 Reject unsafe logo image URLs when loading QR configs ([#294](https://github.com/lyqht/mini-qr/pull/294))
+- 🐛 Restore data on config file load + run e2e suite in CI ([#292](https://github.com/lyqht/mini-qr/pull/292))
+- 🐛 Apply env QR presets on initial page load ([#287](https://github.com/lyqht/mini-qr/pull/287))
+- 🔧 Deploy Storybook previews to Vercel on PRs ([#295](https://github.com/lyqht/mini-qr/pull/295))
+
+## v0.30.2 (2026-05-25)
+- 🔧 Update dependencies and devDependencies to latest versions for improved stability and features ([#280](https://github.com/lyqht/mini-qr/pull/280))
+
+## v0.30.1 (2026-05-15)
+- ✨ ASCII/Unicode QR text export ([#273](https://github.com/lyqht/mini-qr/pull/273))
+- 🐛 Fix image/frame clearing when explicitly set to undefined ([#278](https://github.com/lyqht/mini-qr/pull/278))
+
 ## v0.30.0 (2026-05-11)
 - ✨ Add adjustable image size (ratio) option for logo ([#268](https://github.com/lyqht/mini-qr/pull/268))
 - ♻️ add FontCategory type and FontOption type for better type checking and readability ([#270](https://github.com/lyqht/mini-qr/pull/270))
