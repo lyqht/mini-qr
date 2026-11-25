@@ -66,7 +66,7 @@ You can use either the full `VITE_*` name or the short name. If you build the im
 | `VITE_QR_CODE_PRESETS`                   | `PRESETS`                           | JSON array of custom QR code presets. See [Custom Presets](#custom-presets) below                                                                                                         | `"[]"`    |
 | `VITE_FRAME_PRESET`                      | `FRAME_PRESET`                      | Name of the default frame preset to apply (e.g., `"Default Frame"`)                                                                                                                       | `""`      |
 | `VITE_FRAME_PRESETS`                     | `FRAME_PRESETS`                     | JSON array of custom frame presets. See [Custom Presets](#custom-presets) below                                                                                                           | `"[]"`    |
-| `VITE_DISABLE_LOCAL_STORAGE`             | `DISABLE_LOCAL_STORAGE`             | Set to `"true"` to prevent the app from loading previously saved settings on startup                                                                                                      | `"false"` |
+| `VITE_DISABLE_LOCAL_STORAGE`             | `DISABLE_LOCAL_STORAGE`             | Set to `"true"` to stop the app from saving designs in the browser and restoring them on startup                                                                                          | `"false"` |
 | `VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | `QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | Set to `"true"` to show the Simple/Full view toggle and the "Customize fields" button                                                                                                     | `"false"` |
 | `VITE_FIELDS_VISIBLE`                    | `FIELDS_VISIBLE`                    | Comma-separated field keys. When set, the app starts in Simple mode showing only the data field plus these fields (see [Fixing the visible fields](#fixing-the-visible-fields))           | `""`      |
 | `VITE_DISABLE_COLOR_CONTRAST_WARNING`    | `DISABLE_COLOR_CONTRAST_WARNING`    | Set to `"false"` to show the background/dots color contrast warning. Defaults to hidden in the Docker image (unattended/kiosk deployments), unlike other deployment methods               | `"true"`  |
@@ -251,6 +251,41 @@ To override the Nginx config (e.g. for subdirectory deployment or custom headers
 volumes:
   - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
 ```
+
+## Security
+
+### Use HTTPS
+
+The `docker-compose.yml` serves plain HTTP on port 80. For anything beyond your own machine, put it behind something that handles HTTPS, such as a reverse proxy (Caddy, Traefik, Nginx with certificates) or your cloud's load balancer. Browsers also only allow **Scan with Camera** on HTTPS pages (or on `localhost`).
+
+### What the image already does
+
+- Runs as an unprivileged user (`node`), not root. The app's files are read-only to it, except `dist/config.js`, which is rewritten from your settings on every start.
+- Sends security headers: a Content Security Policy, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` and a `Permissions-Policy` that only allows the camera. It does not block embedding MiniQR in an iframe. If your proxy sets its own Content Security Policy, start from the one in [`serve.json`](./serve.json), or Google Fonts, external logos and exports may stop working.
+- The `docker-compose.yml` drops all Linux capabilities for the app container and blocks it from gaining privileges.
+
+### Pinning and verifying the image
+
+`latest` follows the `main` branch. To control when you update, use a release tag instead, either a version such as `ghcr.io/lyqht/mini-qr:v0.34.0` or `release` for the newest release.
+
+Each published image includes a build provenance record and a software bill of materials (SBOM). You can inspect them with:
+
+```bash
+docker buildx imagetools inspect ghcr.io/lyqht/mini-qr:latest --format '{{ json .Provenance }}'
+docker buildx imagetools inspect ghcr.io/lyqht/mini-qr:latest --format '{{ json .SBOM }}'
+```
+
+### Requests to other sites
+
+MiniQR runs entirely in the browser and has no backend. The Docker image has no analytics. A user's browser only contacts other sites when they:
+
+- pick a frame font from Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`)
+- pick a built-in preset whose logo is hosted elsewhere (e.g. `api.iconify.design`, `padlet-uploads.storage.googleapis.com`, `avatars.githubusercontent.com`)
+- enter a logo or frame background URL from another site
+
+### Shared computers
+
+The app saves the last design in the browser's local storage, including the data encoded in it, such as Wi-Fi passwords, contact details or payment details. On shared or public computers, set `DISABLE_LOCAL_STORAGE=true` so designs are never saved in the browser.
 
 ## Customization Example
 
