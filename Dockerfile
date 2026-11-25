@@ -68,6 +68,8 @@ COPY --from=serve /opt/serve/ /usr/local/
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./
+# Security headers. serve reads serve.json from the folder it serves.
+COPY serve.json ./dist/serve.json
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 # Make sure the entrypoint is executable even if the checkout lost the exec
 # bit. The app files stay owned by root: the app user can only rewrite
