@@ -19,6 +19,9 @@ jobs:
   build_and_push:
     name: Build and Push
     runs-on: ubuntu-latest
+    # A healthy multi-arch build takes a few minutes. Stop a stuck one early
+    # instead of letting it run to the 6 hour job limit.
+    timeout-minutes: 30
     strategy:
       # Prevent a failure in one image from stopping the other builds
       fail-fast: false
@@ -27,7 +30,6 @@ jobs:
           - context: "."
             file: "Dockerfile"
             image: "mini-qr"
-            # ARM not working. Needs further research.
             platforms: "linux/arm64,linux/amd64"
 
     steps:
