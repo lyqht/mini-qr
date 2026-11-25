@@ -89,6 +89,10 @@ services:
 
 The container writes these values to `dist/config.js` on start, which the app loads before starting. Users can still upload their own logo or pick another preset.
 
+If the image was built with a `BASE_PATH`, include it in a same-origin logo path. For example, with `BASE_PATH=/mini-qr`, mount the file as above and set `DEFAULT_LOGO: /mini-qr/logo.svg`.
+
+`DEFAULT_LOGO` only changes the default preset. Returning users whose design is saved in local storage keep their saved design, so they see the logo once they select the default preset again.
+
 ### Passing Variables via docker-compose
 
 The `docker-compose.yml` maps shorter environment variable names to the full build arg names. Set them on the host before running:
