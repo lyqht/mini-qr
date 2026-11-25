@@ -22,7 +22,7 @@ read it too.
 | Install command    | `pnpm install`                                                              |
 | Build command      | `pnpm build-storybook`                                                      |
 | Output directory   | `storybook-static`                                                          |
-| Node.js version    | 20.x                                                                        |
+| Node.js version    | 24.x                                                                        |
 | Ignored build step | `git diff --quiet HEAD^ HEAD -- src .storybook package.json pnpm-lock.yaml` |
 | Connected Git repo | `lyqht/mini-qr`                                                             |
 
