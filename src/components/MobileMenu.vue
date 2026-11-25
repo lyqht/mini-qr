@@ -17,6 +17,7 @@ import {
   DialogClose
 } from '@/components/ui/dialog'
 import { X } from '@lucide/vue'
+import { getBoolEnv } from '@/utils/runtimeConfig'
 
 defineProps<{
   isDarkMode: boolean
@@ -37,7 +38,7 @@ const floating = ref<HTMLElement | null>(null)
 const version = ref('...')
 const changelogContent = ref<string | null>(null)
 const isLoadingChangelog = ref(true)
-const hideCredits = ['1', 'true'].includes((import.meta.env.VITE_HIDE_CREDITS ?? '').toLowerCase())
+const hideCredits = getBoolEnv('VITE_HIDE_CREDITS')
 
 async function fetchAndProcessChangelog() {
   if (changelogContent.value === null) {

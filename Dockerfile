@@ -10,8 +10,10 @@
 FROM --platform=$BUILDPLATFORM node:lts-alpine AS builder
 WORKDIR /app
 
-# Accept BASE_PATH as build argument
-ARG BASE_PATH=/
+# Accept BASE_PATH as build argument. The default ./ makes asset URLs
+# relative, so the prebuilt image works at the domain root or behind a proxy
+# at any sub-path. Set it only to force absolute URLs.
+ARG BASE_PATH=./
 ENV BASE_PATH=${BASE_PATH}
 
 # Accept additional VITE variables as build arguments
