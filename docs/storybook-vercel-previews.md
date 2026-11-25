@@ -1,53 +1,38 @@
 # Storybook previews on Vercel
 
-The [`storybook-preview`](../.github/workflows/storybook-preview.yml) workflow
-builds Storybook (`pnpm build-storybook` → `storybook-static/`) and deploys it
-to a **dedicated** Vercel project, separate from the main app:
+Storybook is deployed by Vercel's Git integration to a **dedicated** Vercel
+project, `mini-qr-storybook`, separate from the main app's `mini-qr` project:
 
-- **Pull requests** get an isolated preview URL, posted as a sticky PR comment
-  and refreshed on every push to the branch.
-- **Pushes to `main`** publish the production Storybook.
+- **Pull requests** get a preview deployment, listed in the Vercel bot's PR
+  comment next to the app preview.
+- **Pushes to `main`** publish the production Storybook at
+  [mini-qr-storybook.vercel.app](https://mini-qr-storybook.vercel.app).
 
-The main app keeps its own zero-config Vercel project. We deliberately do **not**
-add a root `vercel.json` (it would be read by the app's project too) and we
-upload Storybook as Vercel "prebuilt" static output, so the Storybook project
-needs no build command of its own.
+No GitHub Actions workflow or repo secret is involved.
 
-## One-time setup
+## Project settings
 
-1. **Create the Vercel project** (once):
+These live in the Vercel dashboard (Project → Settings), not in the repo. We
+deliberately don't add a root `vercel.json`, because the app's project would
+read it too.
 
-   ```bash
-   # from the repo root, on a checkout with storybook-static/ built
-   pnpm build-storybook
-   npx vercel link            # create/select a NEW project, e.g. "mini-qr-storybook"
-   ```
+| Setting            | Value                                                                       |
+| ------------------ | --------------------------------------------------------------------------- |
+| Framework preset   | Storybook                                                                   |
+| Install command    | `pnpm install`                                                              |
+| Build command      | `pnpm build-storybook`                                                      |
+| Output directory   | `storybook-static`                                                          |
+| Node.js version    | 20.x                                                                        |
+| Ignored build step | `git diff --quiet HEAD^ HEAD -- src .storybook package.json pnpm-lock.yaml` |
+| Connected Git repo | `lyqht/mini-qr`                                                             |
 
-   `vercel link` writes `.vercel/project.json` containing `orgId` and
-   `projectId`. (`.vercel/` is already git-ignored — don't commit it.)
-
-   > Leave **Git integration disabled** on this project (or don't connect a
-   > repo). Deploys are driven entirely by the GitHub Action; connecting Git
-   > would double-deploy.
-
-2. **Create an access token**: Vercel → Settings → Tokens → _Create_.
-
-3. **Add three repo secrets** (GitHub → Settings → Secrets and variables →
-   Actions → _New repository secret_):
-
-   | Secret              | Value                                   |
-   | ------------------- | --------------------------------------- |
-   | `VERCEL_TOKEN`      | the token from step 2                   |
-   | `VERCEL_ORG_ID`     | `orgId` from `.vercel/project.json`     |
-   | `VERCEL_PROJECT_ID` | `projectId` from `.vercel/project.json` |
-
-That's it — the next PR that touches `src/**`, `.storybook/**`, or the
-lockfile will get a Storybook preview comment.
+The ignored build step skips a deploy when a commit doesn't touch Storybook's
+inputs. Vercel builds when the command exits non-zero, so a first deploy or a
+missing parent commit still builds.
 
 ## Notes
 
-- Fork PRs are skipped (secrets aren't available to forks), matching standard
-  GitHub Actions behaviour.
-- The workflow runs only when Storybook-relevant paths change (see the
-  `paths:` filter) to avoid deploying on unrelated PRs.
+- Fork PRs need a team member to authorize the deploy from the Vercel comment
+  while Git fork protection is on (Vercel's default).
+- Dependabot PRs deploy like any other branch; no secrets are needed.
 - To preview locally instead: `pnpm storybook`.
