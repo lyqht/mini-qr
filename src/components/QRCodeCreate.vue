@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BatchExportFieldsGuide from '@/components/BatchExportFieldsGuide.vue'
+import ColorContrastToast from '@/components/ColorContrastToast.vue'
 import CopyImageModal from '@/components/CopyImageModal.vue'
 import DataTemplatesModal from '@/components/DataTemplatesModal.vue'
 import QRCodeFrame from '@/components/QRCodeFrame.vue'
@@ -59,9 +60,7 @@ import {
   type Preset
 } from '@/utils/qrCodePresets'
 import {
-  acceptColorContrastRiskForever,
   CUSTOM_LOADED_PRESET_KEYS,
-  hasAcceptedColorContrastRisk,
   hasStoredQRConfig,
   isLocalStorageEnabled,
   LAST_LOADED_LOCALLY_PRESET_KEY,
@@ -598,48 +597,32 @@ const hasInsufficientColorContrast = computed(
     !isWhiteOnBlackColors.value &&
     hasInsufficientContrast(effectivePaperColor.value, dotsOptionsColor.value)
 )
-// Grandfather existing users (anyone with a config saved before this warning
-// existed) so it doesn't suddenly nag them. Once dismissed, stays dismissed
-// forever — this is a "don't ask me again" flag, not tied to a color combo.
-const acceptedColorContrastRisk = ref<boolean>(
-  isLocalStorageEnabled() && (hasAcceptedColorContrastRisk() || hasStoredQRConfig())
-)
-watch(
-  acceptedColorContrastRisk,
-  (accepted) => {
-    if (accepted && isLocalStorageEnabled()) {
-      acceptColorContrastRiskForever()
-    }
-  },
-  { immediate: true }
-)
 // Presets assign colors programmatically; suppress the warning while one is
-// being applied so picking a preset never nags by itself. It reappears the
-// moment the user actually edits a relevant color, anchored to whichever
-// field they touched last.
+// being applied so picking a preset never warns by itself. It comes back the
+// moment the user actually edits a relevant color.
 let isApplyingPresetColors = false
 const hasManualColorEditSincePreset = ref(false)
-const colorWarningAnchor = ref<'colorSettings' | 'frameBackground'>('colorSettings')
-watch([styleBackground, dotsOptionsColor], () => {
+watch([styleBackground, dotsOptionsColor, () => frameStyle.value.backgroundColor], () => {
   if (isApplyingPresetColors) return
-  colorWarningAnchor.value = 'colorSettings'
   hasManualColorEditSincePreset.value = true
 })
-watch(
-  () => frameStyle.value.backgroundColor,
-  () => {
-    if (isApplyingPresetColors) return
-    colorWarningAnchor.value = 'frameBackground'
-    hasManualColorEditSincePreset.value = true
+// Shown as a temporary toast (see ColorContrastToast.vue), not a blocking prompt.
+const colorContrastWarningMessage = computed<string | null>(() => {
+  if (!colorContrastWarningEnabled || !hasManualColorEditSincePreset.value) return null
+  if (isWhiteOnBlackColors.value) {
+    return t('⚠️ Not all QR code readers can read white-on-black QR codes.')
   }
-)
-const showColorContrastWarning = computed(
-  () =>
-    colorContrastWarningEnabled &&
-    hasManualColorEditSincePreset.value &&
-    (isWhiteOnBlackColors.value || hasInsufficientColorContrast.value) &&
-    !acceptedColorContrastRisk.value
-)
+  if (hasInsufficientColorContrast.value) {
+    return includeBackground.value
+      ? t(
+          '⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.'
+        )
+      : t(
+          '⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.'
+        )
+  }
+  return null
+})
 
 function applySelectedPresetToState() {
   isApplyingPresetColors = true
@@ -2176,36 +2159,6 @@ const updateDataFromModal = (newData: string) => {
                         />
                       </div>
                     </fieldset>
-                    <div
-                      v-if="
-                        showColorContrastWarning &&
-                        colorWarningAnchor === 'frameBackground' &&
-                        isFieldVisible('frameBackground')
-                      "
-                      role="note"
-                      class="field-reveal mb-4 flex w-full flex-col gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
-                    >
-                      <p v-if="isWhiteOnBlackColors">
-                        {{ t('⚠️ Not all QR code readers can read white-on-black QR codes.') }}
-                      </p>
-                      <p v-else-if="hasInsufficientColorContrast">
-                        {{
-                          t(
-                            '⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.'
-                          )
-                        }}
-                      </p>
-                      <div class="flex flex-row items-center gap-2">
-                        <input
-                          id="accept-frame-color-contrast-risk"
-                          type="checkbox"
-                          v-model="acceptedColorContrastRisk"
-                        />
-                        <label for="accept-frame-color-contrast-risk">
-                          {{ t('✅ I accept the risk') }}
-                        </label>
-                      </div>
-                    </div>
                     <div v-show="isFieldVisible('frameBorderColor')">
                       <label for="frame-border-color" class="mb-1 block text-sm">{{
                         t('Border color')
@@ -2650,36 +2603,6 @@ const updateDataFromModal = (newData: string) => {
                 </div>
               </div>
               <div
-                v-if="
-                  showColorContrastWarning &&
-                  colorWarningAnchor === 'colorSettings' &&
-                  isGroupVisible(['backgroundColor', 'dotsColor'])
-                "
-                role="note"
-                class="field-reveal mb-4 flex w-full flex-col gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
-              >
-                <p v-if="isWhiteOnBlackColors">
-                  {{ t('⚠️ Not all QR code readers can read white-on-black QR codes.') }}
-                </p>
-                <p v-else-if="hasInsufficientColorContrast">
-                  {{
-                    t(
-                      '⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.'
-                    )
-                  }}
-                </p>
-                <div class="flex flex-row items-center gap-2">
-                  <input
-                    id="accept-color-contrast-risk"
-                    type="checkbox"
-                    v-model="acceptedColorContrastRisk"
-                  />
-                  <label for="accept-color-contrast-risk">
-                    {{ t('✅ I accept the risk') }}
-                  </label>
-                </div>
-              </div>
-              <div
                 class="field-reveal flex w-full flex-col gap-4 sm:flex-row sm:gap-8"
                 v-show="isGroupVisible(['width', 'height', 'borderRadius'])"
               >
@@ -2917,6 +2840,8 @@ const updateDataFromModal = (newData: string) => {
       </Accordion>
     </section>
   </div>
+
+  <ColorContrastToast :message="colorContrastWarningMessage" />
 
   <DataTemplatesModal
     :show="isDataModalVisible"
