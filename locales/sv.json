@@ -368,5 +368,8 @@
   "SEPA Payment": "SEPA-betalning",
   "Structured Creditor Reference": "Strukturerad kreditgivarreferens",
   "Version 1 (BIC required)": "Version 1 (BIC krävs)",
-  "Version 2 (BIC optional within SEPA)": "Version 2 (BIC valfritt inom SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Version 2 (BIC valfritt inom SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Otillräcklig kontrast mellan bakgrunden och prickarnas färg – vissa QR-kodläsare kanske inte kan skanna den här koden.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Otillräcklig kontrast mellan ramen och prickarnas färg — vissa QR-kodläsare kanske inte kan läsa av den här koden.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Det är inte alla QR-kodläsare som kan läsa QR-koder med vit text på svart bakgrund."
 }

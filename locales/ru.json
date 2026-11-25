@@ -368,5 +368,8 @@
   "SEPA Payment": "Платеж в рамках SEPA",
   "Structured Creditor Reference": "Структурированная справка о кредиторе",
   "Version 1 (BIC required)": "Версия 1 (требуется BIC)",
-  "Version 2 (BIC optional within SEPA)": "Версия 2 (BIC не является обязательным в рамках SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Версия 2 (BIC не является обязательным в рамках SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Недостаточный контраст между цветом фона и цветом точек — некоторые считыватели QR-кодов могут не смочь отсканировать этот код.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Недостаточный контраст между фоном рамки и цветом точек — некоторые считыватели QR-кодов могут не смочь отсканировать этот код.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Не все считыватели QR-кодов могут распознавать QR-коды с белым рисунком на черном фоне."
 }

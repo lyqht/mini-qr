@@ -368,5 +368,8 @@
   "SEPA Payment": "Πληρωμή SEPA",
   "Structured Creditor Reference": "Δομημένη αναφορά πιστωτών",
   "Version 1 (BIC required)": "Έκδοση 1 (απαιτείται BIC)",
-  "Version 2 (BIC optional within SEPA)": "Έκδοση 2 (ο κωδικός BIC είναι προαιρετικός εντός της SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Έκδοση 2 (ο κωδικός BIC είναι προαιρετικός εντός της SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Ανεπαρκής αντίθεση μεταξύ του χρώματος του φόντου και των κουκκίδων — ορισμένοι αναγνώστες κωδικών QR ενδέχεται να μην μπορούν να σαρώσουν αυτόν τον κωδικό.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Ανεπαρκής αντίθεση μεταξύ του φόντου του πλαισίου και του χρώματος των κουκκίδων — ορισμένοι αναγνώστες κωδικών QR ενδέχεται να μην μπορούν να σαρώσουν αυτόν τον κωδικό.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Δεν μπορούν όλες οι συσκευές ανάγνωσης κωδικών QR να διαβάσουν κωδικούς QR με λευκό φόντο και μαύρα στοιχεία."
 }

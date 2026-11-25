@@ -368,5 +368,8 @@
   "SEPA Payment": "Platba v rámci SEPA",
   "Structured Creditor Reference": "Strukturovaný odkaz na věřitele",
   "Version 1 (BIC required)": "Verze 1 (vyžaduje se kód BIC)",
-  "Version 2 (BIC optional within SEPA)": "Verze 2 (kód BIC je v rámci SEPA volitelný)"
+  "Version 2 (BIC optional within SEPA)": "Verze 2 (kód BIC je v rámci SEPA volitelný)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Nedostatečný kontrast mezi barvou pozadí a barvou teček – některé čtečky QR kódů tento kód nemusí dokázat naskenovat.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Nedostatečný kontrast mezi pozadím rámečku a barvou teček — některé čtečky QR kódů tento kód nemusí dokázat naskenovat.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Ne všechny čtečky QR kódů dokážou načíst QR kódy s bílým textem na černém pozadí."
 }

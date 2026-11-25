@@ -368,5 +368,8 @@
   "SEPA Payment": "SEPA 支付",
   "Structured Creditor Reference": "结构化债权人参考信息",
   "Version 1 (BIC required)": "版本 1（需提供 BIC）",
-  "Version 2 (BIC optional within SEPA)": "第 2 版（在 SEPA 范围内，BIC 可选）"
+  "Version 2 (BIC optional within SEPA)": "第 2 版（在 SEPA 范围内，BIC 可选）",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ 背景色与点色之间的对比度不足——某些二维码扫描器可能无法扫描此二维码。",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ 边框背景与点颜色之间的对比度不足——某些二维码扫描器可能无法扫描此二维码。",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ 并非所有二维码扫描器都能识别黑底白码的二维码。"
 }

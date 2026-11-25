@@ -368,5 +368,8 @@
   "SEPA Payment": "SEPA-maksu",
   "Structured Creditor Reference": "Jäsennelty velkojan viite",
   "Version 1 (BIC required)": "Versio 1 (BIC vaaditaan)",
-  "Version 2 (BIC optional within SEPA)": "Versio 2 (BIC valinnainen SEPA-alueella)"
+  "Version 2 (BIC optional within SEPA)": "Versio 2 (BIC valinnainen SEPA-alueella)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Taustan ja pisteiden värien välinen kontrasti on liian heikko — jotkut QR-koodinlukijat eivät välttämättä pysty lukemaan tätä koodia.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Kehyksen taustan ja pisteiden värin välinen kontrasti on liian heikko — jotkut QR-koodinlukijat eivät välttämättä pysty lukemaan tätä koodia.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Kaikki QR-koodinlukijat eivät pysty lukemaan valkoisella pohjalla olevia QR-koodeja."
 }

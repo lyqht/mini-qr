@@ -368,5 +368,8 @@
   "SEPA Payment": "Pembayaran SEPA",
   "Structured Creditor Reference": "Referensi Kreditor Terstruktur",
   "Version 1 (BIC required)": "Versi 1 (diperlukan BIC)",
-  "Version 2 (BIC optional within SEPA)": "Versi 2 (BIC bersifat opsional di wilayah SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Versi 2 (BIC bersifat opsional di wilayah SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Kontras antara warna latar belakang dan warna titik-titiknya tidak cukup — beberapa pembaca kode QR mungkin tidak dapat memindai kode ini.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Kontras antara latar belakang bingkai dan warna titik-titik tidak cukup — beberapa pembaca kode QR mungkin tidak dapat memindai kode ini.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Tidak semua pembaca kode QR dapat membaca kode QR berwarna putih di atas latar belakang hitam."
 }

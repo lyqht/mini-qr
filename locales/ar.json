@@ -368,5 +368,8 @@
   "SEPA Payment": "الدفع عبر منطقة الدفع الموحدة (SEPA)",
   "Structured Creditor Reference": "مرجع منظم للدائنين",
   "Version 1 (BIC required)": "الإصدار 1 (يلزم وجود رمز BIC)",
-  "Version 2 (BIC optional within SEPA)": "الإصدار 2 (رقم BIC اختياري داخل منطقة SEPA)"
+  "Version 2 (BIC optional within SEPA)": "الإصدار 2 (رقم BIC اختياري داخل منطقة SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ التباين غير كافٍ بين لون الخلفية ولون النقاط — قد لا تتمكن بعض أجهزة قراءة رموز QR من مسح هذا الرمز ضوئيًّا.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ التباين غير كافٍ بين خلفية الإطار ولون النقاط — قد لا تتمكن بعض أجهزة قراءة رموز QR من مسح هذا الرمز ضوئيًّا.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ لا تستطيع جميع برامج قراءة رموز QR قراءة الرموز ذات اللون الأبيض على خلفية سوداء."
 }

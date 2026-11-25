@@ -368,5 +368,8 @@
   "SEPA Payment": "SEPA mokėjimas",
   "Structured Creditor Reference": "Struktūrizuota informacija apie kreditorių",
   "Version 1 (BIC required)": "1 versija (reikalingas BIC kodas)",
-  "Version 2 (BIC optional within SEPA)": "2 versija (BIC nurodymas SEPA sistemoje nėra privalomas)"
+  "Version 2 (BIC optional within SEPA)": "2 versija (BIC nurodymas SEPA sistemoje nėra privalomas)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Nepakankamas kontrastas tarp fono ir taškų spalvos — kai kurie QR kodų skaitytuvai gali nesugebėti nuskaityti šio kodo.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Nepakankamas kontrastas tarp rėmelio fono ir taškų spalvos — kai kurie QR kodų skaitytuvai gali nesugebėti nuskaityti šio kodo.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Ne visi QR kodų skaitytuvai gali nuskaityti baltus QR kodus ant juodo fono."
 }
