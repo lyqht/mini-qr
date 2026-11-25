@@ -69,6 +69,30 @@ All `VITE_*` variables are **build-time** arguments — they are baked into the 
 | `VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | `QR_CREATE_SIMPLE_FULL_MODE_TOGGLE` | Set to `"true"` to show the Simple/Full view toggle and the "Customize fields" button | `"false"` |
 | `VITE_FIELDS_VISIBLE`         | `FIELDS_VISIBLE`           | Comma-separated field keys. When set, the app starts in Simple mode showing only the data field plus these fields (see [Fixing the visible fields](#fixing-the-visible-fields)) | `""` |
 
+### Runtime Environment Variables
+
+Unlike the `VITE_*` build arguments, these are read when the container starts, so they work with the prebuilt image and need no rebuild.
+
+| Variable       | Description                                                                                                                                                  | Default |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
+| `DEFAULT_LOGO` | Logo placed in the centre of the default preset's QR code. Accepts an `http(s)` URL, a same-origin path (e.g. a mounted file) or a `data:image/...` URI. Overrides the preset's own image. | `""`    |
+
+```yaml
+services:
+  mini-qr:
+    image: ghcr.io/lyqht/mini-qr:latest
+    environment:
+      DEFAULT_LOGO: /logo.svg
+    volumes:
+      - ./logo.svg:/app/dist/logo.svg:ro
+```
+
+The container writes these values to `dist/config.js` on start, which the app loads before starting. Users can still upload their own logo or pick another preset.
+
+If the image was built with a `BASE_PATH`, include it in a same-origin logo path. For example, with `BASE_PATH=/mini-qr`, mount the file as above and set `DEFAULT_LOGO: /mini-qr/logo.svg`.
+
+`DEFAULT_LOGO` only changes the default preset. Returning users whose design is saved in local storage keep their saved design, so they see the logo once they select the default preset again.
+
 ### Passing Variables via docker-compose
 
 The `docker-compose.yml` maps shorter environment variable names to the full build arg names. Set them on the host before running:

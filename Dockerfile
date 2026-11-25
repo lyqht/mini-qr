@@ -43,6 +43,10 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+# Make sure the entrypoint is executable even if the checkout lost the exec bit
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN npm install -g serve
 EXPOSE 8080
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["serve", "-s", "dist", "-l", "8080"]
