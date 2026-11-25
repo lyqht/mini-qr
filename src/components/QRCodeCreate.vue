@@ -82,6 +82,7 @@ import JSZip from 'jszip'
 import TextExportModal from '@/components/TextExportModal.vue'
 import {
   buildMatrix,
+  PREVIEW_QR_SIZE as PREVIEW_QRCODE_DIM_UNIT,
   type CornerDotType,
   type CornerSquareType,
   type DotType,
@@ -748,8 +749,6 @@ const isExportButtonDisabled = computed(() => {
   return dataStringsFromCsv.value.length === 0
 })
 
-const PREVIEW_QRCODE_DIM_UNIT = 200
-
 /**
  * Calculates the dimensions for QR code export
  * When frame is enabled (showFrame = true), dimensions are calculated from the actual rendered element
@@ -770,8 +769,10 @@ function getExportDimensions() {
     }
   }
 
-  // Calculate the scale factor based on the preview size
-  const scaleFactor = width.value / PREVIEW_QRCODE_DIM_UNIT
+  // Same scale the SVG export uses (svg-export.ts sizes the QR to the smaller
+  // side), so non-square settings don't make the raster target disagree with
+  // the SVG's own proportions.
+  const scaleFactor = Math.min(width.value, height.value) / PREVIEW_QRCODE_DIM_UNIT
 
   const elWidth = el.offsetWidth
   const elHeight = el.offsetHeight

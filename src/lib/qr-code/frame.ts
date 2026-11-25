@@ -1,7 +1,7 @@
 import { escapeAttr, escapeText, renderQrFragment, wrapAsSvg } from './render/svg'
 import type { FrameConfig, ResolvedQRCodeConfig } from './types'
 
-const DEFAULT_FRAME: Required<Omit<FrameConfig, 'text' | 'textPosition'>> = {
+export const DEFAULT_FRAME: Required<Omit<FrameConfig, 'text' | 'textPosition'>> = {
   textColor: '#000000',
   backgroundColor: '#ffffff',
   borderColor: '#000000',

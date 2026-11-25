@@ -40,8 +40,6 @@ function clipRectForSize(svg: string, size: number): string {
   return match
 }
 
-type SvgExportInputWithQrRadius = SvgExportInput & { qrBorderRadius?: string }
-
 describe('buildSvgExportString frame plumbing', () => {
   const base = {
     options: { data: 'https://example.com', width: 200, height: 200 },
@@ -146,7 +144,7 @@ describe('export scaling (#333)', () => {
   })
 
   it('preserves and scales the QR border radius when a frame is present', () => {
-    const input: SvgExportInputWithQrRadius = {
+    const input: SvgExportInput = {
       options: { data: 'https://example.com', width: 1000, height: 1000 },
       size: { width: 1000, height: 1000 },
       qrBorderRadius: '15px',
@@ -161,6 +159,37 @@ describe('export scaling (#333)', () => {
     const qrClip = clipRectForSize(svg, 1000)
 
     expect(numberAttr(qrClip, 'rx')).toBe(75)
+  })
+
+  it('clips the QR corners inside a frame at small sizes too', () => {
+    // Issue comment: frame on, 24px radius, 100x100 export -> square QR corners.
+    const svg = buildSvgExportString({
+      options: { data: 'https://example.com', width: 100, height: 100 },
+      size: { width: 100, height: 100 },
+      qrBorderRadius: '24px',
+      frame: {
+        text: 'Scan me',
+        position: 'bottom',
+        style: { borderWidth: '1px', borderRadius: '8px', padding: '16px' }
+      }
+    })
+
+    expect(numberAttr(clipRectForSize(svg, 100), 'rx')).toBe(12)
+    expect(svg).toMatch(/<g transform="translate\([^)]*\)" clip-path="url\(#qr-corner-clip\)">/)
+  })
+
+  it('scales the frame defaults when the caller omits them', () => {
+    const exportAt = (size: number) =>
+      buildSvgExportString({
+        options: { data: 'https://example.com', width: size, height: size },
+        size: { width: size, height: size },
+        frame: { text: 'Scan me', position: 'bottom', style: {} }
+      })
+
+    const rect = (size: number) => frameBorderRect(exportAt(size))
+    expect(numberAttr(rect(1000), 'stroke-width')).toBe(numberAttr(rect(200), 'stroke-width') * 5)
+    expect(numberAttr(rect(1000), 'rx')).toBe(numberAttr(rect(200), 'rx') * 5)
+    expect(qrTranslateX(exportAt(1000))).toBe(qrTranslateX(exportAt(200)) * 5)
   })
 })
 
