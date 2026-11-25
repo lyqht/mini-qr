@@ -1,7 +1,13 @@
 # syntax=docker/dockerfile:1
 
+# The app builds to static files that run on any CPU, so the build stages run
+# on the build machine's own platform ($BUILDPLATFORM) instead of under QEMU.
+# Running node/npm under QEMU for arm64 crashed with "Illegal instruction" and
+# hung the multi-arch build. Only the final stage is per-architecture, and it
+# only copies files in.
+
 # Build stage
-FROM node:lts-alpine AS builder
+FROM --platform=$BUILDPLATFORM node:lts-alpine AS builder
 WORKDIR /app
 
 # Accept BASE_PATH as build argument
@@ -42,16 +48,21 @@ RUN npm install --frozen-lockfile
 COPY . .
 RUN npm run build
 
+# Install the static file server natively too. serve is plain JavaScript, so the
+# installed files work on every architecture.
+FROM --platform=$BUILDPLATFORM node:lts-alpine AS serve
+RUN npm install -g --prefix /opt/serve serve
+
 # Production stage
 FROM node:lts-alpine AS production
 WORKDIR /app
+COPY --from=serve /opt/serve/ /usr/local/
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 # Make sure the entrypoint is executable even if the checkout lost the exec bit
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-RUN npm install -g serve
 EXPOSE 8080
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["serve", "-s", "dist", "-l", "8080"]

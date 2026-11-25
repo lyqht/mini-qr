@@ -19,6 +19,9 @@ jobs:
   build_and_push:
     name: Build and Push
     runs-on: ubuntu-latest
+    # A healthy multi-arch build takes a few minutes. Stop a stuck one early
+    # instead of letting it run to the 6 hour job limit.
+    timeout-minutes: 30
     strategy:
       # Prevent a failure in one image from stopping the other builds
       fail-fast: false
@@ -27,7 +30,6 @@ jobs:
           - context: "."
             file: "Dockerfile"
             image: "mini-qr"
-            # ARM not working. Needs further research.
             platforms: "linux/arm64,linux/amd64"
 
     steps:
@@ -65,11 +67,14 @@ jobs:
         id: metadata
         uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
+          # Only builds from main move the `latest` tag. PR builds get pr-N and
+          # releases get their version tag plus `release`.
           flavor: |
-            latest=true
+            latest=false
           images: |
             name=ghcr.io/${{ steps.sanitize_names.outputs.lowercase }}/${{matrix.image}}
           tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
             # Tag with branch name
             type=ref,event=branch
             # Tag with pr-number
