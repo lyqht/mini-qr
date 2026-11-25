@@ -368,5 +368,8 @@
   "SEPA Payment": "SEPA 결제",
   "Structured Creditor Reference": "구조화된 채권자 참조",
   "Version 1 (BIC required)": "버전 1 (BIC 필수)",
-  "Version 2 (BIC optional within SEPA)": "버전 2 (SEPA 내에서 BIC 선택 사항)"
+  "Version 2 (BIC optional within SEPA)": "버전 2 (SEPA 내에서 BIC 선택 사항)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ 배경색과 점의 색상 대비가 부족합니다. 일부 QR 코드 리더기에서는 이 코드를 스캔하지 못할 수 있습니다.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ 프레임 배경과 점의 색상 간 대비가 부족합니다. 일부 QR 코드 리더기에서는 이 코드를 스캔하지 못할 수 있습니다.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ 모든 QR 코드 리더기가 검은 바탕에 흰색으로 된 QR 코드를 읽을 수 있는 것은 아닙니다."
 }

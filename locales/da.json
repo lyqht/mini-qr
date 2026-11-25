@@ -155,7 +155,7 @@
   "extra-rounded": "ekstra afrundet",
   "Failed to copy to clipboard": "Kunne ikke kopiere til udklipsholder",
   "Failed to load changelog": "Kunne ikke indlæse changelog",
-  "Feedback": "Feedback",
+  "Feedback": "Tilbagemelding",
   "File name": "Filnavn",
   "Filename Priority": "Filnavnsprioritet",
   "First Name": "Fornavn",
@@ -368,5 +368,8 @@
   "SEPA Payment": "SEPA-betaling",
   "Structured Creditor Reference": "Struktureret kreditorhenvisning",
   "Version 1 (BIC required)": "Version 1 (BIC kræves)",
-  "Version 2 (BIC optional within SEPA)": "Version 2 (BIC er valgfrit inden for SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Version 2 (BIC er valgfrit inden for SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Der er ikke tilstrækkelig kontrast mellem baggrunden og prikkenes farve — nogle QR-kodescannere kan muligvis ikke scanne denne kode.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Der er ikke tilstrækkelig kontrast mellem rammens baggrund og prikkenes farve — nogle QR-kodescannere kan muligvis ikke scanne denne kode.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Ikke alle QR-kodescannere kan læse QR-koder med hvid skrift på sort baggrund."
 }

@@ -368,5 +368,8 @@
   "SEPA Payment": "SEPA Ödemesi",
   "Structured Creditor Reference": "Yapılandırılmış Alacaklı Referansı",
   "Version 1 (BIC required)": "Sürüm 1 (BIC gereklidir)",
-  "Version 2 (BIC optional within SEPA)": "Sürüm 2 (SEPA kapsamında BIC isteğe bağlıdır)"
+  "Version 2 (BIC optional within SEPA)": "Sürüm 2 (SEPA kapsamında BIC isteğe bağlıdır)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Arka plan ile noktaların rengi arasında yeterli kontrast yok — bazı QR kodu okuyucular bu kodu tarayamayabilir.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Çerçeve arka planı ile noktaların rengi arasında yeterli kontrast yok — bazı QR kod okuyucular bu kodu tarayamayabilir.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Tüm QR kod okuyucular, siyah zemin üzerine beyaz renkli QR kodlarını okuyamaz."
 }

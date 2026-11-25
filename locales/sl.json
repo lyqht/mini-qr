@@ -373,5 +373,8 @@
   "SEPA Payment": "Plačilo v okviru SEPA",
   "Structured Creditor Reference": "Strukturirani podatki o upnikih",
   "Version 1 (BIC required)": "Različica 1 (potreben je BIC)",
-  "Version 2 (BIC optional within SEPA)": "Različica 2 (BIC je v okviru SEPA neobvezen)"
+  "Version 2 (BIC optional within SEPA)": "Različica 2 (BIC je v okviru SEPA neobvezen)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Premajhen kontrast med barvo ozadja in barvo pik – nekateri čitalniki QR-kod te kode morda ne bodo mogli skenirati.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Premajhen kontrast med ozadjem okvirja in barvo pik – nekateri čitalniki QR-kod te kode morda ne bodo mogli prebrati.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Vsi čitalniki QR-kod ne morejo prebrati QR-kod z belimi črkami na črnem ozadju."
 }

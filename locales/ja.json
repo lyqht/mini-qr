@@ -368,5 +368,8 @@
   "SEPA Payment": "SEPA決済",
   "Structured Creditor Reference": "債権者情報の体系的な参照",
   "Version 1 (BIC required)": "バージョン 1（BIC が必要）",
-  "Version 2 (BIC optional within SEPA)": "バージョン 2（SEPA 域内では BIC は任意）"
+  "Version 2 (BIC optional within SEPA)": "バージョン 2（SEPA 域内では BIC は任意）",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ 背景色とドットの色のコントラストが不十分です。一部のQRコードリーダーでは、このコードを読み取れない場合があります。",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ 枠の背景色とドットの色のコントラストが不十分です。一部のQRコードリーダーでは、このコードを読み取れない場合があります。",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ すべてのQRコードリーダーが、黒地に白のQRコードを読み取れるわけではありません。"
 }

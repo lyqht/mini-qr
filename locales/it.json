@@ -368,5 +368,8 @@
   "SEPA Payment": "Pagamento SEPA",
   "Structured Creditor Reference": "Riferimento strutturato del creditore",
   "Version 1 (BIC required)": "Versione 1 (è richiesto il codice BIC)",
-  "Version 2 (BIC optional within SEPA)": "Versione 2 (BIC facoltativo all’interno della SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Versione 2 (BIC facoltativo all’interno della SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Contrasto insufficiente tra lo sfondo e il colore dei punti: alcuni lettori di codici QR potrebbero non essere in grado di scansionare questo codice.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Contrasto insufficiente tra lo sfondo del riquadro e il colore dei punti: alcuni lettori di codici QR potrebbero non essere in grado di scansionare questo codice.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Non tutti i lettori di codici QR sono in grado di leggere i codici QR con caratteri bianchi su sfondo nero."
 }
