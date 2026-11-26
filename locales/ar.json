@@ -371,5 +371,11 @@
   "Version 2 (BIC optional within SEPA)": "الإصدار 2 (رقم BIC اختياري داخل منطقة SEPA)",
   "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ التباين غير كافٍ بين لون الخلفية ولون النقاط — قد لا تتمكن بعض أجهزة قراءة رموز QR من مسح هذا الرمز ضوئيًّا.",
   "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ التباين غير كافٍ بين خلفية الإطار ولون النقاط — قد لا تتمكن بعض أجهزة قراءة رموز QR من مسح هذا الرمز ضوئيًّا.",
-  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ لا تستطيع جميع برامج قراءة رموز QR قراءة الرموز ذات اللون الأبيض على خلفية سوداء."
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ لا تستطيع جميع برامج قراءة رموز QR قراءة الرموز ذات اللون الأبيض على خلفية سوداء.",
+  "Too much data for one QR code": "بيانات أكثر من اللازم لرمز QR واحد",
+  "Shorten the text, or split it across several QR codes.": "اختصر النص، أو قسّمه على عدة رموز QR.",
+  "Shorten the text, or choose a lower error correction level.": "اختصر النص، أو اختر مستوى أقل لتصحيح الأخطاء.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "عند حجم {size} بكسل، يبلغ عرض كل مربع في رمز الاستجابة السريعة هذا أقل من {px} بكسل، لذا قد يتعذر مسحه ضوئيًّا. قم بالتصدير بحجم {recommended} بكسل أو أكبر.",
+  "{length} of {max} bytes at error correction level {level}": "{length} من {max} بايت بمستوى تصحيح الأخطاء {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "أزل الشعار وخفِّض مستوى تصحيح الأخطاء بحيث يتسع لعدد يصل إلى {max} بايت."
 }

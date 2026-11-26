@@ -371,5 +371,11 @@
   "Version 2 (BIC optional within SEPA)": "Έκδοση 2 (ο κωδικός BIC είναι προαιρετικός εντός της SEPA)",
   "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Ανεπαρκής αντίθεση μεταξύ του χρώματος του φόντου και των κουκκίδων — ορισμένοι αναγνώστες κωδικών QR ενδέχεται να μην μπορούν να σαρώσουν αυτόν τον κωδικό.",
   "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Ανεπαρκής αντίθεση μεταξύ του φόντου του πλαισίου και του χρώματος των κουκκίδων — ορισμένοι αναγνώστες κωδικών QR ενδέχεται να μην μπορούν να σαρώσουν αυτόν τον κωδικό.",
-  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Δεν μπορούν όλες οι συσκευές ανάγνωσης κωδικών QR να διαβάσουν κωδικούς QR με λευκό φόντο και μαύρα στοιχεία."
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Δεν μπορούν όλες οι συσκευές ανάγνωσης κωδικών QR να διαβάσουν κωδικούς QR με λευκό φόντο και μαύρα στοιχεία.",
+  "Too much data for one QR code": "Πάρα πολλά δεδομένα για έναν κωδικό QR",
+  "Shorten the text, or split it across several QR codes.": "Συντομεύστε το κείμενο ή χωρίστε το σε διάφορους κωδικούς QR.",
+  "Shorten the text, or choose a lower error correction level.": "Συντομεύστε το κείμενο ή επιλέξτε χαμηλότερο επίπεδο διόρθωσης σφαλμάτων.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Σε μέγεθος {size}px, κάθε τετράγωνο αυτού του κωδικού QR έχει πλάτος μικρότερο από {px}px, οπότε ενδέχεται να μην σαρωθεί. Εξαγάγετε το αρχείο σε μέγεθος {recommended}px ή μεγαλύτερο.",
+  "{length} of {max} bytes at error correction level {level}": "{length} {max} byte με επίπεδο διόρθωσης σφαλμάτων {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Αφαιρέστε το λογότυπο και μειώστε το επίπεδο διόρθωσης σφαλμάτων ώστε να χωρέσει έως {max} byte."
 }

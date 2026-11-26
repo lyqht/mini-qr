@@ -371,5 +371,11 @@
   "Version 2 (BIC optional within SEPA)": "Versioon 2 (BIC on SEPA raames vabatahtlik)",
   "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Taustavärvi ja punktide värvi kontrast on ebapiisav — mõned QR-koodi lugejad ei pruugi seda koodi skaneerida.",
   "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Raami taust ja punktide värvi vaheline kontrast on ebapiisav — mõned QR-koodi lugejad ei pruugi seda koodi skaneerida.",
-  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Mitte kõik QR-koodi lugejad ei suuda lugeda valge-mustal taustal olevaid QR-koode."
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Mitte kõik QR-koodi lugejad ei suuda lugeda valge-mustal taustal olevaid QR-koode.",
+  "Too much data for one QR code": "Ühele QR-koodile on liiga palju andmeid",
+  "Shorten the text, or split it across several QR codes.": "Lühenda teksti või jaota see mitme QR-koodi vahel.",
+  "Shorten the text, or choose a lower error correction level.": "Lühendage teksti või valige madalam veaparanduse tase.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Suurusega {size}px on iga selle QR-koodi ruut laiusega alla {px}px, mistõttu seda ei pruugi olla võimalik skaneerida. Ekspordi suurusega {recommended}px või suuremana.",
+  "{length} of {max} bytes at error correction level {level}": "{length} {max} baiti veaparandustasemel {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Eemalda logo ja vähenda veaparanduse taset, et mahtuks kuni {max} baiti."
 }
