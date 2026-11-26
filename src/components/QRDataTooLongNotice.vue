@@ -13,10 +13,13 @@ const { t } = useI18n()
 
 <template>
   <div
-    role="alert"
-    class="flex size-full overflow-auto bg-red-50 p-4 text-center text-xs leading-snug text-red-800 dark:bg-red-950 dark:text-red-200"
+    aria-hidden="true"
+    class="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-64 -translate-x-1/2 rounded-lg bg-red-700 px-3 py-2 text-center text-xs leading-snug text-white shadow-lg dark:bg-red-800"
   >
-    <div class="m-auto flex flex-col gap-1.5">
+    <div
+      class="absolute -top-1.5 left-1/2 size-3 -translate-x-1/2 rotate-45 bg-red-700 dark:bg-red-800"
+    ></div>
+    <div class="relative flex flex-col gap-1">
       <div class="font-semibold">{{ t('Too much data for one QR code') }}</div>
       <div>
         {{

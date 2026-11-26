@@ -86,6 +86,7 @@ import {
 import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
 import TextExportModal from '@/components/TextExportModal.vue'
+import QRCodeErrorPlaceholder from '@/components/QRCodeErrorPlaceholder.vue'
 import QRDataTooLongNotice from '@/components/QRDataTooLongNotice.vue'
 import {
   buildMatrix,
@@ -492,6 +493,19 @@ const dataTooLongHint = computed(() => {
   }
   return t('Shorten the text, or choose a lower error correction level.')
 })
+
+const dataTooLongDescription = computed(() =>
+  isDataTooLong.value
+    ? `${t('{length} of {max} bytes at error correction level {level}', {
+        length: qrCapacity.value.byteLength,
+        max: qrCapacity.value.maxBytes,
+        level: effectiveErrorCorrectionLevel.value
+      })}. ${dataTooLongHint.value}`
+    : ''
+)
+const dataTooLongAnnouncement = computed(() =>
+  isDataTooLong.value ? `${t('Too much data for one QR code')}. ${dataTooLongHint.value}` : ''
+)
 
 const exportQuietZoneModules = computed(() => Math.max(0, Number(margin.value) || 0))
 const exportPxPerModule = computed(() => {
@@ -1452,6 +1466,8 @@ const updateDataFromModal = (newData: string) => {
 
 <template>
   <div class="flex items-start justify-center gap-4 md:flex-row md:gap-6 lg:gap-12 lg:pb-0">
+    <div class="sr-only" aria-live="polite" aria-atomic="true">{{ dataTooLongAnnouncement }}</div>
+    <div id="data-too-long-error" class="sr-only">{{ dataTooLongDescription }}</div>
     <!-- Sticky sidebar on large screens -->
     <div
       v-if="isLarge"
@@ -1492,7 +1508,11 @@ const updateDataFromModal = (newData: string) => {
                   <template #qr-code>
                     <div id="qr-code-container" class="grid place-items-center">
                       <div
-                        class="grid place-items-center overflow-hidden"
+                        :class="[
+                          'grid place-items-center overflow-hidden',
+                          isDataTooLong &&
+                            'outline outline-2 outline-offset-2 outline-red-600 dark:outline-red-500'
+                        ]"
                         :style="[
                           style,
                           {
@@ -1501,13 +1521,7 @@ const updateDataFromModal = (newData: string) => {
                           }
                         ]"
                       >
-                        <QRDataTooLongNotice
-                          v-if="isDataTooLong"
-                          :byte-length="qrCapacity.byteLength"
-                          :max-bytes="qrCapacity.maxBytes"
-                          :level="effectiveErrorCorrectionLevel"
-                          :hint="dataTooLongHint"
-                        />
+                        <QRCodeErrorPlaceholder v-if="isDataTooLong" />
                         <StyledQRCode
                           v-else
                           v-bind="{
@@ -1526,7 +1540,11 @@ const updateDataFromModal = (newData: string) => {
               <template v-else>
                 <div class="grid place-items-center">
                   <div
-                    class="grid place-items-center overflow-hidden"
+                    :class="[
+                      'grid place-items-center overflow-hidden',
+                      isDataTooLong &&
+                        'outline outline-2 outline-offset-2 outline-red-600 dark:outline-red-500'
+                    ]"
                     :style="[
                       style,
                       {
@@ -1535,13 +1553,7 @@ const updateDataFromModal = (newData: string) => {
                       }
                     ]"
                   >
-                    <QRDataTooLongNotice
-                      v-if="isDataTooLong"
-                      :byte-length="qrCapacity.byteLength"
-                      :max-bytes="qrCapacity.maxBytes"
-                      :level="effectiveErrorCorrectionLevel"
-                      :hint="dataTooLongHint"
-                    />
+                    <QRCodeErrorPlaceholder v-if="isDataTooLong" />
                     <StyledQRCode
                       v-else
                       v-bind="{
@@ -1595,7 +1607,7 @@ const updateDataFromModal = (newData: string) => {
     <!-- Main content -->
     <Teleport to="#main-content-container" v-if="mainContentContainer != null">
       <div id="main-content">
-        <div id="qr-code-container" class="grid origin-center place-items-center">
+        <div id="qr-code-container" class="relative grid origin-center place-items-center">
           <!--
             When the framed preview is wider than the cap, FitScaleBox renders
             it scaled inside a wrapper sized to the scaled footprint — the
@@ -1613,7 +1625,11 @@ const updateDataFromModal = (newData: string) => {
                 <template #qr-code>
                   <div id="qr-code-container" class="grid place-items-center">
                     <div
-                      class="grid place-items-center overflow-hidden"
+                      :class="[
+                        'grid place-items-center overflow-hidden',
+                        isDataTooLong &&
+                          'outline outline-2 outline-offset-2 outline-red-600 dark:outline-red-500'
+                      ]"
                       :style="[
                         style,
                         {
@@ -1622,13 +1638,7 @@ const updateDataFromModal = (newData: string) => {
                         }
                       ]"
                     >
-                      <QRDataTooLongNotice
-                        v-if="isDataTooLong"
-                        :byte-length="qrCapacity.byteLength"
-                        :max-bytes="qrCapacity.maxBytes"
-                        :level="effectiveErrorCorrectionLevel"
-                        :hint="dataTooLongHint"
-                      />
+                      <QRCodeErrorPlaceholder v-if="isDataTooLong" />
                       <StyledQRCode
                         v-else
                         v-bind="{
@@ -1648,7 +1658,11 @@ const updateDataFromModal = (newData: string) => {
           <div
             v-else
             id="element-to-export"
-            class="grid place-items-center overflow-hidden"
+            :class="[
+              'grid place-items-center overflow-hidden',
+              isDataTooLong &&
+                'outline outline-2 outline-offset-2 outline-red-600 dark:outline-red-500'
+            ]"
             :style="[
               style,
               {
@@ -1657,13 +1671,7 @@ const updateDataFromModal = (newData: string) => {
               }
             ]"
           >
-            <QRDataTooLongNotice
-              v-if="isDataTooLong"
-              :byte-length="qrCapacity.byteLength"
-              :max-bytes="qrCapacity.maxBytes"
-              :level="effectiveErrorCorrectionLevel"
-              :hint="dataTooLongHint"
-            />
+            <QRCodeErrorPlaceholder v-if="isDataTooLong" />
             <StyledQRCode
               v-else
               v-bind="{
@@ -1676,6 +1684,13 @@ const updateDataFromModal = (newData: string) => {
               aria-label="QR code"
             />
           </div>
+          <QRDataTooLongNotice
+            v-if="isDataTooLong"
+            :byte-length="qrCapacity.byteLength"
+            :max-bytes="qrCapacity.maxBytes"
+            :level="effectiveErrorCorrectionLevel"
+            :hint="dataTooLongHint"
+          />
         </div>
         <div class="mt-3 flex flex-col items-center gap-4">
           <div
@@ -2418,6 +2433,8 @@ const updateDataFromModal = (newData: string) => {
                       <textarea
                         id="data"
                         v-model="data"
+                        :aria-invalid="isDataTooLong || undefined"
+                        :aria-describedby="isDataTooLong ? 'data-too-long-error' : undefined"
                         class="me-2 grow text-input"
                         :placeholder="t('data to encode e.g. a URL or a string')"
                       ></textarea>
