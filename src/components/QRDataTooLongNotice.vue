@@ -19,7 +19,7 @@ const { t } = useI18n()
     <div
       class="absolute -top-1.5 left-1/2 size-3 -translate-x-1/2 rotate-45 bg-red-700 dark:bg-red-800"
     ></div>
-    <div class="relative flex flex-col gap-1">
+    <div class="relative flex flex-col gap-1 text-balance">
       <div class="font-semibold">{{ t('Too much data for one QR code') }}</div>
       <div>
         {{
