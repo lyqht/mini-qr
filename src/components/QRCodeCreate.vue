@@ -86,8 +86,12 @@ import {
 import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
 import TextExportModal from '@/components/TextExportModal.vue'
+import QRDataTooLongNotice from '@/components/QRDataTooLongNotice.vue'
 import {
   buildMatrix,
+  MAX_DATA_BYTES,
+  measureQRCapacity,
+  resolveEffectiveErrorCorrectionLevel,
   type CornerDotType,
   type CornerSquareType,
   type DotType,
@@ -461,6 +465,51 @@ const isErrorCorrectionBoostedForLogo = computed(
     Boolean(image.value) &&
     (errorCorrectionLevel.value === 'L' || errorCorrectionLevel.value === 'M')
 )
+
+const MIN_PX_PER_MODULE = 4
+const RECOMMENDED_PX_PER_MODULE = 5
+
+const effectiveErrorCorrectionLevel = computed(() =>
+  resolveEffectiveErrorCorrectionLevel(Boolean(image.value), errorCorrectionLevel.value)
+)
+const qrCapacity = computed(() =>
+  measureQRCapacity(
+    data.value?.length > 0 ? data.value : previewData.value,
+    effectiveErrorCorrectionLevel.value
+  )
+)
+const isDataTooLong = computed(
+  () => exportMode.value === ExportMode.Single && qrCapacity.value.moduleCount === null
+)
+const dataTooLongHint = computed(() => {
+  if (image.value) {
+    return t('Remove the logo and lower the error correction level to fit up to {max} bytes.', {
+      max: MAX_DATA_BYTES.L
+    })
+  }
+  if (effectiveErrorCorrectionLevel.value === 'L') {
+    return t('Shorten the text, or split it across several QR codes.')
+  }
+  return t('Shorten the text, or choose a lower error correction level.')
+})
+
+const exportQuietZoneModules = computed(() => Math.max(0, Number(margin.value) || 0))
+const exportPxPerModule = computed(() => {
+  const count = qrCapacity.value.moduleCount
+  const size = Math.min(Number(width.value) || 0, Number(height.value) || 0)
+  if (!count || !size) return null
+  return size / (count + 2 * exportQuietZoneModules.value)
+})
+const isExportSizeTooSmall = computed(
+  () =>
+    exportMode.value === ExportMode.Single &&
+    exportPxPerModule.value !== null &&
+    exportPxPerModule.value < MIN_PX_PER_MODULE
+)
+const recommendedExportSize = computed(() => {
+  const modules = (qrCapacity.value.moduleCount ?? 0) + 2 * exportQuietZoneModules.value
+  return Math.ceil((RECOMMENDED_PX_PER_MODULE * modules) / 100) * 100
+})
 //#endregion
 
 //#region /* Frame settings */ Start empty, default is set intelligently */
@@ -505,9 +554,7 @@ const frameStyle = ref<FrameStyle>({
   padding: '16px'
 })
 
-const selectedFramePresetKey = ref<string>(
-  getEnv('VITE_FRAME_PRESET') || defaultFramePreset.name
-)
+const selectedFramePresetKey = ref<string>(getEnv('VITE_FRAME_PRESET') || defaultFramePreset.name)
 
 function toFrameStyle(style: Partial<FrameStyle>): FrameStyle {
   return {
@@ -808,10 +855,14 @@ watch(defaultQRCodeText, (now, prev) => {
 //#region /* General Export - download qr code and copy to clipboard */
 const isExportButtonDisabled = computed(() => {
   if (exportMode.value === ExportMode.Single) {
-    return !data.value
+    return !data.value || isDataTooLong.value
   }
   return dataStringsFromCsv.value.length === 0
 })
+
+const exportDisabledReason = computed(() =>
+  isDataTooLong.value ? t('Too much data for one QR code') : t('Please enter data to encode first')
+)
 
 const PREVIEW_QRCODE_DIM_UNIT = 200
 
@@ -1149,7 +1200,8 @@ const exportFilename = ref('qr-code')
 const isTextExportModalOpen = ref(false)
 const isMobileExportDrawerOpen = ref(false)
 const asciiMatrix = computed<boolean[][]>(() => {
-  if (!data.value) return []
+  if (!data.value || measureQRCapacity(data.value, errorCorrectionLevel.value).moduleCount === null)
+    return []
   try {
     return buildMatrix(data.value, errorCorrectionLevel.value).matrix
   } catch (err) {
@@ -1449,7 +1501,15 @@ const updateDataFromModal = (newData: string) => {
                           }
                         ]"
                       >
+                        <QRDataTooLongNotice
+                          v-if="isDataTooLong"
+                          :byte-length="qrCapacity.byteLength"
+                          :max-bytes="qrCapacity.maxBytes"
+                          :level="effectiveErrorCorrectionLevel"
+                          :hint="dataTooLongHint"
+                        />
                         <StyledQRCode
+                          v-else
                           v-bind="{
                             ...qrCodeProps,
                             width: PREVIEW_QRCODE_DIM_UNIT,
@@ -1475,7 +1535,15 @@ const updateDataFromModal = (newData: string) => {
                       }
                     ]"
                   >
+                    <QRDataTooLongNotice
+                      v-if="isDataTooLong"
+                      :byte-length="qrCapacity.byteLength"
+                      :max-bytes="qrCapacity.maxBytes"
+                      :level="effectiveErrorCorrectionLevel"
+                      :hint="dataTooLongHint"
+                    />
                     <StyledQRCode
+                      v-else
                       v-bind="{
                         ...qrCodeProps,
                         width: PREVIEW_QRCODE_DIM_UNIT,
@@ -1554,7 +1622,15 @@ const updateDataFromModal = (newData: string) => {
                         }
                       ]"
                     >
+                      <QRDataTooLongNotice
+                        v-if="isDataTooLong"
+                        :byte-length="qrCapacity.byteLength"
+                        :max-bytes="qrCapacity.maxBytes"
+                        :level="effectiveErrorCorrectionLevel"
+                        :hint="dataTooLongHint"
+                      />
                       <StyledQRCode
+                        v-else
                         v-bind="{
                           ...qrCodeProps,
                           width: PREVIEW_QRCODE_DIM_UNIT,
@@ -1581,7 +1657,15 @@ const updateDataFromModal = (newData: string) => {
               }
             ]"
           >
+            <QRDataTooLongNotice
+              v-if="isDataTooLong"
+              :byte-length="qrCapacity.byteLength"
+              :max-bytes="qrCapacity.maxBytes"
+              :level="effectiveErrorCorrectionLevel"
+              :hint="dataTooLongHint"
+            />
             <StyledQRCode
+              v-else
               v-bind="{
                 ...qrCodeProps,
                 data: data?.length > 0 ? data : t('Have nice day!'),
@@ -1594,6 +1678,23 @@ const updateDataFromModal = (newData: string) => {
           </div>
         </div>
         <div class="mt-3 flex flex-col items-center gap-4">
+          <div
+            v-if="isExportSizeTooSmall"
+            id="export-size-warning"
+            role="status"
+            class="max-w-xs text-center text-sm text-amber-700 dark:text-amber-400"
+          >
+            {{
+              t(
+                'At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.',
+                {
+                  size: Math.min(Number(width) || 0, Number(height) || 0),
+                  px: MIN_PX_PER_MODULE,
+                  recommended: recommendedExportSize
+                }
+              )
+            }}
+          </div>
           <div class="flex flex-col items-center justify-center gap-2">
             <button
               v-if="exportMode !== ExportMode.Batch"
@@ -1602,9 +1703,7 @@ const updateDataFromModal = (newData: string) => {
               @click="copyQRToClipboard"
               :disabled="isExportButtonDisabled"
               :title="
-                isExportButtonDisabled
-                  ? t('Please enter data to encode first')
-                  : t('Copy QR Code to clipboard')
+                isExportButtonDisabled ? exportDisabledReason : t('Copy QR Code to clipboard')
               "
               :aria-label="t('Copy QR Code to clipboard')"
             >
@@ -1694,9 +1793,7 @@ const updateDataFromModal = (newData: string) => {
                   @click="() => downloadQRImage('png')"
                   :disabled="isExportButtonDisabled"
                   :title="
-                    isExportButtonDisabled
-                      ? t('Please enter data to encode first')
-                      : t('Download QR Code as PNG')
+                    isExportButtonDisabled ? exportDisabledReason : t('Download QR Code as PNG')
                   "
                   :aria-label="t('Download QR Code as PNG')"
                 >
@@ -1729,9 +1826,7 @@ const updateDataFromModal = (newData: string) => {
                   @click="() => downloadQRImage('jpg')"
                   :disabled="isExportButtonDisabled"
                   :title="
-                    isExportButtonDisabled
-                      ? t('Please enter data to encode first')
-                      : t('Download QR Code as JPG')
+                    isExportButtonDisabled ? exportDisabledReason : t('Download QR Code as JPG')
                   "
                   :aria-label="t('Download QR Code as JPG')"
                 >
@@ -1764,9 +1859,7 @@ const updateDataFromModal = (newData: string) => {
                   @click="() => downloadQRImage('svg')"
                   :disabled="isExportButtonDisabled"
                   :title="
-                    isExportButtonDisabled
-                      ? t('Please enter data to encode first')
-                      : t('Download QR Code as SVG')
+                    isExportButtonDisabled ? exportDisabledReason : t('Download QR Code as SVG')
                   "
                   :aria-label="t('Download QR Code as SVG')"
                 >
@@ -1800,7 +1893,7 @@ const updateDataFromModal = (newData: string) => {
                   :disabled="isExportButtonDisabled"
                   :title="
                     isExportButtonDisabled
-                      ? t('Please enter data to encode first')
+                      ? exportDisabledReason
                       : t('Export QR Code as ASCII or Unicode text')
                   "
                   :aria-label="t('Export QR Code as ASCII or Unicode text')"
