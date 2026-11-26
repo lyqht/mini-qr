@@ -51,19 +51,19 @@
     "tailwindcss-animate": "1.0.7",
     "vaul-vue": "0.4.1",
     "vite": "5.4.21",
-    "vue": "3.5.34",
+    "vue": "3.5.46",
     "vue-i18n": "9.14.5"
   },
   "devDependencies": {
     "@eslint/js": "9.39.4",
     "@playwright/test": "1.59.1",
-    "@storybook/addon-essentials": "8.6.14",
-    "@storybook/test": "8.6.15",
-    "@storybook/vue3": "8.6.18",
-    "@storybook/vue3-vite": "8.6.18",
+    "@storybook/addon-essentials": "8.6.19",
+    "@storybook/test": "8.6.19",
+    "@storybook/vue3": "8.6.19",
+    "@storybook/vue3-vite": "8.6.19",
     "@tailwindcss/typography": "0.5.19",
     "@types/node": "20.19.40",
-    "@typescript-eslint/parser": "8.59.2",
+    "@typescript-eslint/parser": "8.74.0",
     "@vitest/browser": "3.2.4",
     "@vue/eslint-config-typescript": "14.7.0",
     "eslint": "9.39.4",
@@ -72,16 +72,23 @@
     "husky": "8.0.3",
     "lint-staged": "15.5.2",
     "playwright": "1.59.1",
-    "postcss": "8.5.14",
+    "postcss": "8.5.33",
     "prettier": "3.8.3",
     "prettier-plugin-tailwindcss": "0.8.0",
-    "sharp": "0.33.5",
-    "storybook": "8.6.18",
+    "sharp": "0.35.5",
+    "storybook": "8.6.19",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.59.2",
+    "typescript-eslint": "8.74.0",
     "vite-plugin-pwa": "0.21.2",
     "vitest": "3.2.4",
     "vue-eslint-parser": "10.4.0",
     "vue-tsc": "3.2.8"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss-selector-parser@<6.1.5": "^6.1.5",
+      "uuid@<11.1.1": "^11.1.1",
+      "minimatch@>=7 <11.0.1": "^11.0.1"
+    }
   }
 }
