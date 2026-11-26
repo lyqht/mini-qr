@@ -18,6 +18,13 @@ services:
       QR_CREATE_SIMPLE_FULL_MODE_TOGGLE: ${QR_CREATE_SIMPLE_FULL_MODE_TOGGLE:-}
       FIELDS_VISIBLE: ${FIELDS_VISIBLE:-}
       DISABLE_COLOR_CONTRAST_WARNING: ${DISABLE_COLOR_CONTRAST_WARNING:-}
+    # The app only serves static files, so it needs no Linux capabilities and
+    # must never gain privileges. The filesystem stays writable because the
+    # entrypoint writes dist/config.js from the settings above on every start.
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     networks:
       - mini-qr-network
 
