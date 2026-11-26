@@ -371,5 +371,11 @@
   "Your network name": "Your network name",
   "YYYY-MM-DDTHH:MM": "YYYY-MM-DDTHH:MM",
   "Zip Code": "Zip Code",
-  "Zipcode": "Zipcode"
+  "Zipcode": "Zipcode",
+  "Too much data for one QR code": "Too much data for one QR code",
+  "Shorten the text, or split it across several QR codes.": "Shorten the text, or split it across several QR codes.",
+  "Shorten the text, or choose a lower error correction level.": "Shorten the text, or choose a lower error correction level.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.",
+  "{length} of {max} bytes at error correction level {level}": "{length} of {max} bytes at error correction level {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Remove the logo and lower the error correction level to fit up to {max} bytes."
 }

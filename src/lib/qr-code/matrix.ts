@@ -19,6 +19,25 @@ function ensureUtf8Override(): void {
   overrideInstalled = true
 }
 
+export const MAX_DATA_BYTES: Record<ECLevel, number> = { L: 2953, M: 2331, Q: 1663, H: 1273 }
+
+export interface QRCapacity {
+  byteLength: number
+  maxBytes: number
+  moduleCount: number | null
+}
+
+export function measureQRCapacity(data: string, ecLevel: ECLevel): QRCapacity {
+  ensureUtf8Override()
+  const byteLength = utf8StringToBytes(data).length
+  const maxBytes = MAX_DATA_BYTES[ecLevel]
+  if (byteLength > maxBytes) return { byteLength, maxBytes, moduleCount: null }
+  const qr = qrcode(0, ecLevel)
+  qr.addData(data, 'Byte')
+  qr.make()
+  return { byteLength, maxBytes, moduleCount: qr.getModuleCount() }
+}
+
 export interface QRMatrix {
   matrix: boolean[][]
   count: number

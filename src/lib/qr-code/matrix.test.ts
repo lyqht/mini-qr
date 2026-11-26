@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildMatrix } from './matrix'
+import { buildMatrix, MAX_DATA_BYTES, measureQRCapacity } from './matrix'
 
 describe('buildMatrix', () => {
   it('produces a square matrix', () => {
@@ -53,5 +53,22 @@ describe('buildMatrix', () => {
   it('throws a typed error when input exceeds capacity at the chosen EC level', () => {
     const huge = 'x'.repeat(10_000)
     expect(() => buildMatrix(huge, 'H')).toThrow(/Failed to build QR matrix/)
+  })
+})
+
+describe('measureQRCapacity', () => {
+  it.each(['L', 'M', 'Q', 'H'] as const)(
+    'fits exactly MAX_DATA_BYTES at level %s and rejects one byte more',
+    (level) => {
+      const max = MAX_DATA_BYTES[level]
+      expect(measureQRCapacity('a'.repeat(max), level).moduleCount).toBe(177)
+      expect(() => buildMatrix('a'.repeat(max), level)).not.toThrow()
+      expect(measureQRCapacity('a'.repeat(max + 1), level).moduleCount).toBeNull()
+      expect(() => buildMatrix('a'.repeat(max + 1), level)).toThrow()
+    }
+  )
+
+  it('counts UTF-8 bytes, not characters', () => {
+    expect(measureQRCapacity('é', 'L').byteLength).toBe(2)
   })
 })
