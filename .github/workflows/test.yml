@@ -11,6 +11,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# The tests only need to read the code.
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Unit & Browser Tests
