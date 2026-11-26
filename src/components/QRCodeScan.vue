@@ -330,8 +330,12 @@ defineExpose({
       <div class="mb-4 flex items-center justify-center">
         <span
           class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800"
-          v-html="qrCodeTypeIcon + ' ' + typeLabel"
-        ></span>
+        >
+          <!-- Only the built-in icon is HTML. The label comes from translations,
+               so it is rendered as text. -->
+          <span class="inline-flex" aria-hidden="true" v-html="qrCodeTypeIcon"></span>
+          {{ typeLabel }}
+        </span>
       </div>
 
       <!-- QR Code Content -->

@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useFloating, offset, flip, shift, autoUpdate } from '@floating-ui/vue'
 import LanguageSelector from '@/components/LanguageSelector.vue'
 import { useI18n } from 'vue-i18n'
+import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 import { fetchWithBasePath } from '@/utils/basePath'
 import { useChangelogNotice } from '@/utils/useChangelogNotice'
@@ -52,7 +53,7 @@ async function fetchAndProcessChangelog() {
 
       version.value = getDisplayVersion(markdown, import.meta.env.VITE_APP_VERSION)
 
-      changelogContent.value = await marked.parse(markdown)
+      changelogContent.value = DOMPurify.sanitize(await marked.parse(markdown))
     } catch (error) {
       console.error('Failed to fetch or process changelog:', error)
       version.value = t('Error')

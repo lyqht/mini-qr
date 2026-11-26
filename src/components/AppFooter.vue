@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -36,7 +37,7 @@ async function fetchAndProcessChangelog() {
 
       version.value = getDisplayVersion(markdown, import.meta.env.VITE_APP_VERSION)
 
-      changelogContent.value = await marked.parse(markdown)
+      changelogContent.value = DOMPurify.sanitize(await marked.parse(markdown))
     } catch (error) {
       console.error('Failed to fetch or process changelog:', error)
       version.value = t('Error')
