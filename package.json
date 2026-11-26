@@ -1,7 +1,7 @@
 {
   "name": "mini-qr",
   "private": true,
-  "version": "0.33.0",
+  "version": "0.34.0",
   "type": "module",
   "packageManager": "pnpm@10.0.0",
   "scripts": {
