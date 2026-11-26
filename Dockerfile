@@ -45,15 +45,21 @@ ENV VITE_FIELDS_VISIBLE=${VITE_FIELDS_VISIBLE}
 ENV VITE_APP_VERSION=${VITE_APP_VERSION}
 ENV VITE_DISABLE_COLOR_CONTRAST_WARNING=${VITE_DISABLE_COLOR_CONTRAST_WARNING}
 
-COPY package*.json ./
-RUN npm install --frozen-lockfile
+# Install exactly what pnpm-lock.yaml lists, with its integrity hashes.
+# (`npm install --frozen-lockfile` ignored both the flag and the lockfile.)
+# pnpm is installed with npm because Node 25+ no longer ships corepack. Keep
+# its version in step with "packageManager" in package.json.
+RUN npm install -g pnpm@10.0.0
+COPY package.json pnpm-lock.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile
 COPY . .
-RUN npm run build
+RUN pnpm run build
 
 # Install the static file server natively too. serve is plain JavaScript, so the
-# installed files work on every architecture.
+# installed files work on every architecture. Pinned so every build ships the
+# same version.
 FROM --platform=$BUILDPLATFORM node:lts-alpine AS serve
-RUN npm install -g --prefix /opt/serve serve
+RUN npm install -g --prefix /opt/serve serve@14.2.8
 
 # Production stage
 FROM node:lts-alpine AS production

@@ -1,16 +1,39 @@
+# Only what `pnpm install` and `vite build` need goes into the build.
 node_modules
-npm-debug.log
 dist
-.env
-*.local
 coverage
-.DS_Store
+playwright-report
+test-results
+storybook-static
+
+# Never copy env files or secrets into an image layer
+.env
+.env.*
+*.local
+*.pem
+
+# Repository and editor files
 .git
 .gitignore
+.github
+.husky
 .vscode
+.idea
+.DS_Store
 *.swp
 *.swo
+
+# Not needed to build the app
+docs
+tests
+.storybook
+# Top-level docs only. public/CHANGELOG.md is still copied: patterns here
+# match from the root of the build context.
+*.md
+
+# Logs and process files
 *.log
 *.pid
 *.seed
 *.pid.lock
+npm-debug.log
