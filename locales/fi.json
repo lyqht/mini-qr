@@ -28,7 +28,7 @@
   "lt": "Liettua",
   "lv": "Latvia",
   "ms": "malaiji",
-  "nb": "Norjan Bokma◄ l",
+  "nb": "Norja (bokmål)",
   "nl": "Hollanti",
   "no": "norjalainen",
   "pl": "Puola",
@@ -368,5 +368,14 @@
   "SEPA Payment": "SEPA-maksu",
   "Structured Creditor Reference": "Jäsennelty velkojan viite",
   "Version 1 (BIC required)": "Versio 1 (BIC vaaditaan)",
-  "Version 2 (BIC optional within SEPA)": "Versio 2 (BIC valinnainen SEPA-alueella)"
+  "Version 2 (BIC optional within SEPA)": "Versio 2 (BIC valinnainen SEPA-alueella)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Taustan ja pisteiden värien välinen kontrasti on liian heikko — jotkut QR-koodinlukijat eivät välttämättä pysty lukemaan tätä koodia.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Kehyksen taustan ja pisteiden värin välinen kontrasti on liian heikko — jotkut QR-koodinlukijat eivät välttämättä pysty lukemaan tätä koodia.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Kaikki QR-koodinlukijat eivät pysty lukemaan valkoisella pohjalla olevia QR-koodeja.",
+  "Too much data for one QR code": "Yksi QR-koodi ei riitä näin suurelle tietomäärälle",
+  "Shorten the text, or split it across several QR codes.": "Lyhennä tekstiä tai jaa se useaan QR-koodiin.",
+  "Shorten the text, or choose a lower error correction level.": "Lyhennä tekstiä tai valitse matalampi virheenkorjaustaso.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Kun koko on {size}px, tämän QR-koodin jokainen ruutu on alle {px}px leveä, joten koodia ei välttämättä voi skannata. Vie koodi vähintään {recommended}px:n kokoisena.",
+  "{length} of {max} bytes at error correction level {level}": "{length} {max} tavua virheenkorjausasteella {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Poista logo ja laske virheenkorjaustasoa, jotta tiedosto mahtuu enintään {max} tavua."
 }

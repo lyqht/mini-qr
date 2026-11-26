@@ -368,5 +368,14 @@
   "SEPA Payment": "Платіж за стандартом SEPA",
   "Structured Creditor Reference": "Структурована довідка про кредитора",
   "Version 1 (BIC required)": "Версія 1 (потрібен код BIC)",
-  "Version 2 (BIC optional within SEPA)": "Версія 2 (BIC є необов’язковим у зоні SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Версія 2 (BIC є необов’язковим у зоні SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Недостатній контраст між кольором фону та кольором крапок — деякі сканери QR-кодів можуть не змогти зчитати цей код.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Недостатній контраст між фоном рамки та кольором точок — деякі зчитувачі QR-кодів можуть не змогти зчитати цей код.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Не всі програми для зчитування QR-кодів можуть зчитувати QR-коди з білим шрифтом на чорному тлі.",
+  "Too much data for one QR code": "Занадто багато даних для одного QR-коду",
+  "Shorten the text, or split it across several QR codes.": "Скоротіть текст або розділіть його на кілька QR-кодів.",
+  "Shorten the text, or choose a lower error correction level.": "Скоротіть текст або виберіть нижчий рівень виправлення помилок.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "При розмірі {size} пікселів ширина кожного квадратика цього QR-коду становить менше {px} пікселів, тому його, можливо, не вдасться відсканувати. Експортуйте з розміром {recommended} пікселів або більше.",
+  "{length} of {max} bytes at error correction level {level}": "{length} {max} байтів при рівні корекції помилок {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Видаліть логотип і знизьте рівень корекції помилок, щоб розмір файлу не перевищував {max} байтів."
 }

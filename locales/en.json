@@ -51,6 +51,9 @@
   "Last saved locally": "Loaded from local storage",
   "{count} piece(s) of data detected": "{count} piece(s) of data detected",
   "{index} / {count} QR codes have been created.": "{index} / {count} QR codes have been created.",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Not all QR code readers can read white-on-black QR codes.",
   "7-bit characters — works in plain text, email, and terminals.": "7-bit characters — works in plain text, email, and terminals.",
   "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.": "7-bit, inverted polarity (# is background) — works in plain text, email, and terminals.",
   "A logo needs more error correction to stay scannable — using High (25%) instead.": "A logo needs more error correction to stay scannable — using High (25%) instead.",
@@ -368,5 +371,11 @@
   "Your network name": "Your network name",
   "YYYY-MM-DDTHH:MM": "YYYY-MM-DDTHH:MM",
   "Zip Code": "Zip Code",
-  "Zipcode": "Zipcode"
+  "Zipcode": "Zipcode",
+  "Too much data for one QR code": "Too much data for one QR code",
+  "Shorten the text, or split it across several QR codes.": "Shorten the text, or split it across several QR codes.",
+  "Shorten the text, or choose a lower error correction level.": "Shorten the text, or choose a lower error correction level.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.",
+  "{length} of {max} bytes at error correction level {level}": "{length} of {max} bytes at error correction level {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Remove the logo and lower the error correction level to fit up to {max} bytes."
 }

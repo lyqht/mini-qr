@@ -368,5 +368,14 @@
   "SEPA Payment": "SEPA-betaling",
   "Structured Creditor Reference": "Strukturert kreditorhenvisning",
   "Version 1 (BIC required)": "Versjon 1 (BIC kreves)",
-  "Version 2 (BIC optional within SEPA)": "Versjon 2 (BIC valgfritt innenfor SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Versjon 2 (BIC valgfritt innenfor SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ For liten kontrast mellom bakgrunnen og prikkene — det kan hende at enkelte QR-kodeskannere ikke klarer å skanne denne koden.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ For liten kontrast mellom rammens bakgrunn og prikkene — det kan hende at enkelte QR-kodeskannere ikke klarer å skanne denne koden.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Ikke alle QR-kodeskannere kan lese QR-koder med hvit skrift på svart bakgrunn.",
+  "Too much data for one QR code": "For mye data til én QR-kode",
+  "Shorten the text, or split it across several QR codes.": "Kort ned teksten, eller del den opp på flere QR-koder.",
+  "Shorten the text, or choose a lower error correction level.": "Kort ned teksten, eller velg et lavere feilrettingsnivå.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Ved {size} px er hver rute i denne QR-koden mindre enn {px} px bred, så den kan kanskje ikke skannes. Eksporter den med {recommended} px eller større.",
+  "{length} of {max} bytes at error correction level {level}": "{length} av {max} byte på feilrettingsnivå {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Fjern logoen og senk feilrettingsnivået slik at filen får plass innenfor {max} byte."
 }

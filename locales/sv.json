@@ -28,7 +28,7 @@
   "lt": "Litauiska",
   "lv": "Lettiska",
   "ms": "malajiska",
-  "nb": "Norska Bokma<unk> l",
+  "nb": "Norska (bokmål)",
   "nl": "Holländska",
   "no": "norsk",
   "pl": "Polska",
@@ -368,5 +368,14 @@
   "SEPA Payment": "SEPA-betalning",
   "Structured Creditor Reference": "Strukturerad kreditgivarreferens",
   "Version 1 (BIC required)": "Version 1 (BIC krävs)",
-  "Version 2 (BIC optional within SEPA)": "Version 2 (BIC valfritt inom SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Version 2 (BIC valfritt inom SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Otillräcklig kontrast mellan bakgrunden och prickarnas färg – vissa QR-kodläsare kanske inte kan skanna den här koden.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Otillräcklig kontrast mellan ramen och prickarnas färg — vissa QR-kodläsare kanske inte kan läsa av den här koden.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Det är inte alla QR-kodläsare som kan läsa QR-koder med vit text på svart bakgrund.",
+  "Too much data for one QR code": "För mycket data för en QR-kod",
+  "Shorten the text, or split it across several QR codes.": "Förkorta texten eller dela upp den på flera QR-koder.",
+  "Shorten the text, or choose a lower error correction level.": "Förkorta texten eller välj en lägre nivå för felkorrigering.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Vid {size}px är varje ruta i denna QR-kod mindre än {px}px bred, vilket innebär att den kanske inte går att skanna. Exportera med {recommended}px eller större.",
+  "{length} of {max} bytes at error correction level {level}": "{length} av {max} byte vid felkorrigeringsnivå {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Ta bort logotypen och sänk felkorrigeringsnivån så att filen ryms inom {max} byte."
 }

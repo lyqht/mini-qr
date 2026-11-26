@@ -1,0 +1,101 @@
+name: Release
+
+# One-click release: Actions → Release → Run workflow.
+# Bumps package.json, adds the public/CHANGELOG.md entry, commits it to main,
+# tags vX.Y.Z, publishes the GitHub Release and builds the versioned Docker image.
+# See RELEASING.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump
+        type: choice
+        options: [patch, minor, major]
+        default: minor
+      dry_run:
+        description: Dry run (only preview the changelog entry in the run summary)
+        type: boolean
+        default: false
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Tag and publish
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.prepare.outputs.version }}
+      published: ${{ steps.publish.outputs.published }}
+    steps:
+      - name: Only release from main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Run the Release workflow from main, not ${{ github.ref_name }}."
+          exit 1
+
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0 # tags and history for the changelog
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: Prepare version and changelog
+        id: prepare
+        env:
+          BUMP: ${{ inputs.bump }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          TZ: Asia/Singapore
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            node scripts/release.mjs "$BUMP" --dry-run
+          else
+            node scripts/release.mjs "$BUMP"
+          fi
+
+      - name: Commit, tag and push
+        if: ${{ !inputs.dry_run }}
+        env:
+          TAG: ${{ steps.prepare.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore(release): $TAG"
+          git tag "$TAG"
+          git push --atomic origin HEAD:main "refs/tags/$TAG"
+
+      - name: Publish GitHub Release
+        id: publish
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.prepare.outputs.tag }}
+          PREVIOUS_TAG: ${{ steps.prepare.outputs.previous_tag }}
+        run: |
+          gh release create "$TAG" --verify-tag --title "$TAG" \
+            --generate-notes --notes-start-tag "$PREVIOUS_TAG"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
+  # A release made with the default token doesn't trigger docker.yml's
+  # `release: published` job, so build the versioned image from here instead.
+  docker:
+    name: Docker image
+    needs: release
+    if: needs.release.outputs.published == 'true'
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/docker.yml
+    with:
+      version: ${{ needs.release.outputs.version }}

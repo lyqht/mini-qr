@@ -368,5 +368,14 @@
   "SEPA Payment": "Pembayaran SEPA",
   "Structured Creditor Reference": "Referensi Kreditor Terstruktur",
   "Version 1 (BIC required)": "Versi 1 (diperlukan BIC)",
-  "Version 2 (BIC optional within SEPA)": "Versi 2 (BIC bersifat opsional di wilayah SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Versi 2 (BIC bersifat opsional di wilayah SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Kontras antara warna latar belakang dan warna titik-titiknya tidak cukup — beberapa pembaca kode QR mungkin tidak dapat memindai kode ini.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Kontras antara latar belakang bingkai dan warna titik-titik tidak cukup — beberapa pembaca kode QR mungkin tidak dapat memindai kode ini.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Tidak semua pembaca kode QR dapat membaca kode QR berwarna putih di atas latar belakang hitam.",
+  "Too much data for one QR code": "Data yang terlalu banyak untuk satu kode QR",
+  "Shorten the text, or split it across several QR codes.": "Persingkat teks tersebut, atau bagi teks tersebut ke dalam beberapa kode QR.",
+  "Shorten the text, or choose a lower error correction level.": "Persingkat teks tersebut, atau pilih tingkat koreksi kesalahan yang lebih rendah.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Pada ukuran {size}px, setiap kotak pada kode QR ini memiliki lebar kurang dari {px}px, sehingga mungkin tidak dapat dipindai. Ekspor dengan ukuran {recommended}px atau lebih besar.",
+  "{length} of {max} bytes at error correction level {level}": "{length} byte dari {max} byte pada tingkat koreksi kesalahan {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Hapus logo dan turunkan tingkat koreksi kesalahan agar ukurannya sesuai dengan {max} byte."
 }

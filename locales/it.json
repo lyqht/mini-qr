@@ -368,5 +368,14 @@
   "SEPA Payment": "Pagamento SEPA",
   "Structured Creditor Reference": "Riferimento strutturato del creditore",
   "Version 1 (BIC required)": "Versione 1 (è richiesto il codice BIC)",
-  "Version 2 (BIC optional within SEPA)": "Versione 2 (BIC facoltativo all’interno della SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Versione 2 (BIC facoltativo all’interno della SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Contrasto insufficiente tra lo sfondo e il colore dei punti: alcuni lettori di codici QR potrebbero non essere in grado di scansionare questo codice.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Contrasto insufficiente tra lo sfondo del riquadro e il colore dei punti: alcuni lettori di codici QR potrebbero non essere in grado di scansionare questo codice.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Non tutti i lettori di codici QR sono in grado di leggere i codici QR con caratteri bianchi su sfondo nero.",
+  "Too much data for one QR code": "Troppi dati per un solo codice QR",
+  "Shorten the text, or split it across several QR codes.": "Accorcia il testo oppure suddividilo in più codici QR.",
+  "Shorten the text, or choose a lower error correction level.": "Accorcia il testo oppure scegli un livello di correzione degli errori più basso.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Con una dimensione di {size} px, ogni quadrato di questo codice QR ha una larghezza inferiore a {px} px, quindi potrebbe non essere leggibile. Esportalo con una dimensione di {recommended} px o superiore.",
+  "{length} of {max} bytes at error correction level {level}": "{length} di {max} byte con livello di correzione degli errori {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Rimuovi il logo e riduci il livello di correzione degli errori in modo da rientrare nel limite di {max} byte."
 }

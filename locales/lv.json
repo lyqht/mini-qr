@@ -373,5 +373,14 @@
   "SEPA Payment": "SEPA maksājums",
   "Structured Creditor Reference": "Strukturēta atsauce uz kreditoru",
   "Version 1 (BIC required)": "1. versija (nepieciešams BIC)",
-  "Version 2 (BIC optional within SEPA)": "2. versija (BIC nav obligāts SEPA ietvaros)"
+  "Version 2 (BIC optional within SEPA)": "2. versija (BIC nav obligāts SEPA ietvaros)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Nepietiekams kontrasts starp fona un punktu krāsu — daži QR kodu nolasītāji varētu nespēt nolasīt šo kodu.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Nepietiekams kontrasts starp rāmja fonu un punktu krāsu — daži QR kodu nolasītāji varētu nespēt nolasīt šo kodu.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Ne visi QR kodu nolasītāji spēj nolasīt QR kodus, kuros balts teksts ir uz melna fona.",
+  "Too much data for one QR code": "Vienam QR kodam ir pārāk daudz datu",
+  "Shorten the text, or split it across several QR codes.": "Saīsiniet tekstu vai sadaliet to pa vairākiem QR kodiem.",
+  "Shorten the text, or choose a lower error correction level.": "Saīsiniet tekstu vai izvēlieties zemāku kļūdu labošanas līmeni.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Ja izmērs ir {size} pikseļu, katrs šī QR koda kvadrāts ir platāks par {px} pikseļiem, tāpēc to var nebūt iespējams nolasīt. Eksportējiet ar izmēru {recommended} pikseļu vai lielāku.",
+  "{length} of {max} bytes at error correction level {level}": "{length} {max} baitu, kļūdu labošanas līmenis {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Noņemiet logotipu un samaziniet kļūdu labošanas līmeni, lai ietilptu līdz {max} baitiem."
 }

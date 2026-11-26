@@ -368,5 +368,14 @@
   "SEPA Payment": "Платеж в рамках SEPA",
   "Structured Creditor Reference": "Структурированная справка о кредиторе",
   "Version 1 (BIC required)": "Версия 1 (требуется BIC)",
-  "Version 2 (BIC optional within SEPA)": "Версия 2 (BIC не является обязательным в рамках SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Версия 2 (BIC не является обязательным в рамках SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Недостаточный контраст между цветом фона и цветом точек — некоторые считыватели QR-кодов могут не смочь отсканировать этот код.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Недостаточный контраст между фоном рамки и цветом точек — некоторые считыватели QR-кодов могут не смочь отсканировать этот код.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Не все считыватели QR-кодов могут распознавать QR-коды с белым рисунком на черном фоне.",
+  "Too much data for one QR code": "Слишком много данных для одного QR-кода",
+  "Shorten the text, or split it across several QR codes.": "Сократите текст или разделите его на несколько QR-кодов.",
+  "Shorten the text, or choose a lower error correction level.": "Сократите текст или выберите более низкий уровень исправления ошибок.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "При размере {size} пикселей ширина каждого квадратика этого QR-кода составляет менее {px} пикселей, поэтому его может не удаться отсканировать. Экспортируйте с размером {recommended} пикселей или больше.",
+  "{length} of {max} bytes at error correction level {level}": "{length} {max} байт при уровне коррекции ошибок {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Удалите логотип и снизьте уровень коррекции ошибок, чтобы размер файла не превышал {max} байт."
 }

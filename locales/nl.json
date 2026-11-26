@@ -368,5 +368,14 @@
   "SEPA Payment": "SEPA-betaling",
   "Structured Creditor Reference": "Gestructureerde crediteurenverwijzing",
   "Version 1 (BIC required)": "Versie 1 (BIC vereist)",
-  "Version 2 (BIC optional within SEPA)": "Versie 2 (BIC optioneel binnen SEPA)"
+  "Version 2 (BIC optional within SEPA)": "Versie 2 (BIC optioneel binnen SEPA)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Onvoldoende contrast tussen de achtergrondkleur en de kleur van de stippen — sommige QR-codelezers kunnen deze code mogelijk niet scannen.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Onvoldoende contrast tussen de achtergrond van het kader en de kleur van de stippen — sommige QR-codelezers kunnen deze code mogelijk niet scannen.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Niet alle QR-codelezers kunnen QR-codes met witte tekens op een zwarte achtergrond lezen.",
+  "Too much data for one QR code": "Te veel gegevens voor één QR-code",
+  "Shorten the text, or split it across several QR codes.": "Maak de tekst korter, of verdeel deze over meerdere QR-codes.",
+  "Shorten the text, or choose a lower error correction level.": "Maak de tekst korter, of kies een lager niveau voor foutcorrectie.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Bij {size}px is elk vierkantje van deze QR-code minder dan {px}px breed, waardoor hij mogelijk niet kan worden gescand. Exporteer de QR-code op {recommended}px of groter.",
+  "{length} of {max} bytes at error correction level {level}": "{length} van {max} bytes bij foutcorrectieniveau {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Verwijder het logo en verlaag het foutcorrectieniveau zodat het bestand maximaal {max} bytes groot is."
 }

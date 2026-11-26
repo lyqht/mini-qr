@@ -1,3 +1,5 @@
+import { getEnv } from './runtimeConfig'
+
 export interface FrameStyle {
   textColor: string
   backgroundColor: string
@@ -200,11 +202,11 @@ function parseFramePresetsFromEnv(envVal?: string): FramePreset[] | undefined {
   }
 }
 
-const envFramePresets = parseFramePresetsFromEnv(import.meta.env.VITE_FRAME_PRESETS)
+const envFramePresets = parseFramePresetsFromEnv(getEnv('VITE_FRAME_PRESETS'))
 export const allFramePresets: FramePreset[] = envFramePresets ?? builtInFramePresets
 
 export const defaultFramePreset: FramePreset =
-  allFramePresets.find((p) => p.name === import.meta.env.VITE_FRAME_PRESET) ?? allFramePresets[0]
+  allFramePresets.find((p) => p.name === getEnv('VITE_FRAME_PRESET')) ?? allFramePresets[0]
 
 export const VALID_FRAME_POSITIONS = ['top', 'bottom', 'left', 'right'] as const
 

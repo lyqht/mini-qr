@@ -101,7 +101,7 @@ For full self-hosting instructions including Docker setup, environment variables
 Translations & bug fixes are welcome!
 For all other matters, before opening an issue or contacting the project maintainer, please read up on to [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Component stories live in Storybook (`pnpm storybook` locally, or the production build at [mini-qr-storybook.vercel.app](https://mini-qr-storybook.vercel.app)). Pull requests that touch the UI get an auto-deployed Storybook preview on Vercel — see [docs/storybook-vercel-previews.md](docs/storybook-vercel-previews.md) for how it's wired up.
+Component stories live in Storybook (`pnpm storybook` locally, or the production build at [mini-qr-storybook.vercel.app](https://mini-qr-storybook.vercel.app)). Pull requests that touch the UI get a Storybook preview from Vercel's Git integration — see [docs/storybook-vercel-previews.md](docs/storybook-vercel-previews.md) for how it's wired up.
 
 ---
 
@@ -141,7 +141,10 @@ Thank you for everyone here for taking their time out to improve MiniQR 🧡
       <td align="center" valign="top" width="16.66%"><a href="http://solovjov.net/"><img src="https://avatars.githubusercontent.com/u/11983427?v=4?s=48" width="48px;" alt="Mikhail Solovev"/><br /><sub><b>Mikhail Solovev</b></sub></a><br /><a href="#translation-r3bers" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/osamajvd"><img src="https://avatars.githubusercontent.com/u/54687462?v=4?s=48" width="48px;" alt="osamajvd"/><br /><sub><b>osamajvd</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=osamajvd" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/aleex1848"><img src="https://avatars.githubusercontent.com/u/17452861?v=4?s=48" width="48px;" alt="aleex1848"/><br /><sub><b>aleex1848</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=aleex1848" title="Code">💻</a></td>
-      <td align="center" valign="top" width="16.66%"><a href="https://github.com/jdiepholz"><img src="https://avatars.githubusercontent.com/u/144233651?v=4?s=48" width="48px;" alt="jdiepholz"/><br /><sub><b>jdiepholz</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=jdiepholz" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/jdiepholz"><img src="https://avatars.githubusercontent.com/u/144233651?v=4?s=48" width="48px;" alt="jdiepholz"/><br /><sub><b>jdiepholz</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=jdiepholz" title="Code">💻</a> <a href="https://github.com/lyqht/mini-qr/commits?author=jdiepholz" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/HaleyHalcyon"><img src="https://avatars.githubusercontent.com/u/180524023?v=4?s=48" width="48px;" alt="HaleyHalcyon"/><br /><sub><b>HaleyHalcyon</b></sub></a><br /><a href="#ideas-HaleyHalcyon" title="Ideas, Planning, & Feedback">🤔</a></td>
+    </tr>
+    <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/Bashar-Omar"><img src="https://avatars.githubusercontent.com/u/88382370?v=4?s=48" width="48px;" alt="Bashar-Omar"/><br /><sub><b>Bashar-Omar</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=Bashar-Omar" title="Code">💻</a></td>
     </tr>
   </tbody>

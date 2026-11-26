@@ -373,5 +373,14 @@
   "SEPA Payment": "Plačilo v okviru SEPA",
   "Structured Creditor Reference": "Strukturirani podatki o upnikih",
   "Version 1 (BIC required)": "Različica 1 (potreben je BIC)",
-  "Version 2 (BIC optional within SEPA)": "Različica 2 (BIC je v okviru SEPA neobvezen)"
+  "Version 2 (BIC optional within SEPA)": "Različica 2 (BIC je v okviru SEPA neobvezen)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Premajhen kontrast med barvo ozadja in barvo pik – nekateri čitalniki QR-kod te kode morda ne bodo mogli skenirati.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Premajhen kontrast med ozadjem okvirja in barvo pik – nekateri čitalniki QR-kod te kode morda ne bodo mogli prebrati.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Vsi čitalniki QR-kod ne morejo prebrati QR-kod z belimi črkami na črnem ozadju.",
+  "Too much data for one QR code": "Preveč podatkov za en QR-kodo",
+  "Shorten the text, or split it across several QR codes.": "Besedilo skrajšajte ali ga razdelite na več QR-kod.",
+  "Shorten the text, or choose a lower error correction level.": "Skrajšajte besedilo ali izberite nižjo stopnjo popravljanja napak.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Pri velikosti {size}px je vsak kvadrat te QR-kode širok manj kot {px}px, zato se morda ne bo dalo skenirati. Izvozite jo v velikosti {recommended}px ali več.",
+  "{length} of {max} bytes at error correction level {level}": "{length} {max} bajtov na stopnji popravljanja napak {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Odstranite logotip in znižajte stopnjo popravljanja napak, da se datoteka prilagodi na največ {max} bajtov."
 }

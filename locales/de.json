@@ -368,5 +368,14 @@
   "SEPA Payment": "SEPA-Zahlung",
   "Structured Creditor Reference": "Strukturierte Gläubigerreferenz",
   "Version 1 (BIC required)": "Version 1 (BIC erforderlich)",
-  "Version 2 (BIC optional within SEPA)": "Version 2 (BIC innerhalb des SEPA optional)"
+  "Version 2 (BIC optional within SEPA)": "Version 2 (BIC innerhalb des SEPA optional)",
+  "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Unzureichender Kontrast zwischen Hintergrund und Punktfarbe – manche QR-Code-Lesegeräte können diesen Code möglicherweise nicht scannen.",
+  "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Unzureichender Kontrast zwischen dem Hintergrund des Rahmens und der Farbe der Punkte – einige QR-Code-Lesegeräte können diesen Code möglicherweise nicht scannen.",
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Nicht alle QR-Code-Lesegeräte können QR-Codes mit weißer Schrift auf schwarzem Hintergrund lesen.",
+  "Too much data for one QR code": "Zu viele Daten für einen QR-Code",
+  "Shorten the text, or split it across several QR codes.": "Kürzen Sie den Text oder teilen Sie ihn auf mehrere QR-Codes auf.",
+  "Shorten the text, or choose a lower error correction level.": "Kürzen Sie den Text oder wählen Sie eine niedrigere Fehlerkorrekturstufe.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Bei einer Größe von {size}px ist jedes Quadrat dieses QR-Codes weniger als {px}px breit, sodass er möglicherweise nicht gescannt werden kann. Exportieren Sie ihn mit einer Größe von {recommended}px oder größer.",
+  "{length} of {max} bytes at error correction level {level}": "{length} von {max} Bytes bei der Fehlerkorrekturstufe {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Entfernen Sie das Logo und senken Sie die Fehlerkorrekturstufe, damit die Datei maximal {max} Bytes groß ist."
 }
