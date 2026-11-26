@@ -371,5 +371,11 @@
   "Version 2 (BIC optional within SEPA)": "バージョン 2（SEPA 域内では BIC は任意）",
   "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ 背景色とドットの色のコントラストが不十分です。一部のQRコードリーダーでは、このコードを読み取れない場合があります。",
   "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ 枠の背景色とドットの色のコントラストが不十分です。一部のQRコードリーダーでは、このコードを読み取れない場合があります。",
-  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ すべてのQRコードリーダーが、黒地に白のQRコードを読み取れるわけではありません。"
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ すべてのQRコードリーダーが、黒地に白のQRコードを読み取れるわけではありません。",
+  "Too much data for one QR code": "1つのQRコードにはデータが多すぎる",
+  "Shorten the text, or split it across several QR codes.": "テキストを短くするか、複数のQRコードに分けてください。",
+  "Shorten the text, or choose a lower error correction level.": "テキストを短くするか、エラー訂正レベルを下げてください。",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "{size}pxの場合、このQRコードの各マスの幅は{px}px未満となるため、読み取れない可能性があります。{recommended}px以上でエクスポートしてください。",
+  "{length} of {max} bytes at error correction level {level}": "エラー訂正レベル {level} における {max} バイトの {length}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "ロゴを削除し、エラー訂正レベルを下げて、最大{max}バイトに収まるようにしてください。"
 }

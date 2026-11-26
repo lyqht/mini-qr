@@ -371,5 +371,11 @@
   "Version 2 (BIC optional within SEPA)": "Versiunea 2 (BIC opțional în cadrul SEPA)",
   "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Contrastul dintre fundal și culoarea punctelor este insuficient — este posibil ca unele dispozitive de citire a codurilor QR să nu poată scana acest cod.",
   "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Contrastul dintre fundalul cadrului și culoarea punctelor este insuficient — este posibil ca unele dispozitive de citire a codurilor QR să nu poată scana acest cod.",
-  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Nu toate aplicațiile de citire a codurilor QR pot citi codurile QR cu caractere albe pe fond negru."
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Nu toate aplicațiile de citire a codurilor QR pot citi codurile QR cu caractere albe pe fond negru.",
+  "Too much data for one QR code": "Sunt prea multe date pentru un singur cod QR",
+  "Shorten the text, or split it across several QR codes.": "Scurtați textul sau împărțiți-l în mai multe coduri QR.",
+  "Shorten the text, or choose a lower error correction level.": "Scurtă textul sau alege un nivel mai scăzut de corectare a erorilor.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "La {size}px, fiecare pătrat al acestui cod QR are o lățime mai mică de {px}px, așa că este posibil să nu poată fi scanat. Exportați-l la {recommended}px sau la o dimensiune mai mare.",
+  "{length} of {max} bytes at error correction level {level}": "{length} de {max} octeți la nivelul de corectare a erorilor {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Eliminați logo-ul și reduceți nivelul de corectare a erorilor pentru a se încadra în {max} octeți."
 }

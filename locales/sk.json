@@ -371,5 +371,11 @@
   "Version 2 (BIC optional within SEPA)": "Verzia 2 (kód BIC je v rámci SEPA voliteľný)",
   "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Nedostatočný kontrast medzi farbou pozadia a farbou bodiek — niektoré čítačky QR kódov tento kód nemusia dokázať naskenovať.",
   "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Nedostatočný kontrast medzi pozadím rámčeka a farbou bodiek — niektoré čítačky QR kódov tento kód nemusia dokázať naskenovať.",
-  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Nie všetky čítačky QR kódov dokážu prečítať QR kódy s bielym textom na čiernom pozadí."
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Nie všetky čítačky QR kódov dokážu prečítať QR kódy s bielym textom na čiernom pozadí.",
+  "Too much data for one QR code": "Príliš veľa údajov na jeden QR kód",
+  "Shorten the text, or split it across several QR codes.": "Text skráťte alebo ho rozdeľte do viacerých QR kódov.",
+  "Shorten the text, or choose a lower error correction level.": "Skráťte text alebo zvoľte nižšiu úroveň opravy chýb.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Pri veľkosti {size}px má každý štvorček tohto QR kódu šírku menšiu ako {px}px, takže sa nemusí podariť naskenovať. Exportujte ho pri veľkosti {recommended}px alebo väčšej.",
+  "{length} of {max} bytes at error correction level {level}": "{length} {max} bajtov pri úrovni korekcie chýb {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Odstráňte logo a znížte úroveň korekcie chýb tak, aby sa vošlo do {max} bajtov."
 }

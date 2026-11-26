@@ -371,5 +371,11 @@
   "Version 2 (BIC optional within SEPA)": "Wersja 2 (kod BIC opcjonalny w ramach SEPA)",
   "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Niewystarczający kontrast między kolorem tła a kolorem kropek — niektóre czytniki kodów QR mogą nie być w stanie odczytać tego kodu.",
   "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Niewystarczający kontrast między tłem ramki a kolorem kropek — niektóre czytniki kodów QR mogą nie być w stanie odczytać tego kodu.",
-  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Nie wszystkie czytniki kodów QR potrafią odczytać kody QR z białymi znakami na czarnym tle."
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Nie wszystkie czytniki kodów QR potrafią odczytać kody QR z białymi znakami na czarnym tle.",
+  "Too much data for one QR code": "Zbyt dużo danych jak na jeden kod QR",
+  "Shorten the text, or split it across several QR codes.": "Skróć tekst lub podziel go na kilka kodów QR.",
+  "Shorten the text, or choose a lower error correction level.": "Skróć tekst lub wybierz niższy poziom korekcji błędów.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Przy rozmiarze {size} px każdy kwadrat tego kodu QR ma szerokość mniejszą niż {px} px, więc skanowanie może się nie powieść. Wyeksportuj kod w rozmiarze {recommended} px lub większym.",
+  "{length} of {max} bytes at error correction level {level}": "{length} bajtów przy {max} na poziomie korekcji błędów {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Usuń logo i obniż poziom korekcji błędów, aby zmieścić do {max} bajtów."
 }

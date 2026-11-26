@@ -371,5 +371,11 @@
   "Version 2 (BIC optional within SEPA)": "Version 2 (BIC er valgfrit inden for SEPA)",
   "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Der er ikke tilstrækkelig kontrast mellem baggrunden og prikkenes farve — nogle QR-kodescannere kan muligvis ikke scanne denne kode.",
   "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Der er ikke tilstrækkelig kontrast mellem rammens baggrund og prikkenes farve — nogle QR-kodescannere kan muligvis ikke scanne denne kode.",
-  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Ikke alle QR-kodescannere kan læse QR-koder med hvid skrift på sort baggrund."
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Ikke alle QR-kodescannere kan læse QR-koder med hvid skrift på sort baggrund.",
+  "Too much data for one QR code": "For mange data til én QR-kode",
+  "Shorten the text, or split it across several QR codes.": "Forkort teksten, eller del den op på flere QR-koder.",
+  "Shorten the text, or choose a lower error correction level.": "Forkort teksten, eller vælg et lavere fejlkorrektionsniveau.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Ved {size} px er hver firkant i denne QR-kode under {px} px bred, så den kan muligvis ikke scannes. Eksporter den i en størrelse på {recommended} px eller større.",
+  "{length} of {max} bytes at error correction level {level}": "{length} {max} byte ved fejlkorrektionsniveau {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Fjern logoet og sænk fejlkorrektionsniveauet, så filen passer inden for {max} bytes."
 }

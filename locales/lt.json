@@ -371,5 +371,11 @@
   "Version 2 (BIC optional within SEPA)": "2 versija (BIC nurodymas SEPA sistemoje nėra privalomas)",
   "⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Nepakankamas kontrastas tarp fono ir taškų spalvos — kai kurie QR kodų skaitytuvai gali nesugebėti nuskaityti šio kodo.",
   "⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.": "⚠️ Nepakankamas kontrastas tarp rėmelio fono ir taškų spalvos — kai kurie QR kodų skaitytuvai gali nesugebėti nuskaityti šio kodo.",
-  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Ne visi QR kodų skaitytuvai gali nuskaityti baltus QR kodus ant juodo fono."
+  "⚠️ Not all QR code readers can read white-on-black QR codes.": "⚠️ Ne visi QR kodų skaitytuvai gali nuskaityti baltus QR kodus ant juodo fono.",
+  "Too much data for one QR code": "Vienam QR kodui per daug duomenų",
+  "Shorten the text, or split it across several QR codes.": "Sutrumpinkite tekstą arba padalinkite jį į kelis QR kodus.",
+  "Shorten the text, or choose a lower error correction level.": "Sutrumpinkite tekstą arba pasirinkite žemesnį klaidų taisymo lygį.",
+  "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Esant {size} pikselių dydžiui, kiekvienas šio QR kodo kvadratėlis yra mažesnis nei {px} pikselių pločio, todėl jo gali nepavykti nuskaityti. Eksportuokite {recommended} pikselių dydžiu arba didesniu.",
+  "{length} of {max} bytes at error correction level {level}": "{length} {max} baitų, klaidų taisymo lygis {level}",
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Pašalinkite logotipą ir sumažinkite klaidų taisymo lygį, kad tilptų iki {max} baitų."
 }
