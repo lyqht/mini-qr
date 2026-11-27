@@ -3,6 +3,7 @@ import BatchExportFieldsGuide from '@/components/BatchExportFieldsGuide.vue'
 import ColorContrastToast from '@/components/ColorContrastToast.vue'
 import CopyImageModal from '@/components/CopyImageModal.vue'
 import DataTemplatesModal from '@/components/DataTemplatesModal.vue'
+import FrameFontPicker from '@/components/FrameFontPicker.vue'
 import QRCodeFrame from '@/components/QRCodeFrame.vue'
 import StyledQRCode from '@/components/StyledQRCode.vue'
 import {
@@ -2333,35 +2334,13 @@ const updateDataFromModal = (newData: string) => {
                       <label for="frame-font-family" class="mb-1 block text-sm">{{
                         t('Font family')
                       }}</label>
-                      <select
+                      <FrameFontPicker
                         id="frame-font-family"
-                        class="w-full text-input"
-                        :value="frameStyle.fontFamily ?? ''"
-                        @change="onFontFamilyChange(($event.target as HTMLSelectElement).value)"
-                      >
-                        <option
-                          v-for="font in groupedFontOptions.ungrouped"
-                          :key="font.value"
-                          :value="font.value"
-                          :style="font.value ? { fontFamily: font.value } : {}"
-                        >
-                          {{ font.label }}
-                        </option>
-                        <optgroup
-                          v-for="group in groupedFontOptions.groups"
-                          :key="group.category"
-                          :label="t(group.label)"
-                        >
-                          <option
-                            v-for="font in group.fonts"
-                            :key="font.value"
-                            :value="font.value"
-                            :style="{ fontFamily: font.value }"
-                          >
-                            {{ font.label }}
-                          </option>
-                        </optgroup>
-                      </select>
+                        :model-value="frameStyle.fontFamily"
+                        :ungrouped="groupedFontOptions.ungrouped"
+                        :groups="groupedFontOptions.groups"
+                        @update:model-value="onFontFamilyChange"
+                      />
                     </div>
                   </div>
                 </div>
