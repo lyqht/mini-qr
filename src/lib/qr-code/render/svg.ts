@@ -95,17 +95,18 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
   }
 
   if (placement && config.image) {
-    const innerSize = placement.size - 2 * placement.margin
+    const innerWidth = placement.width - 2 * placement.margin
+    const innerHeight = placement.height - 2 * placement.margin
     const innerX = placement.x + placement.margin
     const innerY = placement.y + placement.margin
-    if (innerSize > 0) {
+    if (innerWidth > 0 && innerHeight > 0) {
       const crossOrigin = config.image.crossOrigin
         ? ` crossorigin="${config.image.crossOrigin}"`
         : ''
       parts.push(
         `<image class="qr-logo" href="${escapeAttr(config.image.href)}" xlink:href="${escapeAttr(
           config.image.href
-        )}" x="${innerX}" y="${innerY}" width="${innerSize}" height="${innerSize}" preserveAspectRatio="xMidYMid meet"${crossOrigin}/>`
+        )}" x="${innerX}" y="${innerY}" width="${innerWidth}" height="${innerHeight}" preserveAspectRatio="xMidYMid meet"${crossOrigin}/>`
       )
     }
   }

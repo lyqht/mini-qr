@@ -321,9 +321,26 @@ const style = computed(() => ({
   borderRadius: styledBorderRadiusFormatted.value,
   background: styleBackground.value
 }))
+const imageAspectRatio = ref<number | undefined>()
+watch(
+  image,
+  (src) => {
+    imageAspectRatio.value = undefined
+    if (!src) return
+    const img = new Image()
+    img.onload = () => {
+      if (image.value === src && img.naturalWidth > 0 && img.naturalHeight > 0) {
+        imageAspectRatio.value = img.naturalWidth / img.naturalHeight
+      }
+    }
+    img.src = src
+  },
+  { immediate: true }
+)
 const imageOptions = computed(() => ({
   margin: imageMargin.value,
-  imageSize: imageSize.value
+  imageSize: imageSize.value,
+  aspectRatio: imageAspectRatio.value
 }))
 // Capped below 1: past ~0.5 the render pipeline's own scannability safety
 // cap (see computeImagePlacement's SAFE_MAX_AXIS_FRACTION) already clamps the

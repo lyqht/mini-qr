@@ -97,7 +97,8 @@ export function fromLegacyOptions(legacy: Options): QRCodeConfig {
           sizeRatio: legacy.imageOptions?.imageSize ?? 0.4,
           margin: legacy.imageOptions?.margin,
           hideBackgroundDots: legacy.imageOptions?.hideBackgroundDots ?? true,
-          crossOrigin: normalizeCrossOrigin(legacy.imageOptions?.crossOrigin)
+          crossOrigin: normalizeCrossOrigin(legacy.imageOptions?.crossOrigin),
+          aspectRatio: legacy.imageOptions?.aspectRatio
         }
       : undefined
   }

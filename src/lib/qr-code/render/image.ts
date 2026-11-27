@@ -4,6 +4,8 @@ export interface ImagePlacement {
   x: number
   y: number
   size: number
+  width: number
+  height: number
   margin: number
   hidesCell: (r: number, c: number) => boolean
 }
@@ -76,30 +78,48 @@ export function computeImagePlacement(input: PlacementInput): ImagePlacement {
       safeMaxAxisDots % 2 === 0 && safeMaxAxisDots > 1 ? safeMaxAxisDots - 1 : safeMaxAxisDots
   }
 
-  const imageSizeInPx = maxAxisDots * moduleSize
-  const x = offset + (count * moduleSize - imageSizeInPx) / 2
-  const y = offset + (count * moduleSize - imageSizeInPx) / 2 // square only in v1
+  const aspectRatio = normalizeAspectRatio(image.aspectRatio)
+  const widthDots = aspectRatio >= 1 ? maxAxisDots : toOddAtLeastOne(maxAxisDots * aspectRatio)
+  const heightDots = aspectRatio >= 1 ? toOddAtLeastOne(maxAxisDots / aspectRatio) : maxAxisDots
+
+  const width = widthDots * moduleSize
+  const height = heightDots * moduleSize
+  const imageSizeInPx = Math.max(width, height)
+  const x = offset + (count * moduleSize - width) / 2
+  const y = offset + (count * moduleSize - height) / 2
 
   void totalSize
 
   const hideBackground = image.hideBackgroundDots ?? true
   if (!hideBackground) {
-    return { x, y, size: imageSizeInPx, margin: marginPx, hidesCell: () => false }
+    return { x, y, size: imageSizeInPx, width, height, margin: marginPx, hidesCell: () => false }
   }
 
   const centreModule = (count - 1) / 2
-  const half = (maxAxisDots - 1) / 2
-  const minR = Math.floor(centreModule - half)
-  const maxR = Math.ceil(centreModule + half)
-  const minC = minR
-  const maxC = maxR
+  const halfHeight = (heightDots - 1) / 2
+  const halfWidth = (widthDots - 1) / 2
+  const minR = Math.floor(centreModule - halfHeight)
+  const maxR = Math.ceil(centreModule + halfHeight)
+  const minC = Math.floor(centreModule - halfWidth)
+  const maxC = Math.ceil(centreModule + halfWidth)
   return {
     x,
     y,
     size: imageSizeInPx,
+    width,
+    height,
     margin: marginPx,
     hidesCell: (r: number, c: number) => r >= minR && r <= maxR && c >= minC && c <= maxC
   }
+}
+
+function normalizeAspectRatio(ratio: number | undefined): number {
+  return ratio !== undefined && Number.isFinite(ratio) && ratio > 0 ? ratio : 1
+}
+
+function toOddAtLeastOne(value: number): number {
+  const rounded = Math.max(1, Math.round(value))
+  return rounded % 2 === 0 ? rounded - 1 : rounded
 }
 
 function clamp01(v: number): number {
