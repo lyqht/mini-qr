@@ -62,6 +62,7 @@ export const SIMPLE_MODE_FIELD_GROUPS: SimpleFieldGroup[] = [
       { key: 'frameBorderWidth', labelKey: 'Border width' },
       { key: 'frameBorderRadius', labelKey: 'Border radius' },
       { key: 'framePadding', labelKey: 'Padding' },
+      { key: 'frameFontSize', labelKey: 'Font size' },
       { key: 'frameFontFamily', labelKey: 'Font family' }
     ]
   }
@@ -79,6 +80,7 @@ export const FRAME_FIELD_KEYS = [
   'frameBorderWidth',
   'frameBorderRadius',
   'framePadding',
+  'frameFontSize',
   'frameFontFamily'
 ] as const
 

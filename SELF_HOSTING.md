@@ -157,7 +157,7 @@ Valid field keys:
 - **Frame** (the frame is enabled automatically when any of these is listed):
   `framePreset`, `frameText`, `framePosition`, `frameWidth`, `frameTextColor`,
   `frameBackground`, `frameBorderColor`, `frameBorderWidth`, `frameBorderRadius`,
-  `framePadding`, `frameFontFamily`
+  `framePadding`, `frameFontSize`, `frameFontFamily`
 
 Unknown keys are ignored. The data field is always shown.
 

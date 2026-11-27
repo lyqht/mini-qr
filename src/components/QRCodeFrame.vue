@@ -8,6 +8,7 @@ interface FrameStyle {
   borderWidth?: string
   borderRadius?: string
   padding?: string
+  fontSize?: string
   fontFamily?: string
   /** Frame background image (data:image URI or http(s) URL). Drawn over backgroundColor. */
   backgroundImage?: string
@@ -61,7 +62,7 @@ withDefaults(defineProps<Props>(), {
       :style="{
         color: frameStyle.textColor,
         fontFamily: frameStyle.fontFamily || undefined,
-        fontSize: `${PREVIEW_FRAME_FONT_SIZE}px`,
+        fontSize: frameStyle.fontSize || `${PREVIEW_FRAME_FONT_SIZE}px`,
         margin: 0,
         textAlign: 'center',
         [textPosition === 'left' || textPosition === 'right' ? 'width' : 'maxWidth']:

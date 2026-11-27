@@ -28,6 +28,7 @@ export interface LegacyFrameStyle {
   borderWidth?: string
   borderRadius?: string
   padding?: string
+  fontSize?: string
   fontFamily?: string
   backgroundImage?: string
 }
@@ -142,7 +143,7 @@ function toFrameConfig(input: LegacyFrameInput, scale = 1): FrameConfig {
   const out: FrameConfig = {
     text: input.text,
     textPosition: input.position,
-    fontSize: PREVIEW_FRAME_FONT_SIZE * scale
+    fontSize: parsePxLength(s.fontSize, PREVIEW_FRAME_FONT_SIZE) * scale
   }
   if (s.textColor) out.textColor = s.textColor
   if (s.backgroundColor) out.backgroundColor = s.backgroundColor

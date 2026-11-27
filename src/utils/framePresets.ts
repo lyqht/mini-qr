@@ -7,6 +7,7 @@ export interface FrameStyle {
   borderWidth: string
   borderRadius: string
   padding: string
+  fontSize?: string
   fontFamily?: string
   /** Frame background image (data:image URI from upload, or http(s) URL). Drawn over backgroundColor. */
   backgroundImage?: string
@@ -237,6 +238,8 @@ export function isValidFrameStyle(value: unknown): value is FrameStyle {
     isValidCSSLength(s.borderRadius) &&
     typeof s.padding === 'string' &&
     isValidCSSLength(s.padding) &&
+    (s.fontSize === undefined ||
+      (typeof s.fontSize === 'string' && isValidCSSLength(s.fontSize))) &&
     (s.fontFamily === undefined || typeof s.fontFamily === 'string') &&
     (s.backgroundImage === undefined ||
       (typeof s.backgroundImage === 'string' && isValidFrameBackgroundImage(s.backgroundImage)))

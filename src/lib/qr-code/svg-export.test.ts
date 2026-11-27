@@ -114,6 +114,18 @@ describe('export scaling (#333)', () => {
     )
   })
 
+  it('uses the frame font size and scales it with the export size (#337)', () => {
+    const exportWithFontSize = (size: number) =>
+      buildSvgExportString({
+        options: { data: 'https://example.com', width: size, height: size },
+        size: { width: size, height: size },
+        frame: { text: 'Scan me', position: 'bottom', style: { fontSize: '32px' } }
+      })
+
+    expect(numberAttr(frameText(exportWithFontSize(200)), 'font-size')).toBe(32)
+    expect(numberAttr(frameText(exportWithFontSize(1000)), 'font-size')).toBe(160)
+  })
+
   it('scales frame chrome with the QR export size', () => {
     const previewScale = framedExport(200)
     const largeExport = framedExport(1000)
