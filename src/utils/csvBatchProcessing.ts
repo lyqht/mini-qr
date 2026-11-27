@@ -41,6 +41,7 @@ export function processCsvDataForBatch(csvData: CSVData[]): BatchProcessingResul
         city: vCardData.city,
         state: vCardData.state,
         country: vCardData.country,
+        note: vCardData.note,
         version: vCardData.version || '4.0'
       })
       urls.push(vCardString)

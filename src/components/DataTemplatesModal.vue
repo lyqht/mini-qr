@@ -61,6 +61,7 @@ const vcardZipcode = ref('')
 const vcardCity = ref('')
 const vcardState = ref('')
 const vcardCountry = ref('')
+const vcardNote = ref('')
 const vcardVersion = ref('2')
 
 // Location refs
@@ -267,6 +268,7 @@ const detectAndSetDataType = (data: string) => {
       vcardState.value = (result.parsedData.state as string) || ''
       vcardZipcode.value = (result.parsedData.zipcode as string) || ''
       vcardCountry.value = (result.parsedData.country as string) || ''
+      vcardNote.value = (result.parsedData.note as string) || ''
       vcardVersion.value = (result.parsedData.version as string) || '3'
       break
 
@@ -443,6 +445,7 @@ const generateDataString = () => {
         city: vcardCity.value,
         state: vcardState.value,
         country: vcardCountry.value,
+        note: vcardNote.value,
         version: vcardVersion.value
       })
       break
@@ -536,6 +539,7 @@ const fillWithExampleData = () => {
       vcardState.value = 'NY'
       vcardZipcode.value = '10001'
       vcardCountry.value = 'USA'
+      vcardNote.value = 'Product designer. Happy to chat about accessibility.'
       break
     case 'location':
       locationLatitude.value = '37.7749'
@@ -1011,6 +1015,16 @@ const closeModal = () => {
               placeholder="USA"
               class="text-input"
             />
+          </div>
+          <div class="md:col-span-2">
+            <label for="vcardNote" class="label">{{ t('Notes') }}</label>
+            <textarea
+              id="vcardNote"
+              v-model="vcardNote"
+              rows="3"
+              :placeholder="t('e.g. a short bio or what you do')"
+              class="text-input"
+            ></textarea>
           </div>
         </div>
 

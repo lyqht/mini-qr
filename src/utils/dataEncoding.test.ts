@@ -592,3 +592,12 @@ describe('Escape Functions', () => {
     })
   })
 })
+
+describe('vCard notes', () => {
+  it('escapes line breaks and special characters, and reads them back', () => {
+    const note = 'Designer; accessibility, i18n\nAsk me about QR codes'
+    const vcard = generateVCardData({ firstName: 'Jane', note, version: '3' })
+    expect(vcard).toContain(String.raw`NOTE:Designer\; accessibility\, i18n\nAsk me about QR codes`)
+    expect(detectDataType(vcard).parsedData.note).toBe(note)
+  })
+})
