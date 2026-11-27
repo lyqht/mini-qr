@@ -899,9 +899,6 @@ function getExportDimensions() {
     }
   }
 
-  // Same scale the SVG export uses (svg-export.ts sizes the QR to the smaller
-  // side), so non-square settings don't make the raster target disagree with
-  // the SVG's own proportions.
   const scaleFactor = Math.min(width.value, height.value) / PREVIEW_QRCODE_DIM_UNIT
 
   const elWidth = el.offsetWidth

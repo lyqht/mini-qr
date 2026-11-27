@@ -147,12 +147,9 @@ function toFrameConfig(input: LegacyFrameInput, scale = 1): FrameConfig {
   if (s.textColor) out.textColor = s.textColor
   if (s.backgroundColor) out.backgroundColor = s.backgroundColor
   if (s.borderColor) out.borderColor = s.borderColor
-  // Fall back to the renderer's defaults here (rather than leaving the keys
-  // unset) so they get scaled too — otherwise direct callers that omit them
-  // get preview-sized chrome around a large export.
-  out.borderWidth = pxOr(s.borderWidth, DEFAULT_FRAME.borderWidth) * scale
-  out.borderRadius = pxOr(s.borderRadius, DEFAULT_FRAME.borderRadius) * scale
-  out.padding = pxOr(s.padding, DEFAULT_FRAME.padding) * scale
+  out.borderWidth = parsePxLength(s.borderWidth, DEFAULT_FRAME.borderWidth) * scale
+  out.borderRadius = parsePxLength(s.borderRadius, DEFAULT_FRAME.borderRadius) * scale
+  out.padding = parsePxLength(s.padding, DEFAULT_FRAME.padding) * scale
   if (s.fontFamily) out.fontFamily = s.fontFamily
   if (s.backgroundImage) out.backgroundImage = s.backgroundImage
   if (input.captionWidth && input.captionWidth > 0) {
@@ -161,12 +158,8 @@ function toFrameConfig(input: LegacyFrameInput, scale = 1): FrameConfig {
   return out
 }
 
-function pxOr(value: string | undefined, fallback: number): number {
-  return value ? parsePxLength(value) : fallback
-}
-
-function parsePxLength(value: string | undefined): number {
-  if (!value) return 0
+function parsePxLength(value: string | undefined, fallback = 0): number {
+  if (!value) return fallback
   const match = /([-\d.]+)/.exec(value)
   return match ? Number(match[1]) || 0 : 0
 }

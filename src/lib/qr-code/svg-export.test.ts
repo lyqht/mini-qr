@@ -162,7 +162,6 @@ describe('export scaling (#333)', () => {
   })
 
   it('clips the QR corners inside a frame at small sizes too', () => {
-    // Issue comment: frame on, 24px radius, 100x100 export -> square QR corners.
     const svg = buildSvgExportString({
       options: { data: 'https://example.com', width: 100, height: 100 },
       size: { width: 100, height: 100 },

@@ -61,8 +61,6 @@ withDefaults(defineProps<Props>(), {
       :style="{
         color: frameStyle.textColor,
         fontFamily: frameStyle.fontFamily || undefined,
-        // Explicit so the export (svg-export.ts) can mirror it; don't rely on
-        // the global `p { text-lg }` rule in style.css.
         fontSize: `${PREVIEW_FRAME_FONT_SIZE}px`,
         margin: 0,
         textAlign: 'center',
