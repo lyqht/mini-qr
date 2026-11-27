@@ -92,6 +92,7 @@ import {
   buildMatrix,
   MAX_DATA_BYTES,
   measureQRCapacity,
+  PREVIEW_QR_SIZE as PREVIEW_QRCODE_DIM_UNIT,
   resolveEffectiveErrorCorrectionLevel,
   type CornerDotType,
   type CornerSquareType,
@@ -878,8 +879,6 @@ const exportDisabledReason = computed(() =>
   isDataTooLong.value ? t('Too much data for one QR code') : t('Please enter data to encode first')
 )
 
-const PREVIEW_QRCODE_DIM_UNIT = 200
-
 /**
  * Calculates the dimensions for QR code export
  * When frame is enabled (showFrame = true), dimensions are calculated from the actual rendered element
@@ -900,8 +899,7 @@ function getExportDimensions() {
     }
   }
 
-  // Calculate the scale factor based on the preview size
-  const scaleFactor = width.value / PREVIEW_QRCODE_DIM_UNIT
+  const scaleFactor = Math.min(width.value, height.value) / PREVIEW_QRCODE_DIM_UNIT
 
   const elWidth = el.offsetWidth
   const elHeight = el.offsetHeight
@@ -980,6 +978,7 @@ function buildSvgExportInput() {
       : null,
     outerBackground: styleBackground.value,
     borderRadius: exportBorderRadius.value,
+    qrBorderRadius: styledBorderRadiusFormatted.value,
     // SVG natural size: the QR's intrinsic dimensions. Frame chrome is added
     // by the lib's renderFramed primitive on top of this.
     size: { width: width.value, height: height.value }

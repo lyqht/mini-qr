@@ -144,6 +144,9 @@ Thank you for everyone here for taking their time out to improve MiniQR 🧡
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/jdiepholz"><img src="https://avatars.githubusercontent.com/u/144233651?v=4?s=48" width="48px;" alt="jdiepholz"/><br /><sub><b>jdiepholz</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=jdiepholz" title="Code">💻</a> <a href="https://github.com/lyqht/mini-qr/commits?author=jdiepholz" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/HaleyHalcyon"><img src="https://avatars.githubusercontent.com/u/180524023?v=4?s=48" width="48px;" alt="HaleyHalcyon"/><br /><sub><b>HaleyHalcyon</b></sub></a><br /><a href="#ideas-HaleyHalcyon" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/Bashar-Omar"><img src="https://avatars.githubusercontent.com/u/88382370?v=4?s=48" width="48px;" alt="Bashar-Omar"/><br /><sub><b>Bashar-Omar</b></sub></a><br /><a href="https://github.com/lyqht/mini-qr/commits?author=Bashar-Omar" title="Code">💻</a></td>
+    </tr>
   </tbody>
   <tfoot>
     <tr>
