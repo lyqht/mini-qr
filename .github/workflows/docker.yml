@@ -2,7 +2,7 @@ name: Docker
 
 on:
   push:
-    branches: [main]
+    branches: [main, ci-test/locale-trigger]
   # No base-branch filter, same as test.yml: stacked PRs target other feature
   # branches and would otherwise get no image build at all.
   pull_request:

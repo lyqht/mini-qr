@@ -2,7 +2,7 @@ name: crowdin-sync
 
 on:
   push:
-    branches: [main]
+    branches: [main, ci-test/locale-trigger]
     paths:
       - 'locales/en.json'
   schedule:
