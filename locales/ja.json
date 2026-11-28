@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "テキストを短くするか、エラー訂正レベルを下げてください。",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "{size}pxの場合、このQRコードの各マスの幅は{px}px未満となるため、読み取れない可能性があります。{recommended}px以上でエクスポートしてください。",
   "{length} of {max} bytes at error correction level {level}": "エラー訂正レベル {level} における {max} バイトの {length}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "ロゴを削除し、エラー訂正レベルを下げて、最大{max}バイトに収まるようにしてください。"
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "ロゴを削除し、エラー訂正レベルを下げて、最大{max}バイトに収まるようにしてください。",
+  "e.g. a short bio or what you do": "例：簡単な自己紹介や、自分の仕事内容など",
+  "Font size": "文字サイズ",
+  "Search fonts": "フォントを検索",
+  "No fonts found": "フォントが見つかりませんでした"
 }

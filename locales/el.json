@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Συντομεύστε το κείμενο ή επιλέξτε χαμηλότερο επίπεδο διόρθωσης σφαλμάτων.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Σε μέγεθος {size}px, κάθε τετράγωνο αυτού του κωδικού QR έχει πλάτος μικρότερο από {px}px, οπότε ενδέχεται να μην σαρωθεί. Εξαγάγετε το αρχείο σε μέγεθος {recommended}px ή μεγαλύτερο.",
   "{length} of {max} bytes at error correction level {level}": "{length} {max} byte με επίπεδο διόρθωσης σφαλμάτων {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Αφαιρέστε το λογότυπο και μειώστε το επίπεδο διόρθωσης σφαλμάτων ώστε να χωρέσει έως {max} byte."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Αφαιρέστε το λογότυπο και μειώστε το επίπεδο διόρθωσης σφαλμάτων ώστε να χωρέσει έως {max} byte.",
+  "e.g. a short bio or what you do": "π.χ. ένα σύντομο βιογραφικό ή μια περιγραφή της εργασίας σου",
+  "Font size": "Μέγεθος γραμματοσειράς",
+  "Search fonts": "Αναζήτηση γραμματοσειρών",
+  "No fonts found": "Δεν βρέθηκαν γραμματοσειρές"
 }

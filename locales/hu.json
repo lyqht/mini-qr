@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Rövidítse le a szöveget, vagy válasszon alacsonyabb hibajavítási szintet.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "{size}px-es méretnél ennek a QR-kódnak minden egyes négyzete {px}px-nél keskenyebb, ezért előfordulhat, hogy nem sikerül beolvasni. Kérjük, {recommended}px-es vagy annál nagyobb méretben exportálja.",
   "{length} of {max} bytes at error correction level {level}": "{length} {max} bájt hibahelyreállítási szint: {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Távolítsa el a logót, és csökkentse a hibajavítási szintet úgy, hogy a fájl mérete legfeljebb {max} bájt legyen."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Távolítsa el a logót, és csökkentse a hibajavítási szintet úgy, hogy a fájl mérete legfeljebb {max} bájt legyen.",
+  "e.g. a short bio or what you do": "pl. egy rövid bemutatkozás vagy az, hogy mivel foglalkozol",
+  "Font size": "Betűméret",
+  "Search fonts": "Betűtípusok keresése",
+  "No fonts found": "Nem találtak betűtípusokat"
 }

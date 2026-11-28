@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Sutrumpinkite tekstą arba pasirinkite žemesnį klaidų taisymo lygį.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Esant {size} pikselių dydžiui, kiekvienas šio QR kodo kvadratėlis yra mažesnis nei {px} pikselių pločio, todėl jo gali nepavykti nuskaityti. Eksportuokite {recommended} pikselių dydžiu arba didesniu.",
   "{length} of {max} bytes at error correction level {level}": "{length} {max} baitų, klaidų taisymo lygis {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Pašalinkite logotipą ir sumažinkite klaidų taisymo lygį, kad tilptų iki {max} baitų."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Pašalinkite logotipą ir sumažinkite klaidų taisymo lygį, kad tilptų iki {max} baitų.",
+  "e.g. a short bio or what you do": "pvz., trumpa biografija arba aprašymas, kuo užsiimate",
+  "Font size": "Šrifto dydis",
+  "Search fonts": "Ieškoti šriftų",
+  "No fonts found": "Šriftų nerasta"
 }

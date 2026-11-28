@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Zkraťte text nebo zvolte nižší úroveň opravy chyb.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Při velikosti {size}px má každý čtvereček tohoto QR kódu šířku méně než {px}px, takže se nemusí podařit jej naskenovat. Exportujte jej ve velikosti {recommended}px nebo větší.",
   "{length} of {max} bytes at error correction level {level}": "{length} {max} bajtů při úrovni korekce chyb {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Odstraňte logo a snižte úroveň korekce chyb tak, aby se vešlo až {max} bajtů."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Odstraňte logo a snižte úroveň korekce chyb tak, aby se vešlo až {max} bajtů.",
+  "e.g. a short bio or what you do": "např. krátký životopis nebo popis toho, čím se zabýváte",
+  "Font size": "Velikost písma",
+  "Search fonts": "Vyhledat písma",
+  "No fonts found": "Nebyly nalezeny žádné fonty"
 }
