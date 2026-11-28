@@ -175,6 +175,7 @@ export const generateWifiData = (data: {
  * @param {string} [data.city] - City
  * @param {string} [data.state] - State/province
  * @param {string} [data.country] - Country
+ * @param {string} [data.note] - Free-text note, e.g. a short bio; line breaks are kept
  * @param {string} [data.version] - vCard version to generate:
  *   - '2': Generates vCard 2.1 format (older, simplest format)
  *   - '3': Generates vCard 3.0 format (default, widely compatible)
@@ -196,6 +197,7 @@ export const generateVCardData = (data: {
   city?: string
   state?: string
   country?: string
+  note?: string
   version?: string
 }): string => {
   const lines: string[] = []
@@ -283,6 +285,8 @@ export const generateVCardData = (data: {
       lines.push(`ADR;TYPE=WORK:;;${adrString}`)
     }
   }
+
+  if (data.note) lines.push(`NOTE:${escapeVCard(data.note).replace(/\r?\n/g, '\\n')}`)
 
   lines.push('END:VCARD')
   return lines.join('\n')
@@ -619,6 +623,14 @@ export const detectDataType = (
         result.parsedData.zipcode = addressParts[5].trim()
         result.parsedData.country = addressParts[6].trim()
       }
+    }
+
+    const noteField = fullContent.find((line) => line.match(/^NOTE[^:]*:/i))
+    if (noteField) {
+      result.parsedData.note = noteField
+        .substring(noteField.indexOf(':') + 1)
+        .trim()
+        .replace(/\\([nN,;\\])/g, (_, ch: string) => (ch === 'n' || ch === 'N' ? '\n' : ch))
     }
 
     return result

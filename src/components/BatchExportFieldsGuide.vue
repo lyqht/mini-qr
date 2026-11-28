@@ -96,6 +96,12 @@ const vCardFields: Array<{
   { name: 'city', required: false, description: 'City', example: 'San Francisco' },
   { name: 'state', required: false, description: 'State/Province', example: 'CA' },
   { name: 'country', required: false, description: 'Country', example: 'USA' },
+  {
+    name: 'note',
+    required: false,
+    description: 'Notes, e.g. a short bio',
+    example: 'Builds developer tools'
+  },
   { name: 'version', required: false, description: 'vCard version', example: '4.0' },
   {
     name: 'frameText',
