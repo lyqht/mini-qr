@@ -55,3 +55,44 @@ describe('computeImagePlacement safety cap (#309)', () => {
     expect(placement.size).toBe(11)
   })
 })
+
+describe('computeImagePlacement aspect ratio (#329)', () => {
+  const { count } = buildMatrix('https://mercyhill.managedmissions.com/MyTrip/shanereichart', 'Q')
+  const place = (aspectRatio?: number) =>
+    computeImagePlacement({
+      image: { href: 'logo.png', sizeRatio: 0.4, aspectRatio },
+      count,
+      moduleSize: 1,
+      offset: 0,
+      totalSize: count,
+      errorCorrectionLevel: 'Q'
+    })
+  const hiddenCells = (placement: ReturnType<typeof place>) => {
+    let hidden = 0
+    for (let r = 0; r < count; r++)
+      for (let c = 0; c < count; c++) if (placement.hidesCell(r, c)) hidden++
+    return hidden
+  }
+
+  it('keeps a wide logo wide and a tall logo tall, within the square limit', () => {
+    const square = place()
+    const wide = place(3)
+    const tall = place(1 / 3)
+
+    expect(wide.width).toBe(square.width)
+    expect(wide.height).toBeLessThan(square.height)
+    expect(tall.height).toBe(square.height)
+    expect(tall.width).toBeLessThan(square.width)
+    expect(hiddenCells(wide)).toBe(wide.width * wide.height)
+    expect(hiddenCells(wide)).toBeLessThan(hiddenCells(square))
+  })
+
+  it('treats a missing or invalid ratio as square', () => {
+    const square = place()
+    for (const ratio of [undefined, 0, -2, Number.NaN, Number.POSITIVE_INFINITY]) {
+      const placement = place(ratio)
+      expect(placement.width).toBe(square.width)
+      expect(placement.height).toBe(square.height)
+    }
+  })
+})

@@ -29,6 +29,7 @@ export interface ImageConfig {
   margin?: number
   hideBackgroundDots?: boolean
   crossOrigin?: 'anonymous' | 'use-credentials'
+  aspectRatio?: number
 }
 
 export interface FrameConfig {
