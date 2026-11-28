@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Metni kısaltın ya da daha düşük bir hata düzeltme seviyesi seçin.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "{size} piksel boyutunda, bu QR kodundaki her bir karenin genişliği {px} pikselin altındadır; bu nedenle kod taranmayabilir. {recommended} piksel veya daha büyük bir boyutta dışa aktarın.",
   "{length} of {max} bytes at error correction level {level}": "{level} hata düzeltme seviyesinde {max} baytlık {length}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Logoyu kaldırın ve hata düzeltme seviyesini {max} bayta sığacak şekilde düşürün."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Logoyu kaldırın ve hata düzeltme seviyesini {max} bayta sığacak şekilde düşürün.",
+  "e.g. a short bio or what you do": "Örneğin: kısa bir özgeçmiş ya da ne iş yaptığınız",
+  "Font size": "Yazı tipi boyutu",
+  "Search fonts": "Yazı tiplerini ara",
+  "No fonts found": "Yazı tipi bulunamadı"
 }

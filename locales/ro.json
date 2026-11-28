@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Scurtă textul sau alege un nivel mai scăzut de corectare a erorilor.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "La {size}px, fiecare pătrat al acestui cod QR are o lățime mai mică de {px}px, așa că este posibil să nu poată fi scanat. Exportați-l la {recommended}px sau la o dimensiune mai mare.",
   "{length} of {max} bytes at error correction level {level}": "{length} de {max} octeți la nivelul de corectare a erorilor {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Eliminați logo-ul și reduceți nivelul de corectare a erorilor pentru a se încadra în {max} octeți."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Eliminați logo-ul și reduceți nivelul de corectare a erorilor pentru a se încadra în {max} octeți.",
+  "e.g. a short bio or what you do": "de exemplu, o scurtă prezentare a ta sau cu ce te ocupi",
+  "Font size": "Dimensiunea fontului",
+  "Search fonts": "Căutare fonturi",
+  "No fonts found": "Nu s-au găsit fonturi"
 }

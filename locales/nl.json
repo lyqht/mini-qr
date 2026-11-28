@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Maak de tekst korter, of kies een lager niveau voor foutcorrectie.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Bij {size}px is elk vierkantje van deze QR-code minder dan {px}px breed, waardoor hij mogelijk niet kan worden gescand. Exporteer de QR-code op {recommended}px of groter.",
   "{length} of {max} bytes at error correction level {level}": "{length} van {max} bytes bij foutcorrectieniveau {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Verwijder het logo en verlaag het foutcorrectieniveau zodat het bestand maximaal {max} bytes groot is."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Verwijder het logo en verlaag het foutcorrectieniveau zodat het bestand maximaal {max} bytes groot is.",
+  "e.g. a short bio or what you do": "bijvoorbeeld een korte biografie of wat je doet",
+  "Font size": "Lettergrootte",
+  "Search fonts": "Lettertypen zoeken",
+  "No fonts found": "Er zijn geen lettertypen gevonden"
 }

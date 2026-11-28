@@ -382,5 +382,9 @@
   "Shorten the text, or choose a lower error correction level.": "Skrajšajte besedilo ali izberite nižjo stopnjo popravljanja napak.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Pri velikosti {size}px je vsak kvadrat te QR-kode širok manj kot {px}px, zato se morda ne bo dalo skenirati. Izvozite jo v velikosti {recommended}px ali več.",
   "{length} of {max} bytes at error correction level {level}": "{length} {max} bajtov na stopnji popravljanja napak {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Odstranite logotip in znižajte stopnjo popravljanja napak, da se datoteka prilagodi na največ {max} bajtov."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Odstranite logotip in znižajte stopnjo popravljanja napak, da se datoteka prilagodi na največ {max} bajtov.",
+  "e.g. a short bio or what you do": "npr. kratek življenjepis ali opis tega, s čim se ukvarjaš",
+  "Font size": "Velikost pisave",
+  "Search fonts": "Iskanje pisav",
+  "No fonts found": "Pisav ni bilo mogoče najti"
 }

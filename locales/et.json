@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Lühendage teksti või valige madalam veaparanduse tase.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Suurusega {size}px on iga selle QR-koodi ruut laiusega alla {px}px, mistõttu seda ei pruugi olla võimalik skaneerida. Ekspordi suurusega {recommended}px või suuremana.",
   "{length} of {max} bytes at error correction level {level}": "{length} {max} baiti veaparandustasemel {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Eemalda logo ja vähenda veaparanduse taset, et mahtuks kuni {max} baiti."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Eemalda logo ja vähenda veaparanduse taset, et mahtuks kuni {max} baiti.",
+  "e.g. a short bio or what you do": "nt lühike elulugu või tegevusvaldkond",
+  "Font size": "Kirjasuurus",
+  "Search fonts": "Fontide otsimine",
+  "No fonts found": "Fontide leidmine ebaõnnestus"
 }

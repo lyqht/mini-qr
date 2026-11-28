@@ -382,5 +382,9 @@
   "Shorten the text, or choose a lower error correction level.": "Kort ned teksten, eller velg et lavere feilrettingsnivå.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Ved {size} px er hver rute i denne QR-koden mindre enn {px} px bred, så den kan kanskje ikke skannes. Eksporter den med {recommended} px eller større.",
   "{length} of {max} bytes at error correction level {level}": "{length} av {max} byte på feilrettingsnivå {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Fjern logoen og senk feilrettingsnivået slik at filen får plass innenfor {max} byte."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Fjern logoen og senk feilrettingsnivået slik at filen får plass innenfor {max} byte.",
+  "e.g. a short bio or what you do": "f.eks. en kort biografi eller hva du driver med",
+  "Font size": "Skriftstørrelse",
+  "Search fonts": "Søk etter skrifttyper",
+  "No fonts found": "Ingen skrifttyper funnet"
 }

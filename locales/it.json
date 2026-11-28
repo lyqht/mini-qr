@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Accorcia il testo oppure scegli un livello di correzione degli errori più basso.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Con una dimensione di {size} px, ogni quadrato di questo codice QR ha una larghezza inferiore a {px} px, quindi potrebbe non essere leggibile. Esportalo con una dimensione di {recommended} px o superiore.",
   "{length} of {max} bytes at error correction level {level}": "{length} di {max} byte con livello di correzione degli errori {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Rimuovi il logo e riduci il livello di correzione degli errori in modo da rientrare nel limite di {max} byte."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Rimuovi il logo e riduci il livello di correzione degli errori in modo da rientrare nel limite di {max} byte.",
+  "e.g. a short bio or what you do": "ad esempio, una breve biografia o una descrizione di ciò che fai",
+  "Font size": "Dimensione del carattere",
+  "Search fonts": "Cerca i caratteri",
+  "No fonts found": "Non sono stati trovati caratteri"
 }

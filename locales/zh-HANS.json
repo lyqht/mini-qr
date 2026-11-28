@@ -382,5 +382,9 @@
   "Shorten the text, or choose a lower error correction level.": "缩短文本，或选择较低的错误更正级别。",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "在 {size}px 尺寸下，该二维码的每个方格宽度不足 {px}px，因此可能无法扫描。请以 {recommended}px 或更大的尺寸导出。",
   "{length} of {max} bytes at error correction level {level}": "{length} 字节，{max} 字节，纠错级别为 {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "删除徽标，并将纠错级别降低，以使数据长度不超过 {max} 字节。"
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "删除徽标，并将纠错级别降低，以使数据长度不超过 {max} 字节。",
+  "e.g. a short bio or what you do": "例如：简短的个人简介或你的工作内容",
+  "Font size": "字体大小",
+  "Search fonts": "搜索字体",
+  "No fonts found": "未找到字体"
 }

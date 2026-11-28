@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Persingkat teks tersebut, atau pilih tingkat koreksi kesalahan yang lebih rendah.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Pada ukuran {size}px, setiap kotak pada kode QR ini memiliki lebar kurang dari {px}px, sehingga mungkin tidak dapat dipindai. Ekspor dengan ukuran {recommended}px atau lebih besar.",
   "{length} of {max} bytes at error correction level {level}": "{length} byte dari {max} byte pada tingkat koreksi kesalahan {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Hapus logo dan turunkan tingkat koreksi kesalahan agar ukurannya sesuai dengan {max} byte."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Hapus logo dan turunkan tingkat koreksi kesalahan agar ukurannya sesuai dengan {max} byte.",
+  "e.g. a short bio or what you do": "misalnya, biografi singkat atau apa yang Anda lakukan",
+  "Font size": "Ukuran huruf",
+  "Search fonts": "Cari font",
+  "No fonts found": "Tidak ditemukan font"
 }

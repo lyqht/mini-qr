@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Съкратете текста или изберете по-ниско ниво на корекция на грешките.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "При размер {size}px всеки квадрат от този QR код е с ширина по-малка от {px}px, поради което може да не се сканира. Експортирайте го с размер {recommended}px или по-голям.",
   "{length} of {max} bytes at error correction level {level}": "{length} от {max} байта при ниво на корекция на грешки {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Премахнете логото и намалете нивото на корекция на грешките, за да се побере до {max} байта."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Премахнете логото и намалете нивото на корекция на грешките, за да се побере до {max} байта.",
+  "e.g. a short bio or what you do": "например кратка биография или с какво се занимаваш",
+  "Font size": "Размер на шрифта",
+  "Search fonts": "Търсене на шрифтове",
+  "No fonts found": "Не бяха намерени шрифтове"
 }

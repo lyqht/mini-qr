@@ -377,5 +377,9 @@
   "Shorten the text, or choose a lower error correction level.": "Lyhennä tekstiä tai valitse matalampi virheenkorjaustaso.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Kun koko on {size}px, tämän QR-koodin jokainen ruutu on alle {px}px leveä, joten koodia ei välttämättä voi skannata. Vie koodi vähintään {recommended}px:n kokoisena.",
   "{length} of {max} bytes at error correction level {level}": "{length} {max} tavua virheenkorjausasteella {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Poista logo ja laske virheenkorjaustasoa, jotta tiedosto mahtuu enintään {max} tavua."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Poista logo ja laske virheenkorjaustasoa, jotta tiedosto mahtuu enintään {max} tavua.",
+  "e.g. a short bio or what you do": "esim. lyhyt esittely tai kuvaus siitä, mitä teet",
+  "Font size": "Kirjasinkoko",
+  "Search fonts": "Hae fontteja",
+  "No fonts found": "Fontteja ei löytynyt"
 }

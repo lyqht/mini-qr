@@ -382,5 +382,9 @@
   "Shorten the text, or choose a lower error correction level.": "Saīsiniet tekstu vai izvēlieties zemāku kļūdu labošanas līmeni.",
   "At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.": "Ja izmērs ir {size} pikseļu, katrs šī QR koda kvadrāts ir platāks par {px} pikseļiem, tāpēc to var nebūt iespējams nolasīt. Eksportējiet ar izmēru {recommended} pikseļu vai lielāku.",
   "{length} of {max} bytes at error correction level {level}": "{length} {max} baitu, kļūdu labošanas līmenis {level}",
-  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Noņemiet logotipu un samaziniet kļūdu labošanas līmeni, lai ietilptu līdz {max} baitiem."
+  "Remove the logo and lower the error correction level to fit up to {max} bytes.": "Noņemiet logotipu un samaziniet kļūdu labošanas līmeni, lai ietilptu līdz {max} baitiem.",
+  "e.g. a short bio or what you do": "piemēram, īsa biogrāfija vai apraksts par to, ar ko nodarbojies",
+  "Font size": "Rakstzīmju izmērs",
+  "Search fonts": "Meklēt fontus",
+  "No fonts found": "Fonts nav atrasts"
 }
