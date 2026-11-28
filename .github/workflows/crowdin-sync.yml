@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'locales/**'
+      - 'locales/en.json'
   schedule:
     # Pull newly-contributed human translations from Crowdin daily (06:00 UTC).
     - cron: '0 6 * * *'
