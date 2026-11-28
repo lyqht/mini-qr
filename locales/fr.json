@@ -381,5 +381,6 @@
   "e.g. a short bio or what you do": "par exemple, une brève biographie ou une description de votre activité",
   "Font size": "Taille de la police",
   "Search fonts": "Rechercher des polices",
-  "No fonts found": "Aucune police trouvée"
+  "No fonts found": "Aucune police trouvée",
+  "_ciTriggerTest": "x"
 }

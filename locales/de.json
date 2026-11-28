@@ -381,5 +381,6 @@
   "e.g. a short bio or what you do": "z. B. eine kurze Biografie oder eine Beschreibung deiner Tätigkeit",
   "Font size": "Schriftgröße",
   "Search fonts": "Schriftarten suchen",
-  "No fonts found": "Es wurden keine Schriftarten gefunden"
+  "No fonts found": "Es wurden keine Schriftarten gefunden",
+  "_ciTriggerTest": "x"
 }
