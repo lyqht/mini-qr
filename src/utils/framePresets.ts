@@ -1,3 +1,5 @@
+import { getEnv } from './runtimeConfig'
+
 export interface FrameStyle {
   textColor: string
   backgroundColor: string
@@ -5,6 +7,7 @@ export interface FrameStyle {
   borderWidth: string
   borderRadius: string
   padding: string
+  fontSize?: string
   fontFamily?: string
   /** Frame background image (data:image URI from upload, or http(s) URL). Drawn over backgroundColor. */
   backgroundImage?: string
@@ -200,11 +203,11 @@ function parseFramePresetsFromEnv(envVal?: string): FramePreset[] | undefined {
   }
 }
 
-const envFramePresets = parseFramePresetsFromEnv(import.meta.env.VITE_FRAME_PRESETS)
+const envFramePresets = parseFramePresetsFromEnv(getEnv('VITE_FRAME_PRESETS'))
 export const allFramePresets: FramePreset[] = envFramePresets ?? builtInFramePresets
 
 export const defaultFramePreset: FramePreset =
-  allFramePresets.find((p) => p.name === import.meta.env.VITE_FRAME_PRESET) ?? allFramePresets[0]
+  allFramePresets.find((p) => p.name === getEnv('VITE_FRAME_PRESET')) ?? allFramePresets[0]
 
 export const VALID_FRAME_POSITIONS = ['top', 'bottom', 'left', 'right'] as const
 
@@ -235,6 +238,8 @@ export function isValidFrameStyle(value: unknown): value is FrameStyle {
     isValidCSSLength(s.borderRadius) &&
     typeof s.padding === 'string' &&
     isValidCSSLength(s.padding) &&
+    (s.fontSize === undefined ||
+      (typeof s.fontSize === 'string' && isValidCSSLength(s.fontSize))) &&
     (s.fontFamily === undefined || typeof s.fontFamily === 'string') &&
     (s.backgroundImage === undefined ||
       (typeof s.backgroundImage === 'string' && isValidFrameBackgroundImage(s.backgroundImage)))

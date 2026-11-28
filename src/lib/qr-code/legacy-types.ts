@@ -86,6 +86,7 @@ export type Options = {
     imageSize?: number
     crossOrigin?: string
     margin?: number
+    aspectRatio?: number
   }
   dotsOptions?: {
     type?: DotType

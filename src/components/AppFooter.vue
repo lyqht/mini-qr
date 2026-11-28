@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -15,13 +16,14 @@ import {
   DialogClose
 } from '@/components/ui/dialog'
 import { X } from '@lucide/vue'
+import { getBoolEnv } from '@/utils/runtimeConfig'
 
 const { t } = useI18n()
 const { hasUnseenChangelog, markAsSeen } = useChangelogNotice()
 const version = ref('...')
 const changelogContent = ref<string | null>(null)
 const isLoading = ref(true)
-const hideCredits = ['1', 'true'].includes((import.meta.env.VITE_HIDE_CREDITS ?? '').toLowerCase())
+const hideCredits = getBoolEnv('VITE_HIDE_CREDITS')
 
 async function fetchAndProcessChangelog() {
   if (changelogContent.value === null) {
@@ -35,7 +37,7 @@ async function fetchAndProcessChangelog() {
 
       version.value = getDisplayVersion(markdown, import.meta.env.VITE_APP_VERSION)
 
-      changelogContent.value = await marked.parse(markdown)
+      changelogContent.value = DOMPurify.sanitize(await marked.parse(markdown))
     } catch (error) {
       console.error('Failed to fetch or process changelog:', error)
       version.value = t('Error')

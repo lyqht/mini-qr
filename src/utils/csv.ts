@@ -18,6 +18,7 @@ export type VCardOptionalFields =
   | 'city'
   | 'state'
   | 'country'
+  | 'note'
   | 'version'
   | 'frameText'
 
@@ -148,6 +149,7 @@ export const parseCSV = (csvContent: string): CSVParsingResult => {
           'city',
           'state',
           'country',
+          'note',
           'version',
           'frameText'
         ]

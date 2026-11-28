@@ -1,9 +1,10 @@
 import { fromLegacyOptions } from './legacy-adapter'
-import { renderFramed } from './frame'
+import { DEFAULT_FRAME, renderFramed } from './frame'
 import { renderQrFragment, escapeAttr } from './render/svg'
 import type { Options as LegacyOptions } from './legacy-types'
 import type { FrameConfig, QRCodeConfig, ResolvedQRCodeConfig, TextPosition } from './types'
 import { DEFAULT_CONFIG } from './types'
+import { PREVIEW_FRAME_FONT_SIZE, PREVIEW_QR_SIZE } from './preview'
 
 function resolve(config: QRCodeConfig): ResolvedQRCodeConfig {
   return {
@@ -27,6 +28,7 @@ export interface LegacyFrameStyle {
   borderWidth?: string
   borderRadius?: string
   padding?: string
+  fontSize?: string
   fontFamily?: string
   backgroundImage?: string
 }
@@ -46,6 +48,8 @@ export interface SvgExportInput {
   outerBackground?: string
   /** Outer container rounded corners as a CSS pixel string (e.g., "24px"). */
   borderRadius?: string
+  /** QR box rounded corners in preview pixels, used independently from the frame radius. */
+  qrBorderRadius?: string
   /** Target export size — picks the smaller of width/height (square-only in v1). */
   size?: { width: number; height: number }
 }
@@ -57,12 +61,13 @@ export interface SvgExportInput {
  */
 export function buildSvgExportString(input: SvgExportInput): string {
   const baseConfig = fromLegacyOptions(input.options)
-  const config: QRCodeConfig = {
-    ...baseConfig,
-    frame: input.frame ? toFrameConfig(input.frame) : undefined
-  }
+  const config: QRCodeConfig = { ...baseConfig, frame: undefined }
   if (input.size) {
     config.size = Math.min(input.size.width, input.size.height)
+  }
+  if (input.frame) {
+    const qrSize = config.size ?? DEFAULT_CONFIG.size
+    config.frame = toFrameConfig(input.frame, qrSize / PREVIEW_QR_SIZE)
   }
 
   // Apply the preset's container background to the QR itself. The preview
@@ -77,14 +82,15 @@ export function buildSvgExportString(input: SvgExportInput): string {
   const resolved = resolve(config)
 
   if (resolved.frame) {
-    const { svg } = renderFramed(resolved)
+    const qrRadius = parsePxLength(input.qrBorderRadius) * (resolved.size / PREVIEW_QR_SIZE)
+    const { svg } = renderFramed(resolved, qrRadius)
     return svg
   }
 
   // No-frame path — render the QR portion and wrap in our own outer <svg> so
   // we can apply rounded corners via a clipPath without the lib's frame chrome.
   const size = resolved.size
-  const radius = parsePxLength(input.borderRadius)
+  const radius = parsePxLength(input.borderRadius) * (size / PREVIEW_QR_SIZE)
   const bgColor = input.outerBackground ?? resolved.background.color
   return renderStandalone(resolved, size, radius, bgColor)
 }
@@ -128,7 +134,7 @@ function renderStandalone(
   )
 }
 
-function toFrameConfig(input: LegacyFrameInput): FrameConfig {
+function toFrameConfig(input: LegacyFrameInput, scale = 1): FrameConfig {
   const s = input.style
   // Build piecewise so undefined keys are absent (not present-with-undefined).
   // The frame renderer spreads defaults under config; setting fontFamily etc.
@@ -136,24 +142,25 @@ function toFrameConfig(input: LegacyFrameInput): FrameConfig {
   // break downstream escapeAttr calls.
   const out: FrameConfig = {
     text: input.text,
-    textPosition: input.position
+    textPosition: input.position,
+    fontSize: parsePxLength(s.fontSize, PREVIEW_FRAME_FONT_SIZE) * scale
   }
   if (s.textColor) out.textColor = s.textColor
   if (s.backgroundColor) out.backgroundColor = s.backgroundColor
   if (s.borderColor) out.borderColor = s.borderColor
-  if (s.borderWidth) out.borderWidth = parsePxLength(s.borderWidth)
-  if (s.borderRadius) out.borderRadius = parsePxLength(s.borderRadius)
-  if (s.padding) out.padding = parsePxLength(s.padding)
+  out.borderWidth = parsePxLength(s.borderWidth, DEFAULT_FRAME.borderWidth) * scale
+  out.borderRadius = parsePxLength(s.borderRadius, DEFAULT_FRAME.borderRadius) * scale
+  out.padding = parsePxLength(s.padding, DEFAULT_FRAME.padding) * scale
   if (s.fontFamily) out.fontFamily = s.fontFamily
   if (s.backgroundImage) out.backgroundImage = s.backgroundImage
   if (input.captionWidth && input.captionWidth > 0) {
-    out.captionWidth = input.captionWidth
+    out.captionWidth = input.captionWidth * scale
   }
   return out
 }
 
-function parsePxLength(value: string | undefined): number {
-  if (!value) return 0
+function parsePxLength(value: string | undefined, fallback = 0): number {
+  if (!value) return fallback
   const match = /([-\d.]+)/.exec(value)
   return match ? Number(match[1]) || 0 : 0
 }

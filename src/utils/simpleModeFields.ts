@@ -39,7 +39,7 @@ export const SIMPLE_MODE_FIELD_GROUPS: SimpleFieldGroup[] = [
       { key: 'width', labelKey: 'Width (px)' },
       { key: 'height', labelKey: 'Height (px)' },
       { key: 'borderRadius', labelKey: 'Border radius (px)' },
-      { key: 'margin', labelKey: 'Margin (px)' },
+      { key: 'margin', labelKey: 'Margin (modules)' },
       { key: 'imageMargin', labelKey: 'Image margin (px)' },
       { key: 'imageSize', labelKey: 'Image size (ratio)' },
       { key: 'dotsType', labelKey: 'Dots type' },
@@ -62,6 +62,7 @@ export const SIMPLE_MODE_FIELD_GROUPS: SimpleFieldGroup[] = [
       { key: 'frameBorderWidth', labelKey: 'Border width' },
       { key: 'frameBorderRadius', labelKey: 'Border radius' },
       { key: 'framePadding', labelKey: 'Padding' },
+      { key: 'frameFontSize', labelKey: 'Font size' },
       { key: 'frameFontFamily', labelKey: 'Font family' }
     ]
   }
@@ -79,6 +80,7 @@ export const FRAME_FIELD_KEYS = [
   'frameBorderWidth',
   'frameBorderRadius',
   'framePadding',
+  'frameFontSize',
   'frameFontFamily'
 ] as const
 

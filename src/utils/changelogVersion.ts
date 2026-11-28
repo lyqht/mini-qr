@@ -1,6 +1,6 @@
 const VERSION_PATTERN = /^v\d+\.\d+\.\d+$/
-// Matches both legacy "## v0.30.0 (date)" and release-please
-// "## [0.31.0](compare-url) (date)" / "## 0.31.0 (date)" headers.
+// Matches "## v0.30.0 (date)" as well as the linked / unprefixed variants
+// "## [0.31.0](compare-url) (date)" and "## 0.31.0 (date)".
 const CHANGELOG_VERSION_PATTERN = /^##\s+\[?v?(\d+\.\d+\.\d+)/m
 
 /**

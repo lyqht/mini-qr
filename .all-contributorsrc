@@ -161,6 +161,27 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/17452861?v=4",
       "profile": "https://github.com/aleex1848",
       "contributions": ["code"]
+    },
+    {
+      "login": "jdiepholz",
+      "name": "jdiepholz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/144233651?v=4",
+      "profile": "https://github.com/jdiepholz",
+      "contributions": ["code", "doc"]
+    },
+    {
+      "login": "HaleyHalcyon",
+      "name": "HaleyHalcyon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/180524023?v=4",
+      "profile": "https://github.com/HaleyHalcyon",
+      "contributions": ["ideas"]
+    },
+    {
+      "login": "Bashar-Omar",
+      "name": "Bashar-Omar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/88382370?v=4",
+      "profile": "https://github.com/Bashar-Omar",
+      "contributions": ["code"]
     }
   ],
   "contributorsPerLine": 6,

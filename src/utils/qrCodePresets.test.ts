@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { isValidQRCodeConfig } from './qrCodePresets'
+import { describe, it, expect, vi } from 'vitest'
+import { applyDefaultLogo, allQrCodePresets, isValidQRCodeConfig } from './qrCodePresets'
 
 const validStyle = {
   textColor: '#000000',
@@ -112,5 +112,38 @@ describe('isValidQRCodeConfig', () => {
       expect(isValidQRCodeConfig(withImage(42))).toBe(false)
       expect(isValidQRCodeConfig(withImage({ href: 'https://example.com/x.png' }))).toBe(false)
     })
+  })
+})
+
+describe('applyDefaultLogo', () => {
+  const preset = allQrCodePresets[0]
+
+  it('returns the preset unchanged when no logo is configured', () => {
+    expect(applyDefaultLogo(preset)).toBe(preset)
+    expect(applyDefaultLogo(preset, '')).toBe(preset)
+    expect(applyDefaultLogo(preset, '   ')).toBe(preset)
+  })
+
+  it('sets the image for http(s), data:image and same-origin paths', () => {
+    for (const logo of [
+      'https://example.com/logo.svg',
+      'data:image/png;base64,AAAA',
+      '/logo.svg'
+    ]) {
+      expect(applyDefaultLogo(preset, logo).image).toBe(logo)
+    }
+  })
+
+  it('does not mutate the original preset', () => {
+    const before = preset.image
+    applyDefaultLogo(preset, 'https://example.com/logo.svg')
+    expect(preset.image).toBe(before)
+  })
+
+  it('ignores unsafe values', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    expect(applyDefaultLogo(preset, 'javascript:alert(1)')).toBe(preset)
+    expect(applyDefaultLogo(preset, 'data:text/html,<script>')).toBe(preset)
+    spy.mockRestore()
   })
 })

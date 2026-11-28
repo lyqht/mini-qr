@@ -3,6 +3,10 @@ name: Tests
 on:
   push:
     branches: [main]
+    paths:
+      - '**'
+      - '!locales/**'
+      - 'locales/en.json'
   # No base-branch filter: stacked PRs (e.g. Graphite) target other feature
   # branches and would otherwise get no CI at all.
   pull_request:
@@ -11,10 +15,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# The tests only need to read the code.
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Unit & Browser Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -40,7 +48,7 @@ jobs:
 
   e2e:
     name: E2E Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout

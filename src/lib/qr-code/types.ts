@@ -29,6 +29,7 @@ export interface ImageConfig {
   margin?: number
   hideBackgroundDots?: boolean
   crossOrigin?: 'anonymous' | 'use-credentials'
+  aspectRatio?: number
 }
 
 export interface FrameConfig {
@@ -100,7 +101,14 @@ export interface ResolvedQRCodeConfig {
 
 export const DEFAULT_CONFIG: Omit<ResolvedQRCodeConfig, 'data'> = {
   size: 200,
-  margin: 0,
+  // ISO/IEC 18004's minimum quiet zone (#308), matching the ASCII exporter's
+  // own DEFAULT_QUIET_ZONE. Only applies when a config omits margin entirely
+  // — an explicit margin (including 0, as every built-in preset sets) is
+  // always honoured as-is. This is a default, not an enforced floor: forcing
+  // it onto every config regardless of output resolution shrinks module
+  // pixel density enough to make small, high-density exports (e.g. a
+  // logo'd/stylised 200px preset with long data) fail to scan.
+  margin: 4,
   errorCorrectionLevel: 'Q',
   dots: { shape: 'square', color: '#000000' },
   cornerSquares: { shape: 'square', color: '#000000' },

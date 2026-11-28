@@ -9,6 +9,7 @@ import {
   generateVCardData,
   generateLocationData,
   generateEventData,
+  generateEpcData,
   detectDataType,
   escapeVCard,
   escapeWiFi,
@@ -175,6 +176,118 @@ describe('Data Encoding Functions', () => {
     expect(resultStringDates).toContain('DTSTART:20241225T180000Z')
     expect(resultStringDates).toContain('DTEND:20241225T220000Z')
     expect(generateEventData({})).toContain('BEGIN:VCALENDAR')
+  })
+
+  it('generateEpcData formats a minimal EPC QR payload correctly', () => {
+    const result = generateEpcData({ name: 'Jane Smith', iban: 'DE89 3704 0044 0532 0130 00' })
+    expect(result).toBe('BCD\n002\n1\nSCT\n\nJane Smith\nDE89370400440532013000')
+  })
+
+  it('generateEpcData includes optional fields when provided', () => {
+    const result = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      bic: 'deutdeff',
+      amount: 25,
+      purpose: 'gdds',
+      remittanceText: 'Invoice 12345',
+      version: '001'
+    })
+    expect(result).toBe(
+      'BCD\n001\n1\nSCT\nDEUTDEFF\nJane Smith\nDE89370400440532013000\nEUR25.00\nGDDS\n\nInvoice 12345'
+    )
+  })
+
+  it('generateEpcData prefers structured reference over unstructured text', () => {
+    const result = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      remittanceReference: 'RF18539007547034',
+      remittanceText: 'Invoice 12345'
+    })
+    expect(result).toContain('RF18539007547034')
+    expect(result).not.toContain('Invoice 12345')
+  })
+
+  it('generateEpcData returns empty string when required fields are missing', () => {
+    expect(generateEpcData({ name: '', iban: 'DE89370400440532013000' })).toBe('')
+    expect(generateEpcData({ name: 'Jane Smith', iban: '' })).toBe('')
+  })
+
+  it('generateEpcData returns empty string for version 001 without a BIC', () => {
+    expect(
+      generateEpcData({ name: 'Jane Smith', iban: 'DE89370400440532013000', version: '001' })
+    ).toBe('')
+  })
+
+  it('generateEpcData succeeds for version 002 without a BIC', () => {
+    const result = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      version: '002'
+    })
+    expect(result).toBe('BCD\n002\n1\nSCT\n\nJane Smith\nDE89370400440532013000')
+  })
+
+  it('generateEpcData succeeds for version 001 when a BIC is provided', () => {
+    const result = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      bic: 'DEUTDEFF',
+      version: '001'
+    })
+    expect(result).toBe('BCD\n001\n1\nSCT\nDEUTDEFF\nJane Smith\nDE89370400440532013000')
+  })
+
+  it('generateEpcData strips newlines from the beneficiary name to prevent field shifting', () => {
+    const clean = generateEpcData({ name: 'Jane Smith', iban: 'DE89370400440532013000' })
+    const withNewline = generateEpcData({
+      name: 'Jane\nSmith',
+      iban: 'DE89370400440532013000'
+    })
+
+    expect(withNewline).not.toContain('Jane\nSmith')
+    expect(withNewline.split('\n')).toHaveLength(clean.split('\n').length)
+    expect(withNewline.split('\n')).toHaveLength(7)
+    expect(withNewline.split('\n')[5]).toBe('Jane Smith')
+
+    const detected = detectDataType(withNewline)
+    expect(detected.type).toBe('epc')
+    expect(detected.parsedData.name).toBe('Jane Smith')
+    expect(detected.parsedData.iban).toBe('DE89370400440532013000')
+  })
+
+  it('generateEpcData strips CRLF from purpose, remittance and originator info fields', () => {
+    const clean = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      purpose: 'GD',
+      remittanceText: 'Invoice 12345',
+      originatorInfo: 'Thanks'
+    })
+    const withCrlf = generateEpcData({
+      name: 'Jane Smith',
+      iban: 'DE89370400440532013000',
+      purpose: 'G\r\nD',
+      remittanceText: 'Invoice\r\n12345',
+      originatorInfo: 'Thanks\r\na lot'
+    })
+
+    expect(withCrlf).not.toContain('\r')
+    expect(withCrlf.split('\n')).toHaveLength(clean.split('\n').length)
+    expect(withCrlf.split('\n')).toHaveLength(12)
+
+    const [, , , , , , , , purposeLine, , remittanceTextLine, originatorInfoLine] =
+      withCrlf.split('\n')
+    expect(purposeLine).toBe('G D')
+    expect(remittanceTextLine).toBe('Invoice 12345')
+    expect(originatorInfoLine).toBe('Thanks a lot')
+
+    const detected = detectDataType(withCrlf)
+    expect(detected.type).toBe('epc')
+    expect(detected.parsedData.purpose).toBe('G D')
+    expect(detected.parsedData.remittanceText).toBe('Invoice 12345')
+    expect(detected.parsedData.originatorInfo).toBe('Thanks a lot')
   })
 
   it('generateVCardData formats full address correctly for vCard 3.0', () => {
@@ -401,6 +514,21 @@ END:VCALENDAR`
     expect(result.parsedData.startTime).toContain('2024-01-15T10:00:00')
     expect(result.parsedData.endTime).toContain('2024-01-15T11:00:00')
   })
+
+  it('detectDataType identifies EPC QR (SEPA payment) data', () => {
+    const epc =
+      'BCD\n002\n1\nSCT\nDEUTDEFF\nJane Smith\nDE89370400440532013000\nEUR25.00\nGDDS\n\nInvoice 12345'
+
+    const result = detectDataType(epc)
+    expect(result.type).toBe('epc')
+    expect(result.parsedData.version).toBe('002')
+    expect(result.parsedData.bic).toBe('DEUTDEFF')
+    expect(result.parsedData.name).toBe('Jane Smith')
+    expect(result.parsedData.iban).toBe('DE89370400440532013000')
+    expect(result.parsedData.amount).toBe('25.00')
+    expect(result.parsedData.purpose).toBe('GDDS')
+    expect(result.parsedData.remittanceText).toBe('Invoice 12345')
+  })
 })
 
 describe('Escape Functions', () => {
@@ -462,5 +590,14 @@ describe('Escape Functions', () => {
       expect(escapeICal('12345')).toBe('12345')
       expect(escapeICal('test@example.com')).toBe('test@example.com')
     })
+  })
+})
+
+describe('vCard notes', () => {
+  it('escapes line breaks and special characters, and reads them back', () => {
+    const note = 'Designer; accessibility, i18n\nAsk me about QR codes'
+    const vcard = generateVCardData({ firstName: 'Jane', note, version: '3' })
+    expect(vcard).toContain(String.raw`NOTE:Designer\; accessibility\, i18n\nAsk me about QR codes`)
+    expect(detectDataType(vcard).parsedData.note).toBe(note)
   })
 })

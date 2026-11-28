@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import BatchExportFieldsGuide from '@/components/BatchExportFieldsGuide.vue'
+import ColorContrastToast from '@/components/ColorContrastToast.vue'
 import CopyImageModal from '@/components/CopyImageModal.vue'
 import DataTemplatesModal from '@/components/DataTemplatesModal.vue'
+import FrameFontPicker from '@/components/FrameFontPicker.vue'
 import QRCodeFrame from '@/components/QRCodeFrame.vue'
 import StyledQRCode from '@/components/StyledQRCode.vue'
 import {
@@ -11,6 +13,7 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion'
 import { Combobox } from '@/components/ui/Combobox'
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import QRSimpleFieldsCustomizer from '@/components/QRSimpleFieldsCustomizer.vue'
 import {
   Drawer,
@@ -21,7 +24,12 @@ import {
 } from '@/components/ui/drawer'
 import VCardPreview from '@/components/VCardPreview.vue'
 import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
-import { createRandomColor, getRandomItemInArray } from '@/utils/color'
+import { createHarmoniousPalette, getRandomItemInArray } from '@/utils/color'
+import {
+  hasInsufficientContrast,
+  isColorContrastWarningEnabled,
+  isNearWhiteOnBlackInversion
+} from '@/utils/contrast'
 import {
   copyImageToClipboard,
   downloadJpgElement,
@@ -79,8 +87,15 @@ import {
 import { useMediaQuery } from '@vueuse/core'
 import JSZip from 'jszip'
 import TextExportModal from '@/components/TextExportModal.vue'
+import QRCodeErrorPlaceholder from '@/components/QRCodeErrorPlaceholder.vue'
+import QRDataTooLongNotice from '@/components/QRDataTooLongNotice.vue'
 import {
   buildMatrix,
+  MAX_DATA_BYTES,
+  measureQRCapacity,
+  PREVIEW_FRAME_FONT_SIZE,
+  PREVIEW_QR_SIZE as PREVIEW_QRCODE_DIM_UNIT,
+  resolveEffectiveErrorCorrectionLevel,
   type CornerDotType,
   type CornerSquareType,
   type DotType,
@@ -90,6 +105,7 @@ import {
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import 'vue-i18n'
 import { useI18n } from 'vue-i18n'
+import { getBoolEnv, getEnv } from '@/utils/runtimeConfig'
 
 const props = defineProps<{
   initialData?: string
@@ -107,14 +123,14 @@ const isLikelyMobileDevice = computed(() => {
 // the mode and the pinned-field list persist to localStorage so a refresh
 // returns the user to the same view (see onMounted + watchers below).
 
-// Deployment config (build-time env vars):
-// - VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE: when "true", show the Simple/Full
+// Deployment config (env vars, set at build time or when the container starts):
+// - VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE: when "true" or "1", show the Simple/Full
 //   toggle and the Customize fields button. Hidden by default so self-hosted
 //   deployments are not exposed to the controls unless opted in.
 // - VITE_FIELDS_VISIBLE: comma/space separated field keys. When set, the app
 //   starts in Simple mode showing only those fields (a fixed, simplified view).
-const showModeControls = import.meta.env.VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE === 'true'
-const configuredVisibleFields = parseVisibleFields(import.meta.env.VITE_FIELDS_VISIBLE)
+const showModeControls = getBoolEnv('VITE_QR_CREATE_SIMPLE_FULL_MODE_TOGGLE')
+const configuredVisibleFields = parseVisibleFields(getEnv('VITE_FIELDS_VISIBLE'))
 const hasConfiguredVisibleFields = configuredVisibleFields.length > 0
 
 const viewMode = ref<QRViewMode>(hasConfiguredVisibleFields ? 'simple' : 'full')
@@ -226,7 +242,7 @@ const { t, locale } = useI18n()
 //#endregion
 
 //#region /* QR code style settings */
-const data = ref(props.initialData || import.meta.env.VITE_DEFAULT_DATA_TO_ENCODE || '')
+const data = ref(props.initialData || getEnv('VITE_DEFAULT_DATA_TO_ENCODE') || '')
 const debouncedData = ref(data.value)
 const previewData = computed(() =>
   debouncedData.value?.length > 0 ? debouncedData.value : defaultQRCodeText.value
@@ -247,6 +263,7 @@ const image = ref()
 const width = ref()
 const height = ref()
 const margin = ref()
+const showMarginHint = ref(false)
 const imageMargin = ref()
 const imageSize = ref<number | undefined>()
 
@@ -304,13 +321,35 @@ const style = computed(() => ({
   borderRadius: styledBorderRadiusFormatted.value,
   background: styleBackground.value
 }))
+const imageAspectRatio = ref<number | undefined>()
+watch(
+  image,
+  (src) => {
+    imageAspectRatio.value = undefined
+    if (!src) return
+    const img = new Image()
+    img.onload = () => {
+      if (image.value === src && img.naturalWidth > 0 && img.naturalHeight > 0) {
+        imageAspectRatio.value = img.naturalWidth / img.naturalHeight
+      }
+    }
+    img.src = src
+  },
+  { immediate: true }
+)
 const imageOptions = computed(() => ({
   margin: imageMargin.value,
-  imageSize: imageSize.value
+  imageSize: imageSize.value,
+  aspectRatio: imageAspectRatio.value
 }))
+// Capped below 1: past ~0.5 the render pipeline's own scannability safety
+// cap (see computeImagePlacement's SAFE_MAX_AXIS_FRACTION) already clamps the
+// hidden centre area, so higher values stop changing the output — keeping
+// the input's range honest avoids a slider tail that silently does nothing.
+const MAX_SAFE_IMAGE_SIZE = 0.5
 const isImageSizeOutOfRange = computed(() => {
   const v = imageSize.value
-  return typeof v === 'number' && (v < 0 || v > 1)
+  return typeof v === 'number' && (v < 0 || v > MAX_SAFE_IMAGE_SIZE)
 })
 const qrOptions = computed(() => ({
   errorCorrectionLevel: errorCorrectionLevel.value
@@ -341,16 +380,18 @@ function randomizeStyleSettings() {
   const cornerSquareTypes: CornerSquareType[] = ['dot', 'square', 'rounded', 'extra-rounded']
   const cornerDotTypes: CornerDotType[] = ['dot', 'square', 'rounded']
 
+  const palette = createHarmoniousPalette()
+
   dotsOptionsType.value = getRandomItemInArray(dotTypes)
-  dotsOptionsColor.value = createRandomColor()
+  dotsOptionsColor.value = palette.dots
 
   cornersSquareOptionsType.value = getRandomItemInArray(cornerSquareTypes)
-  cornersSquareOptionsColor.value = createRandomColor()
+  cornersSquareOptionsColor.value = palette.cornersSquare
 
   cornersDotOptionsType.value = getRandomItemInArray(cornerDotTypes)
-  cornersDotOptionsColor.value = createRandomColor()
+  cornersDotOptionsColor.value = palette.cornersDot
 
-  styleBackground.value = createRandomColor()
+  styleBackground.value = palette.background
 }
 
 function uploadImage() {
@@ -399,7 +440,7 @@ watch(
     if (newKey === prevKey || !newKey) return
 
     if (
-      import.meta.env.VITE_DISABLE_LOCAL_STORAGE !== 'true' &&
+      !getBoolEnv('VITE_DISABLE_LOCAL_STORAGE') &&
       CUSTOM_LOADED_PRESET_KEYS.includes(newKey) &&
       lastCustomLoadedPreset.value
     ) {
@@ -436,6 +477,74 @@ const recommendedErrorCorrectionLevel = computed<ErrorCorrectionLevel | null>(()
   } else {
     return 'L'
   }
+})
+// A logo needs a real error-correction budget to survive the hidden centre
+// area — 'L' and 'M' can leave a code unscannable once a logo is added
+// (see mini-qr#309), so the render pipeline boosts them to 'Q' whenever an
+// image is set. Surface that here so the UI doesn't silently disagree with
+// what actually gets encoded.
+const isErrorCorrectionBoostedForLogo = computed(
+  () =>
+    Boolean(image.value) &&
+    (errorCorrectionLevel.value === 'L' || errorCorrectionLevel.value === 'M')
+)
+
+const MIN_PX_PER_MODULE = 4
+const RECOMMENDED_PX_PER_MODULE = 5
+
+const effectiveErrorCorrectionLevel = computed(() =>
+  resolveEffectiveErrorCorrectionLevel(Boolean(image.value), errorCorrectionLevel.value)
+)
+const qrCapacity = computed(() =>
+  measureQRCapacity(
+    data.value?.length > 0 ? data.value : previewData.value,
+    effectiveErrorCorrectionLevel.value
+  )
+)
+const isDataTooLong = computed(
+  () => exportMode.value === ExportMode.Single && qrCapacity.value.moduleCount === null
+)
+const dataTooLongHint = computed(() => {
+  if (image.value) {
+    return t('Remove the logo and lower the error correction level to fit up to {max} bytes.', {
+      max: MAX_DATA_BYTES.L
+    })
+  }
+  if (effectiveErrorCorrectionLevel.value === 'L') {
+    return t('Shorten the text, or split it across several QR codes.')
+  }
+  return t('Shorten the text, or choose a lower error correction level.')
+})
+
+const dataTooLongDescription = computed(() =>
+  isDataTooLong.value
+    ? `${t('{length} of {max} bytes at error correction level {level}', {
+        length: qrCapacity.value.byteLength,
+        max: qrCapacity.value.maxBytes,
+        level: effectiveErrorCorrectionLevel.value
+      })}. ${dataTooLongHint.value}`
+    : ''
+)
+const dataTooLongAnnouncement = computed(() =>
+  isDataTooLong.value ? `${t('Too much data for one QR code')}. ${dataTooLongHint.value}` : ''
+)
+
+const exportQuietZoneModules = computed(() => Math.max(0, Number(margin.value) || 0))
+const exportPxPerModule = computed(() => {
+  const count = qrCapacity.value.moduleCount
+  const size = Math.min(Number(width.value) || 0, Number(height.value) || 0)
+  if (!count || !size) return null
+  return size / (count + 2 * exportQuietZoneModules.value)
+})
+const isExportSizeTooSmall = computed(
+  () =>
+    exportMode.value === ExportMode.Single &&
+    exportPxPerModule.value !== null &&
+    exportPxPerModule.value < MIN_PX_PER_MODULE
+)
+const recommendedExportSize = computed(() => {
+  const modules = (qrCapacity.value.moduleCount ?? 0) + 2 * exportQuietZoneModules.value
+  return Math.ceil((RECOMMENDED_PX_PER_MODULE * modules) / 100) * 100
 })
 //#endregion
 
@@ -481,9 +590,7 @@ const frameStyle = ref<FrameStyle>({
   padding: '16px'
 })
 
-const selectedFramePresetKey = ref<string>(
-  import.meta.env.VITE_FRAME_PRESET || defaultFramePreset.name
-)
+const selectedFramePresetKey = ref<string>(getEnv('VITE_FRAME_PRESET') || defaultFramePreset.name)
 
 function toFrameStyle(style: Partial<FrameStyle>): FrameStyle {
   return {
@@ -493,6 +600,7 @@ function toFrameStyle(style: Partial<FrameStyle>): FrameStyle {
     borderWidth: style.borderWidth ?? '1px',
     borderRadius: style.borderRadius ?? '8px',
     padding: style.padding ?? '16px',
+    ...(style.fontSize ? { fontSize: style.fontSize } : {}),
     ...(style.fontFamily ? { fontFamily: style.fontFamily } : {}),
     ...(style.backgroundImage ? { backgroundImage: style.backgroundImage } : {})
   }
@@ -553,7 +661,57 @@ function applyFrameFromPreset(frame?: QRCodeFrameConfig) {
   loadFrameFont(frame.style?.fontFamily)
 }
 
+// --- Color contrast warning (QR background/frame vs dots) -----------------
+// The "paper" a scanner actually sees is the QR's own background when "With
+// background" is on; when that's transparent, it's whatever shows through —
+// the frame's solid background color if one is shown, or nothing checkable
+// if there's no frame or the frame uses a background image instead.
+const effectivePaperColor = computed(() => {
+  if (includeBackground.value) return styleBackground.value
+  if (showFrame.value && !frameStyle.value.backgroundImage) {
+    return frameStyle.value.backgroundColor
+  }
+  return undefined
+})
+const colorContrastWarningEnabled = isColorContrastWarningEnabled()
+const isWhiteOnBlackColors = computed(() =>
+  isNearWhiteOnBlackInversion(effectivePaperColor.value, dotsOptionsColor.value)
+)
+const hasInsufficientColorContrast = computed(
+  () =>
+    !isWhiteOnBlackColors.value &&
+    hasInsufficientContrast(effectivePaperColor.value, dotsOptionsColor.value)
+)
+// Presets assign colors programmatically; suppress the warning while one is
+// being applied so picking a preset never warns by itself. It comes back the
+// moment the user actually edits a relevant color.
+let isApplyingPresetColors = false
+const hasManualColorEditSincePreset = ref(false)
+watch([styleBackground, dotsOptionsColor, () => frameStyle.value.backgroundColor], () => {
+  if (isApplyingPresetColors) return
+  hasManualColorEditSincePreset.value = true
+})
+// Shown as a temporary toast (see ColorContrastToast.vue), not a blocking prompt.
+const colorContrastWarningMessage = computed<string | null>(() => {
+  if (!colorContrastWarningEnabled || !hasManualColorEditSincePreset.value) return null
+  if (isWhiteOnBlackColors.value) {
+    return t('⚠️ Not all QR code readers can read white-on-black QR codes.')
+  }
+  if (hasInsufficientColorContrast.value) {
+    return includeBackground.value
+      ? t(
+          '⚠️ Insufficient contrast between background and dots color — some QR code readers may not be able to scan this code.'
+        )
+      : t(
+          '⚠️ Insufficient contrast between frame background and dots color — some QR code readers may not be able to scan this code.'
+        )
+  }
+  return null
+})
+
 function applySelectedPresetToState() {
+  isApplyingPresetColors = true
+  hasManualColorEditSincePreset.value = false
   const preset = selectedPreset.value
   // Note: We no longer auto-fill data from presets. Users can keep their own data
   // while changing the visual style. The QR preview will show default text if empty.
@@ -579,13 +737,16 @@ function applySelectedPresetToState() {
   const frame = (preset as Preset & { frame?: QRCodeFrameConfig }).frame
   if (frame) {
     applyFrameFromPreset(frame)
-    const framePresetName = import.meta.env.VITE_FRAME_PRESET || preset.name
+    const framePresetName = getEnv('VITE_FRAME_PRESET') || preset.name
     if (allFramePresets.some((p) => p.name === framePresetName)) {
       selectedFramePresetKey.value = framePresetName
     }
   } else {
     showFrame.value = false
   }
+  nextTick(() => {
+    isApplyingPresetColors = false
+  })
 }
 
 watch(selectedPreset, applySelectedPresetToState, { immediate: true })
@@ -606,6 +767,8 @@ const allFramePresetOptions = computed(() => {
 })
 
 function applyFramePreset(preset: FramePreset) {
+  isApplyingPresetColors = true
+  hasManualColorEditSincePreset.value = false
   if (preset.style) {
     frameStyle.value = toFrameStyle(preset.style)
     loadFrameFont(preset.style.fontFamily)
@@ -613,13 +776,16 @@ function applyFramePreset(preset: FramePreset) {
   if (preset.text) frameText.value = preset.text
   if (preset.position) frameTextPosition.value = preset.position
   showFrame.value = true
+  nextTick(() => {
+    isApplyingPresetColors = false
+  })
 }
 
 watch(selectedFramePresetKey, (newKey, prevKey) => {
   if (newKey === prevKey || !newKey) return
 
   if (
-    import.meta.env.VITE_DISABLE_LOCAL_STORAGE !== 'true' &&
+    !getBoolEnv('VITE_DISABLE_LOCAL_STORAGE') &&
     CUSTOM_LOADED_FRAME_PRESET_KEYS.includes(newKey) &&
     lastCustomLoadedFramePreset.value
   ) {
@@ -726,12 +892,14 @@ watch(defaultQRCodeText, (now, prev) => {
 //#region /* General Export - download qr code and copy to clipboard */
 const isExportButtonDisabled = computed(() => {
   if (exportMode.value === ExportMode.Single) {
-    return !data.value
+    return !data.value || isDataTooLong.value
   }
   return dataStringsFromCsv.value.length === 0
 })
 
-const PREVIEW_QRCODE_DIM_UNIT = 200
+const exportDisabledReason = computed(() =>
+  isDataTooLong.value ? t('Too much data for one QR code') : t('Please enter data to encode first')
+)
 
 /**
  * Calculates the dimensions for QR code export
@@ -753,8 +921,7 @@ function getExportDimensions() {
     }
   }
 
-  // Calculate the scale factor based on the preview size
-  const scaleFactor = width.value / PREVIEW_QRCODE_DIM_UNIT
+  const scaleFactor = Math.min(width.value, height.value) / PREVIEW_QRCODE_DIM_UNIT
 
   const elWidth = el.offsetWidth
   const elHeight = el.offsetHeight
@@ -833,6 +1000,7 @@ function buildSvgExportInput() {
       : null,
     outerBackground: styleBackground.value,
     borderRadius: exportBorderRadius.value,
+    qrBorderRadius: styledBorderRadiusFormatted.value,
     // SVG natural size: the QR's intrinsic dimensions. Frame chrome is added
     // by the lib's renderFramed primitive on top of this.
     size: { width: width.value, height: height.value }
@@ -1067,7 +1235,8 @@ const exportFilename = ref('qr-code')
 const isTextExportModalOpen = ref(false)
 const isMobileExportDrawerOpen = ref(false)
 const asciiMatrix = computed<boolean[][]>(() => {
-  if (!data.value) return []
+  if (!data.value || measureQRCapacity(data.value, errorCorrectionLevel.value).moduleCount === null)
+    return []
   try {
     return buildMatrix(data.value, errorCorrectionLevel.value).matrix
   } catch (err) {
@@ -1318,6 +1487,8 @@ const updateDataFromModal = (newData: string) => {
 
 <template>
   <div class="flex items-start justify-center gap-4 md:flex-row md:gap-6 lg:gap-12 lg:pb-0">
+    <div class="sr-only" aria-live="polite" aria-atomic="true">{{ dataTooLongAnnouncement }}</div>
+    <div id="data-too-long-error" class="sr-only">{{ dataTooLongDescription }}</div>
     <!-- Sticky sidebar on large screens -->
     <div
       v-if="isLarge"
@@ -1358,7 +1529,11 @@ const updateDataFromModal = (newData: string) => {
                   <template #qr-code>
                     <div id="qr-code-container" class="grid place-items-center">
                       <div
-                        class="grid place-items-center overflow-hidden"
+                        :class="[
+                          'grid place-items-center overflow-hidden',
+                          isDataTooLong &&
+                            'outline outline-2 outline-offset-2 outline-red-600 dark:outline-red-500'
+                        ]"
                         :style="[
                           style,
                           {
@@ -1367,7 +1542,9 @@ const updateDataFromModal = (newData: string) => {
                           }
                         ]"
                       >
+                        <QRCodeErrorPlaceholder v-if="isDataTooLong" />
                         <StyledQRCode
+                          v-else
                           v-bind="{
                             ...qrCodeProps,
                             width: PREVIEW_QRCODE_DIM_UNIT,
@@ -1384,7 +1561,11 @@ const updateDataFromModal = (newData: string) => {
               <template v-else>
                 <div class="grid place-items-center">
                   <div
-                    class="grid place-items-center overflow-hidden"
+                    :class="[
+                      'grid place-items-center overflow-hidden',
+                      isDataTooLong &&
+                        'outline outline-2 outline-offset-2 outline-red-600 dark:outline-red-500'
+                    ]"
                     :style="[
                       style,
                       {
@@ -1393,7 +1574,9 @@ const updateDataFromModal = (newData: string) => {
                       }
                     ]"
                   >
+                    <QRCodeErrorPlaceholder v-if="isDataTooLong" />
                     <StyledQRCode
+                      v-else
                       v-bind="{
                         ...qrCodeProps,
                         width: PREVIEW_QRCODE_DIM_UNIT,
@@ -1445,7 +1628,7 @@ const updateDataFromModal = (newData: string) => {
     <!-- Main content -->
     <Teleport to="#main-content-container" v-if="mainContentContainer != null">
       <div id="main-content">
-        <div id="qr-code-container" class="grid origin-center place-items-center">
+        <div id="qr-code-container" class="relative grid origin-center place-items-center">
           <!--
             When the framed preview is wider than the cap, FitScaleBox renders
             it scaled inside a wrapper sized to the scaled footprint — the
@@ -1463,7 +1646,11 @@ const updateDataFromModal = (newData: string) => {
                 <template #qr-code>
                   <div id="qr-code-container" class="grid place-items-center">
                     <div
-                      class="grid place-items-center overflow-hidden"
+                      :class="[
+                        'grid place-items-center overflow-hidden',
+                        isDataTooLong &&
+                          'outline outline-2 outline-offset-2 outline-red-600 dark:outline-red-500'
+                      ]"
                       :style="[
                         style,
                         {
@@ -1472,7 +1659,9 @@ const updateDataFromModal = (newData: string) => {
                         }
                       ]"
                     >
+                      <QRCodeErrorPlaceholder v-if="isDataTooLong" />
                       <StyledQRCode
+                        v-else
                         v-bind="{
                           ...qrCodeProps,
                           width: PREVIEW_QRCODE_DIM_UNIT,
@@ -1490,7 +1679,11 @@ const updateDataFromModal = (newData: string) => {
           <div
             v-else
             id="element-to-export"
-            class="grid place-items-center overflow-hidden"
+            :class="[
+              'grid place-items-center overflow-hidden',
+              isDataTooLong &&
+                'outline outline-2 outline-offset-2 outline-red-600 dark:outline-red-500'
+            ]"
             :style="[
               style,
               {
@@ -1499,7 +1692,9 @@ const updateDataFromModal = (newData: string) => {
               }
             ]"
           >
+            <QRCodeErrorPlaceholder v-if="isDataTooLong" />
             <StyledQRCode
+              v-else
               v-bind="{
                 ...qrCodeProps,
                 data: data?.length > 0 ? data : t('Have nice day!'),
@@ -1510,8 +1705,32 @@ const updateDataFromModal = (newData: string) => {
               aria-label="QR code"
             />
           </div>
+          <QRDataTooLongNotice
+            v-if="isDataTooLong"
+            :byte-length="qrCapacity.byteLength"
+            :max-bytes="qrCapacity.maxBytes"
+            :level="effectiveErrorCorrectionLevel"
+            :hint="dataTooLongHint"
+          />
         </div>
         <div class="mt-3 flex flex-col items-center gap-4">
+          <div
+            v-if="isExportSizeTooSmall"
+            id="export-size-warning"
+            role="status"
+            class="max-w-xs text-center text-sm text-amber-700 dark:text-amber-400"
+          >
+            {{
+              t(
+                'At {size}px, each square of this QR code is under {px}px wide, so it may not scan. Export at {recommended}px or larger.',
+                {
+                  size: Math.min(Number(width) || 0, Number(height) || 0),
+                  px: MIN_PX_PER_MODULE,
+                  recommended: recommendedExportSize
+                }
+              )
+            }}
+          </div>
           <div class="flex flex-col items-center justify-center gap-2">
             <button
               v-if="exportMode !== ExportMode.Batch"
@@ -1520,9 +1739,7 @@ const updateDataFromModal = (newData: string) => {
               @click="copyQRToClipboard"
               :disabled="isExportButtonDisabled"
               :title="
-                isExportButtonDisabled
-                  ? t('Please enter data to encode first')
-                  : t('Copy QR Code to clipboard')
+                isExportButtonDisabled ? exportDisabledReason : t('Copy QR Code to clipboard')
               "
               :aria-label="t('Copy QR Code to clipboard')"
             >
@@ -1612,9 +1829,7 @@ const updateDataFromModal = (newData: string) => {
                   @click="() => downloadQRImage('png')"
                   :disabled="isExportButtonDisabled"
                   :title="
-                    isExportButtonDisabled
-                      ? t('Please enter data to encode first')
-                      : t('Download QR Code as PNG')
+                    isExportButtonDisabled ? exportDisabledReason : t('Download QR Code as PNG')
                   "
                   :aria-label="t('Download QR Code as PNG')"
                 >
@@ -1647,9 +1862,7 @@ const updateDataFromModal = (newData: string) => {
                   @click="() => downloadQRImage('jpg')"
                   :disabled="isExportButtonDisabled"
                   :title="
-                    isExportButtonDisabled
-                      ? t('Please enter data to encode first')
-                      : t('Download QR Code as JPG')
+                    isExportButtonDisabled ? exportDisabledReason : t('Download QR Code as JPG')
                   "
                   :aria-label="t('Download QR Code as JPG')"
                 >
@@ -1682,9 +1895,7 @@ const updateDataFromModal = (newData: string) => {
                   @click="() => downloadQRImage('svg')"
                   :disabled="isExportButtonDisabled"
                   :title="
-                    isExportButtonDisabled
-                      ? t('Please enter data to encode first')
-                      : t('Download QR Code as SVG')
+                    isExportButtonDisabled ? exportDisabledReason : t('Download QR Code as SVG')
                   "
                   :aria-label="t('Download QR Code as SVG')"
                 >
@@ -1718,7 +1929,7 @@ const updateDataFromModal = (newData: string) => {
                   :disabled="isExportButtonDisabled"
                   :title="
                     isExportButtonDisabled
-                      ? t('Please enter data to encode first')
+                      ? exportDisabledReason
                       : t('Export QR Code as ASCII or Unicode text')
                   "
                   :aria-label="t('Export QR Code as ASCII or Unicode text')"
@@ -1962,6 +2173,7 @@ const updateDataFromModal = (newData: string) => {
                       'frameBorderWidth',
                       'frameBorderRadius',
                       'framePadding',
+                      'frameFontSize',
                       'frameFontFamily'
                     ])
                   "
@@ -2125,39 +2337,29 @@ const updateDataFromModal = (newData: string) => {
                         placeholder="16px"
                       />
                     </div>
+                    <div v-show="isFieldVisible('frameFontSize')">
+                      <label for="frame-font-size" class="mb-1 block text-sm">{{
+                        t('Font size')
+                      }}</label>
+                      <input
+                        id="frame-font-size"
+                        type="text"
+                        class="text-input"
+                        v-model="frameStyle.fontSize"
+                        :placeholder="`${PREVIEW_FRAME_FONT_SIZE}px`"
+                      />
+                    </div>
                     <div class="sm:col-span-2" v-show="isFieldVisible('frameFontFamily')">
                       <label for="frame-font-family" class="mb-1 block text-sm">{{
                         t('Font family')
                       }}</label>
-                      <select
+                      <FrameFontPicker
                         id="frame-font-family"
-                        class="w-full text-input"
-                        :value="frameStyle.fontFamily ?? ''"
-                        @change="onFontFamilyChange(($event.target as HTMLSelectElement).value)"
-                      >
-                        <option
-                          v-for="font in groupedFontOptions.ungrouped"
-                          :key="font.value"
-                          :value="font.value"
-                          :style="font.value ? { fontFamily: font.value } : {}"
-                        >
-                          {{ font.label }}
-                        </option>
-                        <optgroup
-                          v-for="group in groupedFontOptions.groups"
-                          :key="group.category"
-                          :label="t(group.label)"
-                        >
-                          <option
-                            v-for="font in group.fonts"
-                            :key="font.value"
-                            :value="font.value"
-                            :style="{ fontFamily: font.value }"
-                          >
-                            {{ font.label }}
-                          </option>
-                        </optgroup>
-                      </select>
+                        :model-value="frameStyle.fontFamily"
+                        :ungrouped="groupedFontOptions.ungrouped"
+                        :groups="groupedFontOptions.groups"
+                        @update:model-value="onFontFamilyChange"
+                      />
                     </div>
                   </div>
                 </div>
@@ -2243,6 +2445,8 @@ const updateDataFromModal = (newData: string) => {
                       <textarea
                         id="data"
                         v-model="data"
+                        :aria-invalid="isDataTooLong || undefined"
+                        :aria-describedby="isDataTooLong ? 'data-too-long-error' : undefined"
                         class="me-2 grow text-input"
                         :placeholder="t('data to encode e.g. a URL or a string')"
                       ></textarea>
@@ -2568,15 +2772,33 @@ const updateDataFromModal = (newData: string) => {
               >
                 <div class="w-full sm:w-1/3" v-show="isFieldVisible('margin')">
                   <label for="margin">
-                    {{ t('Margin (px)') }}
+                    {{ t('Margin (modules)') }}
                   </label>
-                  <input
-                    class="text-input"
-                    id="margin"
-                    type="number"
-                    placeholder="0"
-                    v-model="margin"
-                  />
+                  <Popover :open="showMarginHint">
+                    <PopoverAnchor as-child>
+                      <input
+                        class="text-input"
+                        id="margin"
+                        type="number"
+                        placeholder="0"
+                        v-model="margin"
+                        @focus="showMarginHint = true"
+                        @blur="showMarginHint = false"
+                      />
+                    </PopoverAnchor>
+                    <PopoverContent
+                      class="w-64 p-3 text-sm"
+                      side="bottom"
+                      align="start"
+                      @open-auto-focus="(e: Event) => e.preventDefault()"
+                    >
+                      {{
+                        t(
+                          'Suggested: 4 modules — the ISO/IEC 18004 quiet zone minimum for reliable scanning.'
+                        )
+                      }}
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div class="w-full sm:w-1/3" v-show="isFieldVisible('imageMargin')">
                   <label for="image-margin">
@@ -2599,7 +2821,7 @@ const updateDataFromModal = (newData: string) => {
                     id="image-size"
                     type="number"
                     min="0"
-                    max="1"
+                    :max="MAX_SAFE_IMAGE_SIZE"
                     step="0.05"
                     placeholder="0.4"
                     v-model.number="imageSize"
@@ -2611,7 +2833,7 @@ const updateDataFromModal = (newData: string) => {
                     id="image-size-error"
                     class="ms-1 mt-1 text-xs font-normal text-red-600 dark:text-red-400"
                   >
-                    {{ t('Must be between 0 and 1') }}
+                    {{ t('Must be between 0 and {max}', { max: MAX_SAFE_IMAGE_SIZE }) }}
                   </p>
                 </div>
               </div>
@@ -2723,6 +2945,16 @@ const updateDataFromModal = (newData: string) => {
                       </span>
                     </div>
                   </div>
+                  <p
+                    v-if="isErrorCorrectionBoostedForLogo"
+                    class="ms-1 mt-2 text-xs font-normal text-zinc-500 dark:text-zinc-400"
+                  >
+                    {{
+                      t(
+                        'A logo needs more error correction to stay scannable — using High (25%) instead.'
+                      )
+                    }}
+                  </p>
                 </fieldset>
               </div>
             </section>
@@ -2731,6 +2963,8 @@ const updateDataFromModal = (newData: string) => {
       </Accordion>
     </section>
   </div>
+
+  <ColorContrastToast :message="colorContrastWarningMessage" />
 
   <DataTemplatesModal
     :show="isDataModalVisible"

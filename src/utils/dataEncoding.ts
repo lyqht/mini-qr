@@ -27,6 +27,16 @@ export const escapeWiFi = (val: string): string => escapeSpecialChars(val, '\\;,
  */
 export const escapeICal = (val: string): string => escapeSpecialChars(val, '\\,;')
 
+/**
+ * Normalizes a string to a single line for use in a line-delimited format
+ * (e.g. EPC QR). Any run of CRLF/CR/LF is collapsed to a single space so
+ * words don't get glued together, and the result is trimmed.
+ */
+export const sanitizeEpcLine = (val: string): string => {
+  if (!val) return ''
+  return val.replace(/\r\n|\r|\n/g, ' ').trim()
+}
+
 /** Formats a Date object or date string into YYYYMMDDTHHMMSSZ format for iCalendar */
 const formatICalDateTime = (dateTime: string | Date): string => {
   try {
@@ -165,6 +175,7 @@ export const generateWifiData = (data: {
  * @param {string} [data.city] - City
  * @param {string} [data.state] - State/province
  * @param {string} [data.country] - Country
+ * @param {string} [data.note] - Free-text note, e.g. a short bio; line breaks are kept
  * @param {string} [data.version] - vCard version to generate:
  *   - '2': Generates vCard 2.1 format (older, simplest format)
  *   - '3': Generates vCard 3.0 format (default, widely compatible)
@@ -186,6 +197,7 @@ export const generateVCardData = (data: {
   city?: string
   state?: string
   country?: string
+  note?: string
   version?: string
 }): string => {
   const lines: string[] = []
@@ -274,6 +286,8 @@ export const generateVCardData = (data: {
     }
   }
 
+  if (data.note) lines.push(`NOTE:${escapeVCard(data.note).replace(/\r?\n/g, '\\n')}`)
+
   lines.push('END:VCARD')
   return lines.join('\n')
 }
@@ -335,6 +349,85 @@ export const generateEventData = (data: {
   return `BEGIN:VCALENDAR\nVERSION:2.0\n${lines.join('\n')}\nEND:VCALENDAR`
 }
 
+/**
+ * Generates an EPC QR Code (EPC069-12) payload, used for SEPA Credit Transfers
+ * and commonly known as "GiroCode" in electronic banking apps.
+ * @param {object} data - SEPA credit transfer data to encode
+ * @param {string} data.name - Beneficiary name (max 70 chars)
+ * @param {string} data.iban - Beneficiary IBAN (max 34 chars, spaces are stripped)
+ * @param {string} [data.bic] - Beneficiary BIC (required for version '001', optional for '002' within the EEA)
+ * @param {string|number} [data.amount] - Amount in EUR, e.g. 12.30 (optional)
+ * @param {string} [data.purpose] - Purpose code, max 4 chars (optional)
+ * @param {string} [data.remittanceReference] - Structured remittance reference, e.g. a creditor reference (optional)
+ * @param {string} [data.remittanceText] - Unstructured remittance text (optional, ignored if remittanceReference is set)
+ * @param {string} [data.originatorInfo] - Beneficiary to originator information, max 70 chars (optional)
+ * @param {'001' | '002'} [data.version] - EPC QR version, defaults to '002'
+ * @returns {string} - Formatted EPC QR payload string, or empty string if required fields are missing
+ * @see https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/quick-response-code-guidelines-enable-data-capture-initiation
+ */
+export const generateEpcData = (data: {
+  name: string
+  iban: string
+  bic?: string
+  amount?: string | number
+  purpose?: string
+  remittanceReference?: string
+  remittanceText?: string
+  originatorInfo?: string
+  version?: '001' | '002'
+}): string => {
+  if (!data.name || !data.iban) return ''
+
+  const version = data.version === '001' ? '001' : '002'
+  const bic = (data.bic || '').replace(/\s+/g, '').toUpperCase()
+
+  // BIC is mandatory for version '001'; only optional for '002' (SEPA/EEA-only transfers).
+  if (version === '001' && !bic) return ''
+
+  const name = sanitizeEpcLine(data.name).slice(0, 70)
+  const iban = data.iban.replace(/\s+/g, '').toUpperCase()
+
+  let amount = ''
+  if (data.amount !== undefined && data.amount !== '') {
+    const numericAmount = typeof data.amount === 'number' ? data.amount : parseFloat(data.amount)
+    if (!isNaN(numericAmount) && numericAmount > 0) {
+      amount = `EUR${numericAmount.toFixed(2)}`
+    }
+  }
+
+  const purpose = sanitizeEpcLine(data.purpose || '')
+    .slice(0, 4)
+    .toUpperCase()
+  const remittanceReference = sanitizeEpcLine(data.remittanceReference || '').slice(0, 35)
+  // Structured and unstructured remittance information are mutually exclusive.
+  const remittanceText = remittanceReference
+    ? ''
+    : sanitizeEpcLine(data.remittanceText || '').slice(0, 140)
+  const originatorInfo = sanitizeEpcLine(data.originatorInfo || '').slice(0, 70)
+
+  const lines = [
+    'BCD',
+    version,
+    '1',
+    'SCT',
+    bic,
+    name,
+    iban,
+    amount,
+    purpose,
+    remittanceReference,
+    remittanceText,
+    originatorInfo
+  ]
+
+  // Trailing empty fields may be omitted, but IBAN (index 6) is mandatory.
+  while (lines.length > 7 && lines[lines.length - 1] === '') {
+    lines.pop()
+  }
+
+  return lines.join('\n')
+}
+
 // --- Data Detection ---
 
 /**
@@ -359,12 +452,22 @@ export const generateEventData = (data: {
 export const detectDataType = (
   data: string
 ): {
-  type: 'text' | 'url' | 'email' | 'phone' | 'sms' | 'wifi' | 'vcard' | 'location' | 'event'
+  type: 'text' | 'url' | 'email' | 'phone' | 'sms' | 'wifi' | 'vcard' | 'location' | 'event' | 'epc'
   parsedData: Record<string, string | boolean>
 } => {
   // Default result
   const result: {
-    type: 'text' | 'url' | 'email' | 'phone' | 'sms' | 'wifi' | 'vcard' | 'location' | 'event'
+    type:
+      | 'text'
+      | 'url'
+      | 'email'
+      | 'phone'
+      | 'sms'
+      | 'wifi'
+      | 'vcard'
+      | 'location'
+      | 'event'
+      | 'epc'
     parsedData: Record<string, string | boolean>
   } = {
     type: 'text',
@@ -372,6 +475,29 @@ export const detectDataType = (
   }
 
   if (!data) return result
+
+  // EPC QR (SEPA Credit Transfer / GiroCode) detection
+  if (data.match(/^BCD\r?\n/)) {
+    result.type = 'epc'
+    result.parsedData = {}
+
+    const lines = data.replace(/\r/g, '').split('\n')
+
+    result.parsedData.version = lines[1] === '001' ? '001' : '002'
+    result.parsedData.bic = lines[4] || ''
+    result.parsedData.name = lines[5] || ''
+    result.parsedData.iban = lines[6] || ''
+
+    const amountField = lines[7] || ''
+    result.parsedData.amount = amountField.startsWith('EUR') ? amountField.slice(3) : ''
+
+    result.parsedData.purpose = lines[8] || ''
+    result.parsedData.remittanceReference = lines[9] || ''
+    result.parsedData.remittanceText = lines[10] || ''
+    result.parsedData.originatorInfo = lines[11] || ''
+
+    return result
+  }
 
   // vCard detection
   if (data.match(/^BEGIN:VCARD/i)) {
@@ -497,6 +623,14 @@ export const detectDataType = (
         result.parsedData.zipcode = addressParts[5].trim()
         result.parsedData.country = addressParts[6].trim()
       }
+    }
+
+    const noteField = fullContent.find((line) => line.match(/^NOTE[^:]*:/i))
+    if (noteField) {
+      result.parsedData.note = noteField
+        .substring(noteField.indexOf(':') + 1)
+        .trim()
+        .replace(/\\([nN,;\\])/g, (_, ch: string) => (ch === 'n' || ch === 'N' ? '\n' : ch))
     }
 
     return result

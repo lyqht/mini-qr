@@ -78,12 +78,20 @@ async function drawOverlay(
 ): Promise<void> {
   try {
     const logo = await loadOverlayImage(overlay.href)
+    const boxWidth = overlay.width * scaleX
+    const boxHeight = overlay.height * scaleY
+    const fit = Math.min(
+      boxWidth / (logo.naturalWidth || boxWidth),
+      boxHeight / (logo.naturalHeight || boxHeight)
+    )
+    const drawWidth = (logo.naturalWidth || boxWidth) * fit
+    const drawHeight = (logo.naturalHeight || boxHeight) * fit
     ctx.drawImage(
       logo,
-      overlay.x * scaleX,
-      overlay.y * scaleY,
-      overlay.width * scaleX,
-      overlay.height * scaleY
+      overlay.x * scaleX + (boxWidth - drawWidth) / 2,
+      overlay.y * scaleY + (boxHeight - drawHeight) / 2,
+      drawWidth,
+      drawHeight
     )
   } catch (err) {
     console.warn('QR logo failed to load for raster export, skipping:', err)

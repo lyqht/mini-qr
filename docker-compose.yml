@@ -4,6 +4,27 @@ services:
     image: ghcr.io/lyqht/mini-qr:latest
     container_name: mini-qr
     restart: unless-stopped
+    # Read when the container starts. Set them in your shell or in a .env file
+    # next to this file. See SELF_HOSTING.md for what each one does.
+    environment:
+      HIDE_CREDITS: ${HIDE_CREDITS:-}
+      DEFAULT_PRESET: ${DEFAULT_PRESET:-}
+      DEFAULT_DATA: ${DEFAULT_DATA:-}
+      DEFAULT_LOGO: ${DEFAULT_LOGO:-}
+      PRESETS: ${PRESETS:-}
+      FRAME_PRESET: ${FRAME_PRESET:-}
+      FRAME_PRESETS: ${FRAME_PRESETS:-}
+      DISABLE_LOCAL_STORAGE: ${DISABLE_LOCAL_STORAGE:-}
+      QR_CREATE_SIMPLE_FULL_MODE_TOGGLE: ${QR_CREATE_SIMPLE_FULL_MODE_TOGGLE:-}
+      FIELDS_VISIBLE: ${FIELDS_VISIBLE:-}
+      DISABLE_COLOR_CONTRAST_WARNING: ${DISABLE_COLOR_CONTRAST_WARNING:-}
+    # The app only serves static files, so it needs no Linux capabilities and
+    # must never gain privileges. The filesystem stays writable because the
+    # entrypoint writes dist/config.js from the settings above on every start.
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     networks:
       - mini-qr-network
 

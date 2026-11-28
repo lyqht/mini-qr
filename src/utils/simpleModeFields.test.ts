@@ -42,6 +42,7 @@ describe('simple mode field registry', () => {
         'frameBorderWidth',
         'frameBorderRadius',
         'framePadding',
+        'frameFontSize',
         'frameFontFamily'
       ].sort()
     )

@@ -2,7 +2,7 @@ import type { ResolvedQRCodeConfig } from '../types'
 import { buildMatrix } from '../matrix'
 import { buildDotsPath } from './dots'
 import { buildCornerDotsPath, buildCornerSquaresPath } from './corners'
-import { computeImagePlacement } from './image'
+import { computeImagePlacement, resolveEffectiveErrorCorrectionLevel } from './image'
 
 export interface RenderedQR {
   svg: string
@@ -24,7 +24,11 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
   size: number
   matrixCount: number
 } {
-  const { matrix, count } = buildMatrix(config.data, config.errorCorrectionLevel)
+  const effectiveEcLevel = resolveEffectiveErrorCorrectionLevel(
+    Boolean(config.image),
+    config.errorCorrectionLevel
+  )
+  const { matrix, count } = buildMatrix(config.data, effectiveEcLevel)
   const totalModules = count + 2 * config.margin
   const moduleSize = config.size / totalModules
   const offset = config.margin * moduleSize
@@ -46,7 +50,7 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
         moduleSize,
         offset,
         totalSize: config.size,
-        errorCorrectionLevel: config.errorCorrectionLevel
+        errorCorrectionLevel: effectiveEcLevel
       })
     : undefined
 
@@ -91,17 +95,18 @@ export function renderQrFragment(config: ResolvedQRCodeConfig): {
   }
 
   if (placement && config.image) {
-    const innerSize = placement.size - 2 * placement.margin
+    const innerWidth = placement.width - 2 * placement.margin
+    const innerHeight = placement.height - 2 * placement.margin
     const innerX = placement.x + placement.margin
     const innerY = placement.y + placement.margin
-    if (innerSize > 0) {
+    if (innerWidth > 0 && innerHeight > 0) {
       const crossOrigin = config.image.crossOrigin
         ? ` crossorigin="${config.image.crossOrigin}"`
         : ''
       parts.push(
         `<image class="qr-logo" href="${escapeAttr(config.image.href)}" xlink:href="${escapeAttr(
           config.image.href
-        )}" x="${innerX}" y="${innerY}" width="${innerSize}" height="${innerSize}" preserveAspectRatio="xMidYMid meet"${crossOrigin}/>`
+        )}" x="${innerX}" y="${innerY}" width="${innerWidth}" height="${innerHeight}" preserveAspectRatio="xMidYMid meet"${crossOrigin}/>`
       )
     }
   }

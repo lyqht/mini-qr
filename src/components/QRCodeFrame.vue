@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { PREVIEW_FRAME_FONT_SIZE, PREVIEW_QR_SIZE as PREVIEW_QRCODE_DIM_UNIT } from '@/lib/qr-code'
+
 interface FrameStyle {
   textColor?: string
   backgroundColor?: string
@@ -6,6 +8,7 @@ interface FrameStyle {
   borderWidth?: string
   borderRadius?: string
   padding?: string
+  fontSize?: string
   fontFamily?: string
   /** Frame background image (data:image URI or http(s) URL). Drawn over backgroundColor. */
   backgroundImage?: string
@@ -24,8 +27,6 @@ withDefaults(defineProps<Props>(), {
   frameStyle: () => ({}),
   captionWidth: 200
 })
-
-const PREVIEW_QRCODE_DIM_UNIT = 200
 </script>
 
 <template>
@@ -61,6 +62,7 @@ const PREVIEW_QRCODE_DIM_UNIT = 200
       :style="{
         color: frameStyle.textColor,
         fontFamily: frameStyle.fontFamily || undefined,
+        fontSize: frameStyle.fontSize || `${PREVIEW_FRAME_FONT_SIZE}px`,
         margin: 0,
         textAlign: 'center',
         [textPosition === 'left' || textPosition === 'right' ? 'width' : 'maxWidth']:
