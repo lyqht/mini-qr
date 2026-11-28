@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/drawer'
 import VCardPreview from '@/components/VCardPreview.vue'
 import { IS_COPY_IMAGE_TO_CLIPBOARD_SUPPORTED } from '@/utils/clipboard'
-import { createRandomColor, getRandomItemInArray } from '@/utils/color'
+import { createHarmoniousPalette, getRandomItemInArray } from '@/utils/color'
 import {
   hasInsufficientContrast,
   isColorContrastWarningEnabled,
@@ -363,16 +363,18 @@ function randomizeStyleSettings() {
   const cornerSquareTypes: CornerSquareType[] = ['dot', 'square', 'rounded', 'extra-rounded']
   const cornerDotTypes: CornerDotType[] = ['dot', 'square', 'rounded']
 
+  const palette = createHarmoniousPalette()
+
   dotsOptionsType.value = getRandomItemInArray(dotTypes)
-  dotsOptionsColor.value = createRandomColor()
+  dotsOptionsColor.value = palette.dots
 
   cornersSquareOptionsType.value = getRandomItemInArray(cornerSquareTypes)
-  cornersSquareOptionsColor.value = createRandomColor()
+  cornersSquareOptionsColor.value = palette.cornersSquare
 
   cornersDotOptionsType.value = getRandomItemInArray(cornerDotTypes)
-  cornersDotOptionsColor.value = createRandomColor()
+  cornersDotOptionsColor.value = palette.cornersDot
 
-  styleBackground.value = createRandomColor()
+  styleBackground.value = palette.background
 }
 
 function uploadImage() {
