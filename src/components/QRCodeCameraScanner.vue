@@ -97,8 +97,6 @@ const startScanning = async () => {
       cameraId,
       {
         fps: 10,
-        // Wide scan region so both QR (roughly square) and 1D barcodes
-        // (wide/short) sit comfortably inside the viewfinder.
         qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
           const width = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.9)
           const height = Math.floor(Math.min(width * 0.6, viewfinderHeight * 0.8))
@@ -158,7 +156,12 @@ defineExpose({
     </div>
 
     <!-- Scanner container -->
-    <div class="scanner-container relative z-50 mb-4 overflow-hidden rounded-lg">
+    <div
+      :class="[
+        'scanner-container relative z-50 mb-4 overflow-hidden rounded-lg',
+        { 'min-h-[300px]': !isScanning }
+      ]"
+    >
       <div :id="scannerContainerId" class="mx-auto w-full max-w-md"></div>
 
       <!-- Control buttons -->
@@ -213,7 +216,6 @@ defineExpose({
   position: relative;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: #000;
-  min-height: 300px;
 }
 
 /* Override some of the html5-qrcode library styles */

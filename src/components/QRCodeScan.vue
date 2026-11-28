@@ -38,8 +38,6 @@ const barcodeSearchUrl = computed(() => getBarcodeSearchUrl(capturedData.value))
 
 // #region QR Code Type Detection
 const qrCodeType = computed(() => {
-  // 1D barcodes carry raw product/identifier codes, not structured QR content.
-  // Skip the URL/email/phone heuristics so a numeric UPC isn't mislabeled.
   if (isBarcode.value) {
     return 'barcode'
   }
@@ -275,7 +273,7 @@ const catchScanFileError = async (err: Error, file: File) => {
 
   const QrScanner = (await import('qr-scanner')).default
 
-  // Fallback to nimiq/qr-scanner lib (QR codes only).
+  // Fallback to nimiq/qr-scanner lib
   try {
     const result = await QrScanner.scanImage(file, { returnDetailedScanResult: true })
     capturedData.value = result.data
@@ -399,10 +397,9 @@ defineExpose({
           </svg>
           <span>{{ t('Copy to clipboard') }}</span>
         </button>
-        <!-- Product lookup for retail barcodes (UPC/EAN) -->
         <a
           v-if="showProductLookup"
-          class="button flex w-full flex-row items-center justify-start gap-4"
+          class="button flex w-full flex-row items-center justify-start gap-4 no-underline"
           :href="barcodeSearchUrl"
           target="_blank"
           rel="noopener noreferrer"
