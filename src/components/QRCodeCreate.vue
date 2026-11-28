@@ -92,6 +92,7 @@ import {
   buildMatrix,
   MAX_DATA_BYTES,
   measureQRCapacity,
+  PREVIEW_FRAME_FONT_SIZE,
   PREVIEW_QR_SIZE as PREVIEW_QRCODE_DIM_UNIT,
   resolveEffectiveErrorCorrectionLevel,
   type CornerDotType,
@@ -579,6 +580,7 @@ function toFrameStyle(style: Partial<FrameStyle>): FrameStyle {
     borderWidth: style.borderWidth ?? '1px',
     borderRadius: style.borderRadius ?? '8px',
     padding: style.padding ?? '16px',
+    ...(style.fontSize ? { fontSize: style.fontSize } : {}),
     ...(style.fontFamily ? { fontFamily: style.fontFamily } : {}),
     ...(style.backgroundImage ? { backgroundImage: style.backgroundImage } : {})
   }
@@ -2151,6 +2153,7 @@ const updateDataFromModal = (newData: string) => {
                       'frameBorderWidth',
                       'frameBorderRadius',
                       'framePadding',
+                      'frameFontSize',
                       'frameFontFamily'
                     ])
                   "
@@ -2312,6 +2315,18 @@ const updateDataFromModal = (newData: string) => {
                         class="text-input"
                         v-model="frameStyle.padding"
                         placeholder="16px"
+                      />
+                    </div>
+                    <div v-show="isFieldVisible('frameFontSize')">
+                      <label for="frame-font-size" class="mb-1 block text-sm">{{
+                        t('Font size')
+                      }}</label>
+                      <input
+                        id="frame-font-size"
+                        type="text"
+                        class="text-input"
+                        v-model="frameStyle.fontSize"
+                        :placeholder="`${PREVIEW_FRAME_FONT_SIZE}px`"
                       />
                     </div>
                     <div class="sm:col-span-2" v-show="isFieldVisible('frameFontFamily')">
