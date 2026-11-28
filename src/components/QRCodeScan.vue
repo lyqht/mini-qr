@@ -9,6 +9,7 @@ import { Html5Qrcode } from 'html5-qrcode'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import QRCodeCameraScanner from './QRCodeCameraScanner.vue'
+import { isPhoneNumber } from '@/utils/phoneNumber'
 
 defineEmits<{
   'create-qr': [data: string]
@@ -41,7 +42,7 @@ const qrCodeType = computed(() => {
   }
 
   // Phone number detection
-  if (/^tel:(.+)$/i.test(data) || /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/.test(data)) {
+  if (isPhoneNumber(data)) {
     return 'tel'
   }
 
